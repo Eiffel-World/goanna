@@ -33,7 +33,7 @@ feature {DOM_DOCUMENT} -- Factory creation
 			new_name_exists: new_name /= Void
 		do
 			parent_node_make
-			create {DOM_NAMED_MAP_IMPL [DOM_ATTR]} attributes.make (Current)
+			!DOM_NAMED_MAP_IMPL [DOM_ATTR]! attributes.make (Current)
 			set_owner_document (doc)
 			tag_name := new_name
 		end

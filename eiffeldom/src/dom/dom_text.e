@@ -43,7 +43,7 @@ feature -- from DOM_NODE
 
 	node_name: DOM_STRING is
 		once
-			create Result.make_from_string ("#text")
+			!! Result.make_from_string ("#text")
 		end
 	
 end -- class DOM_TEXT

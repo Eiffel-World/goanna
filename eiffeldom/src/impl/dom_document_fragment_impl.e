@@ -40,7 +40,7 @@ feature -- from DOM_NODE
 
 	node_name: DOM_STRING is
 		once
-			create Result.make_from_string ("#document-fragment")
+			!! Result.make_from_string ("#document-fragment")
 		end
 
 end -- class DOM_DOCUMENT_FRAGMENT_IMPL

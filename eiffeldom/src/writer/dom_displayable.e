@@ -35,7 +35,7 @@ feature {NONE}
 		require
 			positive_level: level >= 0
 		do
-			create Result.make (level * 2)
+			!! Result.make (level * 2)
 			if level > 0 then
 				Result.fill_character (' ')
 			end
@@ -87,7 +87,7 @@ feature {NONE}
 			-- Otherwise return 'str'
 		do
 			if str = Void then
-				create Result.make_from_string ("Void")
+				!! Result.make_from_string ("Void")
 			else
 				Result := str
 			end

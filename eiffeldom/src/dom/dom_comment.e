@@ -25,7 +25,7 @@ feature -- from DOM_NODE
 
 	node_name: DOM_STRING is
 		once
-			create Result.make_from_string ("#comment")
+			!! Result.make_from_string ("#comment")
 		end
 
 end -- class DOM_COMMENT

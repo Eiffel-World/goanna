@@ -1,5 +1,7 @@
-/home/glenn/dev/gobo16/example/parse/eiffel/
-/home/glenn/dev/gobo16/library/parse/skeleton/
-/home/glenn/dev/gobo16/library/lexical/skeleton/
-/home/glenn/dev/gobo16/library/utility/loadpath.se
-/home/glenn/dev/gobo16/library/kernel/loadpath.se
+$GOBO/library/utility/loadpath.se
+$GOBO/library/kernel/loadpath.se
+$GOBO/library/structure/loadpath.se
+$GOBO/library/structure/base/
+$GOANNA/eiffeldom/src/loadpath.se
+$UCSTRING/lib/
+$UCSTRING/spec/se/

@@ -282,7 +282,7 @@ feature {DOM_WRITER, DOM_NODE} -- Output Implementation
 			next_attribute: DOM_NODE
 			str: UCSTRING
 		do
-			create str.make (50)
+			!! str.make (50)
 			-- node type
 			str.append_string (make_indent (level))
 			str.append_string (node_type_string (node_type))

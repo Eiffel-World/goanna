@@ -13,24 +13,30 @@ feature
 	make is
 		local
 			discard: DOM_NODE
+			str, str2: DOM_STRING
 		do
 			-- bootstrap implementation
-			create {DOM_IMPLEMENTATION_IMPL} impl
+			!DOM_IMPLEMENTATION_IMPL! impl
 
 			-- create document
-			doc := impl.create_document (create {DOM_STRING}.make_from_string ("http://test"),
-				create {DOM_STRING}.make_from_string ("HTML"), Void)
-			comment := doc.create_comment (create {DOM_STRING}.make_from_string ("This is a comment."))
+			!! str.make_from_string ("http://test")
+			!! str2.make_from_string ("HTML")
+			doc := impl.create_document (str, str2, Void)
+			!! str.make_from_string ("This is a comment.")
+			comment := doc.create_comment (str)
 			discard := doc.document_element.append_child (comment)
-			head := doc.create_element (create {DOM_STRING}.make_from_string ("HEAD"))
-			head.set_attribute (create {DOM_STRING}.make_from_string ("id"), 
-				create {DOM_STRING}.make_from_string ("header"))
-			head.set_attribute (create {DOM_STRING}.make_from_string ("align"), 
-				create {DOM_STRING}.make_from_string ("center"))
+			!! str.make_from_string ("HEAD")
+			head := doc.create_element (str)
+			!! str.make_from_string ("id")
+			!! str2.make_from_string ("header")
+			head.set_attribute (str, str2)
+			!! str.make_from_string ("align")
+			!! str.make_from_string ("center")
+			head.set_attribute (str, str2)
 			discard := doc.document_element.append_child (head)
 			node_impl ?= doc
-			create writer
-			print (writer.to_string(node_impl))
+			!! writer
+			writer.output(node_impl)
 		end
 
 	impl: DOM_IMPLEMENTATION_IMPL

@@ -21,7 +21,7 @@ feature {DOM_NODE}
 	make is
 			-- Initialise this parent node
 		do
-			create {DOM_NODE_LIST_IMPL} child_nodes.make
+			!DOM_NODE_LIST_IMPL! child_nodes.make
 		end
 
 feature

@@ -90,7 +90,7 @@ feature
 			proper_result_owner: Result.owner_document = Current
 		end
 
-	create_cdata_Section (data: DOM_STRING): DOM_CDATA_SECTION is
+	create_cdata_section (data: DOM_STRING): DOM_CDATA_SECTION is
 			-- Creates a CDATASection node whose value is the specified string.
 			-- Parameters
 			--    data   The data for the CDATASection [p.43] contents.
@@ -143,7 +143,7 @@ feature
 			name_set: Result.node_name.is_equal (name)
 			no_namespace_set: Result.local_name = Void and Result.ns_prefix = Void
 				and Result.namespace_uri = Void
-			empty_valid: Result.value.is_equal (create {DOM_STRING}.make_from_string ("")) 
+			-- empty_valid: Result.value.is_equal (create {DOM_STRING}.make_from_string ("")) 
 			proper_result_owner: Result.owner_document = Current
 		end
 

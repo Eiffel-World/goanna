@@ -62,7 +62,7 @@ feature
          	-- Return Value
          	--    A new Element object.
 		do
-			create {DOM_ELEMENT_IMPL} Result.make (Current, tag_name)
+			!DOM_ELEMENT_IMPL! Result.make (Current, tag_name)
 		end
 
 	create_document_fragment: DOM_DOCUMENT_FRAGMENT is
@@ -70,7 +70,7 @@ feature
 			-- Return Value
 			--    A new DocumentFragment.
 		do
-			create {DOM_DOCUMENT_FRAGMENT_IMPL} Result.make (Current)
+			!DOM_DOCUMENT_FRAGMENT_IMPL! Result.make (Current)
 		end
 
 	create_text_node (data: DOM_STRING): DOM_TEXT is
@@ -80,7 +80,7 @@ feature
 			-- Return Value
 			--    The new Text object.
 		do
-			create {DOM_TEXT_IMPL} Result.make (Current, data)
+			!DOM_TEXT_IMPL! Result.make (Current, data)
 		end
 
 	create_comment (data: DOM_STRING): DOM_COMMENT is
@@ -90,7 +90,7 @@ feature
 			-- Return Value
 			--    The new Comment object.
 		do
-			create {DOM_COMMENT_IMPL} Result.make (Current, data)
+			!DOM_COMMENT_IMPL! Result.make (Current, data)
 		end
 
 	create_cdata_section (data: DOM_STRING): DOM_CDATA_SECTION is
@@ -100,7 +100,7 @@ feature
 			-- Return Value
 			--    The new CDATASection [p.43] object.
 		do
-			create {DOM_CDATA_SECTION_IMPL} Result.make (Current, data)
+			!DOM_CDATA_SECTION_IMPL! Result.make (Current, data)
 		end
 
 	create_processing_instruction (target: DOM_STRING; data: DOM_STRING):
@@ -113,7 +113,7 @@ feature
 			-- Return Value
 			--    The new ProcessingInstruction [p.46] object.
 		do
-			create {DOM_PROCESSING_INSTRUCTION_IMPL} Result.make (Current, target, data)
+			!DOM_PROCESSING_INSTRUCTION_IMPL! Result.make (Current, target, data)
 		end
 
 	create_attribute (name: DOM_STRING): DOM_ATTR is
@@ -124,7 +124,7 @@ feature
 			-- Return Value
 			--    A new Attr object.
 		do
-			create {DOM_ATTR_IMPL} Result.make (Current, name)
+			!DOM_ATTR_IMPL! Result.make (Current, name)
 		end
 
 	create_entity_reference (name: DOM_STRING): DOM_ENTITY_REFERENCE is
@@ -134,7 +134,7 @@ feature
 			-- Return Value
 			--    The new EntityReference object.
 		do
-			create {DOM_ENTITY_REFERENCE_IMPL} Result.make (Current, name)
+			!DOM_ENTITY_REFERENCE_IMPL! Result.make (Current, name)
 		end
 
 	get_elements_by_tag_name (tagname: DOM_STRING): DOM_NODE_LIST is
@@ -167,7 +167,7 @@ feature
 			-- Creates an element of the given qualified name and namespace URI.
 			-- DOM Level 2.
 		do
-			create {DOM_ELEMENT_IMPL} Result.make_with_namespace (Current, 
+			!DOM_ELEMENT_IMPL! Result.make_with_namespace (Current, 
 				new_namespace_uri, qualified_name)
 		end
 
@@ -176,7 +176,7 @@ feature -- from DOM_NODE
 	node_name: DOM_STRING is
          -- The name of this node, depending on its type.
       once
-		  create Result.make_from_string ("#document")
+		  !! Result.make_from_string ("#document")
       end
 
    node_type: INTEGER is

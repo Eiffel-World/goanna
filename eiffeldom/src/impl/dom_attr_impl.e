@@ -41,7 +41,7 @@ feature -- Factory creation
 			parent_make
 			name := new_name
 			specified := true
-			create {DOM_STRING} value.make_from_string ("")
+			!DOM_STRING! value.make_from_string ("")
 		end
 
 feature
