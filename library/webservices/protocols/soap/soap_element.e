@@ -85,8 +85,8 @@ feature {NONE, SOAP_NODE_FORMATTER} -- Implementation
 		
 feature {NONE} -- Implementation
 
-	get_named_element (parent: XM_ELEMENT; name: UC_STRING): XM_ELEMENT is
-			-- Search for and return first element with tag name 'name'. Return
+	get_named_element (parent: XM_ELEMENT; name, namespace: UC_STRING): XM_ELEMENT is
+			-- Search for and return first element with 'name' and 'namespace'. Return
 			-- Void if not found.
 		require
 			parent_exists: parent /= Void
@@ -105,7 +105,8 @@ feature {NONE} -- Implementation
 				loop
 					child ?= child_node_cursor.item
 					if child /= Void then
-						if child.name.is_equal (name) then
+						if child.name.is_equal (name) and then child.has_namespace 
+							and then child.namespace.is_equal (namespace) then
 							Result := child
 							found := True
 						end
@@ -113,6 +114,18 @@ feature {NONE} -- Implementation
 					child_node_cursor.forth			
 				end
 			end
+		end
+		
+	check_qualified_name (elem: XM_NAMED_NODE; name, namespace: UC_STRING): BOOLEAN is
+			-- Does 'elem' have the specified 'name' and 'namespace'?
+		require
+			node_exists: elem /= Void
+			name_exists: name /= Void
+			namespace_exists: namespace /= Void
+		do
+			Result := elem.name.is_equal (name) 
+				and then elem.has_namespace
+				and then elem.namespace.is_equal (namespace)
 		end
 		
 	unmarshall_encoding_style_attribute (node: XM_ELEMENT) is
@@ -125,17 +138,23 @@ feature {NONE} -- Implementation
 		local
 			new_value: SOAP_VALUE
 			str: UC_STRING
+			attr: XM_ATTRIBUTE
 		do
 			if node.has_attribute_by_name (Encoding_style_attr) then
-				value_factory.unmarshall_for_type (node.attribute_by_name (Encoding_style_attr).value, 
-					Ns_name_xs, Xsd_anyuri)
-				if not value_factory.unmarshall_ok then
-					unmarshall_ok := False
-					unmarshall_fault := value_factory.unmarshall_fault
+				attr := node.attribute_by_name (Encoding_style_attr)
+				if attr.has_namespace and attr.namespace.is_equal (Ns_name_env) then
+					value_factory.unmarshall_value (attr.value, Ns_name_xs, Xsd_anyuri)
+					if not value_factory.unmarshall_ok then
+						unmarshall_ok := False
+						unmarshall_fault := value_factory.unmarshall_fault
+					else
+						str ?= value_factory.last_value.as_object
+						set_encoding_style (str)
+					end	
 				else
-					str ?= value_factory.last_value.as_object
-					set_encoding_style (str)
-				end
+					unmarshall_ok := False
+					unmarshall_fault := create_fault (Client_fault_code, Malformed_encoding_style_fault_code)
+				end		
 			end
 		end
 		

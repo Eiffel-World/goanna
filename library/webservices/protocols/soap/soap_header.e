@@ -37,7 +37,7 @@ feature -- Initialisation
 			new_block: SOAP_BLOCK
 		do
 			check
-				header_node: node.name.is_equal (Header_element_name)
+				header_node: node.name.is_equal (Header_element_name) and node.namespace.is_equal (Ns_name_env)
 			end
 			make
 			unmarshall_ok := True

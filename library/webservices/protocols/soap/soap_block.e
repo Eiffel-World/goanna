@@ -33,6 +33,7 @@ feature -- Initialization
 				no_encoding_style: encoding_style = Void
 				no_actor: actor = Void
 				no_must_understand: must_understand = Void
+				node_exists: node = block_node
 			end
 
 	unmarshall (init_node: XM_ELEMENT) is
@@ -117,16 +118,22 @@ feature {NONE} -- Implementation
 			node_exists: new_node /= Void
 		local
 			str: UC_STRING
+			attr: XM_ATTRIBUTE
 		do
 			if new_node.has_attribute_by_name (Actor_attr) then
-				value_factory.unmarshall_for_type (new_node.attribute_by_name (Actor_attr).value, 
-					Ns_name_xs, Xsd_anyuri)
-				if not value_factory.unmarshall_ok then
-					unmarshall_ok := False
-					unmarshall_fault := value_factory.unmarshall_fault
+				attr := node.attribute_by_name (Actor_attr)
+				if attr.has_namespace and attr.namespace.is_equal (Ns_name_env) then
+					value_factory.unmarshall_value (attr.value, Ns_name_xs, Xsd_anyuri)
+					if not value_factory.unmarshall_ok then
+						unmarshall_ok := False
+						unmarshall_fault := value_factory.unmarshall_fault
+					else
+						str ?= value_factory.last_value.as_object
+						set_actor (str)
+					end
 				else
-					str ?= value_factory.last_value.as_object
-					set_actor (str)
+					unmarshall_ok := False
+					unmarshall_fault := create_fault (Client_fault_code, Malformed_actor_fault_code)
 				end
 			end
 		end
@@ -140,22 +147,24 @@ feature {NONE} -- Implementation
 			node_exists: new_node /= Void
 		local
 			bool: BOOLEAN_REF
+			attr: XM_ATTRIBUTE
 		do
 			if new_node.has_attribute_by_name (Must_understand_attr) then
-				value_factory.unmarshall_for_type (new_node.attribute_by_name (Must_understand_attr).value, 
-					Ns_name_xs, Xsd_boolean)
-				if not value_factory.unmarshall_ok then
-					unmarshall_ok := False
-					unmarshall_fault := value_factory.unmarshall_fault
+				attr := node.attribute_by_name (Must_understand_attr)
+				if attr.has_namespace and attr.namespace.is_equal (Ns_name_env) then
+					value_factory.unmarshall_value (attr.value, Ns_name_xs, Xsd_boolean)
+					if not value_factory.unmarshall_ok then
+						unmarshall_ok := False
+						unmarshall_fault := value_factory.unmarshall_fault
+					else
+						bool ?= value_factory.last_value.as_object
+						set_must_understand (bool.item)
+					end
 				else
-					bool ?= value_factory.last_value.as_object
-					set_must_understand (bool.item)
+					unmarshall_ok := False
+					unmarshall_fault := create_fault (Client_fault_code, Malformed_must_understand_fault_code)
 				end
 			end
 		end
-		
-invariant
-	
-	node_exists: unmarshall_ok implies node /= Void
 	
 end -- class SOAP_BLOCK

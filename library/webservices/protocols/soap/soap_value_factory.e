@@ -46,8 +46,15 @@ feature -- Status report
 	
 feature -- Factory
 
-	unmarshall_for_type (value: UC_STRING; encoding_style, type: STRING) is
-			-- Unmarshall value according to 'type' as defined in 'encoding_style'. Make
+	unmarshall (node: XM_NAMED_NODE; encoding_style: STRING) is
+			-- Unmarshall value contained in 'node' according to 'encoding_style'. Make
+			-- result available in 'last_value'.
+		do
+			make	
+		end
+		
+	unmarshall_value (value: UC_STRING; encoding_style, type: STRING) is
+			-- Unmarshall 'value' according to 'type' as defined in 'encoding_style'. Make
 			-- result available in 'last_value'.
 		do
 			make	

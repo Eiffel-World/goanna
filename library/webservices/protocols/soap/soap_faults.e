@@ -15,6 +15,9 @@ feature -- Fault constants
 
 	Missing_envelope_element_fault_code: STRING is "MissingEnvelope"
 	Missing_body_element_fault_code: STRING is "MissingBody"
+	Malformed_encoding_style_fault_code: STRING is "MalformedEncodingStyle"
+	Malformed_actor_fault_code: STRING is "MalformedActor"
+	Malformed_must_understand_fault_code: STRING is "MalformedMustUnderstand"
 	
 feature -- Basic routines
 
@@ -31,12 +34,7 @@ feature -- Basic routines
 			else
 				q_code := code
 			end
-			create Result.make (create {UC_STRING}.make_from_string (q_code), 
-				create {UC_STRING}.make_from_string (fault_messages.item (sub_code)))
-		ensure
-			correct_fault_code: sub_code /= Void implies Result.fault_code.out.is_equal (code + "." + sub_code)
-				or else sub_code = Void implies Result.fault_code.out.is_equal (code)
-			correct_fault_string: Result.fault_string.out.is_equal (fault_messages.item (sub_code))
+			create Result.make (q_code, fault_messages.item (sub_code))
 		end
 		
 	fault_messages: DS_HASH_TABLE [STRING, STRING] is
@@ -45,6 +43,9 @@ feature -- Basic routines
 			create Result.make_default
 			Result.force ("Envelope element was not found or not well-formed", Missing_envelope_element_fault_code)
 			Result.force ("Body element was not found or not well-formed", Missing_body_element_fault_code)
+			Result.force ("encodingStyle attribute was malformed or its namespace was incorrect", Malformed_encoding_style_fault_code)
+			Result.force ("actor attribute namespace was incorrect", Malformed_actor_fault_code)
+			Result.force ("mustUnderstand attribute was malformed or its namespace was incorrect", Malformed_must_understand_fault_code)
 		end
 		
 end -- class SOAP_FAULTS

@@ -48,13 +48,12 @@ feature -- Initialisation
 			encoding_attr: XM_ATTRIBUTE
 		do
 			unmarshall_ok := True
-			
-			if node.is_root_node and node.name.is_equal (Envelope_element_name) then
+			if node.is_root_node and check_qualified_name (node, Envelope_element_name, Ns_name_env) then
 				-- search for optional encodingStyle attribute
 				unmarshall_encoding_style_attribute (node)
 				if unmarshall_ok then
 					-- search for a header element and unmarshall (optional)
-					header_elem := get_named_element (node, Header_element_name)
+					header_elem := get_named_element (node, Header_element_name, Ns_name_env)
 					if header_elem /= Void then
 						create header.unmarshall (header_elem)
 						if not header.unmarshall_ok then
@@ -65,7 +64,7 @@ feature -- Initialisation
 					-- search for a body element and unmarshall. Only continue if header unmarshalling
 					-- was ok.
 					if unmarshall_ok then
-						body_elem := get_named_element (node, Body_element_name)
+						body_elem := get_named_element (node, Body_element_name, Ns_name_env)
 						if body_elem /= Void then
 							create body.unmarshall (body_elem)
 							if not body.unmarshall_ok then

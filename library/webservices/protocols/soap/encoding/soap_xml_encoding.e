@@ -24,7 +24,7 @@ inherit
 		
 feature -- Unmarshalling
 
-	unmarshall (type, value: STRING): ANY is
+	unmarshall (type, value: STRING): SOAP_VALUE is
 			-- Unmarshall 'value' according to 'type' using this 
 			-- encoding scheme.
 		local
@@ -52,61 +52,7 @@ feature -- Unmarshalling
 				Result := unmarshall_boolean (value)
 			end	
 		end
-		
-feature -- Marshalling
 
-	marshall (value: ANY): DS_PAIR [STRING, STRING] is
-			-- Marshall 'value' to appropriate type and string representation.
-			-- The first element in the resulting pair will represent the type
-			-- and the second the value.
-		local
-			type, str_value: STRING
-			double_type: DOUBLE_REF
-			integer_type: INTEGER_REF
-			boolean_type: BOOLEAN_REF
-			float_type: REAL_REF
-			string_type: STRING
-		do		
-			-- determine type of last_result and set type and value
-			type := Ns_pre_schema_xsd + ":" 
-			-- double
-			double_type ?= value
-			if double_type /= Void then
-				type := type + Xsd_double
-				str_value := double_type.out
-			else
-				-- integer
-				integer_type ?= value
-				if integer_type /= Void then
-					type := type + Xsd_int
-					str_value := integer_type.out
-				else
-					-- boolean
-					boolean_type ?= value
-					if boolean_type /= Void then
-						type := type + Xsd_boolean
-						str_value := boolean_type.out
-						str_value.to_lower
-					else
-						-- float
-						float_type ?= value
-						if float_type /= Void then
-							type := type + Xsd_float
-							str_value := float_type.out
-						else
-							-- string
-							string_type ?= value
-							if string_type /= Void then
-								type := type + Xsd_string
-								str_value := string_type
-							end
-						end		
-					end
-				end
-			end
-			create Result.make (type, str_value)	
-		end
-	
 feature {NONE} -- Implementation
 
 	unmarshall_int (value: STRING): ANY is
@@ -160,8 +106,7 @@ feature {NONE} -- Implementation
 			end
 			Result := float
 		end
-		
-		
+	
 	unmarshall_double (value: STRING): ANY is
 			-- Unmarshall double XML Schema value
 		require

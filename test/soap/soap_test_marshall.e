@@ -58,6 +58,10 @@ feature -- Test
 			envelope: SOAP_ENVELOPE
 		do
 			create envelope.unmarshall (parse_xml (Envelope1))
+			if not envelope.unmarshall_ok then
+				io.put_string (envelope.unmarshall_fault.marshall)
+				io.new_line
+			end
 			assert ("correct_marshall", envelope.unmarshall_ok)
 		end
 		
@@ -68,9 +72,12 @@ feature -- Test
 			parser: XM_TREE_PARSER
 		do
 			parser := parser_factory.new_toe_eiffel_tree_parser
+--			parser.enable_position_table
 			parser.parse_from_string (xml)
 			if parser.is_correct then
 				Result := parser.document.root_element
+				Result.resolve_namespaces_start
+--				Result.remove_namespace_declarations_from_attributes
 			else
 				io.put_string (parser.last_error_description)
 				io.new_line

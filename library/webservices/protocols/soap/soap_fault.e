@@ -28,7 +28,7 @@ creation
 
 feature -- Initialization
 
-	make (new_fault_code, new_fault_string: UC_STRING) is
+	make (new_fault_code, new_fault_string: STRING) is
 			-- Initialise new fault
 		require
 			new_fault_code_exists: new_fault_code /= Void
@@ -38,7 +38,8 @@ feature -- Initialization
 			fault_string := new_fault_string
 			unmarshall_ok := True	
 		end
-	make_with_detail (new_fault_code, new_fault_string: UC_STRING; new_detail_node: XM_ELEMENT) is
+		
+	make_with_detail (new_fault_code, new_fault_string: STRING; new_detail_node: XM_ELEMENT) is
 			-- Initialise new fault
 		require
 			new_fault_string_exists: new_fault_string /= Void
@@ -59,15 +60,15 @@ feature -- Initialization
 
 feature -- Access
 
-	fault_string: UC_STRING
+	fault_string: STRING
 			-- Human readable explanation of the fault.
 
-	fault_code: UC_STRING
+	fault_code: STRING
 			-- Provides an algorithmic mechanism for identifying the fault.
 			
 feature -- Element change
 
-	set_fault_string (a_fault_string: UC_STRING) is
+	set_fault_string (a_fault_string: STRING) is
 			-- Assign `a_fault_string' to `fault_string'.
 		do
 			fault_string := a_fault_string
@@ -75,7 +76,7 @@ feature -- Element change
 			fault_string_assigned: fault_string = a_fault_string
 		end
 
-	set_fault_code (a_fault_code: UC_STRING) is
+	set_fault_code (a_fault_code: STRING) is
 			-- Assign `a_fault_code' to `fault_code'.
 		do
 			fault_code := a_fault_code
@@ -93,16 +94,18 @@ feature -- Mashalling
 			Result.append ("<env:Fault>")
 			-- add faultcode element
 			Result.append ("<faultcode>")
-			Result.append (fault_code.out)
+			Result.append (fault_code)
 			Result.append ("</faultcode>")
 			-- add faultstring element
 			Result.append ("<faultstring>")
-			Result.append (fault_string.out)
+			Result.append (fault_string)
 			Result.append ("</faultstring>")
 			-- add actor if it exists
-			Result.append ("<faultactor>")
-			Result.append (actor.out)
-			Result.append ("</faultactor>")
+			if actor /= Void then
+				Result.append ("<faultactor>")
+				Result.append (actor.out)
+				Result.append ("</faultactor>")
+			end
 			-- add detail nodes if they exist
 			
 			-- end element

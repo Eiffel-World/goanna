@@ -13,7 +13,7 @@ class
 
 feature -- Access
 
-	encodings: SOAP_ENCODING_REGISTRY is
+	encodings: REGISTRY [SOAP_ENCODING] is
 			-- Shared encoding registry
 		once
 			create Result.make

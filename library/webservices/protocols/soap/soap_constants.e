@@ -17,10 +17,20 @@ feature -- XML constants
 	
 feature -- Namespace constants
 
-	Ns_separator: STRING is ":"
+	Ns_separator: UC_STRING is 
+		once 
+			create Result.make_from_string (":")
+		end
 	
-	Ns_prefix_env: STRING is "env"
-	Ns_name_env: STRING is "http://www.w3.org/2001/09/soap-envelope"
+	Ns_prefix_env: UC_STRING is 
+		once 
+			create Result.make_from_string ("env")
+		end
+		
+	Ns_name_env: UC_STRING is 
+		once 
+			create Result.make_from_string ("http://www.w3.org/2001/09/soap-envelope")
+		end
 	
 	Ns_prefix_enc: STRING is "enc"
 	Ns_name_enc: STRING is "http://www.w3.org/2001/09/soap-encoding"

@@ -1,4 +1,4 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
 <!ENTITY intro SYSTEM "intro.sgml">
 <!ENTITY structure SYSTEM "structure.sgml">
 <!ENTITY webservices SYSTEM "webservices.sgml">

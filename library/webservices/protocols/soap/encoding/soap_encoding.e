@@ -22,26 +22,13 @@ feature -- Status checking
 		
 feature -- Unmarshalling
 
-	unmarshall (type, value: STRING): ANY is
+	unmarshall (type, value: STRING): SOAP_VALUE is
 			-- Unmarshall 'value' according to 'type' using the 
 			-- current encoding scheme.
 		require
 			type_exists: type /= Void
 			value_exists: value /= Void
 		deferred
-		end
-	
-feature -- Marshalling
-
-	marshall (value: ANY): DS_PAIR [STRING, STRING] is
-			-- Marshall 'value' to appropriate type and string representation.
-			-- The first element in the resulting pair will represent the type
-			-- and the second the value.
-		require
-			value_exists: value /= Void
-		deferred
-		ensure
-			value_pair_exists: Result /= Void
 		end
 		
 end -- class SOAP_ENCODING

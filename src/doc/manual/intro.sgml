@@ -3,7 +3,8 @@
   <para>Goanna Manual</para>
   <section>
     <title>Why Goanna?</title>
-    <para>The Goanna library aims to provide a Web Services framework for Eiffel programmers.</para>
+    <para>The Goanna library aims to provide a Web Services framework 
+for Eiffel programmers.</para>
   </section>
   <section>
     <title>Platforms</title>
