@@ -116,8 +116,10 @@ feature -- Basic operations
 	send (data: STRING) is
 			-- Send 'data' to the client. The data is buffered for writing. It will not be 
 			-- physically sent to the client until 'flush_buffer' is called. 
+			-- You must set the content_length before sending content data.
 		require
 			data_exists: data /= Void
+			content_length_set: contains_header ("Content-Length")
 		deferred
 		end
 	

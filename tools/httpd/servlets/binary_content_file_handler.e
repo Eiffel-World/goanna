@@ -27,6 +27,7 @@ feature -- Basic operations
 			file.open_read
 			-- setup response
 			resp.set_content_type (content_types.item (content_type_code))
+			resp.set_content_length (file.count)
 			resp.set_status (Sc_ok)
 			-- write file data to response
 			from
@@ -42,6 +43,6 @@ feature -- Basic operations
 		
 feature {NONE} -- Implementation
 
-	Max_raw_chunk : INTEGER is 8000
+	Max_raw_chunk : INTEGER is 8192
 
 end -- class BINARY_CONTENT_FILE_HANDLER

@@ -33,6 +33,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_STANDARD_LOGGER
+		export
+			{NONE} all
+		end
+		
 creation
 	make
 
@@ -124,37 +129,45 @@ feature {NONE} -- Implementation
 			-- prepare the socket
 			!!server_socket.make (port, 10)
 			socket_multiplexer.register_managed_socket_read (server_socket)
-			print ("Waiting for connections...%N")
-			print ("----------Legend:---------------------%N")
-			print ("#       : new client%N")
-			print ("?       : received data from a client%N")
-			print ("&       : send data to client%N")
-			print ("!       : multiplexed%N")
-			print (".       : idle%N")
-			print ("(n,e,c) : socket error (n), extended error (c), read count (c)%N")
-			print ("--------------------------------------%N")
+			log (Info, "Goanna HTTPD Server. Version 1.0")
+			log (Info, "Copyright (C) 2001 Glenn Maughan.")
+			debug ("status_output")
+				print ("Waiting for connections...%N")
+				print ("----------Legend:---------------------%N")
+				print ("#       : new client%N")
+				print ("?       : received data from a client%N")
+				print ("&       : send data to client%N")
+				print ("!       : multiplexed%N")
+				print (".       : idle%N")
+				print ("(n,e,c) : socket error (n), extended error (c), read count (c)%N")
+				print ("--------------------------------------%N")
+			end
 		end	
 		
 	run is
 			-- Start serving requests
 		local
 			multiplexed : BOOLEAN
-			error: INTEGER
+			error_code: INTEGER
 		do
 			from
 				multiplexed := true
 			until
-				error = sock_err_select
+				error_code = sock_err_select
 			loop
-				multiplexed := socket_multiplexer.multiplex_registered ( 15 , 0) -- it will exit after 60 seconds of no activity
+				multiplexed := socket_multiplexer.multiplex_registered (15 , 0) -- it will exit after 60 seconds of no activity
 				if not multiplexed then
-					io.put_character ('.') -- maybe just idle
-					error := socket_multiplexer.last_socket_error_code
-					if error /= 0 then
-						io.put_integer (socket_multiplexer.last_socket_error_code)
+					debug ("status_output")
+						io.put_character ('.') -- maybe just idle
+					end
+					error_code := socket_multiplexer.last_socket_error_code
+					if error_code /= 0 then
+						log (Error, "Socket error: " + error_code.out)
 					end
 				else
-					io.put_character ('!') -- multiplexed
+					debug ("status_output")
+						io.put_character ('!') -- multiplexed
+					end
 				end
 			end
 		end

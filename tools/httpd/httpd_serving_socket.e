@@ -57,7 +57,9 @@ feature
 			req: HTTPD_SERVLET_REQUEST
 			path: STRING
 		do
-			io.put_character ('?')
+			debug ("status_output")
+				io.put_character ('?')
+			end
 			-- read the request
 			buffer.resize (buffer_size.min (bytes_available))
 			buffer.fill_blank
@@ -103,12 +105,11 @@ feature {NONE}
 			resp.send_error (Sc_not_found)
 		end
 
-    buffer_size : INTEGER is 1024;
+    Buffer_size : INTEGER is 1024;
 
 	buffer: STRING is
 		once
-			-- GM modified from: !!Result.blank (buffer_size)
-			!!Result.make (buffer_size)
+			create Result.make (Buffer_size)
 			Result.fill_blank
 		end
 

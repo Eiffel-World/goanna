@@ -48,9 +48,6 @@ feature {NONE} -- Initialisation
 			http_request_exists: http_request /= Void
 			response_exists: resp /= Void
 		do
-			debug ("httpd_servlet_request")
---				print (generator + " buffer=%R%N" + buffer)
-			end
 			internal_request := http_request
 			internal_response := resp
 			create parameters.make (5)

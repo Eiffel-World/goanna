@@ -20,6 +20,11 @@ inherit
 			{NONE} all
 		end	
 
+	BASIC_ROUTINES
+		export
+			{NONE} all
+		end
+		
 creation
 	make
 
@@ -153,11 +158,11 @@ feature -- Basic operations
 		do
 			if content_buffer /= Void then
 				if not is_committed then
-					set_content_length (content_buffer.count)
 					write_headers	
 				end
 				if not content_buffer.is_empty then
 					write (content_buffer)
+					content_buffer.clear_all
 				end
 			end
 		end
@@ -168,8 +173,8 @@ feature -- Basic operations
 		do
 			content_buffer := Void
 			cookies.wipe_out
-			headers.wipe_out
 			set_content_length (0)
+			headers.wipe_out
 			set_content_type ("text/html")
 			status := Sc_ok
 			status_message := status_code_message (status)
@@ -217,13 +222,28 @@ feature -- Basic operations
 	send (data: STRING) is
 			-- Send 'data' to the client. The data is buffered for writing. It will not be 
 			-- physically sent to the client until 'flush_buffer' is called. 
+		local
+			data_index, buffer_space, end_index: INTEGER
 		do
-			-- keep extending the buffer if needed. We do not periodically send it until flush is called
-			-- so that we can determine the correct content length.
 			if content_buffer = Void then
 				create content_buffer.make (initial_buffer_size)			
 			end
-			content_buffer.append (data)
+			-- write the data in chunks
+			from
+				data_index := 1 
+			invariant
+				content_buffer.capacity = initial_buffer_size
+			until
+				data_index > data.count
+			loop
+				buffer_space := content_buffer.capacity - content_buffer.count
+				end_index := data.count.min (data_index + buffer_space - 1)
+				content_buffer.append (data.substring (data_index, end_index))
+				data_index := end_index + 1
+				if content_buffer.full then
+					flush_buffer
+				end
+			end
 		end
 		
 feature {NONE} -- Implementation
@@ -394,6 +414,9 @@ feature {NONE} -- Implementation
 			debug ("httpd_servlet_response")
 				print ("%R%N" + generator + " response=%R%N'")
 				print (data + "'%R%N")
+			end
+			debug ("httpd_response_write")
+				print (generator + " response bytes = " + data.count.out + "%R%N")
 			end
 			internal_socket.send_string (data)
 			-- TODO: check for internal_socket errors

@@ -23,6 +23,11 @@ inherit
 			{NONE} all
 		end
 
+	SHARED_STANDARD_LOGGER
+		export
+			{NONE} all
+		end
+		
 creation
     make
 
@@ -41,18 +46,16 @@ feature
 		local
 			socket : TCP_SOCKET
 		do
-			io.put_character ('#')
+			debug ("status_output")
+				io.put_character ('#')
+			end
 			socket := wait_for_new_connection
 			if socket /= Void then
 				socket_multiplexer.register_managed_socket_read (socket)
 			else
-				io.put_character ('(')
-				io.put_integer (socket_multiplexer.last_socket_error_code)
-				io.put_character (',')
-				io.put_integer (socket_multiplexer.last_extended_socket_error_code)
-				io.put_character (',')
-				io.put_integer (socket_multiplexer.managed_read_count)
-				io.put_character (')')
+				log (Error, "Socket error: " + socket_multiplexer.last_socket_error_code.out + ","
+					+ socket_multiplexer.last_extended_socket_error_code.out + " read_bytes=" 
+					+ socket_multiplexer.managed_read_count.out)
 			end
 		end
 

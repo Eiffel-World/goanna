@@ -19,9 +19,16 @@ feature  -- Implementation
 
 feature  -- Access
 
-	get_node_R1234: DOM_ELEMENT is
+	get_node_cardnum: DOM_ELEMENT is
 		do
-			Result ?= wrapper.get_node_by_id ("R1234")
+			Result ?= wrapper.get_node_by_id ("cardnum")
+		ensure
+			element_exists: Result /= Void
+		end
+
+	get_node_name: DOM_ELEMENT is
+		do
+			Result ?= wrapper.get_node_by_id ("name")
 		ensure
 			element_exists: Result /= Void
 		end
