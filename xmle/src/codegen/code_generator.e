@@ -85,8 +85,102 @@ feature {NONE} -- Implementation
 	
 	build_build_document_routine is
 			-- build the build document routine
+		local
+			feature_group: EIFFEL_FEATURE_GROUP
+			pair: DS_PAIR [STRING, STRING]
 		do
-		end	
+			create feature_group.make ("Document construction")
+			eiffel_code.add_feature_group (feature_group)
+			-- create build document routine
+			create build_doc.make ("build_document")
+			feature_group.add_feature (build_doc)
+			-- add creation of implementation
+			build_doc.add_local (create pair.make ("impl", "DOM_IMPLEMENTATION"))
+			build_doc.add_body_line ("create {DOM_IMPLEMENTATION_IMPL}.make")
+			add_node_creation (document, 0)
+		end		
+
+	build_doc: EIFFEL_ROUTINE
+			-- The routine representing the 'build_document' feature.
+
+	add_node_creation (node: DOM_NODE; node_number: INTEGER) is
+			-- Add creation instructions to 'build_doc' for 
+			-- 'node' and recursively its children. Name the nodes with 'node_number' as
+			-- a postfix.
+		require
+			node_exists: node /= Void
+			positive_node_number: node_number >= 0
+		local
+			nstr: STRING
+			pair: DS_PAIR [STRING, STRING]
+		do
+			nstr := node_number.out
+			-- check node type and create appropriate local variable and 
+			-- creation instruction
+			inspect node.node_type
+			when node.Attribute_node then
+				-- create attribute node
+				--build_doc.add_local (create pair.make ("node" + nstr, "DOM_ATTR")
+				
+			when node.Cdata_section_node then
+
+			when node.Comment_node then
+	
+			when node.Document_fragment_node then
+
+			when node.Document_node then
+				build_doc.add_local (create pair.make ("document", "DOM_DOCUMENT")
+				build_doc.add_local (create pair.make ("node" + nstr, "DOM_NODE")
+				build_doc.add_body_line ("create dstr.make_from_string (%"%")")
+				build_doc.add_body_line ("create dstr2.make_from_string (%"%")")
+				build_doc.add_body_line ("document := impl.create_document (dstr, dstr2, Void)")
+				build_doc.add_body_line ("node" + nstr + " := document")
+			when node.Document_type_node then
+
+			when node.Element_node then
+					
+			when node.Entity_node then
+
+			when node.Entity_reference_node then
+
+			when node.Notation_node then
+
+			when node.Processing_instruction_node then
+
+			when node.Text_node then
+				
+			else
+
+			end
+			-- add child node creation
+			add_child_creation (node, node_number) 
+		end
+			
+		add_child_creation (parent: DOM_NODE; node_number: INTEGER): INTEGER is
+				-- add creation instructions for each child of 'parent'.
+				-- Add 'append_node' instructions to add each child.
+				-- Return the node number for the next node.
+			require
+				parent_exists: parent /= Void
+				positive_node_number: node_number >= 0
+			local
+				child_nodes: DOM_NODE_LIST
+			do
+				from
+					Result := node_number + 1
+					child_nodes := parent.child_nodes
+					child_nodes.start
+				until
+					child_nodes.off
+				loop
+					-- recursively add a node creation for the child
+					add_node_creation (child_nodes.item, next_node_number.out)
+					-- add instructions to append the newly created child to the parent
+					build_doc.add_body_line ("node" + node_number.out + ".append_child (node" + Result.out)"
+					Result := Result + 1
+					child_nodes.forth
+				end
+			end
 
 end -- class CODE_GENERATOR
 
