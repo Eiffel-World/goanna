@@ -29,8 +29,7 @@ feature -- Basic operations
 			-- Process GET request
 		do
 			visit_count := visit_count + 1
-			--send_basic_html (req, resp)
-			send_xmle_document (req, resp)
+			send_basic_html (req, resp)
 		end
 	
 	do_post (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
@@ -43,12 +42,26 @@ feature {NONE} -- Implementation
 
 	send_basic_html (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
 		local
+			parameter_names: LINEAR [STRING]
 			header_names: LINEAR [STRING]
 		do
 			resp.send ("<html><head><title>Test Servlet</title></head>%R%N")
 			resp.send ("<body><h1>This is a test.</h1>%R%N")
 			resp.send ("<p>Visits = " + visit_count.out + "</p>%R%N")
+			-- display all parameters
+			resp.send ("<h2>Parameters</h2>%R%N")
+			from
+				parameter_names := req.get_parameter_names
+				parameter_names.start
+			until
+				parameter_names.off
+			loop
+				resp.send (parameter_names.item + " = " 
+					+ quoted_eiffel_string_out (req.get_parameter (parameter_names.item)) + "<br>%R%N")
+				parameter_names.forth
+			end				
 			-- display all variables
+			resp.send ("<h2>Headers</h2>%R%N")
 			from
 				header_names := req.get_header_names
 				header_names.start
@@ -60,20 +73,8 @@ feature {NONE} -- Implementation
 				header_names.forth
 			end			
 			resp.send ("</body></html>%R%N")	
-		end
-	
-	send_xmle_document (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
-		do
-			-- test XMLE generated document
-			resp.set_content_type ("text/xml")
-			create document.make
-			resp.send (document.to_document)
-		end
-		
-	document: ORDER_XMLE
-	
+		end	
+
 	visit_count: INTEGER
-	
-	dom_nodes_refs: XMLE_DOM_STORAGE_REFS
-	
+		
 end -- class TEST_SERVLET
