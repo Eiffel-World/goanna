@@ -69,7 +69,7 @@ feature
          --    True    if the node has any children,
          --    False   if the node has no children.
 	  do
-		  Result := child_nodes /= Void and not child_nodes.empty
+		  Result := child_nodes /= Void and then not child_nodes.empty
       end
 
 	normalize is
