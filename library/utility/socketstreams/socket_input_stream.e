@@ -15,6 +15,11 @@ inherit
 	
 	KI_TEXT_INPUT_STREAM
 	
+	SOCKET_ERRORS
+		export
+			{NONE} all
+		end
+		
 create
 	
 	make
@@ -28,7 +33,7 @@ feature -- Initialisation
 			read_socket_exists: read_socket /= Void
 		do
 			socket := read_socket
-			create buffer.make (2048)
+			set_buffer_size (Default_buffer_size)
 			bytes_read := -1
 			set_eol ("%N")
 		ensure
@@ -47,6 +52,10 @@ feature -- Access
 			-- is to be kept beyond the next call to this feature.
 			-- However `last_string' is not shared between file objects.)
 
+	last_read_ok: BOOLEAN
+			-- Was last read successful?	
+			-- See socket.error_code and socket.extended_error_code for more details.
+			
 	name: STRING is
 			-- Name of input stream
 		do
@@ -59,12 +68,15 @@ feature -- Access
 	eol: STRING
 			-- Line separator
 	
+	buffer_size: INTEGER
+			-- Size of read buffer
+			
 feature -- Status report
 
 	end_of_input: BOOLEAN is
 			-- Has the end of input stream been reached?
 		do
-			Result := not socket.is_closed or not socket.is_valid
+			Result := socket.is_closed_incoming or not socket.is_valid
 		end
 
 	is_open_read: BOOLEAN is
@@ -90,18 +102,28 @@ feature -- Input
 			-- Will block until complete string has been read or a socket
 			-- error occurs (such as being closed).
 		do
-			-- prime the string
-			-- keep building the string until a line separator is found
-			from
-				read_character
-				last_string.wipe_out
-				last_string.append_character (last_character)				
-			until
-				last_string.count = nb
-			loop
-				read_character
-				last_string.append_character (last_character)
-			end	
+			-- create new string
+			if last_string = Void then
+				create last_string.make (nb)
+			else
+				if last_string.count < nb then
+					last_string.resize (nb)
+				end
+			end
+			-- read until nb characters have been read		
+			read_character						
+			if last_read_ok then
+				from
+					last_string.append_character (last_character)	
+				until
+					last_string.count = nb or not last_read_ok
+				loop
+					read_character
+					if last_read_ok then
+						last_string.append_character (last_character)
+					end
+				end	
+			end
 		end	
 	
 	unread_character (an_item: CHARACTER) is
@@ -109,7 +131,17 @@ feature -- Input
 			-- This item will be read first by the next
 			-- call to a read routine.
 		do
-			
+			if bytes_read > 0 then
+				if offset = 1 then
+					-- from previous buffer so prepend
+					-- and pretend we read one more character
+					buffer.prepend_character (an_item)
+					bytes_read := bytes_read + 1
+				elseif offset <= bytes_read + 1 then
+					-- move the offset back one
+					offset := offset - 1	
+				end
+			end
 		end
 
 	read_line is
@@ -117,7 +149,41 @@ feature -- Input
 			-- or end of file is reached. Make the characters that have
 			-- been read available in `last_string' and discard the line
 			-- separator characters from the input stream.
+		local
+			eol_found: BOOLEAN
+			c: INTEGER
 		do
+			-- create new string
+			if last_string = Void then
+				create last_string.make (2048)
+			end
+			-- read until eol has been read
+			read_character
+			if last_read_ok then
+				from
+					last_string.wipe_out
+					last_string.append_character (last_character)				
+				until
+					eol_read or not last_read_ok
+				loop
+					read_character	
+					if last_read_ok then
+						last_string.append_character (last_character)				
+					end
+				end
+				if last_read_ok then
+					-- put the eol string back
+					from
+						c := 0
+					until
+						c >= eol.count
+					loop
+						unread_character (last_string.item (last_string.count - c))
+						c := c + 1
+					end
+					last_string.head (last_string.count - eol.count)
+				end
+			end
 		end
 
 	read_new_line is
@@ -126,8 +192,9 @@ feature -- Input
 			-- line separator available in `last_string',
 			-- or make `last_string' empty and leave the
 			-- input stream unchanged if no line separator
-			-- was found.
+			-- was found.			
 		do
+			
 		end
 
 feature -- Status setting
@@ -141,14 +208,27 @@ feature -- Status setting
 		do
 			eol := new_eol
 		end
+	
+	set_buffer_size (size: INTEGER) is
+			-- Set read buffer size to 'size'.
+			-- Destroys current buffer.
+		require
+			valid_size: size > 0
+		do
+			buffer_size := size
+			create buffer.make (size)
+			buffer.fill_blank
+		end	
 		
 feature {NONE} -- Implementation
 
+	Default_buffer_size: INTEGER is 1024
+	
 	buffer: STRING
 			-- Buffer for socket reads
 			
 	bytes_read: INTEGER
-			-- Number of bytes read on 
+			-- Number of bytes read
 	
 	offset: INTEGER
 			-- Position of next character to read from buffer
@@ -162,21 +242,41 @@ feature {NONE} -- Implementation
 			-- check if there are characters in the buffer to consume
 			if offset > bytes_read then
 				-- clear the buffer and read more from the socket
-				buffer.wipe_out
+				buffer.fill_blank
 				offset := 1
 				socket.receive_string (buffer)
-				bytes_read := socket.bytes_received
+				set_last_read_status
+				if last_read_ok then
+					bytes_read := socket.bytes_received
+				end
 			end
-			-- consume one character from the buffer
-			Result := buffer.item (offset)
-			offset := offset + 1
+			if last_read_ok then
+				-- consume one character from the buffer
+				Result := buffer.item (offset)
+				offset := offset + 1
+			end
 		end
 		
 	eol_read: BOOLEAN is
 			-- Does the last_string end with the end of line string
 		do
 			Result := last_string.count >= eol.count
-				and then last_string.substring_index (eol, last_string.count - eol.count) /= 0
+				and then last_string.substring_index (eol, last_string.count - eol.count + 1) /= 0
+		end
+	
+	set_last_read_status is
+			-- Set the last_read_ok flag depending on the current socket
+			-- status
+		do
+			last_read_ok := socket.last_error_code = Sock_err_no_error
+			debug ("socket")
+				if not last_read_ok then
+					print ("Socket error: " 
+						+ socket.last_error_code.out + ", " 
+						+ socket.last_socket_error_code.out + ", "
+						+ socket.last_extended_socket_error_code.out)
+				end
+			end
 		end
 		
 invariant
