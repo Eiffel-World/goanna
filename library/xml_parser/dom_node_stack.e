@@ -31,21 +31,46 @@ feature -- Access
 			end
 		end
 
-	find_namespace_uri_qname (qname: DOM_STRING): DOM_STRING is
-			-- Find a namespace URI bound to the prefix of 'qname' if one exists.
+	find_namespace_for_attribute (qname: DOM_STRING;
+		attributes: DS_BILINEAR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]): DOM_STRING is
+			-- Find a namespace URI bound to the prefix of 'qname' if one exists. Search
+			-- the raw attributes structure first then search the current element and all
+			-- ancestors.
 		require
 			qname_exists: qname /= Void
+			attributes_exists: attributes /= Void
 		local
 			i: INTEGER
 			c: UCCHAR
+			ns_prefix: DOM_STRING
+			cursor: DS_BILINEAR_CURSOR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]
+			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
 		do
+			create Result.make (0)
 			-- extract prefix
 			c.make_from_character (':')
 			i := qname.index_of (c, 1)
 			if i /= 0 then
-				Result := find_namespace_uri (qname.substring (1, i - 1), Void)
-			else
-				create Result.make (0)
+				ns_prefix := qname.substring (1, i - 1)
+				-- search attributes
+				-- attributes are stored with DS_PAIR [DS_PAIR [name, prefix], value]]
+				from
+					cursor := attributes.new_cursor
+					cursor.start
+				until
+					cursor.off
+				loop
+					pair := cursor.item
+					if pair.first.second.is_equal (Default_namespace_prefix)
+						and then pair.first.first.is_equal (ns_prefix) then
+						create Result.make_from_ucstring (pair.second)
+					end
+					cursor.forth
+				end
+				-- if not found then search the element and its ancestors
+				if Result.is_empty then
+					Result := find_namespace_uri (ns_prefix, Void)	
+				end		
 			end
 		end
 		
@@ -82,5 +107,13 @@ feature -- Access
 		ensure
 			empty_uri_if_not_found: Result /= Void
 		end
-		
+	
+feature {NONE} -- Implementation
+
+	Default_namespace_prefix: DOM_STRING is
+			-- Default namespace prefix
+		once
+			create Result.make_from_string ("xmlns")
+		end
+
 end -- class DOM_NODE_STACK

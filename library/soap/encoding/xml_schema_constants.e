@@ -34,6 +34,10 @@ feature -- Constants
 	Xsd_int: STRING is "int"
 			-- Same as Xsd_decimal. Java SOAP seems to use this type instead of the 
 			-- standard 'decimal' name.
+	
+	Xsd_short: STRING is "short"
+			-- Same as Xsd_decimal.
+			-- TODO: Check if this is a 2001 Schema type.
 			
 	Xsd_float: STRING is "float"
 			-- IEEE single-precision 32-bit floating point type including INF (infinity)
@@ -136,6 +140,7 @@ feature -- Constants
 				or type.is_equal (Xsd_boolean)
 				or type.is_equal (Xsd_decimal)
 				or type.is_equal (Xsd_int)
+				or type.is_equal (Xsd_short)
 				or type.is_equal (Xsd_float)
 				or type.is_equal (Xsd_double)
 		end

@@ -63,7 +63,6 @@ feature -- Basic operations
 		local
 			service_name, action: STRING
 			response: STRING
-			ref: INTEGER_REF
 			agent_service: SERVICE_PROXY
 			parameters: TUPLE [ANY]
 			first: DOM_ELEMENT
@@ -129,6 +128,13 @@ feature {NONE} -- Implementation
 	valid_envelope: BOOLEAN
 			-- Did the request contain a valid envelope?
 	
+	request_schema_version: INTEGER
+			-- Xsi version. This is used to send the reponse using the same 
+			-- schema version.
+			
+	Xsi_1999: INTEGER is 1
+	Xsi_2001: INTEGER is 2
+	
 	last_error: STRING
 			-- Last error message
 			
@@ -175,6 +181,7 @@ feature {NONE} -- Implementation
 			doc: DOM_DOCUMENT
 			env, body, response, return: DOM_ELEMENT
 			discard: DOM_NODE
+			xsi, xsd: DOM_STRING
 		do
 			create {DOM_IMPLEMENTATION_IMPL} impl
 			-- create XML document and envelope element with appropriate namespace attributes
@@ -184,12 +191,18 @@ feature {NONE} -- Implementation
 			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
 				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_soap_env),
 				create {DOM_STRING}.make_from_string (Ns_uri_soap_env))
+			-- check request schema version and create appropriate response versions
+			if request_schema_version = Xsi_2001 then
+				create xsi.make_from_string (Ns_uri_schema_xsi_2001)
+				create xsd.make_from_string (Ns_uri_schema_xsd_2001)
+			elseif request_schema_version = Xsi_1999 then
+				create xsi.make_from_string (Ns_uri_schema_xsi_1999)
+				create xsd.make_from_string (Ns_uri_schema_xsd_1999)
+			end
 			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
-				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsi),
-				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsi))
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsi), xsi)
 			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
-				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsd),
-				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsd))
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsd), xsd)
 			-- create body element	
 			body := doc.create_element_ns (create {DOM_STRING}.make_from_string (Ns_uri_soap_env), 
 				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Elem_body))
@@ -205,8 +218,11 @@ feature {NONE} -- Implementation
 				create {DOM_STRING}.make_from_string (Ns_uri_soap_enc))		
 			discard := body.append_child (response)
 			-- create result element
-			return := marshall_return_element (doc, last_result)
-			discard := response.append_child (return)
+			-- only add parameter elements if the result was not Void
+			if last_result /= Void then
+				return := marshall_return_element (doc, last_result)
+				discard := response.append_child (return)
+			end
 			debug ("soap")
 				print (serialize_dom_tree (doc))
 			end
@@ -221,7 +237,6 @@ feature {NONE} -- Implementation
 			impl: DOM_IMPLEMENTATION
 			doc: DOM_DOCUMENT
 			env, body, fault_elem, code, string: DOM_ELEMENT
-			value_text: DOM_TEXT
 			discard: DOM_NODE
 		do
 			create {DOM_IMPLEMENTATION_IMPL} impl
@@ -308,35 +323,69 @@ feature {NONE} -- Implementation
 			name, scheme, type, value: STRING
 			i: INTEGER
 			q_name: Q_NAME
+			xsi_uri, xsi_type_attr: DOM_STRING
 		do
-			scheme := body_elem.get_attribute (create {DOM_STRING}.make_from_string (q_attr_encoding_style.out)).out
-			if encodings.has (scheme) then
-				create Result.make
-				elements := body_elem.child_nodes
-				Result.resize (1, elements.length)
-				from
-					i := 0
-				until
-					i >= elements.length or not valid_envelope
-				loop
-					element ?= elements.item (i)
-					check element /= Void end
-					name := element.local_name.out
-					value := element.first_child.node_value.out
-					create q_name.make (Ns_pre_schema_xsi, Attr_type)
-					type := element.get_attribute (create {DOM_STRING}.make_from_string (q_name.out)).out
-					create q_name.make_from_qname (type)
-					if encodings.valid_type (scheme, q_name.local_name) then
-						Result.force (encodings.unmarshall (scheme, type, value), i + 1)
-						i := i + 1	
+			create Result.make
+			-- check that the element has parameter children
+			if body_elem.has_child_nodes then
+				-- locate encoding style
+				scheme := find_encoding_style (body_elem)
+				if scheme /= Void and then encodings.has (scheme) then
+					elements := body_elem.child_nodes
+					Result.resize (1, elements.length)
+					from
+						i := 0
+					until
+						i >= elements.length or not valid_envelope
+					loop
+						element ?= elements.item (i)
+						check element /= Void end
+						name := element.local_name.out
+						-- check that we dealing with a simple type
+						if not element.first_child.has_child_nodes then
+							value := element.first_child.node_value.out
+							-- check for both 1999 and 2001 XML Schema instance namespaces
+							create xsi_uri.make_from_string (Ns_uri_schema_xsi_2001)
+							create xsi_type_attr.make_from_string (Attr_type)
+							if element.has_attribute_ns (xsi_uri, xsi_type_attr) then
+								type := element.get_attribute_ns (xsi_uri, xsi_type_attr).out
+								-- save schema version for response
+								request_schema_version := xsi_2001
+							else
+								create xsi_uri.make_from_string (Ns_uri_schema_xsi_1999)
+								if element.has_attribute_ns (xsi_uri, xsi_type_attr) then
+									type := element.get_attribute_ns (xsi_uri, xsi_type_attr).out
+									-- save schema version for response
+									request_schema_version := xsi_1999
+								end
+							end
+							-- check that a type attribute was found
+							if type /= Void then
+								create q_name.make_from_qname (type)
+								if encodings.valid_type (scheme, q_name.local_name) then
+									Result.force (encodings.unmarshall (scheme, type, value), i + 1)
+									i := i + 1	
+								else
+									valid_envelope := False
+									last_error := "Unknown type " + type + " in encoding scheme " + scheme
+								end	
+							else
+								valid_envelope := False
+								last_error := "Parameter type must be specified"
+							end
+						else
+							valid_envelope := False
+							last_error := "Composite types not supported yet"
+						end
+					end
+				else
+					valid_envelope := False
+					if scheme = Void then
+						last_error := "Unspecified encoding scheme"
 					else
-						valid_envelope := False
-						last_error := "Unknown type " + type + " in encoding scheme " + scheme
-					end			
+						last_error := "Unknown encoding scheme " + scheme
+					end
 				end
-			else
-				valid_envelope := False
-				last_error := "Unknown encoding scheme " + scheme
 			end
 		end		
 		
@@ -345,6 +394,7 @@ feature {NONE} -- Implementation
 			-- with appropriate xsi:type and marshalled value.
 		require
 			doc_exists: doc /= Void
+			last_result_not_void: last_result /= Void
 		local
 			value_node: DOM_TEXT
 			discard: DOM_NODE
@@ -360,9 +410,33 @@ feature {NONE} -- Implementation
 			value_node := doc.create_text_node (create {DOM_STRING}.make_from_string (value_pair.second))
 			discard := Result.append_child (value_node)
 		end
+	
+	find_encoding_style (body_elem: DOM_ELEMENT): STRING is
+			-- Search 'body_elem' and its parents for encoding style attribute
+		require
+			first_exists: body_elem /= Void
+			valid_envelope: valid_envelope
+		local
+			element: DOM_ELEMENT
+			ns, attr_name: DOM_STRING
+		do
+			create ns.make_from_string (Ns_uri_soap_env)
+			create attr_name.make_from_string (Attr_encoding_style)
+			from	
+				element := body_elem
+			until
+				element = Void or Result /= Void
+			loop
+				if element.has_attribute_ns (ns, attr_name) then
+					Result := element.get_attribute_ns (ns, attr_name).out
+				else
+					element ?= element.parent_node
+				end
+			end
+		end
 		
 	Soap_action_header: STRING is "HTTP_SOAPACTION"
-	
+
 	validate_request_header (req: HTTP_SERVLET_REQUEST) is
 			-- Validate the HTTP request for valid header elements for a 
 			-- SOAP request.

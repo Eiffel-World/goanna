@@ -101,12 +101,12 @@ feature
 		  positive_index: index >= 0
       deferred
       end
-
-   length: INTEGER is
-         -- The number of nodes in the map.
-         -- The range of valid child node indices is 0 to `length'-1 inclusive.
-      deferred
-      end
+	
+	length: INTEGER is
+			-- The number of nodes in the map.
+			-- The range of valid child node indices is 0 to `length'-1 inclusive.
+		deferred
+		end
 
 	get_named_item_ns (namespace_uri, local_name: DOM_STRING): G is
 			-- Retrieves a node specified by local name and namespace URI.
@@ -115,7 +115,7 @@ feature
 		require
 			namespace_uri_exists: namespace_uri /= Void
 			local_name_exists: local_name /= Void
-			has_item: has_named_item_ns (namespace_uri, local_name)
+			has_item_ns: has_named_item_ns (namespace_uri, local_name)
 		deferred
 		ensure
 			result_exists: Result /= Void
@@ -132,8 +132,8 @@ feature
 			arg_exists: arg /= Void
 			-- not_wrong_document_err: arg.owner_document = owner_document
 			-- not_no_modification_allowed_err: not readonly
-			not_inuse_attribute_err: arg.node_type = Attribute_node implies
-				arg.owner_document = Void
+			--not_inuse_attribute_err: arg.node_type = Attribute_node implies
+			--	arg.owner_element = Void
       deferred
 	  ensure
 		  arg_set: get_named_item_ns (arg.namespace_uri, arg.local_name) = arg

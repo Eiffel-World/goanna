@@ -31,8 +31,8 @@ feature -- Initialisation
 		do
 			element_make
 			declare_namespace (Ns_pre_soap_env, Ns_uri_soap_env)
-			declare_namespace (Ns_pre_schema_xsi, Ns_uri_schema_xsi)
-			declare_namespace (Ns_pre_schema_xsd, Ns_uri_schema_xsd)
+			declare_namespace (Ns_pre_schema_xsi, Ns_uri_schema_xsi_2001)
+			declare_namespace (Ns_pre_schema_xsd, Ns_uri_schema_xsd_2001)
 		end
 		
 	unmarshall (node: DOM_NODE) is

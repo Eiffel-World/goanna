@@ -38,11 +38,11 @@ feature -- Unmarshalling
 			if xsd_type.is_equal (Xsd_string) then
 				-- xsd:string
 				Result := value
-			elseif xsd_type.is_equal (Xsd_int) then
-				-- xsd:int
+			elseif xsd_type.is_equal (Xsd_int) or xsd_type.is_equal (Xsd_short) then
+				-- xsd:int / xsd:short
 				Result := unmarshall_int (value)
 			elseif xsd_type.is_equal (Xsd_float) or xsd_type.is_equal (Xsd_decimal) then
-				-- xsd:float
+				-- xsd:float / xsd:decimal
 				Result := unmarshall_float (value)
 			elseif xsd_type.is_equal (Xsd_double) then
 				-- xsd:double

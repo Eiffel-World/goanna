@@ -21,7 +21,7 @@ public class TestSOAPClient
 	public void doCall(String method, Object value) throws Exception
 	{
 		Call call = new Call ();
-		call.setTargetObjectURI ("urn:soapinterop");
+		call.setTargetObjectURI ("http://soapinterop.org/");
 		call.setMethodName (method);
 		call.setEncodingStyleURI(encodingStyleURI);
 
@@ -68,6 +68,7 @@ public class TestSOAPClient
 		t.url = new URL (args[1 - offset]);
 
 		// test all types
+		t.doCall("echoInteger", new Integer(1));
 		t.doCall("echoBoolean", new Boolean(true));
 		t.doCall("echoBoolean", new Boolean(false));
 		t.doCall("echoDecimal", new Integer(100));

@@ -139,7 +139,7 @@ feature {NONE} -- Implementation
 			test_service.register (test~test_string (?), "testString")
 			registry.register (test_service, "urn:testSOAP")
 			create test_interop.make
-			registry.register (test_interop, "urn:soapinterop")
+			registry.register (test_interop, "http://soapinterop.org/")
 		end
 
 end -- class SOAP

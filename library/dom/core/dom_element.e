@@ -123,6 +123,18 @@ feature
       deferred
       end
 
+   remove_attribute_ns (new_namespace_uri, name: DOM_STRING) is
+         -- Removes an attribute by 'namespac_uri' and `name'. If 
+         -- the removed attribute has a default value it is immediately replaced.
+         -- Parameters
+         --    name   The name of the attribute to remove.
+	  require
+		  name_exists: name /= Void
+		  has_attribute_ns: has_attribute_ns (new_namespace_uri, name)
+		  not_no_modification_allowed_err: not readonly
+      deferred
+      end
+      
    get_attribute_node (name: DOM_STRING): DOM_ATTR is
          -- Retrieves an Attr node by `name'.
          -- Parameters
@@ -158,6 +170,25 @@ feature
 		  attribute_set: has_attribute (new_attr.name)
       end
 
+	set_attribute_node_ns (new_attr: DOM_ATTR): DOM_ATTR is
+			-- Adds a new attribute. If an attribute with that name is
+			-- already present in the element, it is replaced by the new one.
+			-- Parameters
+			--    newAttr   The Attr node to add to the attribute list.
+			-- Return Value
+			--    If the newAttr attribute replaces an existing attribute
+			--    with the same name, the previously existing Attr node is
+			--    returned, otherwise null is returned.
+		require
+			new_attr_exists: new_attr /= Void
+			not_wrong_document_err: new_attr.owner_document = owner_document
+			not_no_modification_allowed_err: not readonly
+			not_inuse_attribute_err: new_attr.owner_element = Void
+		deferred
+		ensure
+			attribute_set: has_attribute_ns (new_attr.namespace_uri, new_attr.local_name)
+		end
+      
    remove_attribute_node (old_attr: DOM_ATTR): DOM_ATTR is
          -- Removes the specified attribute.
          -- Parameters
@@ -204,7 +235,15 @@ feature
 		deferred
 		end
 
-	-- TODO: add has_attribute_ns
+	has_attribute_ns (new_namespace_uri: DOM_STRING; name: DOM_STRING): BOOLEAN is
+			-- Returns True when an attirbute with a given local name and namespace
+			-- URI is specified o this element or has a default value, false otherwise.
+			-- DOM Level 2.
+		require
+			namespace_uri_exists: new_namespace_uri /= Void
+			name_exists: name /= Void
+		deferred
+		end
 
 feature -- Validation Utility
 

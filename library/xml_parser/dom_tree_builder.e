@@ -67,6 +67,7 @@ feature {NONE} -- Parser call backs
 			qname: DOM_STRING
 			dom_ns_prefix: DOM_STRING
 			new_element: DOM_ELEMENT
+			cursor: DS_BILINEAR_CURSOR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]
 			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
 			node_holder: DOM_TREE_NODE
 			new_attribute: DOM_ATTR_IMPL
@@ -93,17 +94,18 @@ feature {NONE} -- Parser call backs
 			-- build attributes collection
 			-- attributes are stored with DS_PAIR [DS_PAIR [name, prefix], value]]
 			from
-				attributes.start
+				cursor := attributes.new_cursor
+				cursor.start
 				create new_attributes.make
 			until
-				attributes.off
+				cursor.off
 			loop
-				pair := attributes.item_for_iteration
+				pair := cursor.item
 				qname := build_qualified_name (pair.first.second, pair.first.first)
-				create new_attribute.make_with_namespace (document, nodes.find_namespace_uri_qname (qname), qname)
+				create new_attribute.make_with_namespace (document, nodes.find_namespace_for_attribute (qname, attributes), qname)
 				new_attribute.set_value (create {DOM_STRING}.make_from_ucstring (pair.second))
 				new_attributes.force_last (new_attribute)
-				attributes.forth
+				cursor.forth
 			end
 			-- build a node holder and extract namespace attributes
 			create node_holder.make_with_attributes (new_attributes)
@@ -124,7 +126,7 @@ feature {NONE} -- Parser call backs
 			until
 				new_attributes.off
 			loop
-				discard := new_element.set_attribute_node (new_attributes.item_for_iteration)
+				discard := new_element.set_attribute_node_ns (new_attributes.item_for_iteration)
 				new_attributes.forth
 			end
 			nodes.force (node_holder)

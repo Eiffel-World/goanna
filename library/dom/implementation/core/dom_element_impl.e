@@ -96,7 +96,7 @@ feature
 			--    attribute does not have a specified or default value.
 			-- DOM Level 2.
 		do
-			Result := attributes.get_named_item (name).node_value
+			Result := attributes.get_named_item_ns (new_namespace_uri, name).node_value
 		end
 		
    set_attribute (name: DOM_STRING; value: DOM_STRING) is
@@ -157,6 +157,17 @@ feature
 		  discard := attributes.remove_named_item (name)
       end
 
+   remove_attribute_ns (new_namespace_uri, name: DOM_STRING) is
+         -- Removes an attribute by 'namespac_uri' and `name'. If 
+         -- the removed attribute has a default value it is immediately replaced.
+         -- Parameters
+         --    name   The name of the attribute to remove.
+	  local
+		  discard: DOM_NODE
+	  do
+		  discard := attributes.remove_named_item_ns (new_namespace_uri, name)
+      end
+      
    get_attribute_node (name: DOM_STRING): DOM_ATTR is
          -- Retrieves an Attr node by `name'.
          -- Parameters
@@ -181,6 +192,19 @@ feature
 		  Result := attributes.set_named_item (new_attr)
       end
 
+   set_attribute_node_ns (new_attr: DOM_ATTR): DOM_ATTR is
+         -- Adds a new attribute. If an attribute with that name is
+         -- already present in the element, it is replaced by the new one.
+         -- Parameters
+         --    newAttr   The Attr node to add to the attribute list.
+         -- Return Value
+         --    If the newAttr attribute replaces an existing attribute
+         --    with the same name, the previously existing Attr node is
+         --    returned, otherwise null is returned.
+	  do
+		  Result := attributes.set_named_item_ns (new_attr)
+      end
+      
    remove_attribute_node (old_attr: DOM_ATTR): DOM_ATTR is
          -- Removes the specified attribute.
          -- Parameters
@@ -205,9 +229,6 @@ feature
 	  do
       end
 
-	-- TODO: add getAttributeNS, setAttributeNS, removeAttributeNS,
-	-- getAttributeNodeNS, setAttributeNodeNS, getElementsByTagNameNS.
-
 	has_attribute (name: DOM_STRING): BOOLEAN is
 			-- Returns true when an attribute with a given name is specified
 			-- on this element or has a default value, false otherwise.
@@ -216,7 +237,15 @@ feature
 			Result := attributes.has_named_item (name)
 		end
 
-	-- TODO: add has_attribute_ns
+	has_attribute_ns (new_namespace_uri: DOM_STRING; name: DOM_STRING): BOOLEAN is
+			-- Returns True when an attirbute with a given local name and namespace
+			-- URI is specified o this element or has a default value, false otherwise.
+			-- DOM Level 2.
+		do
+			Result := attributes.has_named_item_ns (new_namespace_uri, name)
+		end
+			
+	-- TODO: getAttributeNodeNS, setAttributeNodeNS, getElementsByTagNameNS.
 
 feature -- from DOM_NODE
    
