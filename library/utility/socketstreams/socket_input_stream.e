@@ -110,6 +110,7 @@ feature -- Input
 					last_string.resize (nb)
 				end
 			end
+			last_string.wipe_out
 			-- read until nb characters have been read		
 			read_character						
 			if last_read_ok then
@@ -142,6 +143,7 @@ feature -- Input
 					offset := offset - 1	
 				end
 			end
+			last_character := an_item
 		end
 
 	read_line is
@@ -155,13 +157,13 @@ feature -- Input
 		do
 			-- create new string
 			if last_string = Void then
-				create last_string.make (2048)
+				create last_string.make (120)
 			end
+			last_string.wipe_out
 			-- read until eol has been read
 			read_character
 			if last_read_ok then
 				from
-					last_string.wipe_out
 					last_string.append_character (last_character)				
 				until
 					eol_read or not last_read_ok
@@ -193,7 +195,45 @@ feature -- Input
 			-- or make `last_string' empty and leave the
 			-- input stream unchanged if no line separator
 			-- was found.			
+		local
+			bad_char_found, eol_found: BOOLEAN
+			chars_read: INTEGER
 		do
+			-- create new string
+			if last_string = Void then
+				create last_string.make (120)
+			end
+			last_string.wipe_out
+			-- attempt to read the eol string. Abort as soon as
+			-- a missmatched character is read.
+			read_character
+			if last_read_ok then
+				
+				from
+					chars_read := chars_read + 1
+				until
+					eol_found or bad_char_found
+				loop
+					if not last_character.is_equal (eol.item (chars_read)) then
+						bad_char_found := True
+					else
+						last_string.append_character (last_character)
+						if last_string.is_equal (eol) then
+							eol_found := True
+						end
+					end
+					if chars_read < eol.count then
+						read_character
+						bad_char_found := not last_read_ok
+						chars_read := chars_read + 1
+					end
+				end	
+				-- if eol was not found reset the last string and buffer
+				if bad_char_found or chars_read > eol.count then
+					unread_character (last_character)
+					last_string.wipe_out
+				end
+			end
 			
 		end
 
