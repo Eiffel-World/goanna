@@ -44,7 +44,7 @@ default
 
 
 cluster
-	root_cluster:		"$GOANNA\examples\xmlrpc\client"
+	root_cluster:		"$GOANNA\examples\xmlrpc\client\test"
 
 
 	goanna:		"$GOANNA\library"
