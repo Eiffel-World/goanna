@@ -24,7 +24,8 @@ feature -- Factory methods
 			-- Create a dom tree builder that uses the Expat XML
 			-- parser
 		do
-			create Result.make (new_expat_event_parser_imp)
+			--create Result.make (new_expat_event_parser_imp)
+			create Result.make (new_eiffel_event_parser_imp)
 		end 
       
 end -- class DOM_TREE_BUILDER_FACTORY

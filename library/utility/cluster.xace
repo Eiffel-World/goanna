@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<cluster name="utility" location="${GOANNA}/library/utility">
+<cluster name="goanna_utility" location="${GOANNA}/library/utility">
 
 	<description>
 		description: "Cluster definition for Goanna utility classes"
