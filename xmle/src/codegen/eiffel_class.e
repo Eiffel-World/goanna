@@ -136,7 +136,7 @@ feature {NONE} -- Implementation
 			until
 				feature_groups.off
 			loop
-				feature_groups.item.print (output)
+				feature_groups.item.write (output)
 				feature_groups.forth
 			end
 		end

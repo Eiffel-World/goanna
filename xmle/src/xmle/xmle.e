@@ -17,9 +17,6 @@ creation
 feature -- Initialization
 
 	make is
-		local
-			node_impl: DOM_NODE_IMPL
-			writer: DOM_WRITER
 		do
 			-- check arguments
 			parse_arguments
@@ -31,7 +28,6 @@ feature -- Initialization
 				else
 					display_parser_error
 				end
-			
 			else
 				show_usage
 			end

@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 			until
 				features.off
 			loop
-				features.item.print (output)
+				features.item.write (output)
 				features.forth
 			end
 		end

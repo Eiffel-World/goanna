@@ -112,8 +112,9 @@ feature -- Basic operations
 			end
 			if is_function then
 				output.put_string (": " + type)
-				output.put_new_line
 			end
+			output.put_string (" is")
+			output.put_new_line
 			if is_deferred then
 				output.put_string ("%T%Tdeferred")
 				output.put_new_line
