@@ -13,10 +13,14 @@ deferred class
 
 inherit
 
+-- NOTE: the following export modification clauses are commented out because
+-- the SmallEiffel compiler doesn't correctly compile them. Once SmallEiffel
+-- catches up with the language definition, they need uncommenting.
+
 	FAST_CGI
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 	
 feature -- Basic operations
 

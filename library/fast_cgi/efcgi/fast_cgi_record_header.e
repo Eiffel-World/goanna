@@ -13,30 +13,34 @@ class
 
 inherit
 
+-- NOTE: the following export modification clauses are commented out because
+-- the SmallEiffel compiler doesn't correctly compile them. Once SmallEiffel
+-- catches up with the language definition, they need uncommenting.
+
 	FAST_CGI_DEFS
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 	SOCKET_ERRORS
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 
 	YAES_HELPER
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 	UT_STRING_FORMATTER
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 	BIT_MANIPULATION
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 creation
 

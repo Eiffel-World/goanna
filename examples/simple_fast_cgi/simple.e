@@ -18,15 +18,19 @@ inherit
 			make as fast_cgi_app_make
 		end
 
+-- NOTE: the following export modification clauses are commented out because
+-- the SmallEiffel compiler doesn't correctly compile them. Once SmallEiffel
+-- catches up with the language definition, they need uncommenting.
+
 	UT_STRING_FORMATTER
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 	
 	KL_SHARED_ARGUMENTS
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 			
 creation
 
