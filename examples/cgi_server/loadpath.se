@@ -1,7 +1,0 @@
-${GOBO}/library/loadpath.se
-${YAESOCKETS}/loadpath.se
-${UCSTRING}/lib/
-${UCSTRING}/spec/se/
-${GOANNA}/library/loadpath.se
-${GOANNA}/examples/cgi_server/
-
