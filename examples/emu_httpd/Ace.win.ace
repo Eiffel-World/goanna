@@ -19,6 +19,8 @@ default
 	inlining(no)
 	multithreaded(no)
 	check_vape(yes)
+	arguments("9000 d:\Eiffel50\docs")
+	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
 	disabled_debug(yes)
 	debug(no)
 	line_generation(no)
@@ -27,7 +29,7 @@ default
 
 
 cluster
-	start:		"."
+	emu:		"$GOANNA/examples/emu_httpd"
 
 	yeasockets:		"$YAESOCKETS"
 
@@ -51,33 +53,6 @@ cluster
 	ds_lex:		"$GOBO/library/lexical/skeleton"
 
 	ds_kernel:		"$GOBO/library/kernel"
-
---	support_cluster:		"$EPOSIX\src\support"
-
---	capi_cluster:		"$EPOSIX\src\capi"
-
---	stdc_cluster:		"$EPOSIX\src\standardc"
---		visible
---			stdc_signal_switch
---				export
---					"switcher"
---				end
---		end
-
---	posix_cluster:		"$EPOSIX\src\posix"
---		exclude
---			"epx_factory.e"; 
---		end
-
---	papi_cluster:		"$EPOSIX\src\papi"
-
---	abstract_cluster:		"$EPOSIX\src\abstract"
-
---	wapi_cluster:		"$EPOSIX\src\wapi"
-
---	windows_cluster:		"$EPOSIX\src\windows"
-
---	compatibiliy_cluster:		"$EPOSIX\src\spec\ise"
 
 external
 

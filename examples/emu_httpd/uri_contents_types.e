@@ -43,6 +43,7 @@ feature {NONE}
 			content_types.put ("image/gif", "gif")
 			content_types.put ("image/jpeg", "jpeg")
 			content_types.put ("image/jpeg", "jpg")
+			content_types.put ("text/css", "css")
 		end
 
 end

@@ -35,6 +35,7 @@ feature
 		do
 				io.put_character ('.')
 				buffer.resize (buffer_size.min (bytes_available))
+				buffer.fill_blank
 				receive_string (buffer)
 				-- parse the request line to see
 				parse_http_request_line (buffer)

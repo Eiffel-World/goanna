@@ -28,24 +28,34 @@ feature
 			fname: STRING
 			ctype, extension: STRING
 		do
-			--io.put_string ("processing GET")
+			debug ("emu_file_read")
+				io.put_string ("processing GET")
+			end
 			fname := clone (document_root_cell.item)
-			fname.append (request_uri)
-			--io.put_string ("file:" + fname)
+			fname.append (convert_file_separators (request_uri))
+			debug ("emu_file_read")
+				io.put_string ("file:" + fname)
+			end
 			!!answer.make
 			if file_exists (fname) then
-				--io.put_string ("will fetch by extension")
+				debug ("emu_file_read")
+					io.put_string ("will fetch by extension")
+				end
 				extension := ct_table.extension (request_uri)
-				--io.put_string ("extension:" + extension)
+				debug ("emu_file_read")
+					io.put_string ("extension:" + extension)
+				end
 				if ct_table.content_types.has (extension) then
 					ctype := ct_table.content_types @ (extension) -- was .item
-					--io.put_string ("ctype:" + ctype)
+					debug ("emu_file_read")
+						io.put_string ("ctype:" + ctype)
+					end
 				else
 					ctype := "text/html"
 				end
 				-- TODO: This code could be improved to avoid string
 				-- comparisons
-				if ctype.is_equal ("text/html") then
+				if ctype.is_equal ("text/html") or ctype.is_equal ("text/css") then
 					process_text_file (fname)
 				else
 					process_raw_file (fname)
@@ -69,17 +79,12 @@ feature
 		  		-- GM modified from: create file.open_read (name)
 				create file.make (name)
 				file.open_read 
-				file.read_stream (max_line_len)
 			until
-				file.last_string.count <= 0 or else file.end_of_file
+				file.end_of_file
 			loop
-				--print ("count:")
-				--print (file_descriptor.last_string.count)
-				--print ("%R%N")
+				file.read_stream (max_line_len)
 				answer.append_reply_text (file.last_string)
 				answer.append_reply_text (crlf)
-				-- GM modified from: file.read_string (max_line_len)
-				file.read_stream (max_line_len)
 			end
 		end
 
@@ -93,15 +98,11 @@ feature
 		  		answer.set_reply_text (buffer)
 				create file.make (name)
 				file.open_read
-				file.read_stream (max_raw_chunk)
 			until
-				file.last_string.count <= 0 or else file.end_of_file
+				file.end_of_file
 			loop
-				--print ("count:")
-				--print (file_descriptor.last_string.count)
-				--print ("%R%N")
-				answer.append_reply_text (file.last_string)
 				file.read_stream (max_raw_chunk)
+				answer.append_reply_text (file.last_string)
 			end
 		end
 
@@ -117,12 +118,26 @@ feature {NONE}
 			Result := file.exists
 		end
 
+	convert_file_separators (uri: STRING): STRING is
+			-- Convert all forward slashes in 'uri' to file separator 
+			-- characters
+		require
+			uri_exists: uri /= Void
+		do
+			Result := clone (uri)
+			Result.replace_substring_all ("/", file_separator_string)
+		end
 
 	max_line_len : INTEGER is 1024
 
 	max_raw_chunk : INTEGER is 8000;
 
-
+	file_separator_string: STRING is
+		once
+			create Result.make (1)
+			Result.append ("\")
+		end
+		
 	buffer : STRING is
 		once
 			-- GM modified from: !!Result.blank (256 * 1024) 
