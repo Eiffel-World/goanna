@@ -15,6 +15,24 @@ inherit
 			set_node_value, node_value
 		end
 			
+creation
+
+	make
+
+feature -- Factory creation
+
+	make (owner_doc: DOM_DOCUMENT; new_name: DOM_STRING) is
+			-- Create a new attribute node.
+		require
+			owner_doc_exists: owner_doc /= Void
+			new_name_exists: new_name /= Void
+		do
+			parent_make
+			set_owner_document (owner_doc)
+			name := new_name
+			specified := true
+		end
+
 feature
 
    name: DOM_STRING

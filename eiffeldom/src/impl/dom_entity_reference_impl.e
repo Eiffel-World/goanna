@@ -11,6 +11,23 @@ inherit
 	DOM_ENTITY_REFERENCE
 
 	DOM_CHILD_AND_PARENT_NODE
+		rename
+			make as child_parent_make
+		end
+
+creation
+
+	make
+
+feature {DOM_DOCUMENT} -- Factory creation
+
+	make (owner_doc: DOM_DOCUMENT; new_name: DOM_STRING) is
+			-- Create a new entity reference node
+		do
+			child_parent_make
+			set_owner_document (owner_doc)
+			name := new_name
+		end
 
 feature
 

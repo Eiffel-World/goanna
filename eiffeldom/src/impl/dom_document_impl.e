@@ -113,6 +113,7 @@ feature
 			-- Return Value
 			--    The new ProcessingInstruction [p.46] object.
 		do
+			create {DOM_PROCESSING_INSTRUCTION_IMPL} Result.make (Current, target, data)
 		end
 
 	create_attribute (name: DOM_STRING): DOM_ATTR is
@@ -123,6 +124,7 @@ feature
 			-- Return Value
 			--    A new Attr object.
 		do
+			create {DOM_ATTR_IMPL} Result.make (Current, name)
 		end
 
 	create_entity_reference (name: DOM_STRING): DOM_ENTITY_REFERENCE is
@@ -132,6 +134,7 @@ feature
 			-- Return Value
 			--    The new EntityReference object.
 		do
+			create {DOM_ENTITY_REFERENCE_IMPL} Result.make (Current, name)
 		end
 
 	get_elements_by_tag_name (tagname: DOM_STRING): DOM_NODE_LIST is

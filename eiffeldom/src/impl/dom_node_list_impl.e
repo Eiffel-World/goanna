@@ -59,5 +59,4 @@ feature -- Access
 		  end
       end
 
-
 end -- class DOM_NODE_LIST_IMPL

@@ -11,12 +11,19 @@ creation
 feature
 
 	make is
+		local
+			discard: DOM_NODE
 		do
 			-- bootstrap implementation
 			create {DOM_IMPLEMENTATION_IMPL} impl
+
 			-- create document
 			doc := impl.create_document (create {DOM_STRING}.make_from_string ("http://test"),
 				create {DOM_STRING}.make_from_string ("HTML"), Void)
+			element := doc.document_element
+			comment := doc.create_comment (create {DOM_STRING}.make_from_string ("This is a comment."))
+			discard := element.append_child (comment)
+			
 			node_impl ?= doc
 			create writer
 			print (writer.to_string(node_impl))
