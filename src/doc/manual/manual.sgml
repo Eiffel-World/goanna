@@ -1,16 +1,56 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
 
 <book>
-  <title>Goanna Web Services Library for Eiffel</title>
-  <titleabbrev>Goanna</titleabbrev>
   <bookinfo>
-    <author>
-      <honorific>Dr.</honorific>
-      <firstname>Glenn</firstname>
-      <surname>Maughan</surname>
-    </author>
-  </bookinfo>
+    <title>The Goanna Eiffel Library</title>
+    <authorgroup>
+      <author>
+	<firstname>Glenn</firstname>
+	<surname>Maughan</surname>
+	<affiliation>
+	  <orgname>goanna.info</orgname>
+	</affiliation> 
+      </author>
+    </authorgroup>
+    <edition>User's Guide for Goanna V1.0</edition>
+    <pubdate>2001</pubdate>
+    <copyright>
+      <year>2001</year>
+      <holder>Glenn Maughan</holder>
+    </copyright>
+    <legalnotice>
 
+      <para>Eiffel Forum License, version 1</para>
+
+      <para>Permission is hereby granted to use, copy, modify and/or distribute this package, provided that:</para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>copyright notices are retained unchanged</para>
+	</listitem>
+	<listitem>
+	  <para>any distribution of this package, whether modified or not, includes this file</para>
+	</listitem>
+      </itemizedlist>
+
+      <para>Permission is hereby also granted to distribute binary programs which depend on this package, 
+provided that:</para>
+      <itemizedlist>
+	<listitem>
+	  <para>if the binary program depends on a modified version of this package, you must publicly
+release the modified version of this package</para>
+	</listitem>
+      </itemizedlist>
+      
+      <para>THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT WARRANTY. ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+EVENT SHALL THE AUTHORS BE LIABLE TO ANY PARTY FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT
+OF THE USE OF THIS PACKAGE.</para>
+    </legalnotice>
+  </bookinfo>
+  
   <preface>
     <title>Preface</title>
     <para>This is the preface.</para>
@@ -50,6 +90,61 @@
     <section>
       <title>Libraries</title>
       <para>Major components: servlet, xml-rpc, soap, log4e, etc</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Web Services</title>
+    <section>
+      <title>Service Registry</title>
+      <para>Describe implementation of service registry.</para>
+    </section>
+    <section>
+      <title>Protocols</title>
+      <section>
+	<title>XML-RPC</title>
+	<para>Describe implementation of XML-RPC API.</para>
+      </section>
+      <section>
+	<title>SOAP</title>
+	<para>Describe implementation of SOAP API.</para>
+      </section>
+    </section>
+    <section>
+      <title>Examples</title>
+      <para>Describe web services examples</para>
+      <section>
+	<title>XML-RPC Examples</title>
+	<para>Describe general structure of XML-RPC examples and server side.</para>
+	<section>
+	  <title>Interoperability Tests</title>
+	  <para>Describe Interop tests.</para>
+	</section>
+	<section>
+	  <title>Calculator</title>
+	  <para>Describe distributed calculator.</para>
+	</section>
+	<section>
+	  <title>Address Book</title>
+	  <para>Describe Address Book example.</para>
+	</section>
+	<section>
+	  <title>Current Time</title>
+	  <para>Describe current time example.</para>
+	</section>
+	<section>
+	  <title>Spell Checker</title>
+	  <para>Describe distributed spell checker.</para>
+	</section>
+      </section>
+      <section>
+	<title>SOAP Examples</title>
+	<para>Describe general SOAP examples and server implementation.</para>
+	<section>
+	  <title>Interoperability Tests</title>
+	  <para>Describe interop tests.</para>
+	</section>
+      </section>
     </section>
   </chapter>
 
@@ -187,25 +282,6 @@
       <section>
 	<title>XML Configuration</title>
 	<para>Describe configuration using XML.</para>
-      </section>
-    </section>
-  </chapter>
-
-  <chapter>
-    <title>Web Services</title>
-    <section>
-      <title>Service Registry</title>
-      <para>Describe implementation of service registry.</para>
-    </section>
-    <section>
-      <title>Protocols</title>
-      <section>
-	<title>XML-RPC</title>
-	<para>Describe implementation of XML-RPC API.</para>
-      </section>
-      <section>
-	<title>SOAP</title>
-	<para>Describe implementation of SOAP API.</para>
       </section>
     </section>
   </chapter>
