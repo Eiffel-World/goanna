@@ -13,11 +13,22 @@ class LOG_CONSOLE_APPENDER
 inherit
 	
 	LOG_APPENDER
+		redefine
+			layout
+		end
 	
 creation
 	
 	make
-	
+
+feature -- Status Report
+
+	layout: LOG_LAYOUT is
+			-- Use a simple layout for console output
+		once
+			create {LOG_SIMPLE_LAYOUT} Result
+		end
+
 feature -- Status Setting
 	
 	close is
@@ -29,7 +40,7 @@ feature -- Status Setting
 	do_append (event: LOG_EVENT) is
 			-- Log event on this appender.
 		do
-			io.put_string (event.rendered_message)
+			io.put_string (layout.format (event))
 		end
 	
 end -- class LOG_CONSOLE_APPENDER

@@ -27,8 +27,13 @@ feature -- Status Report
 	name: STRING
 			-- Name of this appender that uniquely 
 			-- identifies it.
-	
-	
+
+	layout: LOG_LAYOUT is
+			-- Layout used to format events for this appender. May be Void
+			-- if no layout is used.
+		deferred
+		end
+			
 feature -- Status Setting
 	
 	close is
