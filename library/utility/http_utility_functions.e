@@ -32,10 +32,10 @@ feature -- Basic operations
 
 	decode_url (url: STRING): STRING is
 			-- Decode a urlencoded string by replacing '+' with space ' ',
-	     	-- and "%xx" to the Latin1 character specified by the hex digits
-	     	-- "xx".  The input string is assumed to have been broken up into
-		    -- either a key or a value pair, so '=', '?', and '&' are not
-	     	-- treated as separators.
+	     		-- and "%xx" to the Latin1 character specified by the hex digits
+	     		-- "xx".  The input string is assumed to have been broken up into
+		 	-- either a key or a value pair, so '=', '?', and '&' are not
+	     		-- treated as separators.
 		local
 			i, hi, lo: INTEGER
 			ch: CHARACTER

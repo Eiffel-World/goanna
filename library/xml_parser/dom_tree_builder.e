@@ -35,6 +35,12 @@ inherit
 			on_processing_instruction,
 			on_comment
 		end
+	
+	UT_STRING_FORMATTER
+		export
+			{NONE} all
+		end
+	
 creation
    
 	make
@@ -65,10 +71,16 @@ feature {NONE} -- Parser call backs
 			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
 		do
 			debug ("parser_events")
-				print ("on_start_tag: name='" + name.out + "' ns_prefix='" + ns_prefix.out + "'") 
+				print ("on_start_tag:%R%N%Tname=" + quoted_eiffel_string_out (name.out) 
+					+ " ns_prefix=" + quoted_eiffel_string_out (ns_prefix.out)) 
 				print ("%R%N")
 			end
-			new_node := document.create_element (create {DOM_STRING}.make_from_ucstring (name)) -- TODO: change to create_element_ns
+			if not ns_prefix.empty then
+				new_node := document.create_element_ns (create {DOM_STRING}.make_from_ucstring (ns_prefix),
+					create {DOM_STRING}.make_from_ucstring (name))
+			else
+				new_node := document.create_element (create {DOM_STRING}.make_from_ucstring (name))
+			end
 			-- set new node as root document element if not already set.
 			if document_element = Void then
 				document_element := new_node
@@ -92,21 +104,31 @@ feature {NONE} -- Parser call backs
 		end
 
 	on_content (chr_data: UCSTRING) is
-			-- called whenever the parser findes character data
+			-- called whenever the parser finds character data
+		local
+			normalized: UCSTRING
 		do
 			debug ("parser_events")
-				print ("on_content: '" + chr_data.out + "'")
+				print ("on_content:%R%N%Tchr_data=" + quoted_eiffel_string_out (chr_data.out))
 				print ("%R%N")
 			end
-			current_node := current_open_composite.append_child (document.create_text_node 
-					(create {DOM_STRING}.make_from_ucstring (chr_data)))
+			-- normalize the character data if we are not in a CDATA section
+			-- if there is anything left then add it to the current composite.
+			if not in_cdata_section then
+				normalize (chr_data)
+			end
+			if not chr_data.empty then
+				current_node := current_open_composite.append_child (document.create_text_node 
+						(create {DOM_STRING}.make_from_ucstring (chr_data)))
+			end
 		end
 
 	on_end_tag (name, ns_prefix: UCSTRING) is
 			-- called whenever the parser findes an end element
 		do
 			debug ("parser_events")
-				print ("on_end_tag: name='" + name.out + "' ns_prefix='" + ns_prefix.out + "'")
+				print ("on_end_tag:%R%N%Tname=" + quoted_eiffel_string_out (name.out) + " ns_prefix=" 
+					+ quoted_eiffel_string_out (ns_prefix.out))
 				print ("%R%N")
 			end
 			-- if the current node is Void then the parent node has ended
@@ -120,7 +142,8 @@ feature {NONE} -- Parser call backs
 			new_element: DOM_NODE
 		do
 			debug ("parser_events")
-				print ("on_processing_instruction: target='" + target.out + "' data='" + data.out + "'")
+				print ("on_processing_instruction:%R%N%Ttarget=" + quoted_eiffel_string_out (target.out) + " data=" 
+					+ quoted_eiffel_string_out (data.out))
 				print ("%R%N")
 			end
 			new_element := document.create_processing_instruction (create {DOM_STRING}.make_from_ucstring (target), 
@@ -138,7 +161,7 @@ feature {NONE} -- Parser call backs
 			new_element: DOM_NODE
 		do
 			debug ("parser_events")
-				print ("on_comment: " + com.out)
+				print ("on_comment:%R%N%Tcom=" + quoted_eiffel_string_out (com.out))
 				print ("%R%N")
 			end
 			new_element := document.create_comment (create {DOM_STRING}.make_from_ucstring (com))
@@ -152,8 +175,8 @@ feature {NONE} -- Parser call backs
 	on_element_declaration (name: UCSTRING; model: POINTER) is
 		do
 			debug ("parser_events")
-				print ("on_element_declaration: name=" + name.out)
-				print (" model=" + model.out)
+				print ("on_element_declaration:%R%N%Tname=" + quoted_eiffel_string_out (name.out))
+				print (" model=" + quoted_eiffel_string_out (model.out))
 				print ("%R%N")
 			end
 		end
@@ -162,9 +185,9 @@ feature {NONE} -- Parser call backs
 			attribute_type, default_value: UCSTRING; is_required: BOOLEAN) is
 		do
 			debug ("parser_events")
-				print ("on_attribute_declaration: element_name=" + element_name.out)
-				print (" attribute_name=" + attribute_name.out + " attribute_type=" + attribute_type.out)
-				print (" default_value=" + default_value.out + " is_required=" + is_required.out)
+				print ("on_attribute_declaration:%R%N%Telement_name=" + quoted_eiffel_string_out (element_name.out))
+				print (" attribute_name=" + quoted_eiffel_string_out (attribute_name.out) + " attribute_type=" + quoted_eiffel_string_out (attribute_type.out))
+				print (" default_value=" + quoted_eiffel_string_out (default_value.out) + " is_required=" + is_required.out)
 				print ("%R%N")
 			end
 		end
@@ -172,7 +195,8 @@ feature {NONE} -- Parser call backs
 	on_xml_declaration (xml_version, encoding: UCSTRING; standalone: INTEGER) is
 		do
 			debug ("parser_events")
-				print ("on_xml_declaration: xml_version=" + xml_version.out + " encoding=" + encoding.out)
+				print ("on_xml_declaration:R%N%Txml_version=" + quoted_eiffel_string_out (xml_version.out) 
+					+ " encoding=" + quoted_eiffel_string_out (encoding.out))
 				print (" standalone=" + standalone.out)
 				print ("%R%N")
 			end
@@ -184,10 +208,11 @@ feature {NONE} -- Parser call backs
 			value: UCSTRING; value_length: INTEGER; base, system_id, public_id, notation_name: UCSTRING) is
 		do
 			debug ("parser_events")
-				print ("on_entity_declaration: entity_name=" + entity_name.out)
-				print (" is_parameter_entity=" + is_parameter_entity.out + " value=" + value.out)
-				print (" value_length=" + value_length.out + " base=" + base.out + " public_id=" + public_id.out)
-				print (" notation_name=" + notation_name.out)
+				print ("on_entity_declaration:%R%N%Tentity_name=" + quoted_eiffel_string_out (entity_name.out))
+				print (" is_parameter_entity=" + is_parameter_entity.out + " value=" + quoted_eiffel_string_out (value.out))
+				print (" value_length=" + value_length.out + " base=" + quoted_eiffel_string_out (base.out) 	
+					+ " public_id=" + quoted_eiffel_string_out (public_id.out))
+				print (" notation_name=" + quoted_eiffel_string_out (notation_name.out))
 				print ("%R%N")
 			end
 		end
@@ -198,6 +223,7 @@ feature {NONE} -- Parser call backs
 				print ("on_start_cdata_section")
 				print ("%R%N")
 			end
+			in_cdata_section := True
 		end
 
 	on_end_cdata_section is
@@ -206,18 +232,23 @@ feature {NONE} -- Parser call backs
 				print ("on_end_cdata_section")
 				print ("%R%N")
 			end
+			in_cdata_section := False
 		end
 
 	on_default (data: UCSTRING) is
 		do
 			debug ("parser_events")
-				print ("on_default: data=" + data.out)
+				print ("on_default:%R%N%Tdata=" + quoted_eiffel_string_out (data.out))
 				print ("%R%N")
 			end
 		end
 
 	on_default_expanded (data: UCSTRING) is
 		do
+			debug ("parser_events")
+				print ("on_default_expanded:%R%N%Tdata=" + quoted_eiffel_string_out (data.out))
+				print ("%R%N")
+			end
 		end
 
 	on_start_doctype (name, system_id, public_id: UCSTRING; has_internal_subset: BOOLEAN) is
@@ -227,12 +258,12 @@ feature {NONE} -- Parser call backs
 			uc_public_id, uc_system_id: DOM_STRING
 		do
 			debug ("parser_events")
-				print ("on_start_doctype: name=" + name.out)
+				print ("on_start_doctype:%R%N%Tname=" + quoted_eiffel_string_out (name.out))
 				if system_id /= Void then
-					print (" system_id=" + system_id.out)
+					print (" system_id=" + quoted_eiffel_string_out (system_id.out))
 				end 
 				if public_id /= Void then
-					print (" public_id=" + public_id.out)
+					print (" public_id=" + quoted_eiffel_string_out (public_id.out))
 				end
 				print (" has_internal_subset=" + has_internal_subset.out)
 				print ("%R%N")
@@ -268,8 +299,9 @@ feature {NONE} -- Parser call backs
 	on_notation_declaration (notation_name, base, system_id, public_id: UCSTRING) is
 		do
 			debug ("parser_events")
-				print ("on_notation_declaration: notation_name=" + notation_name.out)
-				print (" base=" + base.out + " system_id=" + system_id.out + " public_id=" + public_id.out)
+				print ("on_notation_declaration:%R%N%Tnotation_name=" + quoted_eiffel_string_out (notation_name.out))
+				print (" base=" + quoted_eiffel_string_out (base.out) + " system_id=" + quoted_eiffel_string_out (system_id.out)
+					+ " public_id=" + quoted_eiffel_string_out (public_id.out))
 				print ("%R%N")
 			end
 		end
@@ -277,8 +309,8 @@ feature {NONE} -- Parser call backs
 	on_start_namespace_declaration (namespace_prefix, uri: UCSTRING) is
 		do
 			debug ("parser_events")
-				print ("on_start_namespace_declaration: namespace_prefix=" + namespace_prefix.out)
-				print (" uri=" + uri.out)
+				print ("on_start_namespace_declaration:%R%N%Tnamespace_prefix=" + quoted_eiffel_string_out (namespace_prefix.out))
+				print (" uri=" + quoted_eiffel_string_out (uri.out))
 				print ("%R%N")
 			end
 		end
@@ -286,7 +318,7 @@ feature {NONE} -- Parser call backs
 	on_end_namespace_declaration (namespace_prefix: UCSTRING) is
 		do
 			debug ("parser_events")
-				print ("on_end_namespace_declaration: namespace_prefix=" + namespace_prefix.out)
+				print ("on_end_namespace_declaration:%R%N%Tnamespace_prefix=" + quoted_eiffel_string_out (namespace_prefix.out))
 				print ("%R%N")
 			end
 		end
@@ -302,7 +334,11 @@ feature {NONE} -- Parser call backs
 feature {NONE} -- Implementation
 
 	current_node: DOM_NODE
+	
 	current_open_composite: DOM_NODE
+	
+	in_cdata_section: BOOLEAN
+	
 	document_element: DOM_ELEMENT
 	
 	dom_impl: DOM_IMPLEMENTATION
@@ -312,4 +348,16 @@ feature {NONE} -- Implementation
 			create Result
 		end
       
+	normalize (str: UCSTRING) is
+			-- Remove leading and trailing whitespace from 'str'
+			-- Modifies 'str' parameter
+		require
+			str_exists: str /= Void
+		do
+			str.left_adjust
+			str.right_adjust
+		ensure
+			normalized_exists: str /= Void
+		end
+		
 end -- class DOM_TREE_BUILDER

@@ -19,6 +19,8 @@ indexing
    
 class DATE	
 
+obsolete "Use GOBO 2.0 datatime cluster"
+
 inherit
    COMPARABLE
       redefine

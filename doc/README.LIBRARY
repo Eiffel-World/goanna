@@ -23,4 +23,11 @@ applications. The library includes the following components:
 	utility - General utility classes such as string tokenizers, and
 		string streams.
 
+	logging - A logging framework.
+
+	datetime - A date time cluster. This cluster is obsolete we recommend
+		using the GOBO 2.0 datatime cluster insteak.
+
+	codegen - A simple Eiffel class text generator framework.
+
 See the individual library directories for more details.

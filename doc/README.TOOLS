@@ -3,6 +3,11 @@ Project Goanna Tools
 
 The tools distributed with Project Goanna include:
 
+	httpd - A HTTP server and servlet engine. This tool provides functional
+		HTTP server facilities and servlet management. HTTPD can server up 
+		standard internet files via a FILE_SERVLET and can perform dynamic
+		page creation via standard servlets.
+
 	xmle - The XML/HTML to Eiffel compiler. This tool is similar to the
 		XMLC tool from the Enhydra Java framework 
 		(http://www.enhydra.org). XMLE provides the means to convert

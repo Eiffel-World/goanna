@@ -1,59 +1,13 @@
 system
-	httpd
+	goanna
 
 root
-	HTTPD: make
+	ANY
 
 default
-	assertion(require)
-	assertion(ensure)
-	assertion(check)
-	assertion(loop)
-	assertion(invariant)
-	address_expression(yes)
-	array_optimization(yes)
-	console_application(yes)
-	dead_code_removal(yes)
-	dynamic_runtime(no)
-	exception_trace(yes)
-	inlining(yes)
-	inlining_size("2")
-	multithreaded(no)
-	check_vape(yes)
-	arguments("80 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
-	arguments("9000 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
-	arguments("9000 d:\goanna\tools\httpd\Documentation")
-	arguments("9000 d:\dev\goanna\tools\httpd\Documentation")
-	arguments("9000 d:\goanna\tools\httpd\docroot")
-	arguments("9000 d:\Eiffel50\docs")
-	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
-	arguments(" ")
-	disabled_debug(yes)
-	disabled_debug("httpd_response_write")
-	disabled_debug("status_output")
-	disabled_debug("base64_encode")
-	disabled_debug("normalize")
-	disabled_debug("session_management")
-	disabled_debug("dom_test_servlet")
-	disabled_debug("dom_output")
-	debug("query_string_parsing")
-	disabled_debug("xmle_id_nodes")
-	disabled_debug("httpd_servlet_response")
-	disabled_debug("unhandled_node_types")
-	disabled_debug("cookie_parsing")
-	line_generation(no)
-	profile(no)
-	trace(no)
-	--precompiled("$GOANNA/precomp/spec/$PLATFORM/goanna")
-
---arguments(" ")
+	assertion (all);
 
 cluster
-	httpd:		"$GOANNA/tools/httpd"
-
-	servlets:		"$GOANNA/tools/httpd/servlets"
-
-	templates:		"$GOANNA/tools/httpd/templates"
 
 	goanna:					"$GOANNA\library"
 
@@ -143,15 +97,39 @@ cluster
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
+	eXML: 						"$EXML/lib";
+	all eXML_factory (eXML): 			"$/factory";
+	all eXML_interface (eXML): 			"$/interface";
+	eXML_impl (eXML): 				"$/implementation";
+	all eXML_impl_interface (eXML_impl): 	"$/implementation_interface"
+		exclude
+			"xml_start_tag_i.e"
+		end
+	eXML_expat_impl (eXML_impl): 			"$/expat"
+	eXML_expat_api_impl (eXML_expat_impl): 	"$/api"
+	eXML_expat_general_impl (eXML_expat_impl): "$/general"
+		exclude
+			"expat_processing_instruction.e"
+		end
+	eXML_expat_event_impl (eXML_expat_impl): 	"$/event"
+		use
+                    ".lace"
+            end
+	eXML_expat_ise_impl (eXML_expat_impl): 	"$/spec/ise"
+--	eXML_expat_tree_impl (eXML_expat_impl): 	"$/tree"
+--	all eXML_native_impl (eXML_impl): 		"$/native"
+--	all eXML_tree_on_event_impl (eXML_impl): 	"$/tree_on_event"
+
 external
 
 	include_path:
-		"$GOBO\library\kernel\include",
+		"$EXPAT\lib",
 		"$GOBO\library\time\include",
-		"$GOANNA\library\utility\spec\ise4\include"
+		"$GOBO\library\kernel\include"
 
 	object:
-		"$YAESOCKETS\C\Debug\cl.lib",
-		"$GOANNA\library\datetime\clib\Debug\datetime.lib"
+		"$EXML\lib\implementation\expat\spec\c\libexml.lib",
+		"$EXPAT\lib\Debug\expat.lib",
+		"$YAESOCKETS\C\Final\cl.lib"
 
 end

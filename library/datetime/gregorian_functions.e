@@ -19,6 +19,8 @@ indexing
 
 class GREGORIAN_FUNCTIONS
 
+obsolete "Use GOBO 2.0 datatime cluster"
+
 feature{NONE}	
 	dioy: INTEGER is 365;
 		-- Days in ordinary year

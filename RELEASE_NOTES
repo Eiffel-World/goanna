@@ -1,6 +1,24 @@
 Project Goanna Release Notes
 ----------------------------
 
+Release 0.3
+-----------
+20 May 2001
+
+o HTTPD server implemented. Provides working HTTP server and servlet engine for testing and
+development.
+
+o Ported HTTPD server and servlet library to SmallEiffel.
+
+o Now using GOBO 2.0. Stopped using the Goanna date time cluster in favour of
+the GOBO date time cluster.
+
+o Using updated eXML parser and UCSTRING. Some new parsing hooks are used but further work
+is still required.
+
+o Using new Yaesockets.
+
+
 Release 0.2
 -----------
 4 Feb 2001

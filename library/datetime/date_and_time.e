@@ -18,7 +18,9 @@ indexing
 	author: "$Author$"
    
 class DATE_AND_TIME
-       
+      
+obsolete "Use GOBO 2.0 datatime cluster"
+
 inherit
    DATE 
       rename 

@@ -11,6 +11,8 @@ indexing
 class
 	STRING_TOKENIZER
 	
+obsolete "Use DC_STRING_TOKENIZER instead"
+
 inherit
 
 	STRING_MANIPULATION

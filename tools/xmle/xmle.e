@@ -37,6 +37,9 @@ feature -- Initialization
 					print ("Generating Eiffel code...%R%N")
 					generate_eiffel_code (parser.document)
 					print ("XMLE compilation complete.%R%N")
+					if display_xml then
+						display_dom_tree (parser.document)
+					end
 				else
 					display_parser_error
 				end
@@ -55,18 +58,25 @@ feature {NONE} -- Implementation
 	file_name: UCSTRING
 			-- Name of file to parse.
 
+	display_xml: BOOLEAN
+			-- Should the resulting DOM be displayed?
+			
 	parse_arguments is
 			-- Parse and validate the command line arguments
 		local
 			str: STRING
 			file: FILE
 		do
-			if arguments.argument_count = 1 then
-				str := arguments.argument (1)
+			Arguments.set_option_sign ('-')
+			if Arguments.argument_count >= 1 then
+				str := Arguments.argument (1)
 				create {PLAIN_TEXT_FILE} file.make (str)
 				if file.exists and file.is_readable then
 					arguments_ok := True
 					create file_name.make_from_string (str)
+				end
+				if Arguments.separate_word_option_value ("display") /= Void then
+					display_xml := True
 				end
 			end
 		end
@@ -76,7 +86,7 @@ feature {NONE} -- Implementation
 		local
 			str: STRING
 		do
-			create str.make_from_string ("Usage: xmle <xmlfilename>")
+			create str.make_from_string ("Usage: xmle <xmlfilename> [-display]")
 			print (str)
 		end 
 
@@ -99,6 +109,23 @@ feature {NONE} -- Implementation
 			code_generator.generate (document)
 		end
 
+	display_dom_tree (document: DOM_DOCUMENT) is
+			-- Display dom tree to standard out.
+		require
+			document_exists: document /= Void	
+		local
+			writer: DOM_SERIALIZER
+		do
+			writer := serializer_factory.serializer_for_document (document)
+			writer.set_output (io.output)
+			writer.serialize (document)		
+		end
+	
+	serializer_factory: DOM_SERIALIZER_FACTORY is
+		once
+			create Result
+		end
+	
 feature {NONE} -- DOM object references
 
 	dom_storage_refs: XMLE_DOM_STORAGE_REFS

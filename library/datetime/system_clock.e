@@ -23,6 +23,8 @@ indexing
 
 class SYSTEM_CLOCK
    
+obsolete "Use GOBO 2.0 datatime cluster"
+
 feature{ANY}
 
    year : INTEGER is do Result := c_getyear(time); end;
