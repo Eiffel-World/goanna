@@ -13,11 +13,6 @@ class
 
 inherit
 	CONTENT_FILE_HANDLER
-	
-	KL_INPUT_STREAM_ROUTINES
---		export
---			{NONE} all
---		end
 		
 feature -- Basic operations
 
@@ -28,9 +23,9 @@ feature -- Basic operations
 			--| There is currently no difference between this method and
 			--| the equivalent method in BINARY_CONTENT_FILE_HANDLER
 		local
-			file: like input_stream_type
+			file: KL_TEXT_INPUT_FILE
 		do
-			file := make_file_open_read (file_name)
+			create file.make (file_name)
 			-- This is really inefficient because the whole file has
 			-- to be read into memory. I had to do it this way because 
 			-- I couldn't find a portable way to get the file.count to
@@ -38,11 +33,12 @@ feature -- Basic operations
 			from
 				buffer.wipe_out
 			until
-				end_of_input (file)
+				file.end_of_file
 			loop
-				buffer.append (read_string (file, Max_line_length))
+				file.read_string (Max_line_length)
+				buffer.append (file.last_string)
 			end
-			close (file)	
+			file.close	
 			-- setup response
 			resp.set_content_type (content_types.item (content_type_code))
 			resp.set_content_length (buffer.count)

@@ -47,7 +47,6 @@ feature -- Initialisation
 			vb: EV_VERTICAL_BOX
 			hb: EV_HORIZONTAL_BOX
 			l: EV_LABEL
-			hs: EV_HORIZONTAL_SEPARATOR
 			b: EV_BUTTON
 			status: EV_STATUS_BAR
 			environment: EV_ENVIRONMENT

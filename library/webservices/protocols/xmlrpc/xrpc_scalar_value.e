@@ -96,7 +96,7 @@ feature -- Initialisation
 			int_ref: INTEGER_REF
 			double_ref: DOUBLE_REF
 			bool_ref: BOOLEAN_REF
-			text: UC_STRING
+			text: STRING
 			decoder: BASE64_ENCODER 
 		do
 			unmarshall_ok := True

@@ -79,7 +79,7 @@ feature -- Basic operations
 					service_name := call.extract_service_name.out
 					action := call.extract_action.out
 					parameters := call.extract_parameters
-					log_hierarchy.category (Xmlrpc_category).info ("Calling: " + call.method_name.out)
+					log_hierarchy.logger (Xmlrpc_category).info ("Calling: " + call.method_name.out)
 					-- retrieve service and execute call
 					if registry.has (service_name) then
 						agent_service := registry.get (service_name)
@@ -132,7 +132,7 @@ feature -- Basic operations
 			resp.send (response_text)
 			-- check result and log if there was a failure
 			if fault /= Void then
-				log_hierarchy.category (Xmlrpc_category).error ("Call failed: " + fault.string)
+				log_hierarchy.logger (Xmlrpc_category).error ("Call failed: " + fault.string)
 			end
 		rescue
 			if not failed then
@@ -159,15 +159,16 @@ feature {NONE} -- Implementation
 			-- detected then an XRPC_FAULT element will be created that represents
 			-- the problem encountered.
 		local
-			parser_factory: expanded XM_PARSER_FACTORY
-			parser: XM_TREE_PARSER
+			parser: XM_EIFFEL_PARSER
+			tree_pipe: XM_TREE_CALLBACKS_PIPE
 		do
 			valid_call := True
-			parser := parser_factory.new_toe_eiffel_tree_parser
---			parser := parser_factory.new_toe_expat_tree_parser
-			parser.parse_from_string (req.content)
+			create parser.make
+			create tree_pipe.make
+			parser.set_callbacks (tree_pipe.start)
+			parser.parse_from_string (req.content)		
 			if parser.is_correct then
-				create call.unmarshall (parser.document.root_element)
+				create call.unmarshall (tree_pipe.document.root_element)
 				if not call.unmarshall_ok then
 					valid_call := False
 					create fault.make (call.unmarshall_error_code)

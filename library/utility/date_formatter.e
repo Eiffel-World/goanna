@@ -33,7 +33,7 @@ feature -- Transformation
 			Result.append (short_months.item (date.month + 1))
 			Result.append_character ('-')
 			century := date.year.out
-			century.tail (2)
+			century.keep_tail (2)
 			Result.append (century)
 			-- time
 			Result.append_character (' ')

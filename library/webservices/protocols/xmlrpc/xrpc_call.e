@@ -99,7 +99,7 @@ feature {XRPC_SYSTEM} -- Initialisation
 		require
 			struct_exists: struct /= Void
 		local
-			table: DS_HASH_TABLE [ANY, UC_STRING]
+			table: DS_HASH_TABLE [ANY, STRING]
 			param_array: ARRAY [ANY]
 			param_value: XRPC_VALUE 
 			i: INTEGER
@@ -137,13 +137,13 @@ feature {XRPC_SYSTEM} -- Initialisation
 		
 feature -- Access
 
-	method_name: UC_STRING
+	method_name: STRING
 			-- Name of method to call
 			
 	params: DS_LINKED_LIST [XRPC_PARAM]
 			-- Call parameters
 
-	extract_service_name: UC_STRING is
+	extract_service_name: STRING is
 			-- Extract the service name from the call's 'method_name'. The 'method_name'
 			-- should be in the form 'service.action', where 'service' is the service name.
 			-- If a '.' does not exist in the 'method_name' then the service name is returned
@@ -153,17 +153,17 @@ feature -- Access
 		local
 			i: INTEGER
 		do
-			i := method_name.index_of (Uc_dot, 1)
+			i := method_name.index_of ('.', 1)
 			if i = 0 or (i - 1) <= 0 then
 				create Result.make (0)
 			else
 				Result := method_name.substring (1, i - 1)
 			end
 		ensure
-			empty_service_name_if_no_dot: method_name.index_of (UC_dot, 1) = 0 implies Result.is_equal (UC_empty)
+			empty_service_name_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")
 		end
 	
-	extract_action: UC_STRING is
+	extract_action: STRING is
 			-- Extract the service name from the call's 'method_name'. The 'method_name'
 			-- should be in the form 'service.action', where 'action' is the action to be invoked.
 			-- If a '.' does not exist in the 'method_name' then the action is returned
@@ -173,14 +173,14 @@ feature -- Access
 		local
 			i: INTEGER
 		do
-			i := method_name.index_of (UC_dot, 1)
+			i := method_name.index_of ('.', 1)
 			if i = 0 or (i + 1) >= method_name.count then
 				create Result.make (0)
 			else
 				Result := method_name.substring (i + 1, method_name.count)
 			end		
 		ensure
-			empty_action_if_no_dot: method_name.index_of (UC_dot, 1) = 0 implies Result.is_equal (UC_empty)	
+			empty_action_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")	
 		end	
 		
 	extract_parameters: TUPLE is
@@ -213,7 +213,7 @@ feature -- Access
 		
 feature -- Status setting
 
-	set_method_name (new_name: UC_STRING) is
+	set_method_name (new_name: STRING) is
 			-- Set method to call to 'new_name'
 		require
 			new_name_exists: new_name /= Void

@@ -27,7 +27,7 @@ feature -- Access
 		once
 			create Result.make (Debug_p)
 			create {L4E_FILE_APPENDER} appender.make (Application_log, True)
-			create {L4E_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
+			create {L4E_PATTERN_LAYOUT} layout.make ("@d [@-6p] @c - @m%N")
 			appender.set_layout (layout)
 			Result.root.add_appender (appender)
 		end

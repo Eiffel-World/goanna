@@ -32,7 +32,7 @@ inherit
 			{NONE} all
 		end
 		
-	LOG_SHARED_HIERARCHY
+	L4E_SHARED_HIERARCHY
 		rename
 			warn as log_warn
 		export
@@ -314,13 +314,13 @@ feature {NONE} -- Implementation
 	initialise_logger is
 			-- Set logger appenders
 		local
-			appender: LOG_APPENDER
-			layout: LOG_LAYOUT
+			appender: L4E_APPENDER
+			layout: L4E_LAYOUT
 		do
-			create {LOG_FILE_APPENDER} appender.make ("log.txt", True)
-			create {LOG_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
+			create {L4E_FILE_APPENDER} appender.make ("log.txt", True)
+			create {L4E_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
 			appender.set_layout (layout)
-			log_hierarchy.category (Servlet_app_log_category).add_appender (appender)
+			log_hierarchy.logger (Servlet_app_log_category).add_appender (appender)
 		end
 	
 end -- class FAST_CGI

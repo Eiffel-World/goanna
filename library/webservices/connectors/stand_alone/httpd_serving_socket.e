@@ -71,7 +71,7 @@ feature
 					path := req.get_header (Script_name_var)
 					if path /= Void then
 						-- remove leading slash from path
-						path.tail (path.count - 1)
+						path.keep_tail (path.count - 1)
 					end
 				end			
 				if path /= Void then

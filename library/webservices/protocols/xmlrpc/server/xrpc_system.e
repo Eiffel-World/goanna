@@ -178,7 +178,7 @@ feature -- Access
 						service_name := sub_call.extract_service_name.out
 						action := sub_call.extract_action.out
 						parameters := sub_call.extract_parameters
-						log_hierarchy.category (Xmlrpc_category).info ("Multicall calling: " + sub_call.method_name.out)
+						log_hierarchy.logger (Xmlrpc_category).info ("Multicall calling: " + sub_call.method_name.out)
 						-- retrieve service and execute call
 						if registry.has (service_name) then
 							agent_service := registry.get (service_name)

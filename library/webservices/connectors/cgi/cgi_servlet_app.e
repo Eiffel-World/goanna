@@ -28,7 +28,7 @@ inherit
 			{NONE} all
 		end
 		
-	LOG_SHARED_HIERARCHY
+	L4E_SHARED_HIERARCHY
 		export
 			{NONE} all
 		end
@@ -69,7 +69,7 @@ feature -- Basic operations
 				path := req.get_header (Path_info_var)
 				if path /= Void then
 					-- remove leading slash from path
-					path.tail (path.count - 1)
+					path.keep_tail (path.count - 1)
 				end
 			end			
 			if path /= Void then
@@ -95,13 +95,13 @@ feature {NONE} -- Implementation
 	initialise_logger is
 			-- Set logger appenders
 		local
-			appender: LOG_APPENDER
-			layout: LOG_LAYOUT
+			appender: L4E_APPENDER
+			layout: L4E_LAYOUT
 		do
-			create {LOG_FILE_APPENDER} appender.make ("log.txt", True)
-			create {LOG_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
+			create {L4E_FILE_APPENDER} appender.make ("log.txt", True)
+			create {L4E_PATTERN_LAYOUT} layout.make ("@d [@-6p] @c - @m%N")
 			appender.set_layout (layout)
-			log_hierarchy.category (Servlet_app_log_category).add_appender (appender)
+			log_hierarchy.logger (Servlet_app_log_category).add_appender (appender)
 		end
 		
 	handle_missing_servlet (resp: CGI_SERVLET_RESPONSE) is

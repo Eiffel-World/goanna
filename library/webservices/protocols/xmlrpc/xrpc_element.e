@@ -47,7 +47,7 @@ feature -- Mashalling
 
 feature {NONE} -- Implementation
 
-	get_named_element (parent: XM_ELEMENT; name: UC_STRING): XM_ELEMENT is
+	get_named_element (parent: XM_ELEMENT; name: STRING): XM_ELEMENT is
 			-- Search for and return first element with tag name 'name'. Return
 			-- Void if not found.
 		require

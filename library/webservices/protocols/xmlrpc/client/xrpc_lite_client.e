@@ -317,18 +317,23 @@ feature {NONE} -- Implementation
 		require
 			content_exists: content /= Void
 		local
-			parser_factory: expanded XM_PARSER_FACTORY
-			parser: XM_TREE_PARSER
+			parser: XM_EIFFEL_PARSER
+			tree_pipe: XM_TREE_CALLBACKS_PIPE
 			child: XM_ELEMENT
 		do
 			invocation_ok := True
-			parser := parser_factory.new_toe_eiffel_tree_parser
-			parser.parse_from_string (content)
+			create parser.make
+			create tree_pipe.make
+			parser.set_callbacks (tree_pipe.start)
+			parser.parse_from_string (content)		
 			if parser.is_correct then
+				-- retrieve child if available
+				if not tree_pipe.document.root_element.is_empty then
+					child ?= tree_pipe.document.root_element.first
+				end
 				-- peek at response elements to determine if it is a fault or not
-				child ?= parser.document.root_element.first
 				if child /= Void and then child.name.is_equal (Fault_element) then
-					create fault.unmarshall (parser.document.root_element)
+					create fault.unmarshall (tree_pipe.document.root_element)
 					if not fault.unmarshall_ok then		
 						-- create fault
 						create fault.make (fault.unmarshall_error_code)
@@ -336,14 +341,14 @@ feature {NONE} -- Implementation
 					end
 					invocation_ok := False
 				else
-					create response.unmarshall (parser.document.root_element)
+					create response.unmarshall (tree_pipe.document.root_element)
 					if not response.unmarshall_ok then
 						-- create fault
 						invocation_ok := False
 						create fault.make (response.unmarshall_error_code)
 						response := Void
 					end
-				end
+				end	
 			else
 				invocation_ok := False
 				response := Void

@@ -78,7 +78,7 @@ feature -- Initialisation
 		local
 			member_cursor: DS_BILINEAR_CURSOR [XM_NODE]
 			next, next_value, next_name: XM_ELEMENT
-			name_text: UC_STRING
+			name_text: STRING
 			unmarshalled: XRPC_VALUE
 		do
 			unmarshall_ok := True
