@@ -13,7 +13,7 @@ class
 
 feature
 	
-	Syslog_port: INTEGER is 167
+	Syslog_port: INTEGER is 514
 			-- Standard syslog UDP port.
 
 	Log_kern: INTEGER is 0
