@@ -116,8 +116,6 @@ feature -- Access
 	previous_node: DOM_NODE is
 			-- Returns the previous node in the set and moves the position of the 
      		-- iterator backwards in the set.
-     	local
-     		accepted: BOOLEAN
 		do
 		end
 	
@@ -207,8 +205,6 @@ feature {NONE} -- Implementation
 	
  	find_previous_node (node: DOM_NODE): DOM_NODE is
  			-- return the previous node from the actual DOM tree.
- 		local
- 			found: BOOLEAN
  		do
  		end
  	

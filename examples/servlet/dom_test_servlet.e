@@ -48,7 +48,7 @@ feature {NONE} -- Implementation
 			serializer: DOM_SERIALIZER
 			stream: IO_STRING
 			dom_impl: DOM_IMPLEMENTATION_IMPL
-			root, element: DOM_ELEMENT
+			root: DOM_ELEMENT
 			discard: DOM_NODE
 			str: DOM_STRING
 			format_param: STRING

@@ -310,7 +310,7 @@ feature {NONE} -- Implementation
 			-- coordinate pair that is of the form 'value,value'. Any amount of
 			-- whitespace may separate each token.
 		local
-			i, e, next: INTEGER
+			e: INTEGER
 			pair, name, value: STRING
 			tokenizer: STRING_TOKENIZER
 		do
