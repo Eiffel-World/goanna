@@ -13,6 +13,8 @@ o Fixed LOG_FILE_APPENDER for new GOBO classes. (Thanks Neal Lester).
 o Added Web interface example for XMLRPC current time service. Also added current time service
 to server example.
 
+o Fixed decoding of request parameters in HTTP_UTILITY_FUNCTIONS.
+
 
 Release 0.4
 -----------
