@@ -54,7 +54,9 @@ feature -- Basic routines
 			call_exists: call /= Void
 		do
 			send_call (call)
-			receive_response
+			if socket_ok then
+				receive_response	
+			end	
 		ensure
 			response_available: invocation_ok implies (response /= Void and fault = Void)
 			fault_available: not invocation_ok implies (response = Void and fault /= Void)
@@ -71,6 +73,9 @@ feature -- Basic routines
 	
 feature {NONE} -- Implementation
 
+	socket_ok: BOOLEAN
+			-- Was last socket operation successful?
+			
 	host: STRING
 			-- Server host name
 			
@@ -93,29 +98,48 @@ feature {NONE} -- Implementation
 			if socket = Void or else not socket.is_valid then
 				connect
 			end
-			call_data := call.marshall
-			create data.make (2048)
-			data.append ("POST ")
-			data.append (uri)
-			data.append (" HTTP/1.0%R%N")
-			data.append ("User-Agent: Goanna XML-RPC Client%R%N")
-			data.append ("Host: ")
-			data.append (socket.peer_name)
-			data.append ("%R%N")
-			data.append ("Content-Type: text/xml%R%N")
-			data.append ("Content-Length: ")
-			data.append (call_data.count.out)
-			data.append ("%R%N%R%N")
-			data.append (call_data)
-			socket.send_string (data)
+			if socket_ok then
+				call_data := call.marshall
+				create data.make (2048)
+				data.append ("POST ")
+				data.append (uri)
+				data.append (" HTTP/1.0%R%N")
+				data.append ("User-Agent: Goanna XML-RPC Client%R%N")
+				data.append ("Host: ")
+				data.append (socket.peer_name)
+				data.append ("%R%N")
+				data.append ("Content-Type: text/xml%R%N")
+				data.append ("Content-Length: ")
+				data.append (call_data.count.out)
+				data.append ("%R%N%R%N")
+				data.append (call_data)
+				socket.send_string (data)
+				check_socket_error ("after write")	
+				if not socket_ok then
+					
+				end
+			end
 		end
 		
 	connect is
 			-- Open socket connected to service
 		do
 			create socket.make_connecting_to_port (host, port)
+			check_socket_error ("after connect")
 		ensure
-			socket_ready: socket.is_valid
+			socket_ready: socket_ok implies socket.is_valid
+		end
+		
+	disconnect is
+			-- Open socket connected to service
+		do
+			if socket /= Void then
+				socket.close
+				check_socket_error ("after disconnect")
+				socket := Void
+			end
+		ensure
+			socket_closed: socket = Void
 		end
 		
 	receive_response is
@@ -129,33 +153,38 @@ feature {NONE} -- Implementation
 			if socket = Void or else not socket.is_valid then
 				connect
 			end
-			-- read until complete response has been read 
-			content_length_found := False
-			content_length := -1
-			end_header_index := -1
-			content := Void
-			from
-				create buffer.make (8192)
-				buffer.fill_blank
-				socket.receive_string (buffer)
-				check_socket_error ("after priming read")
-			until
-				done
-			loop
-				response_string.append (buffer.substring (1, socket.bytes_received))
-				done := check_response (response_string)
-				if not done then
+			if socket_ok then
+				-- read until complete response has been read 
+				content_length_found := False
+				content_length := -1
+				end_header_index := -1
+				content := Void
+				from
+					create buffer.make (8192)
 					buffer.fill_blank
 					socket.receive_string (buffer)
-					check_socket_error ("after loop read")					
+					check_socket_error ("after priming read")
+				until
+					done or not socket_ok
+				loop
+					response_string.append (buffer.substring (1, socket.bytes_received))
+					done := check_response (response_string)
+					if not done then
+						buffer.fill_blank
+						socket.receive_string (buffer)
+						check_socket_error ("after loop read")					
+					end
+				end
+				if socket_ok then
+					debug ("xmlrpc_socket")
+						print (response_string)
+						print ("%N")
+					end
+					-- determine response type
+					process_response
+					disconnect
 				end
 			end
-			debug ("xmlrpc_socket")
-				print (response_string)
-				print ("%N")
-			end
-			-- determine response type
-			process_response
 		end
 
 	content_length_found: BOOLEAN
@@ -209,14 +238,29 @@ feature {NONE} -- Implementation
 		do
 			debug ("xmlrpc_socket")
 				print ("Socket status (" + message + "):%N")
-				print ("%TBytes received: " + socket.bytes_received.out + "%N")
-				print ("%TBytes sent: " + socket.bytes_sent.out + "%N")
-				print ("%TBytes available: " + socket.bytes_available.out + "%N")
-				print ("%TSocket valid: " + socket.is_valid.out + "%N")
 			end
 			if socket.last_error_code /= Sock_err_no_error then
-				print ("Socket error: " + socket.last_error_code.out + "%N")
-				print ("Extended error: " + socket.last_extended_socket_error_code.out + "%N")
+				socket_ok := False
+				-- setup fault
+				invocation_ok := False
+				response := Void
+				-- create fault
+				create fault.make (Socket_error)
+			else
+				socket_ok := True
+			end
+			debug ("xmlrpc_socket")
+				print ("%TSocket error: " + socket.last_error_code.out + "%N")
+				print ("%TExtended error: " + socket.last_extended_socket_error_code.out + "%N")
+				if socket.is_valid then
+					print ("%TBytes received: " + socket.bytes_received.out + "%N")
+					print ("%TBytes sent: " + socket.bytes_sent.out + "%N")
+					print ("%TBytes available: " + socket.bytes_available.out + "%N")
+				end
+				print ("%TSocket valid: " + socket.is_valid.out + "%N")				
+			end
+			if not socket_ok then
+				socket := Void
 			end
 		end
 		

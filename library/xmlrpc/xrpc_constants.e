@@ -184,6 +184,9 @@ feature -- Error codes
 		
 	Invalid_operands_for_service_action: INTEGER is 28
 			-- Invalid operands for service action
+		
+	Socket_error: INTEGER is 29
+			-- A socket error occurred
 			
 	fault_code_string (code: INTEGER): STRING is
 			-- Return error message for fault 'code'.
@@ -228,7 +231,8 @@ feature -- Error codes
 				"Unable to execute service action",							-- 25
 				"Action not found for service",								-- 26
 				"Service not found",										-- 27
-				"Invalid operands for service action"						-- 28
+				"Invalid operands for service action",						-- 28
+				"Socket error"
 			>>
 		end
 

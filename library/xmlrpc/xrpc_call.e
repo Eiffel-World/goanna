@@ -97,7 +97,7 @@ feature -- Access
 			i: INTEGER
 		do
 			i := method_name.index_of ('.', 1)
-			if i = 0 then
+			if i = 0 or (i - 1) <= 0 then
 				Result := ""
 			else
 				Result := method_name.substring (1, i - 1)
@@ -117,7 +117,7 @@ feature -- Access
 			i: INTEGER
 		do
 			i := method_name.index_of ('.', 1)
-			if i = 0 then
+			if i = 0 or (i + 1) >= method_name.count then
 				Result := ""
 			else
 				Result := method_name.substring (i + 1, method_name.count)
