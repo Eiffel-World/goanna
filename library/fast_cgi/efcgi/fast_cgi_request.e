@@ -141,13 +141,22 @@ feature -- Basic operations
 		local
 			record_header: FAST_CGI_RECORD_HEADER
 			record_body: FAST_CGI_RAW_BODY
+			offset, bytes_to_send: INTEGER
 		do 
-			-- send it all in one record. May need to split into smaller records in the
-			-- future.
-			create record_header.make (version, request_id, Fcgi_stderr, str.count, 0)
-			create record_body.make (str, 0)
-			record_header.write (socket)
-			record_body.write (socket)
+			-- split into chunks 65535 bytes or less.
+			from
+				offset := 1
+			until
+				offset > str.count
+			loop
+				bytes_to_send := (65535).min (str.count - (offset - 1))
+				-- create and send stderr stream record
+				create record_header.make (version, request_id, Fcgi_stderr, bytes_to_send, 0)
+				create record_body.make (str.substring (offset, offset + bytes_to_send - 1), 0)
+				record_header.write (socket)
+				record_body.write (socket)
+				offset := offset + 65535
+			end
 			-- end stderr stream record
 			create record_header.make (version, request_id, Fcgi_stderr, 0, 0)
 			record_header.write (socket)
@@ -161,13 +170,22 @@ feature -- Basic operations
 		local
 			record_header: FAST_CGI_RECORD_HEADER
 			record_body: FAST_CGI_RAW_BODY
+			offset, bytes_to_send: INTEGER
 		do 
-			-- send it all in one record. May need to split into smaller records in the
-			-- future.
-			create record_header.make (version, request_id, Fcgi_stdout, str.count, 0)
-			create record_body.make (str, 0)
-			record_header.write (socket)
-			record_body.write (socket)
+			-- split into chunks 65535 bytes or less.
+			from
+				offset := 1
+			until
+				offset > str.count
+			loop
+				bytes_to_send := (65535).min (str.count - (offset - 1))
+				-- create and send stdout stream record
+				create record_header.make (version, request_id, Fcgi_stdout, bytes_to_send, 0)
+				create record_body.make (str.substring (offset, offset + bytes_to_send - 1), 0)
+				record_header.write (socket)
+				record_body.write (socket)
+				offset := offset + 65535
+			end
 			-- end stdout stream record
 			create record_header.make (version, request_id, Fcgi_stdout, 0, 0)
 			record_header.write (socket)

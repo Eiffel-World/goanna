@@ -17,7 +17,7 @@ inherit
 		rename
 			make as cgi_servlet_make
 		redefine
-			get_header, get_header_names, internal_response
+			has_header, get_header, get_header_names, internal_response
 		end
 		
 creation
@@ -66,6 +66,14 @@ feature -- Access
 			Result := array_list
 		end
 
+feature -- Status report
+
+	has_header (name: STRING): BOOLEAN is
+			-- Does this request contain a header named 'name'?
+		do
+			Result := internal_request.parameters.has (name)
+		end
+		
 feature {NONE} -- Implementation
 
 	internal_request: FAST_CGI_REQUEST
