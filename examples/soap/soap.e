@@ -1,5 +1,5 @@
 indexing
-	description: "HTTP Server."
+	description: "SOAP Example Server."
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	library: "tools httpd"
 	date: "$Date$"
@@ -9,7 +9,7 @@ indexing
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
-	HTTPD
+	SOAP
 
 inherit
 
@@ -47,6 +47,7 @@ feature -- Initialization
 				config.set_server_port (port)
 				parent_make (port, 10)
 				register_servlets
+				init_soap
 				run
 			end
 		end
@@ -105,8 +106,30 @@ feature {NONE} -- Implementation
 			create {FILE_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "file")
 			servlet_manager.register_default_servlet (servlet)
-			create {SNOOP_SERVLET} servlet.init (config)
-			servlet_manager.register_servlet (servlet, "snoop")
+			-- SOAP is not compatible with SmallEiffel because
+			-- is uses object serialization and agents
+			create {SOAP_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "soap")
+		end
+		
+	init_soap is
+			-- Initialise SOAP RPC calls
+		local
+			account_service, address_service, calculator_service: SERVICE
+			addresses: ADDRESS_REGISTER
+			calculator: CALCULATOR
+		do
+			create addresses.make
+			create address_service.make
+			address_service.register (addresses~get_address_from_name (?), "getAddressFromName")
+			registry.register (address_service, "urn:AddressFetcher")
+			create calculator
+			create calculator_service.make
+			calculator_service.register (calculator~times (?, ?), "times")
+			calculator_service.register (calculator~divide (?, ?), "divide")
+			calculator_service.register (calculator~minus (?, ?), "minus")
+			calculator_service.register (calculator~plus(?, ?), "plus")
+			registry.register (calculator_service, "urn:xml-soap-demo-calculator")
 		end
 
-end -- class HTTPD
+end -- class SOAP

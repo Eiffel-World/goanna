@@ -19,6 +19,7 @@ ${GOANNA}/library/utility/
 ${GOANNA}/library/utility/spec/se/
 ${GOANNA}/library/logging/
 ${GOANNA}/library/datetime/
+${GOANNA}/library/httpd/
 ${GOANNA}/tools/httpd/
 ${GOANNA}/tools/httpd/servlets/
 ${GOANNA}/tools/httpd/templates/

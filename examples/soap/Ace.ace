@@ -1,8 +1,8 @@
 system
-	httpd
+	soap
 
 root
-	HTTPD: make
+	SOAP: make
 
 default
 	assertion(require)
@@ -54,10 +54,10 @@ default
 --arguments(" ")
 
 cluster
-	root_cluster:		"$GOANNA/tools/httpd"
+	root_cluster:		"$GOANNA\examples\soap"
 
 
-	root_servlets (root_cluster):		"$\servlets"
+	servers (root_cluster):		"$\servers"
 
 	goanna:		"$GOANNA\library"
 
