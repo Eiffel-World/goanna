@@ -60,7 +60,6 @@ feature {NONE} -- Implementation
 			parameter_names: DS_LINEAR [STRING]
 			header_names: DS_LINEAR [STRING]
 			line: STRING
-			header: STRING
 		do
 			create Result.make (255)
 			Result.append_string ("<pre>")

@@ -24,7 +24,13 @@ feature -- Constants
 		once
 			create Result.make (Fatal_int, "FATAL")
 		end
-			
+		
+	Error_p: LOG_PRIORITY is
+			-- Error priority designates error events.
+		once
+			create Result.make (Error_int, "ERROR")
+		end	
+		
 	Warn_p: LOG_PRIORITY is
 			-- Warn priority designates potentially 
 			-- harmful situations.

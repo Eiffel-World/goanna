@@ -1,56 +1,80 @@
 system
-	GOANNA
+	goanna
 
 root
 	GOANNA: make
 
 default
-	console_application (yes);
+	assertion(check)
+	assertion(require)
+	assertion(ensure)
+	assertion(loop)
+	assertion(invariant)
+	arguments(" ")
+	disabled_debug(yes)
+	disabled_debug("base64_encode")
+	debug(no)
+	line_generation(no)
+	profile(no)
+	trace(no)
+	il_verifiable(no)
+	msil_generation_type("exe")
+	check_vape(yes)
+	console_application(yes)
+	address_expression(no)
+	array_optimization(no)
+	dead_code_removal(yes)
+	dynamic_runtime(no)
+	exception_trace(no)
+	inlining(no)
+	multithreaded(no)
+
 
 cluster
-	goanna_utility:					"$GOANNA\library\utility"
+	goanna_utility:		"$GOANNA\library\utility"
 
-	goanna_utility_ise (goanna_utility):	"$\spec\ise"
-	
-	goanna_log4e:				"$GOANNA\library\log4e"
 
-	all "base":						"$ISE_EIFFEL/library/base"
+	goanna_utility_ise (goanna_utility):		"$\spec\ise"
+
+	goanna_log4e:		"$GOANNA\library\log4e"
+
+	all "base":		"$ISE_EIFFEL/library/base"
 		exclude
 			"desc"; "table_eiffel3"; "CVS"; "EIFGEN"; 
 		end
 
-	gobo:							"$GOBO\library"
+	gobo:		"$GOBO\library"
 
-	gobo_kernel (gobo):				"$\kernel"
+	gobo_kernel (gobo):		"$\kernel"
 		exclude
 			"spec"; "include"; 
 		end
 
 	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
 
-	all gobo_structures (gobo):			"$\structure"
+	all gobo_structures (gobo):		"$\structure"
 
-	all gobo_util (gobo):				"$\utility"
+	all gobo_util (gobo):		"$\utility"
 		exclude
 			"spec"; 
 		end
 
-	gobo_ise_util (gobo_util):			"$\spec\ise"
+	gobo_ise_util (gobo_util):		"$\spec\ise"
 
-	all gobo_time (gobo):				"$\time"
+	all gobo_time (gobo):		"$\time"
 		exclude
 			"spec"; "include"; 
 		end
 
-	gobo_ise_time (gobo_time):			"$\spec\ise"
+	gobo_ise_time (gobo_time):		"$\spec\ise"
 
-	gobo_test (gobo):					"$\test\harness"
+	gobo_test (gobo):		"$\test\harness"
 
-	utility_tests:					"$GOANNA\test\utility"
+	utility_tests:		"$GOANNA\test\utility"
 
-	log4e_tests:				"$GOANNA\test\log4e"
+	log4e_tests:		"$GOANNA\test\log4e"
 
-	testgen:		 				"$GOANNA\test\TESTGEN"
+	testgen:		"$GOANNA\test\TESTGEN"
 
 external
 

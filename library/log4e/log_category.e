@@ -28,6 +28,12 @@ feature {LOG_CATEGORY_FACTORY} -- Initialisation
 			context := hierarchy
 			name := cat_name
 			create appenders.make
+			is_additive := True
+		ensure
+			context_set: context = hierarchy
+			name_set: name = cat_name
+			additive: is_additive
+			not_disabled: not is_disabled
 		end
 	
 feature -- Status Report
@@ -46,10 +52,12 @@ feature -- Status Report
 		do
 			from
 				next := Current
+				Result := next.cat_priority
 			until
 				Result /= Void
 			loop	
 				-- check internal priority
+				next := next.parent
 				Result := next.cat_priority
 			end
 		end
@@ -74,9 +82,9 @@ feature -- Status Report
 		require
 			check_priority_exists: check_priority /= Void
 		do
-			Result := context.disabled >= check_priority.level and then priority >= check_priority
+			Result := context.disabled < check_priority.level and then priority >= check_priority
 		ensure
-			true_if_priority_enabled: Result = (context.disabled >= check_priority.level
+			true_if_priority_enabled: Result = (context.disabled < check_priority.level
 						  and priority >= check_priority)
 		end
 	
@@ -102,26 +110,28 @@ feature -- Status Setting
 			appender_added: appenders.has (new_appender)
 		end
 	
-	remove_appender (name: STRING) is
-			-- Remove appender with 'name'
+	remove_appender (appender_name: STRING) is
+			-- Remove appender with name 'appender_name'
 			-- Iterates to find matching appender.
 		require
-			name_exists: name /= Void
+			name_exists: appender_name /= Void
+		local
+			found: BOOLEAN
 		do
-			from
-				appenders.start
-			until
-				appenders.off
-			loop
-				if appenders.item_for_iteration.name.is_equal (name) then
-					found := True
-				else
-					appenders.forth
-				end
-			end
-			if not appenders.off then
-				appenders.remove
-			end
+--			from
+--				appenders.start
+--			until
+--				appenders.off or found
+--			loop
+--				if appenders.item_for_iteration.name.is_equal (appender_name) then
+--					found := True
+--				else
+--					appenders.forth
+--				end
+--			end
+--			if not appenders.off then
+--				appenders.remove
+--			end
 		end
 	
 	
@@ -152,6 +162,8 @@ feature -- Status Setting
 	
 	close_appenders is
 			-- Close all appenders
+		local
+			c: DS_LINKED_LIST_CURSOR [LOG_APPENDER]
 		do
 			-- loop through all appenders
 			from
@@ -161,7 +173,7 @@ feature -- Status Setting
 				c.off
 			loop
 				c.item.close
-				c.next
+				c.forth
 			end		
 		end
 	

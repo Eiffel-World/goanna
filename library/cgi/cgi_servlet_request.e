@@ -145,7 +145,6 @@ feature -- Access
 	get_header_names: DS_LINEAR [STRING] is
 			-- Get all header names.
 		local
-			cursor: DS_HASH_TABLE_CURSOR [STRING, STRING]
 			array_list: DS_ARRAYED_LIST [STRING]
 		do
 			-- create fixed list of variable names

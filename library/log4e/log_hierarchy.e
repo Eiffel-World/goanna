@@ -14,6 +14,11 @@ inherit
 	
 	LOG_PRIORITY_CONSTANTS
 	
+	STRING_MANIPULATION
+		export
+			{NONE} all
+		end
+		
 creation
 	
 	make
@@ -26,7 +31,10 @@ feature -- Initialisation
 		do
 			create root.make (Current, "root")
 			root.set_priority (priority)
-			disabled := Disable_off
+			create categories.make_default
+			enable_all
+		ensure
+			not_disabled: disabled = Disable_off
 		end
 	
 feature -- Category Factory
@@ -42,9 +50,9 @@ feature -- Category Factory
 			if categories.has (cat_name) then
 				Result := categories.item (cat_name)
 			else
-				create new_cat.make (Current, cat_name)
-				categories.put (new_cat, cat_name)
-				set_category_parents (new_cat)
+				create Result.make (Current, cat_name)
+				categories.put (Result, cat_name)
+				set_category_parents (Result)
 			end
 		ensure
 			category_exists: has (cat_name)
@@ -97,7 +105,7 @@ feature -- Status Setting
 	disable_all is
 			-- Disable all logging
 		do
-			disable := Fatal_int
+			disabled := Fatal_int
 		end
 	
 	enable_all is
@@ -109,7 +117,7 @@ feature -- Status Setting
 	clear is
 			-- Clear all categories from this hierarchy
 		do
-			categories.clear_all
+			categories.wipe_out
 		end
 	
 feature {NONE} -- Implementation
@@ -139,7 +147,7 @@ feature {NONE} -- Implementation
 				-- not "w.x.y.z". If a parent does 
 				-- not exist with the sub category 
 				-- then create it
-				sub_name := cat_name.substring (1, cat_name.last_index_of ('.'))
+				sub_name := cat_name.substring (1, last_index_of (cat_name, '.', cat_name.count))
 				if not categories.has (sub_name) then
 					surrogate := category (sub_name)
 					new_cat.set_parent (surrogate)

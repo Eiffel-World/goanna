@@ -27,7 +27,7 @@ feature -- Test
 			cat: LOG_CATEGORY
 			appender: LOG_CONSOLE_APPENDER
 		do
-			create h.make (Debugging)
+			create h.make (Debug_p)
 			cat := h.category ("test")
 			create appender.make ("console")
 			cat.add_appender (appender)

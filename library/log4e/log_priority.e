@@ -19,7 +19,7 @@ feature -- Initialisation
 	make (new_level: INTEGER; desc: STRING) is
 			-- Create new priority 
 		require
-			positive_level: level > 0
+			positive_level: new_level > 0
 			desc_exists: desc /= Void	 
 		do
 			level := new_level
