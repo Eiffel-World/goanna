@@ -262,18 +262,67 @@ feature -- Validation Utility
 			else
 				Result := True
 			end
+			debug ("dom_assertions")
+				print (generator + ".is_right_document: " + Result.out + "%R%N")
+			end
 		end
 
 	can_insert (new_child: DOM_NODE): BOOLEAN is
 			-- Can 'new_child' be inserted in this node?
+		local
+			ancestor: DOM_NODE
+			found: BOOLEAN
 		do
-			Result := True
+			-- check the basics at this level including whether the node is not already
+			-- the current node or an ancestor. Descendants may check
+			-- further restrictions such as the type of node being inserted.
+			if new_child /= Current then
+				-- check all ancestors
+				from
+					ancestor := parent_node
+				until
+					ancestor = Void or found
+				loop
+					if ancestor = new_child then
+						found := True
+					else
+						ancestor := ancestor.parent_node
+					end
+					
+				end
+				if not found then
+					Result := True
+				end
+			end
+			debug ("dom_assertions")
+				print (generator + ".can_insert: " + Result.out + "%R%N")
+			end
 		end
 
 	has_node (old_child: DOM_NODE): BOOLEAN is
 			-- Does 'old_child' exist in this node?
+		local
+			child: DOM_NODE
+			index: INTEGER
 		do
-			Result := True
+			from
+				index := 0
+				child := child_nodes.item (0)
+			variant
+				child_nodes.length - (index + 1)
+			until
+				index >= child_nodes.length or Result
+			loop
+				if child = old_child then
+					Result := True
+				else
+					index := index + 1
+					child := child_nodes.item (index)
+				end
+			end
+			debug ("dom_assertions")
+				print (generator + ".has_node: " + Result.out + "%R%N")
+			end
 		end
 
 	readonly: BOOLEAN is
@@ -286,12 +335,18 @@ feature -- Validation Utility
 			-- Does 'new_prefix' consist of valid namespace prefix characters?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".valid_prefix_chars: " + "not implemented" + "%R%N")
+			end
 		end
 
 	well_formed_prefix (new_prefix: DOM_STRING): BOOLEAN is
 			-- Is 'new_prefix' a well formed namespace prefix?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".well_formed_prefix: " + "not implemented" + "%R%N")
+			end
 		end
 
 feature {DOM_WRITER, DOM_NODE} -- Output Implementation

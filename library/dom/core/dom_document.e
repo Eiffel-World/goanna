@@ -215,10 +215,9 @@ feature
 			-- Creates an element of the given qualified name and namespace URI.
 			-- DOM Level 2.
 		require
-			namespace_uri_exists: new_namespace_uri /= Void
 			qualified_name_exists: qualified_name /= Void
 			not_invalid_character_err: valid_qualified_name_chars (qualified_name)
-			not_namespace_err: valid_qualified_name (namespace_uri, qualified_name)
+			not_namespace_err: valid_qualified_name (new_namespace_uri, qualified_name)
 		deferred
 		ensure
 			result_exists: Result /= Void
@@ -232,10 +231,9 @@ feature
 			-- Creates an attribute of the given qualified name and namespace URI.
 			-- DOM Level 2.
 		require
-			namespace_uri_exists: new_namespace_uri /= Void
 			qualified_name_exists: qualified_name /= Void
 			not_invalid_character_err: valid_qualified_name_chars (qualified_name)
-			not_namespace_err: valid_qualified_name (namespace_uri, qualified_name)
+			not_namespace_err: valid_qualified_name (new_namespace_uri, qualified_name)
 		deferred
 		ensure
 			result_exists: Result /= Void
@@ -298,7 +296,6 @@ feature -- Validation Utility
 			-- Is 'new_name' a valid name within 'new_namespace_uri'?
 		require
 			new_name_exists: new_name /= Void
-			namespace_exists: new_namespace_uri /= Void
 		deferred
 		end
 

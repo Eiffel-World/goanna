@@ -36,10 +36,10 @@ feature {DOM_DOCUMENT} -- Factory creation
 
 feature -- from DOM_NODE
 
-   node_type: INTEGER is
-      once
-         Result := Document_fragment_node
-      end
+	node_type: INTEGER is
+		once
+			Result := Document_fragment_node
+		end
 
 	node_name: DOM_STRING is
 		once

@@ -23,6 +23,11 @@ inherit
 			append_child, insert_before, remove_child
 		end
 
+	DOM_XML_NAMESPACE_CONSTANTS
+		export
+			{NONE} all
+		end
+		
 creation
 
 	make
@@ -332,42 +337,88 @@ feature -- Validation Utility
 			-- Does 'new_name' consist of valid characters for a document name?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".valid_name_chars: " + "not implemented" + "%R%N")
+			end
 		end
 
 	valid_qualified_name_chars (new_name: DOM_STRING): BOOLEAN is
 			-- Does 'new_name' consist of valid characters for a qualified name?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".valid_qualified_name_chars: " + "not implemented" + "%R%N")
+			end
 		end
 
 	valid_qualified_name (new_namespace_uri, new_name: DOM_STRING): BOOLEAN is
 			-- Is 'new_name' a valid name within 'new_namespace_uri'?
+			-- Fails if the qualified name is malformed, if the qualified name has a prefix and
+			-- the namespace URI is Void, if the qualified name has a prefix that is "xml" 
+			-- and the namespace URI is different from "http://www.w3.org/XML/1998/namespace",
+			-- or if the qualified name is "xmlns" and the namespace URI is different from
+			-- "http://www.w3.org/2000/xmlns".
+		local
+			colon_index: INTEGER
+			has_prefix: BOOLEAN
+			name_prefix: DOM_STRING
 		do
 			Result := True
+			colon_index := new_name.index_of (Qname_separator, 1)
+			if colon_index > 0 then
+				has_prefix := True
+				name_prefix := new_name.substring (1, colon_index - 1)
+			end
+			if has_prefix and new_namespace_uri = Void then
+				Result := False
+			elseif has_prefix 
+				and then name_prefix.is_equal (Xml_prefix) 
+				and then not new_namespace_uri.is_equal (Xml_namespace_uri) then
+				Result := False
+			elseif not has_prefix 
+				and then new_name.is_equal (Xmlns_qname) 
+				and then not new_namespace_uri.is_equal (Xmlns_default_uri) then
+				Result := False
+			end
+			debug ("dom_assertions")
+				print (generator + ".valid_qualified_name: " + Result.out + "%R%N")
+			end
 		end
 
 	valid_entity_name (new_name: DOM_STRING): BOOLEAN is
 			-- Is 'new_name' a valid name for an entity?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".valid_entity_name: " + "not implemented" + "%R%N")
+			end
 		end
 
 	valid_target_chars (new_target: DOM_STRING): BOOLEAN is
 			-- Does 'new_target' consist of valid target characters?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".valid_target_chars: " + "not implemented" + "%R%N")
+			end
 		end
 	
 	valid_node_name (new_name: DOM_STRING): BOOLEAN is
 			-- Is 'new_name' a valid name for a node?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".valid_node_name: " + "not implemented" + "%R%N")
+			end
 		end
 
 	import_supported (new_node: DOM_NODE): BOOLEAN is
 			-- Can 'new_node' be imported into this document?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".import_supported: " + "not implemented" + "%R%N")
+			end
 		end
 		
 end -- class DOM_DOCUMENT_IMPL
