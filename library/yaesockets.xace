@@ -20,6 +20,7 @@
 
 	<external>
 		<link_library location="$(YAESOCKETS)/C/cl.obj" if="${GOBO_OS}=windows"/>
+		<link_library location="WSOCK32.lib" if="${GOBO_OS}=windows"/>
 		<link_library location="$(YAESOCKETS)/C/cl.o" if="${GOBO_OS}=unix"/>
 	</external>
 

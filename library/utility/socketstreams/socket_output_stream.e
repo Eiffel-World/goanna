@@ -105,7 +105,7 @@ feature {NONE} -- Implementation
 			-- Set the last_write_ok flag depending on the current socket
 			-- status
 		do
-			last_write_ok := socket.last_error_code = Sock_err_no_error
+			last_write_ok := socket.last_error_code = sock_err_no_error
 			debug ("socket")
 				if not last_write_ok then
 					print ("Socket error: " 

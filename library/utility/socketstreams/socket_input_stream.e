@@ -19,6 +19,11 @@ inherit
 		export
 			{NONE} all
 		end
+	
+	STRING_MANIPULATION
+		export
+			{NONE} all
+		end
 		
 create
 	
@@ -136,7 +141,7 @@ feature -- Input
 				if offset = 1 then
 					-- from previous buffer so prepend
 					-- and pretend we read one more character
-					buffer.prepend_character (an_item)
+					prepend_character (an_item, buffer)
 					bytes_read := bytes_read + 1
 				elseif offset <= bytes_read + 1 then
 					-- move the offset back one
@@ -152,7 +157,6 @@ feature -- Input
 			-- been read available in `last_string' and discard the line
 			-- separator characters from the input stream.
 		local
-			eol_found: BOOLEAN
 			c: INTEGER
 		do
 			-- create new string
@@ -256,8 +260,7 @@ feature -- Status setting
 			valid_size: size > 0
 		do
 			buffer_size := size
-			create buffer.make (size)
-			buffer.fill_blank
+			buffer := create_blank_buffer (size)
 		end	
 		
 feature {NONE} -- Implementation
@@ -282,7 +285,7 @@ feature {NONE} -- Implementation
 			-- check if there are characters in the buffer to consume
 			if offset > bytes_read then
 				-- clear the buffer and read more from the socket
-				buffer.fill_blank
+				fill_blank (buffer)
 				offset := 1
 				socket.receive_string (buffer)
 				set_last_read_status
@@ -308,7 +311,7 @@ feature {NONE} -- Implementation
 			-- Set the last_read_ok flag depending on the current socket
 			-- status
 		do
-			last_read_ok := socket.last_error_code = Sock_err_no_error
+			last_read_ok := socket.last_error_code = sock_err_no_error
 			debug ("socket")
 				if not last_read_ok then
 					print ("Socket error: " 
