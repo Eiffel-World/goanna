@@ -1,18 +1,18 @@
 test
 
-    Goanna
+	Goanna
 
 default
 
-    class ("TEST_[A-Z0-9_]*")
-    feature ("test_[a-z0-9_]*")
-    prefix ("X")
-    testgen ("TESTGEN")
-    compile ("compile -no_split -no_style_warning GOANNA")
-    execute ("goanna")
+	class ("TEST_[A-Z0-9_]*")
+	feature ("test_[a-z0-9_]*")
+	prefix ("X")
+	testgen ("TESTGEN")
+	compile ("compile -no_split -no_style_warning GOANNA")
+	execute ("goanna")
 
 cluster
 
-    test_dir: "$GOANNA/test/utility"
+	test_dir: "$GOANNA/test/utility"
 
 end

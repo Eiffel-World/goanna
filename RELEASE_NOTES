@@ -5,6 +5,9 @@ Release 0.3
 -----------
 20 May 2001
 
+o SOAP proof-of-concept implemented. Request and response envelopes handled. Only basic
+parameter types supported. Requires Eiffel Agent support.
+
 o HTTPD server implemented. Provides working HTTP server and servlet engine for testing and
 development.
 
