@@ -10,8 +10,9 @@
     which can be found at <ulink url="http://jakarta.apache.org">the Apache
     Jakarta project</ulink>. For the most part, the source 
     has been ported as is. A number of Eiffel-like improvements have been made 
-    such as appropriate contracts, and the use of generic types. The general struture and
-    usage of the library remains very similar to the original Java version.
+    such as appropriate contracts, and the use of generic types. The general 
+    struture and usage of the library remains very similar to the original 
+    Java version.
   </para>
   
   <section>
@@ -103,6 +104,7 @@
 	a specified priority in the case of <function>log</function>.
       </para> 
     </section>
+
     <section>
       <title>Priorities</title>
       <para>Describe priorities for categories.</para>
