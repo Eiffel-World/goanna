@@ -26,7 +26,7 @@ feature -- Initialisation
 		do
 			create root.make (Current, "root")
 			root.set_priority (priority)
-			disable := Disable_off
+			disabled := Disable_off
 		end
 	
 feature -- Category Factory
@@ -55,7 +55,7 @@ feature -- Status Report
 	root: LOG_CATEGORY
 			-- Root category of this hierarchy
 	
-	disable: INTEGER
+	disabled: INTEGER
 			-- Globally disabled priority level. Disable_off if no priorities
 			-- are disabled.
 	
@@ -77,21 +77,21 @@ feature -- Status Setting
 		require
 			priority_exists: priority /= Void
 		do
-			disable := priority.level
+			disabled := priority.level
 		ensure
-			priority_disabled: disable = priority.level
+			priority_disabled: disabled = priority.level
 		end
 	
 	disable_debug is
 			-- Disable debug logging
 		do
-			disable := Debug_int
+			disabled := Debug_int
 		end
 	
 	disable_info is
 			-- Disable info logging
 		do
-			disable := Info_int
+			disabled := Info_int
 		end
 	
 	disable_all is
@@ -103,7 +103,7 @@ feature -- Status Setting
 	enable_all is
 			-- Enable all logging
 		do
-			disable := Disable_off
+			disabled := Disable_off
 		end
 	
 	clear is

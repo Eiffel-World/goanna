@@ -16,6 +16,7 @@ default
 
 cluster
 
-	test_dir:     "$GOANNA/test/utility"
+	test_utility: "$GOANNA/test/utility"
+	test_log4e: "$GOANNA/test/log4e"
 
 end

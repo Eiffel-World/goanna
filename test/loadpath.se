@@ -1,5 +1,7 @@
 ${GOBO}/library/loadpath.se
 ${GOANNA}/library/utility/
 ${GOANNA}/library/utility/spec/se/
-./utility/
-./TESTGEN/
+${GOANNA}/library/log4e/
+${GOANNA}/test/utility/
+${GOANNA}/test/log4e/
+${GOANNA}/test/TESTGEN/

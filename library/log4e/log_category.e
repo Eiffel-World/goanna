@@ -13,10 +13,7 @@ class LOG_CATEGORY
 inherit
 	
 	LOG_PRIORITY_CONSTANTS
-		export
-			{NONE} all
-		end
-			
+		
 creation
 	
 	make
@@ -30,7 +27,7 @@ feature {LOG_CATEGORY_FACTORY} -- Initialisation
 		do
 			context := hierarchy
 			name := cat_name
-			create appenders.make (1)
+			create appenders.make
 		end
 	
 feature -- Status Report
@@ -69,9 +66,6 @@ feature -- Status Report
 	is_additive: BOOLEAN
 			-- Should appenders of this category's parent be used?
 	
-	priority: LOG_PRIORITY
-			-- The logging priority of this category
-	
 	appenders: DS_LINKED_LIST [LOG_APPENDER]
 			-- Appenders for this category.
 	
@@ -80,9 +74,9 @@ feature -- Status Report
 		require
 			check_priority_exists: check_priority /= Void
 		do
-			Result := context.disable >= check_priority.level and then priority >= check_priority
+			Result := context.disabled >= check_priority.level and then priority >= check_priority
 		ensure
-			true_if_priority_enabled: Result = (context.disable >= check_priority.level
+			true_if_priority_enabled: Result = (context.disabled >= check_priority.level
 						  and priority >= check_priority)
 		end
 	
@@ -91,7 +85,7 @@ feature -- Status Setting
 	set_priority (new_priority: LOG_PRIORITY) is
 			-- Set the priority for this category.
 		require
-			priority_exists: cat_priority /= Void
+			priority_exists: new_priority /= Void
 		do
 			cat_priority := new_priority
 		end
@@ -148,7 +142,7 @@ feature -- Status Setting
 				c.off
 			loop
 				c.item.do_append (event)
-				c.next
+				c.forth
 			end
 			-- if additive then recurse to parent
 			if is_additive and then parent /= Void then
@@ -187,8 +181,8 @@ feature -- Logging
 		require
 			message_exists: message /= Void
 		do
-			if is_enabled_for (Debugging) then
-				forced_log (Debugging, message)
+			if is_enabled_for (Debug_p) then
+				forced_log (Debug_p, message)
 			end
 		end
 	
@@ -206,8 +200,8 @@ feature -- Logging
 		require
 			message_exists: message /= Void
 		do
-			if is_enabled_for (Warn) then
-				forced_log (Warn, message)
+			if is_enabled_for (Warn_p) then
+				forced_log (Warn_p, message)
 			end
 		end
 	
@@ -225,8 +219,8 @@ feature -- Logging
 		require
 			message_exists: message /= Void
 		do
-			if is_enabled_for (Info) then
-				forced_log (Info, message)
+			if is_enabled_for (Info_p) then
+				forced_log (Info_p, message)
 			end
 		end
 	
@@ -244,8 +238,8 @@ feature -- Logging
 		require
 			message_exists: message /= Void
 		do
-			if is_enabled_for (Error) then
-				forced_log (Error, message)
+			if is_enabled_for (Error_p) then
+				forced_log (Error_p, message)
 			end
 		end
 	
@@ -263,8 +257,8 @@ feature -- Logging
 		require
 			message_exists: message /= Void
 		do
-			if is_enabled_for (Fatal) then
-				forced_log (Fatal, message)
+			if is_enabled_for (Fatal_p) then
+				forced_log (Fatal_p, message)
 			end
 		end
 	
@@ -281,27 +275,37 @@ feature -- Logging
 	
 feature {NONE} -- Implementation
 	
-	forced_log (event_priority: LOG_PRIORITY; message: STRING) is
+	forced_log (event_priority: LOG_PRIORITY; message: ANY) is
 			-- Create new logging event and send to appenders.
 		require
 			priority_exists: event_priority /= Void
 			message_exists: message /= Void
+		local
+			event: LOG_EVENT
 		do
-			call_appenders (create {LOGGING_EVENT}.make (Current, event_priority, message))
+			create  event.make (Current, event_priority, message)
+			call_appenders (event)
 		end
 	
-feature {LOG_CATEGORY} -- Internal
+feature {LOG_CATEGORY, LOG_HIERARCHY} -- Internal
 	
 	cat_priority: LOG_PRIORITY
 			-- The assigned priority of this category. Void if the 
 			-- categories priority should be inherited 
 			-- from an ancestor.
-				
+	
+	set_parent (new_parent: LOG_CATEGORY) is
+			-- Set the parent for this category.
+		require
+			not_root: context.root /= Current
+			new_parent_exists: new_parent /= Void
+		do
+			parent := new_parent
+		end
+	
 invariant
 	
-	name_exists: name /= Void and then not name.empty
-	no_parent_if_root: context.root = Current implies parent = Void 
-	parent_if_not_root: context.root /= Current implies parent /= Void
+	name_exists: name /= Void and then not name.is_empty
 	appenders_exist: appenders /= Void
 	
 end -- class LOG_CATEGORY
