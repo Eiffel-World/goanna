@@ -75,11 +75,13 @@ feature -- Basic Operations
 			-- Log event on this appender.
 		local
 			return_result: INTEGER
-			messages: ARRAY [STRING]
+			messages: ARRAY [POINTER]
+			c_str: ANY
 			c_messages:ANY
 		do
+			c_str := event.rendered_message.to_c
 			create messages.make (0, 0)
-			messages.put (event.rendered_message, 0)
+			messages.put ($c_str, 0)
 			c_messages := messages.to_c
 
 			return_result := c_report_event (
@@ -93,7 +95,7 @@ feature -- Basic Operations
 				$c_messages, 								-- format string array
 				default_pointer)							-- raw data buffer
 			if return_result = 0 then
-				internal_log.error ("Failed to report event to NT event log source " + name + " Error=" + c_get_last_error.out)
+				internal_log.error ("Failed to report event to NT event log source " + name)
 			end
 		end
 	
@@ -138,15 +140,6 @@ feature {NONE} -- Implementation
 						internal_log.error ("Failed to add ErrorMessageFile subkey to NT event log registry key for " + name)
 					end	
 					
-					-- add the CategoryMessageFile subkey
-					subkey := "CategoryMessageFile"
-					c_subkey := subkey.to_c
-					key_result := c_reg_set_value_ex (key, $c_subkey, 0, c_Reg_expand_sz,
-						$c_message_file, message_file.count + 1)
-					if key_result /= c_Error_success then
-						internal_log.error ("Failed to add CategoryMessagFile subkey to NT event log registry key for " + name)
-					end	
-					
 					-- set the TypesSupported subkey
 					subkey :="TypesSupported"
 					c_subkey := subkey.to_c
@@ -156,10 +149,19 @@ feature {NONE} -- Implementation
 						internal_log.error ("Failed to add TypesSupported subkey to NT event log registry key for " + name)
 					end	
 					
+					-- add the CategoryMessageFile subkey
+					subkey := "CategoryMessageFile"
+					c_subkey := subkey.to_c
+					key_result := c_reg_set_value_ex (key, $c_subkey, 0, c_Reg_expand_sz,
+						$c_message_file, message_file.count + 1)
+					if key_result /= c_Error_success then
+						internal_log.error ("Failed to add CategoryMessagFile subkey to NT event log registry key for " + name)
+					end	
+
 					-- set the CategoryCount subkey
 					subkey := "CategoryCount"
 					c_subkey := subkey.to_c
-					count := 8
+					count := 5
 					key_result := c_reg_set_value_ex (key, $c_subkey, 0, c_Reg_dword, $count, 4) -- 4 = sizeof (DWORD)
 					if key_result /= c_Error_success then
 						internal_log.error ("Failed to add CategoryCount subkey to NT event log registry key for " + name)

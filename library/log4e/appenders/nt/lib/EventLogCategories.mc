@@ -1,34 +1,34 @@
-MessageId=50000
+MessageId=1
 SymbolicName=LOG4E_NT_FATAL
 Language=English
 Fatal
 .
 
-MessageId=40000
+MessageId=2
 SymbolicName=LOG4E_NT_ERROR
 Language=English
 Error
 .
 
-MessageId=30000
+MessageId=3
 SymbolicName=LOG4E_NT_WARN
 Language=English
 Warn
 .
 
-MessageId=20000
+MessageId=4
 SymbolicName=LOG4E_NT_INFO
 Language=English
 Info
 .
 
-MessageId=10000
+MessageId=5
 SymbolicName=LOG4E_NT_DEBUG
 Language=English
 Debug
 .
 
-MessageId=1
+MessageId=1000
 SymbolicName=LOG4E_NT_MESSAGE
 Language=English
 %1
