@@ -7,7 +7,8 @@
     files and the NT event log.
   </para>
   <para>The classes in <literal>log4e</literal> are a direct port of Jakarta log4j 
-    which can be found at http://jakarta.apache.org. For the most part, the source 
+    which can be found at <ulink url="http://jakarta.apache.org">the Apache
+    Jakarta project</ulink>. For the most part, the source 
     has been ported as is. A number of Eiffel-like improvements have been made 
     such as appropriate contracts, and the use of generic types. The general struture and
     usage of the library remains very similar to the original Java version.
@@ -17,7 +18,7 @@
     <title>Overview</title>
     <para>The central object of the log4e library is the
       <emphasis>hierarchy</emphasis>. The hierarchy holds each of the
-      logging <emphasis>catregories</emphasis> on which messages 
+      logging <emphasis>categories</emphasis> on which messages 
       can be logged. As its name suggests, the hierarchy maintains the
       collection of categories in a hierarchy with a predefined root 
       category at the top and user defined sub-categories beneath.
@@ -60,15 +61,15 @@
 	if a category is created with the name 
 	<literal>a.b</literal> it identifies the category named 
 	<literal>b</literal> with the parent category named 
-	<liberal>a</literal>. When this category is created the category 
-	  hierarchy will also instantiate any intermediate
-	  parent categories if needed. For the category named 
-	  <literal>a.b</literal> the hierarchy will create a category
-	  named <literal>a</literal> if it doesn't already exist and set 
-	  it as the parent of <literal>b</literal>. A category
-	  name can contain an arbitrary number of parts separated by 
-	  dots ('.'). The hierarchy will manage the parents
-	  automatically for you.
+	<literal>a</literal>. When this category is created the category 
+	hierarchy will also instantiate any intermediate
+	parent categories if needed. For the category named 
+	<literal>a.b</literal> the hierarchy will create a category
+	named <literal>a</literal> if it doesn't already exist and set 
+	it as the parent of <literal>b</literal>. A category
+	name can contain an arbitrary number of parts separated by 
+	dots ('<literal>.</literal>'). The hierarchy will manage the parents
+	automatically for you.
       </para>
       <para>The naming of categories follows your requirements for 
 	logging. Category hierarchies can be defined that
@@ -91,13 +92,13 @@
 	priority and appenders and log messages to it.
       </para>
       <para>Messages can be sent to a category using the routines 
-	<function>debugging</function><footnote>The original 
-	  log4j library uses the routine name 
-	  <function>debug</function> however this is a reserved word 
-	  in Eiffel and has therefore been renamed 
-	  <function>debugging</function></footnote>,
+	<function>debugging</function><footnote><para>The original 
+	    log4j library uses the routine name 
+	    <function>debug</function> however this is a reserved word 
+	    in Eiffel and has therefore been renamed 
+	    <function>debugging</function></para></footnote>,
 	<function>warn</function>, <function>info</function>, 
-	<function>error</function>, <function>fatal</function or
+	<function>error</function>, <function>fatal</function> or
 	<function>log</function> to log at predefined priorities or 
 	a specified priority in the case of <function>log</function>.
       </para> 
