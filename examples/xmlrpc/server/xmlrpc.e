@@ -115,8 +115,13 @@ feature {NONE} -- Implementation
 		local
 			calculator_service: SERVICE_PROXY
 			addresses: ADDRESS_REGISTER
+			test: TEST
 			calculator: CALCULATOR
 		do
+			-- TEST is a self registering service
+			create test.make
+			registry.register (test, "test")
+			
 			-- ADDRESS_REGISTER is a self registering service
 			create addresses.make
 			registry.register (addresses, "addressbook")

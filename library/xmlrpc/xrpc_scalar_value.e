@@ -160,7 +160,11 @@ feature -- Initialisation
 --						value := encoder.decode (string_value)
 					-- check for date/time
 					elseif type.is_equal (Date_time_type) then
-						-- TODO process date
+						value := unmarshall_date_iso8601 (string_value)
+						if value = Void then
+							unmarshall_ok := False
+							unmarshall_error_code := Invalid_date_time_value
+						end
 					else
 						unmarshall_ok := False
 						unmarshall_error_code := Invalid_value_type
@@ -228,6 +232,32 @@ feature {NONE} -- Implementation
 			Result.append (int_format.formatted (date.second))
 		ensure
 			formatted_string_exists: Result /= Void
+		end
+	
+	unmarshall_date_iso8601 (str: STRING): DT_DATE_TIME is
+			-- Create a date time object from the ISO8601 'str'
+			-- Return Void if 'str' does not conform to ISO8601 format.
+		require
+			str_exists: str /= Void
+		local
+			date, hour, minute, second: STRING
+		do
+			-- check valid length
+			if str.count = 17 then
+				-- check integer parts
+				date := str.substring (1, 8)
+				hour := str.substring (10, 11)
+				minute := str.substring (13, 14)
+				second := str.substring (16, 17)
+				if date.is_integer and hour.is_integer and minute.is_integer and second.is_integer then
+					create Result.make (date.substring (1, 4).to_integer,
+						date.substring (5, 6).to_integer,
+						date.substring (7, 8).to_integer,
+						hour.to_integer,
+						minute.to_integer,
+						second.to_integer)
+				end
+			end
 		end
 		
 invariant

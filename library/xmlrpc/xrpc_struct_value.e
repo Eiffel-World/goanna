@@ -42,6 +42,7 @@ feature -- Initialisation
 			create value.make (struct.count)
 			from
 				c := struct.new_cursor
+				c.start
 			until
 				c.off
 			loop
@@ -159,6 +160,7 @@ feature -- Conversion
 			create struct.make (value.count)
 			from
 				c := value.new_cursor
+				c.start
 			until
 				c.off
 			loop

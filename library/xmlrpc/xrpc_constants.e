@@ -190,6 +190,9 @@ feature -- Error codes
 			
 	Assertion_failure: INTEGER is 30
 			-- An assertion failed
+		
+	Invalid_date_time_value: INTEGER is 31
+			-- Invalid date time value
 			
 	fault_code_string (code: INTEGER): STRING is
 			-- Return error message for fault 'code'.
@@ -236,7 +239,8 @@ feature -- Error codes
 				"Service not found",										-- 27
 				"Invalid operands for service action",						-- 28
 				"Socket error",												-- 29
-				"Assertion violation"										-- 30
+				"Assertion violation",										-- 30
+				"Invalid date time value"									-- 31
 			>>
 		end
 
