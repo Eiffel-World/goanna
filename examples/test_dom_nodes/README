@@ -1,0 +1,14 @@
+Project Goanna Example
+----------------------
+
+Test DOM Nodes
+--------------
+
+This example creates a DOM object structure and streams its text
+representation to standard output.
+
+Usage
+-----
+
+Compile and run. The output of the DOM document will appear on the console.
+

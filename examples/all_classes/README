@@ -1,0 +1,18 @@
+Project Goanna Example
+----------------------
+
+All Classes
+-----------
+
+This example provides a convienient way to compile all classes in the source
+tree. If new classes are added to the library then they should be added to
+this project either directly in ALL_CLASSES or indirectly via the compilation
+of another class.
+
+The project is also used to generate class interface documentation.
+
+Usage
+-----
+
+None.
+

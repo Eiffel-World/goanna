@@ -1,0 +1,16 @@
+Project Goanna Example
+----------------------
+
+Text XML Parser
+---------------
+
+This example provides a simple interface to the XML parser. You can attempt
+to parse any XML document using this utility. The resulting DOM structure
+will be streamed to standard output.
+
+Usage
+-----
+
+Pass a single parameter to the executable specifying the file name of 
+an XML document.
+
