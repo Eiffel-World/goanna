@@ -39,4 +39,4 @@ feature -- Test
 			assert_equal ("one_char", last_index_of (str, '.', str.count), 1)
 		end	
 
-end -- class TEST_STRING_MANIPULATION
+end -- class UTILITY_TEST_STRING_MANIPULATION

@@ -27,6 +27,7 @@
 			<invariant enable="True"/>
 			<loop enable="True"/>
 			<check enable="True"/>
+			<debug enable="True" name="base64_encoding"/>
 			<optimize enable="False"/>
 		</option>
 

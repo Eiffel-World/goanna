@@ -45,5 +45,5 @@ feature -- Test
 		end
 		
 	
-end -- class TEST_HTTP_UTILITY_FUNCTIONS
+end -- class UTILITY_TEST_HTTP_UTILITY_FUNCTIONS
 

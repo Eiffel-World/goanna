@@ -39,4 +39,4 @@ feature -- Test
 			assert_equal ("digit", '0', char_to_lower ('0'))
 		end
 		
-end -- class TEST_CHARACTER_MANIPULATION
+end -- class UTILITY_TEST_CHARACTER_MANIPULATION

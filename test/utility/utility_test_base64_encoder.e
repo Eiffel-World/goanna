@@ -51,4 +51,4 @@ feature -- Test
 			assert_equal ("Hello there!xx", "Hello there!xx", encoder.decode ("SGVsbG8gdGhlcmUheHg="))
 		end
 
-end -- class TEST_BASE64_ENCODER
+end -- class UTILITY_TEST_BASE64_ENCODER

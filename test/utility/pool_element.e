@@ -10,7 +10,4 @@ indexing
 
 class POOL_ELEMENT
 
-create 
-	default_create
-
 end -- class POOL_ELEMENT

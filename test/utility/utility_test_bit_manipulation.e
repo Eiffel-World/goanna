@@ -40,5 +40,5 @@ feature -- Test
 			assert_equal ("and_3_1", 1, bit_and (3, 1))
 		end		
 	
-end -- class TEST_BIT_MANIPULATION
+end -- class UTILITY_TEST_BIT_MANIPULATION
 
