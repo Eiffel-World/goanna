@@ -13,9 +13,9 @@ class LOG_EVENT
 inherit
 	
 	DT_SHARED_SYSTEM_CLOCK
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 	
 creation
 	

@@ -56,5 +56,28 @@ feature -- Basic operations
 		ensure
 			full_result: Result = (buffer.count = buffer.capacity)
 		end	
-
+	
+	last_index_of (str: STRING; c: CHARACTER; start_index_from_end: INTEGER): INTEGER is
+			-- Position of last occurence of `c' in 'str'.
+			-- 0 if none
+		require
+			str_exists: str /= Void
+			start_index_small_enough: start_index_from_end <= str.count
+			start_index_large_enough: start_index_from_end >= 1
+		local
+			i: INTEGER
+		do
+			from
+				i := start_index_from_end
+			until
+				i < 1 or else str.item (i) = c
+			loop
+				i := i - 1
+			end
+			if i > 0 then
+				Result := i
+			end
+		ensure
+			correct_place: Result > 0 implies str.item (Result) = c
+		end
 end -- class STRING_MANIPULATION
