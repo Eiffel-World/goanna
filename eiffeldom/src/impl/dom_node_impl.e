@@ -11,16 +11,6 @@ inherit
 
 	DOM_NODE
 		
-feature -- Initialisation
-
-	make is
-			-- Initialise this node
-		do
-			if node_type = Element_node then
-				create {DOM_NAMED_NODE_MAP_IMPL} attributes
-			end
-		end
-
 feature
 
    node_value: DOM_STRING is

@@ -109,6 +109,7 @@ feature
          -- Return Value
          --    The node being inserted.
 	  require
+		  child_nodes_exist: child_nodes /= Void
 		  new_child_exists: new_child /= Void
 		  ref_child_exists: ref_child /= Void
 		  not_hierarchy_request_err: can_insert (new_child)
@@ -132,6 +133,7 @@ feature
          -- Return Value
          --    The node replaced.
 	  require
+		 child_nodes_exist: child_nodes /= Void
 		 new_child_exists: new_child /= Void
 		 old_child_exists: old_child /= Void
 		 not_hierarchy_request_err: can_insert (new_child)
@@ -154,6 +156,7 @@ feature
          -- Return Value
          --    The node removed.
 	  require
+		 child_nodes_exist: child_nodes /= Void
 		 old_child_exists: old_child /= Void
 		 not_no_modification_allowed_err: not readonly
 		 not_not_found_err: has_node (old_child)
@@ -176,6 +179,7 @@ feature
          -- Return Value
          --    The node added.
 	  require
+		 child_nodes_exist: child_nodes /= Void
 		 new_child_exists: new_child /= Void
 		 not_hierarchy_request_err: can_insert (new_child)
 		 not_wrong_document_err: is_right_document (new_child)

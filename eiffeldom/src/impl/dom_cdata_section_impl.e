@@ -16,8 +16,6 @@ inherit
 	DOM_CHARACTER_DATA
 
 	DOM_CHILD_NODE
-		rename
-			make as node_make
 		redefine
 			set_node_value, node_value
 		end
@@ -30,7 +28,6 @@ feature {DOM_DOCUMENT} -- Factory creation
 			owner_exists: new_owner /= Void
 			new_data_exists: new_data /= Void
 		do
-			node_make
 			set_owner_document (new_owner)
 			set_data (new_data)
 		end
