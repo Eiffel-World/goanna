@@ -14,6 +14,9 @@ deferred class
 inherit
 
 	SERVLET_REQUEST
+		redefine
+			to_string
+		end
 	
 feature -- Access
 
@@ -114,4 +117,33 @@ feature -- Status report
 		deferred	
 		end
 
+feature -- Output
+
+	to_string: STRING is
+			-- String representation of this request
+		do
+			Result := Precursor
+			Result.append_string ("auth_type: ")
+			Result.append_string (auth_type)
+			Result.append_string ("%R%N")
+			Result.append_string ("method: ")
+			Result.append_string (method)
+			Result.append_string ("%R%N")
+			Result.append_string ("path_info: ")
+			Result.append_string (path_info)
+			Result.append_string ("%R%N")
+			Result.append_string ("path_translated: ")
+			Result.append_string (path_translated)
+			Result.append_string ("%R%N")
+			Result.append_string ("query_string: ")
+			Result.append_string (query_string)
+			Result.append_string ("%R%N")
+			Result.append_string ("remote_user: ")
+			Result.append_string (remote_user)
+			Result.append_string ("%R%N")
+			Result.append_string ("servlet_path: ")
+			Result.append_string (servlet_path)
+			Result.append_string ("%R%N")
+		end
+		
 end -- class HTTP_SERVLET_REQUEST

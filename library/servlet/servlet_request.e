@@ -9,8 +9,9 @@ indexing
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 deferred class
-	SERVLET_REQUEST
 
+	SERVLET_REQUEST
+		
 feature -- Access
 
 	get_parameter (name: STRING): STRING is
@@ -100,5 +101,45 @@ feature -- Status report
 			-- Content data
 		deferred
 		end
-		
+
+feature -- Output
+
+	to_string: STRING is
+			-- String representation of this request
+		do
+			create Result.make (100)
+			Result.append_string ("Servlet Request: ")
+			Result.append_string ("%R%N")
+			Result.append_string ("protocol: ")
+			Result.append_string (protocol)
+			Result.append_string ("%R%N")
+			Result.append_string ("scheme: ")
+			Result.append_string (scheme)
+			Result.append_string ("%R%N")
+			Result.append_string ("server_name: ")
+			Result.append_string (server_name)
+			Result.append_string ("%R%N")
+			Result.append_string ("server_port: ")
+			Result.append_string (server_port)
+			Result.append_string ("%R%N")
+			Result.append_string ("remote_address: ")
+			Result.append_string (remote_address)
+			Result.append_string ("%R%N")
+			Result.append_string ("remote_host: ")
+			Result.append_string (remote_host)
+			Result.append_string ("%R%N")
+			Result.append_string ("is_secure: ")
+			Result.append_boolean (is_secure)
+			Result.append_string ("%R%N")
+			Result.append_string ("content_type: ")
+			Result.append_string (content_type)
+			Result.append_string ("%R%N")
+			Result.append_string ("content_length: ")
+			Result.append_integer (content_length)
+			Result.append_string ("%R%N")
+			Result.append_string ("content: ")
+			Result.append_string (content)
+			Result.append_string ("%R%N")
+		end
+
 end -- class SERVLET_REQUEST

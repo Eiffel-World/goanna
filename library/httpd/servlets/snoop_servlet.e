@@ -60,27 +60,29 @@ feature {NONE} -- Implementation
 			parameter_names: DS_LINEAR [STRING]
 			header_names: DS_LINEAR [STRING]
 			line: STRING
+			header: STRING
 		do
 			create Result.make (255)
-			-- display all variables
-			Result.append ("<h2>Headers</h2>%R%N")
-			debug ("snoop")
-				print ("Request Headers:%R%N")
-			end
-			from
+			Result.append_string ("<pre>")
+			Result.append_string (req.to_string)
+			Result.append_string ("</pre>")
+			-- display all headers
+			Result.append_string ("<h2>Headers</h2>")
+			from 
 				header_names := req.get_header_names
 				header_names.start
 			until
 				header_names.off
 			loop
-				line := header_names.item_for_iteration + " = " 
-					+ quoted_eiffel_string_out (req.get_header (header_names.item_for_iteration))
-				debug ("snoop")
-					print ("%T" + line + "%R%N")
+				Result.append_string (header_names.item_for_iteration + " = ")
+				if req.has_header (header_names.item_for_iteration) then
+					Result.append_string (req.get_header (header_names.item_for_iteration))
+				else
+					Result.append_string ("Void")
 				end
-				Result.append (line + "<br>%R%N")
+				Result.append_string ("<br>")
 				header_names.forth
-			end	
+			end
 			-- display all content
 			if not req.content.is_empty then
 				debug ("snoop")

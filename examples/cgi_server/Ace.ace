@@ -1,13 +1,13 @@
 system
-	httpd
+	cgi
 
 root
-	httpd: make
+	CGI: make
 
 default
+	assertion(check)
 	assertion(require)
 	assertion(ensure)
-	assertion(check)
 	assertion(loop)
 	assertion(invariant)
 	arguments("9000 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
@@ -19,25 +19,17 @@ default
 	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
 	arguments(" ")
 	disabled_debug(yes)
-	disabled_debug("cookie_parsing")
-	disabled_debug("snoop")
-	disabled_debug("status_output")
-	disabled_debug("httpd_servlet_response")
-	disabled_debug("query_string_parsing")
-	disabled_debug("parser_events")
-	disabled_debug("normalize")
-	disabled_debug("soap")
-	disabled_debug("dom_test_servlet")
-	disabled_debug("raw_snoop")
-	disabled_debug("unhandled_node_types")
-	disabled_debug("session_management")
 	disabled_debug("base64_encode")
-	disabled_debug("httpd_response_write")
-	disabled_debug("namespace")
-	disabled_debug("dom_output")
-	line_generation(no)
+	debug("cgi")
+	disabled_debug("cookie_parsing")
+	disabled_debug("query_string_parsing")
+	disabled_debug("session_management")
+	disabled_debug("snoop")
+	line_generation(yes)
 	profile(no)
 	trace(no)
+	il_verifiable(yes)
+	msil_generation_type("exe")
 	check_vape(yes)
 	console_application(yes)
 	address_expression(yes)
@@ -54,9 +46,8 @@ default
 --arguments(" ")
 
 cluster
-	root_cluster:		"$GOANNA/tools/httpd"
+	root_cluster:		"$GOANNA/examples/cgi_server"
 
-	root_servlets (root_cluster):		"$\servlets"
 
 	goanna:		"$GOANNA\library"
 
@@ -94,16 +85,16 @@ cluster
 
 	utility_ise (utility):		"$\spec\ise"
 
-	datetime (goanna):		"$\datetime"
-		exclude
-			"date.e"; "date_and_time.e"; "gregorian_functions.e"; "system_clock.e"; 
-		end
-
 	xmle_codegen (goanna):		"$\codegen"
 
 	xml_parser (goanna):		"$\xml_parser"
 
 	logging (goanna):		"$\logging"
+
+	datetime (goanna):		"$\datetime"
+		exclude
+			"date.e"; "date_and_time.e"; "gregorian_functions.e"; "system_clock.e"; 
+		end
 
 	yaesockets:		"$YAESOCKETS"
 		exclude
@@ -193,8 +184,8 @@ external
 
 	object:
 		"$YAESOCKETS\C\Debug\cl.lib",
-		"$GOANNA\library\datetime\clib\Debug\datetime.lib",
 		"$EXPAT\lib\Debug\expat.lib",
+		"$GOANNA\library\datetime\clib\Debug\datetime.lib",
 		"$EXML/library/impl/expat/spec/c/libexml.lib"
 
 end
