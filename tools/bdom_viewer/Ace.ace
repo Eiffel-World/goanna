@@ -22,28 +22,34 @@ default
 	profile(no)
 	trace(no)
 
-
---precompiled ("$EIFFEL4\precomp\spec\$PLATFORM\base")
--- Eiffel DOM
--- Eiffel DOM parser
---debug ("parser_events")
--- EiffelBase
--- GOBO
--- eXML
--- Unicode String
-
 cluster
-	retrieve:		"$GOANNA\xmle\src\samples\retrieve"
+	retrieve:		"$GOANNA\tools\bdom_viewer"
 
-	codegen:		"$GOANNA\xmle\src\codegen"
+	dom:				"$GOANNA\library\dom";
+	dom_core (dom):		"$\core";
+	dom_impl (dom):		"$\implementation";
+	impl_core (dom_impl):	"$\core";
+	dom_writer (dom):		"$\writer";
+	xmle_doc (dom_impl): 	"$\xmle_doc";
 
-	dom:		"$GOANNA\eiffeldom\src\dom"
+	base:				"$EIFFEL4\library\base";
+	base_kernel (base):	"$\kernel";
+	base_support (base):	"$\support";
 
-	dom_impl:		"$GOANNA\eiffeldom\src\impl"
+	gobo: 			"$GOBO\library";
+	gobo_kernel (gobo):	"$\kernel";
+	gobo_ise_kernel (gobo_kernel):	"$\spec\ise";
 
-	dom_writer:		"$GOANNA\eiffeldom\src\writer"
+	all gobo_structures (gobo):	"$\structure";
+	all gobo_util (gobo): 		"$\utility";
 
-	xml_dom_parser:		"$GOANNA\xmlparser\src\parser"
+	ucstring:				"$UCSTRING";
+	ucstring_lib (ucstring):	"$\lib";
+	ucstring_ise (ucstring):	"$\spec\ise";
 
+external
+
+	include_path:
+		"$GOBO\library\kernel\include"
 
 end

@@ -52,7 +52,7 @@ feature -- Basic Operations
 		do
 			warn ("Accepted -- YEAH! %N")
 
-			length := getparam_integer (Content_length)
+			length := getparam_integer (Content_length_var)
 
 --			print (generator + ".process_request: length=" + length.out)
 			

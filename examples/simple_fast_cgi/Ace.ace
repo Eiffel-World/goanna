@@ -15,6 +15,7 @@ default
 	inlining_size("4")
 	multithreaded(no)
 	check_vape(no)
+	arguments("8001 10")
 	arguments("8000 10")
 	disabled_debug(yes)
 	debug("fcgi_protocol")
@@ -28,38 +29,38 @@ default
 -- GOBO
 
 cluster
-	root_cluster:		"$GOANNA\efcgi\src\samples\simple"
+	root_cluster:		"$GOANNA\examples\simple_fast_cgi"
 
-	fcgi:		"$GOANNA\efcgi\src\efcgi"
+	fast_cgi:		"$GOANNA\library\fast_cgi"
 
-	fcgi_external:		"$GOANNA\efcgi\src\spec\ise"
+	efcgi (fast_cgi):		"$\efcgi"
 
 	yaesockets:		"$YAESOCKETS"
 
-	yaesockets_ise:		"$YAESOCKETS\spec\ise"
+	yaesockets_ise (yaesockets):		"$\spec\ise"
 
-	base_kernel:		"$EIFFEL4\library\base\kernel"
+	base:		"$EIFFEL4\library\base"
 
-	base_support:		"$EIFFEL4\library\base\support"
+	base_kernel (base):		"$\kernel"
 
-	gobo_kernel:		"$GOBO\library\kernel"
+	base_support (base):		"$\support"
 
-	gobo_ise_kernel:		"$GOBO\library\kernel\spec\ise"
+	gobo:		"$GOBO\library"
 
-	all gobo_structures:		"$GOBO\library\structure"
+	gobo_kernel (gobo):		"$\kernel"
 
-	all gobo_util:		"$GOBO\library\utility"
+	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
+
+	all gobo_structures (gobo):		"$\structure"
+
+	all gobo_util (gobo):		"$\utility"
 
 external
 
 	include_path:
-		"$GOANNA\efcgi\src\spec\ise\clib",
-		"$FCGI\include",
 		"$GOBO\library\kernel\include"
 
 	object:
-		"$GOANNA\efcgi\src\spec\ise\clib\Debug\efcgi.lib",
-		"$YAESOCKETS\C\Debug\cl.lib",
-		"$FCGI\libfcgi\Debug\libfcgi.lib"
+		"$YAESOCKETS\C\Debug\cl.lib"
 
 end

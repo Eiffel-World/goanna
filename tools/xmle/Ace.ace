@@ -25,92 +25,65 @@ default
 	profile(no)
 	trace(no)
 
-
---precompiled ("$EIFFEL4\precomp\spec\$PLATFORM\base")
--- Eiffel DOM
--- Eiffel DOM parser
---debug ("parser_events")
--- EiffelBase
--- GOBO
--- eXML
--- Unicode String
-
 cluster
-	xmle:		"$GOANNA\xmle\src\xmle"
 
-	codegen:		"$GOANNA\xmle\src\codegen"
+	xmle:				"$GOANNA\tools\xmle";
 
-	dom:		"$GOANNA\eiffeldom\src\dom"
+	dom:				"$GOANNA\library\dom";
+	dom_core (dom):		"$\core";
+	dom_impl (dom):		"$\implementation";
+	impl_core (dom_impl):	"$\core";
+	dom_writer (dom):		"$\writer";
+	xmle_doc (dom_impl): 	"$\xmle_doc";
 
-	dom_impl:		"$GOANNA\eiffeldom\src\impl"
+	servlet:			"$GOANNA\library\servlet"
+	goanna_utility:		"$GOANNA\library\utility"
+	xmle_codegen:		"$GOANNA\library\codegen"
+	xml_parser:			"$GOANNA\library\xml_parser"
 
-	dom_writer:		"$GOANNA\eiffeldom\src\writer"
+	base:				"$EIFFEL4\library\base";
+	base_kernel (base):	"$\kernel";
+	base_support (base):	"$\support";
 
-	xml_dom_parser:		"$GOANNA\xmlparser\src\parser"
+	gobo: 			"$GOBO\library";
+	gobo_kernel (gobo):	"$\kernel";
+	gobo_ise_kernel (gobo_kernel):	"$\spec\ise";
 
-	base_kernel:		"$EIFFEL4\library\base\kernel"
+	all gobo_structures (gobo):	"$\structure";
+	all gobo_util (gobo): 		"$\utility";
+		
+	ucstring:				"$UCSTRING";
+	ucstring_lib (ucstring):	"$\lib";
+	ucstring_ise (ucstring):	"$\spec\ise";
 
-	base_support:		"$EIFFEL4\library\base\support"
+	eXML: "$EXML\lib";
+	eXML_interface (eXML): "$\interface"
+	eXML_general_interface (eXML_interface): "$\general"
+	eXML_event_interface (eXML_interface): "$\event"
+	eXML_tree_interface (eXML_interface): "$\tree"
+	eXML_factory_interface (eXML_interface): "$\factory"
+	eXML_formater_interface (eXML_interface): "$\formater"
+	eXML_position_interface (eXML_interface): "$\position"
+	eXML_source_interface (eXML_interface): "$\source"
 
-	gobo_kernel:		"$GOBO\library\kernel"
+	eXML_implementation (eXML): "$\implementation"	
+	eXML_implementation_interface (eXML_implementation): "$\implementation_interface"
+	eXML_general_implementatin_interface (eXML_implementation_interface): "$\general"
+	eXML_event_implementation_interface (eXML_implementation_interface): "$\event"
+	eXML_tree_implementation_interface (eXML_implementation_interface): "$\tree"
 
-	gobo_ise_kernel:		"$GOBO\library\kernel\spec\ise"
+	eXML_expat_implementation (eXML_implementation): "$\expat"
+	eXML_expat_general_implementation (eXML_expat_implementation): "$\general"
+	eXML_expat_event_implementation (eXML_expat_implementation): "$\event"
+	eXML_expat_ise_implementation (eXML_expat_implementation): "$\compiler_specific\ise"
+	eXML_expat_factory_implementation (eXML_expat_implementation): "$\factory"
+	eXML_expat_position_implementation (eXML_expat_implementation): "$\position"
+	eXML_expat_source_implementation (eXML_expat_implementation): "$\source"
 
-	all gobo_structures:		"$GOBO\library\structure"
+	eXML_tree_on_event_implementation (eXML_implementation): "$\tree_on_event"
+	eXML_tree_on_event_tree_implementation (eXML_tree_on_event_implementation): "$\tree"
+	eXML_tree_on_event_factory_implementation (eXML_tree_on_event_implementation): "$\factory"
 
-	all gobo_util:		"$GOBO\library\utility"
-
-	exml:		"$EXML\lib"
-
-	exml_interface (exml):		"$\interface"
-
-	exml_general_interface (exml_interface):		"$\general"
-
-	exml_event_interface (exml_interface):		"$\event"
-
-	exml_tree_interface (exml_interface):		"$\tree"
-
-	exml_factory_interface (exml_interface):		"$\factory"
-
-	exml_formater_interface (exml_interface):		"$\formater"
-
-	exml_position_interface (exml_interface):		"$\position"
-
-	exml_source_interface (exml_interface):		"$\source"
-
-	exml_implementation (exml):		"$\implementation"
-
-	exml_implementation_interface (exml_implementation):		"$\implementation_interface"
-
-	exml_general_implementatin_interface (exml_implementation_interface):		"$\general"
-
-	exml_event_implementation_interface (exml_implementation_interface):		"$\event"
-
-	exml_tree_implementation_interface (exml_implementation_interface):		"$\tree"
-
-	exml_expat_implementation (exml_implementation):		"$\expat"
-
-	exml_expat_general_implementation (exml_expat_implementation):		"$\general"
-
-	exml_expat_event_implementation (exml_expat_implementation):		"$\event"
-
-	exml_expat_ise_implementation (exml_expat_implementation):		"$\compiler_specific\ise"
-
-	exml_expat_factory_implementation (exml_expat_implementation):		"$\factory"
-
-	exml_expat_position_implementation (exml_expat_implementation):		"$\position"
-
-	exml_expat_source_implementation (exml_expat_implementation):		"$\source"
-
-	exml_tree_on_event_implementation (exml_implementation):		"$\tree_on_event"
-
-	exml_tree_on_event_tree_implementation (exml_tree_on_event_implementation):		"$\tree"
-
-	exml_tree_on_event_factory_implementation (exml_tree_on_event_implementation):		"$\factory"
-
-	ucstring:		"$UCSTRING\lib"
-
-	ucstring_ise:		"$UCSTRING\spec\ise"
 
 external
 
@@ -121,6 +94,6 @@ external
 
 	object:
 		"$EXML\lib\implementation\expat\compiler_specific\ise\clib\msc\exml.lib",
-		"$EXPAT\lib\Debug\expat.lib"
+		"$EXPAT\lib\Debug\expat.lib";
 
 end

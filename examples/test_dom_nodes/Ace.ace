@@ -17,30 +17,30 @@ default
 	inlining (no)
 	inlining_size ("4")
 
-	--precompiled ("$EIFFEL4\precomp\spec\$PLATFORM\base")
-
 cluster
 	
-	root_cluster:		"$GOANNA\eiffeldom\src\test"
+	root_cluster:		"$GOANNA\examples\test_dom_nodes"
 
-	-- Eiffel DOM
-	dom:				"$GOANNA\eiffeldom\src\dom";
-	dom_impl:			"$GOANNA\eiffeldom\src\impl";
-	dom_writer: 		"$GOANNA\eiffeldom\src\writer";
+	dom:				"$GOANNA\library\dom";
+	dom_core (dom):		"$\core";
+	dom_impl (dom):		"$\implementation";
+	impl_core (dom_impl):	"$\core";
+	dom_writer (dom):		"$\writer";
 
-	-- EiffelBase
-	base_kernel:		"$EIFFEL4\library\base\kernel";
-	base_support:		"$EIFFEL4\library\base\support";
+	base:				"$EIFFEL4\library\base";
+	base_kernel (base):	"$\kernel";
+	base_support (base):	"$\support";
 
-	-- GOBO
-	gobo_kernel:		"$GOBO\library\kernel";
-	gobo_ise_kernel:	"$GOBO\library\kernel\spec\ise";
-	all gobo_structures:"$GOBO\library\structure";
-	all gobo_util: 		"$GOBO\library\utility";
+	gobo: 			"$GOBO\library";
+	gobo_kernel (gobo):	"$\kernel";
+	gobo_ise_kernel (gobo_kernel):	"$\spec\ise";
+
+	all gobo_structures (gobo):	"$\structure";
+	all gobo_util (gobo): 		"$\utility";
 		
-	-- Unicode String
-	ucstring:			"$UCSTRING\lib";
-	ucstring_ise:		"$UCSTRING\spec\ise";
+	ucstring:				"$UCSTRING";
+	ucstring_lib (ucstring):	"$\lib";
+	ucstring_ise (ucstring):	"$\spec\ise";
 
 external
 

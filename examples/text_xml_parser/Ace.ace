@@ -17,34 +17,33 @@ default
 	inlining (no)
 	inlining_size ("4")
 
-	--precompiled ("$EIFFEL4\precomp\spec\$PLATFORM\base")
-
 cluster
 	
-	root_cluster:		"$GOANNA\xmlparser\src\test"
+	root_cluster:		"$GOANNA\examples\text_xml_parser"
 
-	-- Eiffel DOM
-	dom:				"$GOANNA\eiffeldom\src\dom";
-	dom_impl:			"$GOANNA\eiffeldom\src\impl";
-	dom_writer: 		"$GOANNA\eiffeldom\src\writer";
+	dom:				"$GOANNA\library\dom";
+	dom_core (dom):		"$\core";
+	dom_impl (dom):		"$\implementation";
+	impl_core (dom_impl):	"$\core";
+	dom_writer (dom):		"$\writer";
 
-	-- Eiffel DOM parser
-	xml_dom_parser: 	"$GOANNA\xmlparser\src\parser"
-		default
-			--debug ("parser_events")
-		end;
+	xml_parser:			"$GOANNA\library\xml_parser"
 	
-	-- EiffelBase
-	base_kernel:		"$EIFFEL4\library\base\kernel";
-	base_support:		"$EIFFEL4\library\base\support";
+	base:				"$EIFFEL4\library\base";
+	base_kernel (base):	"$\kernel";
+	base_support (base):	"$\support";
 
-	-- GOBO
-	gobo_kernel:		"$GOBO\library\kernel";
-	gobo_ise_kernel:	"$GOBO\library\kernel\spec\ise";
-	all gobo_structures:"$GOBO\library\structure";
-	all gobo_util: 		"$GOBO\library\utility";
+	gobo: 			"$GOBO\library";
+	gobo_kernel (gobo):	"$\kernel";
+	gobo_ise_kernel (gobo_kernel):	"$\spec\ise";
+
+	all gobo_structures (gobo):	"$\structure";
+	all gobo_util (gobo): 		"$\utility";
 		
-	-- eXML
+	ucstring:				"$UCSTRING";
+	ucstring_lib (ucstring):	"$\lib";
+	ucstring_ise (ucstring):	"$\spec\ise";
+
 	eXML: "$EXML\lib";
 	eXML_interface (eXML): "$\interface"
 	eXML_general_interface (eXML_interface): "$\general"
@@ -73,17 +72,15 @@ cluster
 	eXML_tree_on_event_tree_implementation (eXML_tree_on_event_implementation): "$\tree"
 	eXML_tree_on_event_factory_implementation (eXML_tree_on_event_implementation): "$\factory"
 
-	-- Unicode String
-	ucstring:		"$UCSTRING\lib";
-	ucstring_ise:	"$UCSTRING\spec\ise";
-
 external
 
-	include_path:	"$EXPAT\lib",
-				"$EXML\lib\implementation\expat\compiler_specific\ise\clib",
-				"$GOBO\library\kernel\include";
+	include_path:
+		"$EXPAT\lib",
+		"$EXML\lib\implementation\expat\compiler_specific\ise\clib",
+		"$GOBO\library\kernel\include"
 
-	object:		"$EXML\lib\implementation\expat\compiler_specific\ise\clib\msc\exml.lib",
-				"$EXPAT\lib\Debug\expat.lib";
+	object:	
+		"$EXML\lib\implementation\expat\compiler_specific\ise\clib\msc\exml.lib",
+		"$EXPAT\lib\Debug\expat.lib";
 
 end
