@@ -13,7 +13,8 @@ class
 	
 inherit
 	
-	REGISTRY [FUNCTION [ANY, TUPLE [ANY], ANY]]
+	REGISTRY [FUNCTION [ANY, TUPLE, ANY]]
+
 	
 creation
 	
@@ -21,22 +22,22 @@ creation
 	
 feature -- Status report
 
-	valid_operands (name: STRING; args: TUPLE [ANY]): BOOLEAN is
-			-- Are 'args' valid operands for the function named 'name'?
+	valid_operands (name: STRING; operands: TUPLE): BOOLEAN is
+			-- Are 'operands' valid operands for the function named 'name'?
 		require
 			name_exists: name /= Void
 			service_exists: has (name)
-			args_exist: args /= Void
+			args_exist: operands /= Void
 		do
-			Result := get (name).valid_operands (args)
+			Result := get (name).valid_operands (operands)
 		end
 		
 feature -- Status setting
 
-	call (name: STRING; args: TUPLE [ANY]) is
+	call (name: STRING; args: TUPLE) is
 			-- Call named function
 		local
-			function: FUNCTION [ANY, TUPLE [ANY], ANY]
+			function: FUNCTION [ANY, TUPLE, ANY]
 		do
 			if has (name) then
 				function := get (name)

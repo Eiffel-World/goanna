@@ -1,22 +1,23 @@
 system
-	calculator
+	addressbook
 
 root
-	CALCULATOR: start
+	ADDRESS_BOOK: start
 
 default
-	assertion(no)
-	arguments("localhost 9000")
+	assertion(check)
+	assertion(require)
+	assertion(ensure)
+	assertion(loop)
+	assertion(invariant)
 	arguments("localhost 8080")
+	arguments("localhost 9000")
 	arguments("localhost 9090")
-	arguments("www.stuffeddog.com 8080")
-	arguments("www.stuffeddog.com 80")
 	arguments("9000")
 	arguments("80")
 	arguments(" ")
 	disabled_debug(yes)
 	disabled_debug("base64_encode")
-	disabled_debug("calculator")
 	disabled_debug("dlg_dispatcher")
 	disabled_debug("dom_assertions")
 	disabled_debug("gdi_count")
@@ -50,7 +51,7 @@ default
 
 
 cluster
-	root_cluster:		"$GOANNA\examples\xmlrpc\client\calculator"
+	root_cluster:		"$GOANNA\examples\xmlrpc\client\addressbook"
 
 
 	goanna:		"$GOANNA\library"
@@ -169,6 +170,9 @@ cluster
 	exml_expat_ise_implementation (exml_expat_implementation):		"$/spec/ise"
 
 	ucstring:		"$UCSTRING\lib"
+		default
+			assertion(require)
+		end
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 

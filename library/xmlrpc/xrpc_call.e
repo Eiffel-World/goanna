@@ -126,7 +126,7 @@ feature -- Access
 			empty_action_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")	
 		end	
 		
-	extract_parameters: TUPLE [ANY] is
+	extract_parameters: TUPLE is
 			-- Convert params to a tuple suitable for passing to an agent.
 		require
 			params_exists: params /= Void
@@ -135,17 +135,19 @@ feature -- Access
 			i: INTEGER
 		do
 			create Result.make
-			Result.resize (1, params.count)
-			from
-				c := params.new_cursor
-				c.start
-				i := 1
-			until
-				c.off
-			loop
-				Result.force (c.item.value.as_object, i)
-				c.forth
-				i := i + 1
+			if not params.is_empty then				
+				Result.resize (1, params.count)
+				from
+					c := params.new_cursor
+					c.start
+					i := 1
+				until
+					c.off
+				loop
+					Result.force (c.item.value.as_object, i)
+					c.forth
+					i := i + 1
+				end
 			end
 		ensure
 			param_tuple_exists: Result /= Void

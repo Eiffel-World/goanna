@@ -188,6 +188,9 @@ feature -- Error codes
 	Socket_error: INTEGER is 29
 			-- A socket error occurred
 			
+	Assertion_failure: INTEGER is 30
+			-- An assertion failed
+			
 	fault_code_string (code: INTEGER): STRING is
 			-- Return error message for fault 'code'.
 		require
@@ -232,7 +235,8 @@ feature -- Error codes
 				"Action not found for service",								-- 26
 				"Service not found",										-- 27
 				"Invalid operands for service action",						-- 28
-				"Socket error"
+				"Socket error",												-- 29
+				"Assertion violation"										-- 30
 			>>
 		end
 

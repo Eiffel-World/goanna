@@ -17,7 +17,7 @@ inherit
 	
 creation
 	
-	make, unmarshall
+	make, make_with_detail, unmarshall
 	
 feature -- Initialisation
 
@@ -26,6 +26,15 @@ feature -- Initialisation
 		do
 			code := new_code
 			string := fault_code_string (code)
+			unmarshall_ok := True
+		end
+	
+	make_with_detail (new_code: INTEGER; detail: STRING) is
+			-- Initialise with fault code and detailed message
+			-- Fault code message and detail message will be concatenated
+		do
+			code := new_code
+			string := fault_code_string (code) + detail
 			unmarshall_ok := True
 		end
 		

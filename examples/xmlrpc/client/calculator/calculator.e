@@ -245,6 +245,7 @@ feature {NONE} -- Implementation
 				print ("add_digit (" + digit.out + "): " + str + " display_value=" + display_value.out + "%N")
 			end
 			update_display_value
+			update_error_message (" ")
 		end
 		
 	perform_operation is
@@ -292,6 +293,7 @@ feature {NONE} -- Implementation
 					value := double_ref.item
 					display_value := 0.0
 					update_value
+					update_error_message (" ")
 				else
 					update_error_message ("Fault received: (" + client.fault.code.out + ") " + client.fault.string)	
 				end	

@@ -44,7 +44,7 @@ feature -- Initialisation
 	unmarshall (node: DOM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
 		local
-			params, param, pvalue: DOM_ELEMENT
+			params, pvalue: DOM_ELEMENT
 		do
 			unmarshall_ok := True
 			if node.has_child_nodes then

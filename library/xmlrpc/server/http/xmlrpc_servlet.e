@@ -27,6 +27,11 @@ inherit
 		export
 			{NONE} all
 		end
+	
+	KL_EXCEPTIONS
+		export
+			{NONE} all
+		end
 		
 creation
 
@@ -61,58 +66,72 @@ feature -- Basic operations
 			response_text: STRING
 			service_name, action: STRING
 			agent_service: SERVICE_PROXY
-			parameters: TUPLE [ANY]
+			parameters: TUPLE
 			result_value: XRPC_VALUE
+			failed: BOOLEAN
 		do
-			parse_call (req)
-			if valid_call then
-				-- extract service details
-				service_name := call.extract_service_name
-				action := call.extract_action
-				parameters := call.extract_parameters
-				-- retrieve service and execute call
-				if registry.has (service_name) then
-					agent_service := registry.get (service_name)
-					if agent_service.has (action) then
-						if agent_service.valid_operands (action, parameters) then
-							agent_service.call (action, parameters)
-							if agent_service.process_ok then
-								result_value := Value_factory.build (agent_service.last_result)
-								if result_value /= Void then
-									create response.make (create {XRPC_PARAM}.make (result_value))
-									response_text := response.marshall	
+			if not failed then
+				parse_call (req)
+				if valid_call then
+					-- extract service details
+					service_name := call.extract_service_name
+					action := call.extract_action
+					parameters := call.extract_parameters
+					-- retrieve service and execute call
+					if registry.has (service_name) then
+						agent_service := registry.get (service_name)
+						if agent_service.has (action) then
+							if agent_service.valid_operands (action, parameters) then
+								agent_service.call (action, parameters)
+								if agent_service.process_ok then
+									result_value := Value_factory.build (agent_service.last_result)
+									if result_value /= Void then
+										create response.make (create {XRPC_PARAM}.make (result_value))
+										response_text := response.marshall	
+									else
+										-- construct fault response for invalid return type
+										create fault.make (Invalid_action_return_type)
+										response_text := fault.marshall
+									end
 								else
-									-- construct fault response for invalid return type
-									create fault.make (Invalid_action_return_type)
+									-- construct fault response for failed call
+									create fault.make_with_detail (Unable_to_execute_service_action, call.method_name)
 									response_text := fault.marshall
-								end
+								end	
 							else
-								-- construct fault response for failed call
-								create fault.make (Unable_to_execute_service_action)
+								-- construct fault response for invalid action operands
+								create fault.make_with_detail (Invalid_operands_for_service_action, call.method_name)
 								response_text := fault.marshall
-							end	
+							end
 						else
 							-- construct fault response for invalid service action
-							create fault.make (Invalid_operands_for_service_action)
+							create fault.make_with_detail (Action_not_found_for_service, call.method_name)
 							response_text := fault.marshall
 						end
 					else
-						-- construct fault response for invalid service action
-						create fault.make (Action_not_found_for_service)
+						-- construct fault response for invalid service
+						create fault.make_with_detail (Service_not_found, service_name)
 						response_text := fault.marshall
-					end
+					end		
 				else
-					-- construct fault response for invalid service
-					create fault.make (Service_not_found)
 					response_text := fault.marshall
-				end		
-			else
-				response_text := fault.marshall
+				end
 			end
 			-- send response
 			resp.set_content_type (Headerval_content_type)
 			resp.set_content_length (response_text.count)
 			resp.send (response_text)
+		rescue
+			if not failed then
+				-- check for an assertion failure and respond with an appropriate fault
+				-- otherwise fail as normal
+				if assertion_violation then
+					build_assertion_fault
+					response_text := fault.marshall
+					failed := True
+					retry
+				end
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -182,4 +201,26 @@ feature {NONE} -- Implementation
 			create Result
 		end
 
+	build_assertion_fault is
+			-- Initialise 'fault' to explain current assertion violation
+		require
+			assertion_violation: assertion_violation
+		local
+			detail: STRING
+		do
+			create detail.make (100)
+			detail.append (": ")
+			detail.append (meaning (exception))
+			detail.append (" class: '")
+			detail.append (class_name)
+			detail.append ("' routine: '")
+			detail.append (recipient_name)
+			detail.append ("' tag: '")
+			detail.append (tag_name)
+			detail.append_character ('%'')
+			create fault.make_with_detail (Assertion_failure, detail)
+		ensure
+			fault_initialised: fault /= Void and then fault.code = Assertion_failure
+		end
+		
 end -- class XMLRPC_SERVLET

@@ -23,6 +23,11 @@ inherit
 		export
 			{NONE} all
 		end
+	
+	KL_EXCEPTIONS
+		export
+			{NONE} all
+		end
 		
 creation
 
@@ -56,12 +61,20 @@ feature -- Basic routines
 			send_call (call)
 			if socket_ok then
 				receive_response	
+				-- check for response assertion failure and raise exception
+				if not invocation_ok and exception_on_failure then
+					if fault.code = Assertion_failure then
+						raise ("Remote_assertion_failure")
+					end
+				end
 			end	
 		ensure
 			response_available: invocation_ok implies (response /= Void and fault = Void)
 			fault_available: not invocation_ok implies (response = Void and fault /= Void)
 		end
-		
+
+feature -- Status report
+
 	invocation_ok: BOOLEAN
 			-- Was the last call successful?
 			
@@ -71,6 +84,18 @@ feature -- Basic routines
 	fault: XRPC_FAULT
 			-- Last fault. Only available if not 'invocation_ok'.
 	
+	exception_on_failure: BOOLEAN
+			-- Should an exception be raised if a remote call assertion fails?
+			-- Default: false
+
+feature -- Status setting
+
+	set_exception_on_failure (flag: BOOLEAN) is
+			-- Set 'exception_on_failure' to 'flag'
+		do
+			exception_on_failure := flag
+		end
+		
 feature {NONE} -- Implementation
 
 	socket_ok: BOOLEAN
