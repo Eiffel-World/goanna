@@ -24,6 +24,7 @@ cluster
 	root_cluster:		"d:\goanna\eiffeldom\src\test"
 	dom:				"d:\goanna\eiffeldom\src\dom";
 	dom_impl:			"d:\goanna\eiffeldom\src\impl";
+	dom_writer: 		"d:\goanna\eiffeldom\src\writer";
 
 		-- EiffelBase
 	base_kernel:		"$EIFFEL4\library\base\kernel";

@@ -336,6 +336,14 @@ feature -- Validation Utility
 		deferred
 		end
 
+feature -- non-DOM implementation
+
+	output: STRING is
+			-- String representation of this node
+		deferred
+		ensure
+			result_exists: Result /= Void
+		end
 invariant
 
    has_owner: node_type /= Document_node implies owner_document /= Void

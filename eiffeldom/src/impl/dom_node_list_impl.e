@@ -52,7 +52,7 @@ feature -- Access
       do
 		  -- adjust index and check if valid
 		  adjusted_index := i + 1
-		  if valid_index (adjusted_index) then
+		  if not valid_index (adjusted_index) then
 			  Result := Void
 		  else
 			  Result := i_th (adjusted_index)

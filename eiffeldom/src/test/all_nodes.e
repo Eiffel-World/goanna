@@ -11,10 +11,6 @@ creation
 feature
 
 	make is
-		local
-			impl: DOM_IMPLEMENTATION
-			doc: DOM_DOCUMENT
-			node_impl: DOM_NODE_IMPL
 		do
 			-- bootstrap implementation
 			create {DOM_IMPLEMENTATION_IMPL} impl
@@ -22,19 +18,23 @@ feature
 			doc := impl.create_document (create {DOM_STRING}.make_from_string ("http://test"),
 				create {DOM_STRING}.make_from_string ("HTML"), Void)
 			node_impl ?= doc
-			print (node_impl.output)
+			create writer
+			print (writer.to_string(node_impl))
 		end
+
+	node_impl: DOM_NODE_IMPL
+	writer: DOM_WRITER
 
 	-- unused attributes used to compile all DOM classes
 
 	attr: DOM_ATTR_IMPL
 	character_date: DOM_CHARACTER_DATA_IMPL
 	comment: DOM_COMMENT_IMPL
-	document: DOM_DOCUMENT_IMPL
+	doc: DOM_DOCUMENT
 	document_fragment: DOM_DOCUMENT_FRAGMENT_IMPL
 	element: DOM_ELEMENT_IMPL
 	exception: DOM_EXCEPTION_IMPL
-	implementation: DOM_IMPLEMENTATION_IMPL
+	impl: DOM_IMPLEMENTATION_IMPL
 	named_node_map: DOM_NAMED_NODE_MAP_IMPL
 	node: DOM_NODE_IMPL
 	node_list: DOM_NODE_LIST_IMPL

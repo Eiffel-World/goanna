@@ -274,7 +274,11 @@ feature -- Output
 			-- Convenience function for debugging.
 			-- String representation of node.
 		do
-			Result := "[" + node_name + ":" + node_value + "]"
+			Result := "[" + node_name + ":" 
+			if node_value /= Void then
+				Result := Result + node_value
+			end
+			Result := Result + "]"
 		end
 		
 end -- class DOM_NODE_IMPL
