@@ -20,12 +20,12 @@ inherit
 			is_equal, copy
 		end
 
-	HASH_TABLE [DOM_NODE, DOM_STRING]
+	DS_HASH_TABLE [DOM_NODE, DOM_STRING]
 		rename
 			count as length,
+			is_empty as empty,
 			make as hashtable_make,
-			ds_item as get_named_item,
-			item as hash_item,
+			item as get_named_item,
 			has as has_named_item
 		end
 

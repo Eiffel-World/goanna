@@ -34,13 +34,13 @@ feature -- Access
 	type: STRING
 			-- Type of this feature if it is a function
 
-	params: LINKED_LIST [DS_PAIR [STRING, STRING]]
+	params: DS_LINKED_LIST [DS_PAIR [STRING, STRING]]
 			-- Parameter pairs (name, type) of this routine.
 
-	locals: LINKED_LIST [DS_PAIR [STRING, STRING]]
+	locals: DS_LINKED_LIST [DS_PAIR [STRING, STRING]]
 			-- Local variable pairs (name, type) of this routine.
 
-	body: LINKED_LIST [STRING]
+	body: DS_LINKED_LIST [STRING]
 			-- Source code lines that constitute the body of the routine.
 
 	is_function: BOOLEAN is
@@ -72,7 +72,7 @@ feature -- Status setting
 			parameter_name_exists: new_parameter.first /= Void
 			parameter_value_exists: new_parameter.second /= Void
 		do
-			params.extend (new_parameter)
+			params.force_last (new_parameter)
 		end
 
 	add_local (new_local: DS_PAIR [STRING, STRING]) is
@@ -86,7 +86,7 @@ feature -- Status setting
 				create body.make
 				create locals.make
 			end
-			locals.extend (new_local)
+			locals.force_last (new_local)
 		end
 
 	add_body_line (line: STRING) is
@@ -98,7 +98,7 @@ feature -- Status setting
 				create body.make
 				create locals.make
 			end
-			body.extend (line)
+			body.force_last (line)
 		end
 
 feature -- Basic operations
@@ -107,7 +107,7 @@ feature -- Basic operations
 			-- Print source code representation of this routine on 'output'
 		do
 			output.put_string ("%T" + name)
-			if not params.empty then
+			if not params.is_empty then
 				write_params (output)
 			end
 			if is_function then
@@ -119,7 +119,7 @@ feature -- Basic operations
 				output.put_string ("%T%Tdeferred")
 				output.put_new_line
 			else
-				if not locals.empty then
+				if not locals.is_empty then
 					write_locals (output)
 				end
 				write_body (output)
@@ -139,8 +139,9 @@ feature {NONE} -- Implementation
 			until
 				params.off
 			loop
-				output.put_string (params.item.first + ": " + params.item.second)
-				if not params.islast then
+				output.put_string (params.item_for_iteration.first 
+					+ ": " + params.item_for_iteration.second)
+				if not params.is_last then
 					output.put_string ("; ")
 				end
 				params.forth
@@ -157,7 +158,8 @@ feature {NONE} -- Implementation
 			until
 				locals.off
 			loop
-				output.put_string ("%T%T%T" + locals.item.first + ": " + locals.item.second)
+				output.put_string ("%T%T%T" + locals.item_for_iteration.first 
+					+ ": " + locals.item_for_iteration.second)
 				output.put_new_line
 				locals.forth
 			end
@@ -172,7 +174,7 @@ feature {NONE} -- Implementation
 			until
 				body.off
 			loop
-				output.put_string ("%T%T%T" + body.item)
+				output.put_string ("%T%T%T" + body.item_for_iteration)
 				output.put_new_line
 				body.forth
 			end

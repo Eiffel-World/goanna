@@ -107,7 +107,7 @@ feature
 	       ensure_child_list_exists
            previous := old_child.previous_sibling
            next := old_child.next_sibling
-           child_nodes.prune (old_child)
+           child_nodes.delete (old_child)
            -- previous and next may be Void if 'old_child' is an only child
            if previous /= Void then
            	    previous.set_next_sibling (next)
@@ -137,7 +137,7 @@ feature
 	  do
 	      ensure_child_list_exists
 	      last := last_child
-		  child_nodes.extend (new_child)
+		  child_nodes.force_last (new_child)
 		          new_child.set_parent_node (Current)
 		  -- last may be Void if this node has no children
 		  if last /= Void then

@@ -68,20 +68,20 @@ feature -- Status setting
 			-- Add 'cookie' to the response. Can be called multiple times
 			-- to add more than one cookie.
 		do
-			cookies.extend (cookie)
+			cookies.force_last (cookie)
 		end
 
 	add_header (name, value: STRING) is
 			-- Adds a response header with the given naem and value. This
 			-- method allows response headers to have multiple values.
 		local
-			new_values: LINKED_LIST [like value]
+			new_values: DS_LINKED_LIST [like value]
 		do
 			if headers.has (name) then
-				headers.item (name).extend (value)
+				headers.item (name).force_last (value)
 			else
 				create new_values.make
-				new_values.extend (value)
+				new_values.force_last (value)
 				set_header (name, value)
 			end
 		end
@@ -106,10 +106,10 @@ feature -- Status setting
 			-- header already exists, the new value overwrites the previous
 			-- one.
 		local
-			new_values: LINKED_LIST [like value]
+			new_values: DS_LINKED_LIST [like value]
 		do
 			create new_values.make
-			new_values.extend (value)
+			new_values.force_last (value)
 			headers.force (new_values, name)
 		end
 
@@ -158,7 +158,7 @@ feature -- Basic operations
 		do
 			content_buffer := Void
 			cookies.wipe_out
-			headers.clear_all
+			headers.wipe_out
 			set_content_length (0)
 			set_content_type ("text/html")
 			status := Sc_ok
@@ -240,10 +240,10 @@ feature {NONE} -- Implementation
 	status_message: STRING
 		-- The status message. Void if none.
 			
-	cookies: LINKED_LIST [COOKIE]
+	cookies: DS_LINKED_LIST [COOKIE]
 		-- The cookies that will be sent with this response.
 		
-	headers: HASH_TABLE [LINKED_LIST [STRING], STRING]
+	headers: DS_HASH_TABLE [DS_LINKED_LIST [STRING], STRING]
 		-- The headers that will be sent with this response.
 						
 	build_error_page (sc: INTEGER; msg: STRING): STRING is
@@ -281,32 +281,31 @@ feature {NONE} -- Implementation
 	build_headers: STRING is
 			-- Build string representation of headers suitable for sending as a response.			
 		local
-			header_keys: ARRAY [STRING]
-			header_values: LINKED_LIST [STRING]
-			i: INTEGER
+			header_keys: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [STRING], STRING]
+			header_values: DS_LINKED_LIST [STRING]
 			name: STRING
 		do
 			create Result.make (200)
 			from
-				header_keys := headers.current_keys
-				i := header_keys.lower
+				header_keys := headers.new_cursor
+				header_keys.start
 			until
-				i > header_keys.upper
+				header_keys.off
 			loop
 				from
-					name := header_keys.item (i)
-					header_values := headers.item (header_keys.item (i))
+					name := header_keys.key
+					header_values := header_keys.item
 					header_values.start
 				until
 					header_values.off
 				loop
 					Result.append (name)
 					Result.append (": ")
-					Result.append (header_values.item)
+					Result.append (header_values.item_for_iteration)
 					Result.append ("%R%N")
 					header_values.forth
 				end
-				i := i + 1
+				header_keys.forth
 			end
 		end
 	
@@ -331,8 +330,6 @@ feature {NONE} -- Implementation
 			-- Write the response headers to the output stream.
 		require
 			not_committed: not is_committed	
-		local
-			str: STRING
 		do
 			-- NOTE: There is no need to send the HTTP status line because
 			-- the FastCGI protocol does it for us.

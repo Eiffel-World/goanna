@@ -20,12 +20,12 @@ inherit
 			is_equal, copy
 		end
 
-	HASH_TABLE [G, DOM_STRING]
+	DS_HASH_TABLE [G, DOM_STRING]
 		rename
 			count as length,
 			make as hashtable_make,
-			ds_item as get_named_item,
-			item as hash_item,
+			is_empty as empty,
+			item as get_named_item,
 			has as has_named_item
 		end
 
@@ -137,13 +137,21 @@ feature
          --    The node at the `index'th position in the NamedNodeMap,
          --    or null if that is not a valid index.
       local
-		  normalized_index: INTEGER
-		  local_keys: ARRAY [DOM_STRING]
+		  local_keys: DS_HASH_TABLE_CURSOR [G, DOM_STRING]
+		  current_index: INTEGER
 	  do
-		  local_keys := current_keys
-		  normalized_index := index + 1
-		  if normalized_index <= local_keys.count then
-			  Result := get_named_item (local_keys.item (normalized_index))
+		  local_keys := new_cursor
+		  if index + 1 <= length then
+			  -- skip forwards index amount
+			  from
+				 local_keys.start      
+			  until
+			     current_index > index
+			  loop
+				 local_keys.forth
+				 current_index := current_index + 1		
+			  end
+			  Result := local_keys.item		  
 		  end
       end
 

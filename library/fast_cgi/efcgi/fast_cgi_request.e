@@ -72,7 +72,7 @@ feature -- Access
 	num_writers: INTEGER
 			-- Number of writers
 				
-	parameters: HASH_TABLE [STRING, STRING]
+	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of parameters passed to this request.
 	
 	raw_stdin_content: STRING
@@ -317,7 +317,7 @@ feature {NONE} -- Implementation
 			name, value: STRING
 		do
 			from
-				parameters.clear_all
+				parameters.wipe_out
 				offset := 1
 			until
 				offset >= raw_param_content.count

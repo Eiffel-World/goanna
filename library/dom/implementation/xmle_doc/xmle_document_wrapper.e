@@ -30,7 +30,7 @@ feature -- Access
 	document: DOM_DOCUMENT
 			-- The document held by this wrapper.
 
-	id_elements: HASH_TABLE [DOM_NODE, STRING]
+	id_elements: DS_HASH_TABLE [DOM_NODE, STRING]
 			-- Table of elements indexed by 'id'. 
 
 	get_element_by_id (id: STRING): DOM_NODE is

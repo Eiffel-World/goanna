@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 			parent_exists: parent /= Void
 			doc_exists: doc /= Void
 		local
-			parameter_names: LINEAR [STRING]
+			parameter_names: DS_LINEAR [STRING]
 			element: DOM_ELEMENT
 			str, name, value: DOM_STRING
 			discard: DOM_NODE
@@ -94,10 +94,10 @@ feature {NONE} -- Implementation
 				create str.make_from_string ("Parameter")
 				element := doc.create_element (str)
 				create name.make_from_string ("name")
-				create value.make_from_string (parameter_names.item)
+				create value.make_from_string (parameter_names.item_for_iteration)
 				element.set_attribute (name, value)				
 				create name.make_from_string ("value")
-				create value.make_from_string (req.get_parameter (parameter_names.item))
+				create value.make_from_string (req.get_parameter (parameter_names.item_for_iteration))
 				element.set_attribute (name, value)
 				discard := parent.append_child (element)
 				parameter_names.forth
@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 			parent_exists: parent /= Void
 			doc_exists: doc /= Void
 		local
-			header_names: LINEAR [STRING]
+			header_names: DS_LINEAR [STRING]
 			element: DOM_ELEMENT
 			text: DOM_TEXT
 			discard: DOM_NODE
@@ -126,9 +126,9 @@ feature {NONE} -- Implementation
 				create str.make_from_string ("Header")
 				element := doc.create_element (str)
 				create name.make_from_string ("name")
-				create value.make_from_string (header_names.item)	
+				create value.make_from_string (header_names.item_for_iteration)	
 				element.set_attribute (name, value)
-				create str.make_from_string (req.get_header (header_names.item))
+				create str.make_from_string (req.get_header (header_names.item_for_iteration))
 				text := document.create_text_node (str)
 				discard := element.append_child (text)
 				discard := parent.append_child (element)

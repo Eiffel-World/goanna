@@ -17,10 +17,11 @@ inherit
 			copy, is_equal
 		end
 
-	ARRAYED_LIST [DOM_NODE]
+	DS_ARRAYED_LIST [DOM_NODE]
 		rename
 			make as arrayed_list_make,
-			item as cursor_item,
+			is_empty as empty,
+			item as index_item,
 			count as length
 		end
 
@@ -55,7 +56,7 @@ feature -- Access
 		  if not valid_index (adjusted_index) then
 			  Result := Void
 		  else
-			  Result := i_th (adjusted_index)
+			  Result := index_item (adjusted_index)
 		  end
       end
 

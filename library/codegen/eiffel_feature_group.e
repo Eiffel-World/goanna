@@ -32,10 +32,10 @@ feature -- Access
 	comment: STRING
 			-- Feature group comment
 
-	exports: LINKED_LIST [STRING]
+	exports: DS_LINKED_LIST [STRING]
 			-- Class names in export list of this group.
 
-	features: LINKED_LIST [EIFFEL_FEATURE]
+	features: DS_LINKED_LIST [EIFFEL_FEATURE]
 			-- Features in this group.
 
 feature -- Status setting
@@ -53,7 +53,7 @@ feature -- Status setting
 		require
 			class_name_exists: class_name /= Void
 		do
-			exports.extend (class_name)
+			exports.force_last (class_name)
 		end
 
 	add_feature (new_feature: EIFFEL_FEATURE) is
@@ -61,7 +61,7 @@ feature -- Status setting
 		require
 			new_feature_exists: new_feature /= Void
 		do
-			features.extend (new_feature)
+			features.force_last (new_feature)
 		end 
 
 feature -- Basic operations
@@ -78,7 +78,7 @@ feature {NONE} -- Implementation
 	write_header (output: IO_MEDIUM) is
 		do
 			output.put_string ("feature ")
-			if not exports.empty then
+			if not exports.is_empty then
 				write_exports (output)
 			end
 			output.put_string (" -- " + comment)
@@ -94,8 +94,8 @@ feature {NONE} -- Implementation
 			until
 				exports.off
 			loop
-				output.put_string (exports.item)
-				if not exports.islast then
+				output.put_string (exports.item_for_iteration)
+				if not exports.is_last then
 					output.put_string (", ")
 				end
 				exports.forth
@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 			until
 				features.off
 			loop
-				features.item.write (output)
+				features.item_for_iteration.write (output)
 				features.forth
 			end
 		end

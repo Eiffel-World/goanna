@@ -22,7 +22,7 @@ feature -- Access
 			result_exists: Result /= Void
 		end
 
-	get_headers (name: STRING): LINEAR [STRING] is
+	get_headers (name: STRING): DS_LINEAR [STRING] is
 			-- Get all values of the specified request header. If the
 			-- header has comma-separated values they are separated and added to the
 			-- result. If only one value exists, it is added as the sole entry in the
@@ -35,7 +35,7 @@ feature -- Access
 			result_exists: Result /= Void
 		end
 	
-	get_header_names: LINEAR [STRING] is
+	get_header_names: DS_LINEAR [STRING] is
 			-- Get all header names.
 		deferred
 		ensure

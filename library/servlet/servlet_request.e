@@ -19,14 +19,14 @@ feature -- Access
 			result_exists: Result /= Void
 		end
 	
-	get_parameter_names: LINEAR [STRING] is
+	get_parameter_names: DS_LINEAR [STRING] is
 			-- Return all parameter names
 		deferred
 		ensure
 			result_exists: Result /= Void
 		end
 		
-	get_parameter_values: LINEAR [STRING] is
+	get_parameter_values: DS_LINEAR [STRING] is
 			-- Return all parameter values
 		deferred
 		ensure

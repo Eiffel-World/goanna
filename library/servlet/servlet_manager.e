@@ -49,12 +49,12 @@ feature -- Status setting
 			servlet_exists: servlet /= Void
 			name_exists: name /= Void
 		do
-			servlets.put (servlet, name)
+			servlets.force (servlet, name)
 		end
 
 feature {NONE} -- Implementation
 
-	servlets: HASH_TABLE [K, STRING]
+	servlets: DS_HASH_TABLE [K, STRING]
 			-- Managed servlets.
 
 end -- class SERVLET_MANAGER

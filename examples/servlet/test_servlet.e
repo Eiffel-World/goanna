@@ -42,8 +42,8 @@ feature {NONE} -- Implementation
 
 	send_basic_html (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
 		local
-			parameter_names: LINEAR [STRING]
-			header_names: LINEAR [STRING]
+			parameter_names: DS_LINEAR [STRING]
+			header_names: DS_LINEAR [STRING]
 		do
 			resp.send ("<html><head><title>Test Servlet</title></head>%R%N")
 			resp.send ("<body><h1>This is a test.</h1>%R%N")
@@ -56,8 +56,8 @@ feature {NONE} -- Implementation
 			until
 				parameter_names.off
 			loop
-				resp.send (parameter_names.item + " = " 
-					+ quoted_eiffel_string_out (req.get_parameter (parameter_names.item)) + "<br>%R%N")
+				resp.send (parameter_names.item_for_iteration + " = " 
+					+ quoted_eiffel_string_out (req.get_parameter (parameter_names.item_for_iteration)) + "<br>%R%N")
 				parameter_names.forth
 			end				
 			-- display all variables
@@ -68,8 +68,8 @@ feature {NONE} -- Implementation
 			until
 				header_names.off
 			loop
-				resp.send (header_names.item + " = " 
-					+ quoted_eiffel_string_out (req.get_header (header_names.item)) + "<br>%R%N")
+				resp.send (header_names.item_for_iteration + " = " 
+					+ quoted_eiffel_string_out (req.get_header (header_names.item_for_iteration)) + "<br>%R%N")
 				header_names.forth
 			end			
 			resp.send ("</body></html>%R%N")	

@@ -33,13 +33,13 @@ feature -- Access
 	name: STRING
 			-- Class name
 
-	parents: LINKED_LIST [STRING]
+	parents: DS_LINKED_LIST [STRING]
 			-- Class parents
 
-	creation_procedure_names: LINKED_LIST [STRING]
+	creation_procedure_names: DS_LINKED_LIST [STRING]
 			-- Creation procedure names
 
-	feature_groups: LINKED_LIST [EIFFEL_FEATURE_GROUP]
+	feature_groups: DS_LINKED_LIST [EIFFEL_FEATURE_GROUP]
 			-- Feature groups
 
 feature -- Status setting
@@ -57,7 +57,7 @@ feature -- Status setting
 		require
 			new_parent_exists: new_parent /= Void
 		do
-			parents.extend (new_parent)
+			parents.force_last (new_parent)
 		end
 
 	add_creation_procedure_name (new_name: STRING) is
@@ -65,7 +65,7 @@ feature -- Status setting
 		require
 			new_name_exists: new_name /= Void
 		do
-			creation_procedure_names.extend (new_name)
+			creation_procedure_names.force_last (new_name)
 		end
 
 	add_feature_group (new_group: EIFFEL_FEATURE_GROUP) is
@@ -73,7 +73,7 @@ feature -- Status setting
 		require
 			new_group_exists: new_group /= Void
 		do
-			feature_groups.extend (new_group)
+			feature_groups.force_last (new_group)
 		end
 
 feature -- Basic operations
@@ -82,13 +82,13 @@ feature -- Basic operations
 			-- Print source code representation of this class
 		do
 			write_header (output)
-			if not parents.empty then	
+			if not parents.is_empty then	
 				write_parents (output)
 			end
-			if not creation_procedure_names.empty then
+			if not creation_procedure_names.is_empty then
 				write_creation_names (output)
 			end
-			if not feature_groups.empty then
+			if not feature_groups.is_empty then
 				write_feature_groups (output)
 			end
 			write_end (output)
@@ -113,7 +113,7 @@ feature {NONE} -- Implementation
 			until
 				parents.off
 			loop
-				output.put_string ("%T" + parents.item)
+				output.put_string ("%T" + parents.item_for_iteration)
 				output.put_new_line
 				parents.forth
 			end
@@ -130,8 +130,8 @@ feature {NONE} -- Implementation
 			until
 				creation_procedure_names.off
 			loop
-				output.put_string ("%T" + creation_procedure_names.item)
-				if not creation_procedure_names.islast then
+				output.put_string ("%T" + creation_procedure_names.item_for_iteration)
+				if not creation_procedure_names.is_last then
 					output.put_string (", ")
 				else
 					output.put_new_line
@@ -148,7 +148,7 @@ feature {NONE} -- Implementation
 			until
 				feature_groups.off
 			loop
-				feature_groups.item.write (output)
+				feature_groups.item_for_iteration.write (output)
 				feature_groups.forth
 			end
 		end

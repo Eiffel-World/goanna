@@ -45,16 +45,42 @@ feature -- Access
 			Result := clone (parameters.item (name))
 		end
 
-	get_parameter_names: LINEAR [STRING] is
+	get_parameter_names: DS_LINEAR [STRING] is
 			-- Return all parameter names
+		local
+			cursor: DS_HASH_TABLE_CURSOR [STRING, STRING]
+			array_list: DS_ARRAYED_LIST [STRING]
 		do
-			Result := parameters.current_keys.linear_representation
+			create array_list.make (parameters.count)
+			cursor := parameters.new_cursor
+			from
+				cursor.start
+			until
+				cursor.off
+			loop
+				array_list.force_last (clone (cursor.key))
+				cursor.forth
+			end
+			Result := array_list
 		end
 
-	get_parameter_values: LINEAR [STRING] is
+	get_parameter_values: DS_LINEAR [STRING] is
 			-- Return all parameter values
+		local
+			cursor: DS_HASH_TABLE_CURSOR [STRING, STRING]
+			array_list: DS_ARRAYED_LIST [STRING]
 		do
-			Result := parameters.linear_representation
+			create array_list.make (parameters.count)
+			cursor := parameters.new_cursor
+			from
+				cursor.start
+			until
+				cursor.off
+			loop
+				array_list.force_last (clone (cursor.item))
+				cursor.forth
+			end
+			Result := array_list
 		end
 	
 	get_header (name: STRING): STRING is
@@ -63,7 +89,7 @@ feature -- Access
 			Result := clone (internal_request.parameters.item (name))
 		end
 
-	get_headers (name: STRING): LINEAR [STRING] is
+	get_headers (name: STRING): DS_LINEAR [STRING] is
 			-- Get all values of the specified request header. If the
 			-- header has comma-separated values they are separated and added to the
 			-- result. If only one value exists, it is added as the sole entry in the
@@ -72,10 +98,23 @@ feature -- Access
 			
 		end
 		
-	get_header_names: LINEAR [STRING] is
+	get_header_names: DS_LINEAR [STRING] is
 			-- Get all header names.
+		local
+			cursor: DS_HASH_TABLE_CURSOR [STRING, STRING]
+			array_list: DS_ARRAYED_LIST [STRING]
 		do
-			Result := internal_request.parameters.current_keys.linear_representation
+			create array_list.make (internal_request.parameters.count)
+			cursor := internal_request.parameters.new_cursor
+			from
+				cursor.start
+			until
+				cursor.off
+			loop
+				array_list.force_last (clone (cursor.key))
+				cursor.forth
+			end
+			Result := array_list
 		end
 	
 feature -- Status report
@@ -213,7 +252,7 @@ feature {NONE} -- Implementation
 	internal_request: FAST_CGI_REQUEST
 		-- Internal request information and stream functionality.
 	
-	parameters: HASH_TABLE [STRING, STRING]
+	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of parameter values with support for multiple values per parameter name
 			
 	parse_parameters is

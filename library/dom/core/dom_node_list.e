@@ -39,14 +39,14 @@ feature -- Utility
 		deferred
 		end
 
-	extend (new_node: DOM_NODE) is
+	force_last (new_node: DOM_NODE) is
 			-- Add 'new_node' to end of list.
 		require
 			new_node_exists: new_node /= Void
 		deferred
 		end
 
-	prune (old_node: DOM_NODE) is
+	delete (old_node: DOM_NODE) is
 			-- Remove 'old_node' from list. If 'old_node' not found go off.
 		require
 			old_node_exists: old_node /= Void
