@@ -1,8 +1,8 @@
 system
-	tree_builder
+	xmle
 
 root
-	TREE_BUILDER: "make"
+	XMLE: "make"
 
 default
 	assertion (all)
@@ -21,7 +21,8 @@ default
 
 cluster
 	
-	root_cluster:		"$GOANNA\xmlparser\src\test"
+	xmle:		"$GOANNA\xmle\src\xmle";
+	codegen:	"$GOANNA\xmle\src\codegen";
 
 	-- Eiffel DOM
 	dom:				"$GOANNA\eiffeldom\src\dom";

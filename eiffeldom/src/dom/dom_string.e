@@ -15,7 +15,31 @@ inherit
 
 creation
 
-	make, make_from_string, make_from_utf8
+	make, make_from_string, make_from_utf8, make_from_ucstring
+
+feature -- Initialisation
+
+	make_from_ucstring (other: UCSTRING) is
+			-- Create a dom string from 'other'
+		require
+			other_exists: other /= Void
+		local
+			i: INTEGER
+		do
+			resize(other.count)
+			from
+				i := 1
+			--variant
+			--	other.count - i
+			until
+				i > other.count
+			loop
+				put_code(other.item_code(i), i)
+				i := i + 1
+			end
+		ensure 
+			same_size: count = other.count
+		end
 
 feature -- Status report
 

@@ -123,7 +123,6 @@ feature
 		ensure
 			result_exists: Result /= Void
 			target_set: Result.target.is_equal (target)
-			data_set: Result.data.is_equal (target)
 			proper_result_owner: Result.owner_document = Current
 		end
 
@@ -274,7 +273,7 @@ feature -- Validation Utility
 		deferred
 		end
 
-feature {DOM_IMPLEMENTATION} -- Convenience routines
+feature -- Convenience routines
 
 	set_document_element (e: DOM_ELEMENT) is
 			-- Set the root document element.

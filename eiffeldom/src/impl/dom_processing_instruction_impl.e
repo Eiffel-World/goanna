@@ -27,7 +27,7 @@ feature -- Factory creation
 			-- Create a new processing instruction node
 		require
 			owner_doc_exists: owner_doc /= Void
-			target_exists: target /= Void
+			target_exists: new_target /= Void
 			data_exists: new_data /= Void
 		do
 			cdata_make (owner_doc, new_data)

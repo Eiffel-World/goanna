@@ -29,7 +29,6 @@ feature
 			!DOM_DOCUMENT_IMPL! Result.make (doctype)
 			document_element := Result.create_element_ns (namespace_uri, qualified_name)
 			discard := Result.append_child (document_element)
-			Result.set_document_element (document_element)
 		end
 
 	create_document_type (qualified_name, public_id, system_id: DOM_STRING): DOM_DOCUMENT_TYPE is
