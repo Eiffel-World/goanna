@@ -1,0 +1,6 @@
+${GOBO}/library/loadpath.se
+${UCSTRING}/lib/
+${UCSTRING}/spec/se/
+${GOANNA}/library/loadpath.se
+${GOANNA}/examples/text_xml_parser/
+

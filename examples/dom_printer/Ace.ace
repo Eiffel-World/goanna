@@ -1,0 +1,80 @@
+system
+	tree_builder
+
+root
+	TREE_BUILDER: make
+
+default
+	assertion(require)
+	assertion(ensure)
+	assertion(check)
+	assertion(loop)
+	assertion(invariant)
+	arguments(" ")
+	disabled_debug(yes)
+	debug(no)
+	line_generation(no)
+	profile(no)
+	trace(no)
+	check_vape(yes)
+	console_application(yes)
+	address_expression(no)
+	array_optimization(no)
+	dead_code_removal(yes)
+	dynamic_runtime(no)
+	exception_trace(no)
+	inlining(no)
+	multithreaded(no)
+
+
+cluster
+	root_cluster:		"$GOANNA\examples\text_xml_parser"
+
+	all dom:		"$GOANNA\library\dom"
+
+	xml_parser:		"$GOANNA\library\xml_parser"
+
+	all base:		"$ISE_EIFFEL\library\base"
+		exclude
+			"desc"; "table_eiffel3"; "CVS"; 
+		end
+
+	gobo:		"$GOBO\library"
+
+	gobo_kernel (gobo):		"$\kernel"
+
+	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
+
+	all gobo_structures (gobo):		"$\structure"
+		exclude
+			"base"; "CVS"; 
+		end
+
+	all gobo_util (gobo):		"$\utility"
+		exclude
+			"CVS"; 
+		end
+
+	ucstring:		"$UCSTRING"
+
+	ucstring_lib (ucstring):		"$\lib"
+
+	ucstring_ise (ucstring_lib):		"$\spec\ise"
+
+	all exml:		"$EXML\library"
+		exclude
+			"se";
+		end;
+
+external
+
+	include_path:
+		"$EXPAT\lib",
+		"$EXML\lib\impl\expat\spec\c",
+		"$GOBO\library\kernel\include"
+
+	object:
+		"$EXML\library\impl\expat\spec\c\libexml.lib",
+		"$EXPAT\lib\Debug\expat.lib"
+
+end
