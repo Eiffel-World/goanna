@@ -15,6 +15,11 @@ class
 inherit
 	
 	THREAD
+	
+	GS_SHARED_REQUEST_THREAD_DATA
+		export
+			{NONE} request_queue
+		end
 
 feature -- Basic operations
 
@@ -27,16 +32,5 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
--- NOTE: change to shared global once functions.
-
-	request_queue: GS_REQUEST_QUEUE
-				-- Queue of pending requests.
-				
-	request_mutex: MUTEX
-				-- Request mutex.
-				
-	request_condition: CONDITION_VARIABLE
-				-- Condition variable on which notification of new requests will
-				-- be sent
 				
 end -- class GS_REQUEST_THREAD
