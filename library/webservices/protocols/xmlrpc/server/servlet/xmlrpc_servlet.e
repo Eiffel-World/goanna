@@ -164,6 +164,7 @@ feature {NONE} -- Implementation
 		do
 			valid_call := True
 			parser := parser_factory.new_toe_eiffel_tree_parser
+--			parser := parser_factory.new_toe_expat_tree_parser
 			parser.parse_from_string (req.content)
 			if parser.is_correct then
 				create call.unmarshall (parser.document.root_element)

@@ -15,6 +15,8 @@ to server example.
 
 o Fixed decoding of request parameters in HTTP_UTILITY_FUNCTIONS.
 
+o Added rescue to service feature of HTTP_SERVLET to respond with "500 Internal Server Error" 
+when an error occurs.
 
 Release 0.4
 -----------

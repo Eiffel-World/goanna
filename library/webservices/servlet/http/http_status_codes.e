@@ -31,6 +31,9 @@ feature -- Access
 	Sc_not_found: INTEGER is 404
 			-- Resource could not be found.
 			
+	Sc_internal_server_error: INTEGER is 500
+			-- Internal server failure.
+			
 	Sc_not_implemented: INTEGER is 501
 			-- Server does not support the functionality required to service the
 			-- request.
