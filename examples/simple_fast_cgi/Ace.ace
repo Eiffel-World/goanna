@@ -16,13 +16,15 @@ default
 	multithreaded(no)
 	check_vape(no)
 	arguments("8001 10")
-	arguments("8000 10")
+	arguments("8001 aaaa")
+	arguments("aaaa 10")
 	disabled_debug(yes)
 	debug("fcgi_protocol")
 	debug(no)
 	line_generation(no)
 	profile(no)
 	trace(no)
+
 
 cluster
 	root_cluster:		"$GOANNA\examples\simple_fast_cgi"
@@ -37,7 +39,7 @@ cluster
 
 	utility:		"$GOANNA\library\utility"
 
-	utility_ise (utility):	"$\spec\ise"
+	utility_ise (utility):		"$\spec\ise"
 
 	all base:		"$EIFFEL4\library\base"
 		exclude

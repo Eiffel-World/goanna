@@ -41,7 +41,12 @@ inherit
 --		export
 --			{NONE} all
 --		end
-		
+	
+	STRING_MANIPULATION
+		export
+			{NONE} all
+		end
+			
 creation
 
 	make, read
@@ -69,8 +74,7 @@ feature -- Initialization
 		local
 			buffer: STRING
 		do
-			create buffer.make (Fcgi_header_len)
-			buffer.fill_blank
+			buffer := create_blank_buffer (Fcgi_header_len)
 			socket.receive_string (buffer)
 			if socket.last_error_code = Sock_err_no_error then
 				process_header_bytes (buffer)
@@ -96,8 +100,7 @@ feature -- Basic operations
 		local
 			enc_data: STRING
 		do
-			create enc_data.make (Fcgi_header_len)
-			enc_data.fill_blank
+			enc_data := create_blank_buffer (Fcgi_header_len)
 			enc_data.put (character_from_code (version), 1)
 			enc_data.put (character_from_code (type), 2)
 			enc_data.put (character_from_code (bit_and (bit_shift_right (request_id, 8), 255)), 3)

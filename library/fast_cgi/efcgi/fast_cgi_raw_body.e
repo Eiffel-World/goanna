@@ -50,8 +50,7 @@ feature -- Basic operations
 			create enc_data.make (raw_content_data.count + padding_length)
 			enc_data.append (raw_content_data)
 			if padding_length > 0 then
-				create padding.make (padding_length)
-				padding.fill_blank
+				padding := create_blank_buffer (padding_length)
 				enc_data.append (padding)
 			end
 			socket.send_string (enc_data)

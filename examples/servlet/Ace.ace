@@ -5,11 +5,6 @@ root
 	SERVLET_SERVER: make
 
 default
-	assertion(require)
-	assertion(ensure)
-	assertion(check)
-	assertion(loop)
-	assertion(invariant)
 	address_expression(no)
 	array_optimization(yes)
 	console_application(yes)
@@ -23,6 +18,7 @@ default
 	arguments("8000 10")
 	disabled_debug(yes)
 	disabled_debug("fcgi_protocol")
+	disabled_debug("base64_encode")
 	debug("cookie_parsing")
 	disabled_debug("dom_output")
 	disabled_debug("query_string_parsing")
@@ -101,12 +97,35 @@ cluster
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
+	eposix:		"$EPOSIX\src"
+
+	eposix_support (eposix):		"$\support"
+
+	eposix_capi (eposix):		"$\capi"
+
+	epoxis_stdc (eposix):		"$\standardc"
+		visible
+			stdc_signal_switch
+				export
+					"switcher"
+				end
+		end
+
+	eposix_abstract (eposix):		"$\abstract"
+
+	eposix_wapi (eposix):		"$\wapi"
+
+	eposix_windows (eposix):		"$\windows"
+
+	eposix_compatibiliy (eposix):		"$\spec\ise"
+
 external
 
 	include_path:
 		"$GOBO\library\kernel\include"
 
 	object:
-		"$YAESOCKETS\C\Debug\cl.lib"
+		"$YAESOCKETS\C\Debug\cl.lib",
+		"$EPOSIX\libeposix.lib"
 
 end

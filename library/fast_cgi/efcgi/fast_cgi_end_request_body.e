@@ -48,8 +48,7 @@ feature -- Basic operations
 		local
 			enc_data: STRING
 		do
-			create enc_data.make (Fcgi_end_req_body_len)
-			enc_data.fill_blank
+			enc_data := create_blank_buffer (Fcgi_end_req_body_len)
 			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 24), 255)), 1)
 			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 16), 255)), 2)
 			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 8), 255)), 3)

@@ -36,7 +36,12 @@ inherit
 --		export
 --			{NONE} all
 --		end
-		
+	
+	STRING_MANIPULATION
+		export
+			{NONE} all
+		end
+			
 feature -- Initialization
 
 	read (header: FAST_CGI_RECORD_HEADER; socket: TCP_SOCKET) is
@@ -51,8 +56,7 @@ feature -- Initialization
 			read_ok := True
 			-- read content data
 			if header.content_length > 0 then
-				create raw_content_data.make (header.content_length)
-				raw_content_data.fill_blank
+				raw_content_data := create_blank_buffer (header.content_length)
 				socket.receive_string (raw_content_data)
 				if socket.last_error_code = Sock_err_no_error then
 					process_body_fields
@@ -62,8 +66,7 @@ feature -- Initialization
 			end
 			-- read padding data
 			if read_ok and header.padding_length > 0 then
-				create raw_padding.make (header.padding_length)
-				raw_padding.fill_blank
+				raw_padding := create_blank_buffer (header.padding_length)
 				socket.receive_string (raw_padding)
 			end
 		end

@@ -190,6 +190,16 @@ feature -- Conversion
 	
 	Default_version: INTEGER is 0
 		
+	max_age_to_date (age: INTEGER): STRING is
+			-- Convert max_age to a date
+		local
+			date: STDC_TIME
+		do
+			create date.make_from_now
+			--TODO: date.add (age)
+			Result := date.default_format
+		end
+		
 invariant
 
 	name_exists: name /= Void

@@ -1,6 +1,20 @@
 Project Goanna Release Notes
 ----------------------------
 
+Release 0.2
+-----------
+XX Feb 2001
+
+o Added argument checking to simple_fast_cgi argument.
+
+o Added support for cookies and sessions to servlet library.
+
+o Goanna FastCGI now compiles and executes correctly under SmallEiffel.
+A new class STRING_MANIPULATION was needed to encapsulate different string
+handling between ISE and SmallEiffel. ELKS2000 will hopefully fix this when
+it is supported in all compilers.
+
+
 Release 0.1 (Proof-of-Concept)
 ------------------------------
 6 Jan 2001

@@ -41,8 +41,10 @@ feature -- Initialisation
 	make is
 			-- Initialise application and begin request processing loop
 		do
-			fast_cgi_app_make (Arguments.argument (1).to_integer, Arguments.argument (2).to_integer)
-			run
+			if valid_arguments then
+				fast_cgi_app_make (Arguments.argument (1).to_integer, Arguments.argument (2).to_integer)
+				run
+			end
 		end
 	
 feature -- Basic Operations
@@ -90,6 +92,38 @@ feature -- Basic Operations
 			if length > 0 then
 				putstr ("<br>%R%NContent = " + quoted_eiffel_string_out (request.raw_stdin_content))
 			end
+		end
+
+	valid_arguments: BOOLEAN is
+			-- Check command line arguments for validity
+		do
+			Result := True
+			if Arguments.argument_count /= 2 then
+				display_error ("Error: Missing argument.")
+				Result := False
+			else
+				if not Arguments.argument (1).is_integer or not Arguments.argument (2).is_integer then
+					display_error ("Error: <port> and <queuesize> must be integer.")
+					Result := False
+				end
+			end			
+		end
+	
+	display_error (error: STRING) is
+			-- Display error message and usage	
+		require
+			error_exists: error /= Void
+		do
+			io.put_string (error)
+			io.put_new_line
+			io.put_string (usage_text)
+			io.put_new_line
+		end
+		
+	usage_text: STRING is
+			-- Usage help text
+		once
+			Result := "Usage: simple <port> <queuesize>"
 		end
 
 end -- class SIMPLE
