@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<cluster name="cgi" location="${GOANNA}/library/cgi">
+<cluster name="cgi" location="${GOANNA}/library/webservices/connectors/cgi">
 
 	<description>
 		description: "Cluster definition for Goanna CGI connector classes"

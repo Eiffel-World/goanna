@@ -3,7 +3,7 @@
 <cluster name="goanna" location="${GOANNA}/library" abstract="True">
 
 	<description>
-		description: "Cluster definition for Goanna CGI connector classes"
+		description: "Cluster definition for Goanna library classes"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -14,14 +14,14 @@
 	</description>
 
 	<mount location="${GOANNA}/library/cgi/cluster.xace"/>
-	<mount location="${GOANNA}/library/codegen/cluster.xace"/>
 	<mount location="${GOANNA}/library/dom/cluster.xace"/>
 	<mount location="${GOANNA}/library/fast_cgi/cluster.xace"/>
 	<mount location="${GOANNA}/library/httpd/cluster.xace"/>
-	<mount location="${GOANNA}/library/log4e/cluster.xace"/>
-	<mount location="${GOANNA}/library/servlet/cluster.xace"/>
+	<mount location="${GOANNA}/library/webservices/servlet/cluster.xace"/>
 	<mount location="${GOANNA}/library/soap/cluster.xace"/>
-	<mount location="${GOANNA}/library/utility/cluster.xace"/>
 	<mount location="${GOANNA}/library/xmlrpc/cluster.xace"/>
 
+	<mount location="${GOANNA}/library/utility/cluster.xace"/>
+	<mount location="${GOANNA}/library/utility/log4e/cluster.xace"/>
+	<mount location="${GOANNA}/library/utility/codegen/cluster.xace"/>
 </cluster>

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<cluster name="codegen" location="${GOANNA}/library/codegen">
+<cluster name="fast_cgi" location="${GOANNA}/library/webservices/connectors/fast_cgi">
 
 	<description>
-		description: "Cluster definition for Goanna Eiffel code generation classes"
+		description: "Cluster definition for Goanna FastCGI connector classes"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -12,5 +12,7 @@
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO cluster.xace files"
 	</description>
+
+	<cluster name="protocol"/>
 
 </cluster>

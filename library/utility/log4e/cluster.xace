@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<cluster name="log4e" location="${GOANNA}/library/log4e">
+<cluster name="log4e" location="${GOANNA}/library/utility/log4e">
 
 	<description>
 		description: "Cluster definition for Goanna log4e"
@@ -26,7 +26,7 @@
 	</cluster>
 
 	<external if="${GOBO_OS}=windows">
-		<include_dir location="$(GOANNA)/library/log4e/appenders/nt/lib"/>
+		<include_dir location="$(GOANNA)/library/utility/log4e/appenders/nt/lib"/>
 	</external>
 
 </cluster>
