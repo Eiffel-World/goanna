@@ -70,7 +70,7 @@ feature {NONE} -- Implementation
 		local
 			last: INTEGER
 		do
-			if i < pattern_length and pattern.item (i) = '{' then
+			if i <= pattern_length and pattern.item (i) = '{' then
 				last = pattern.index_of ('}', i)
 				if last > i then
 					Result := pattern.substring (i + 1, last)
@@ -107,11 +107,11 @@ feature {NONE} -- Implementation
 			converter: LOG_PATTERN_CONVERTER
 		do
 			from
-				i := 0
+				i := 1
 				c := pattern.item (i)
 				i := i + 1
 			until
-				i < pattern_length
+				i <= pattern_length
 			loop
 				inspect state
 				when Literal_state then
@@ -129,7 +129,7 @@ feature {NONE} -- Implementation
 						else
 							if current_literal.count /= 0 then
 								create {LOG_LITERAL_PATTERN_CONVERTER} converter.make (current_literal)
-								add_to_list (converter)
+								converters.force_last (converter)
 							end
 							current_literal.wipe_out
 							current_literal.append_character (c)
@@ -167,7 +167,8 @@ feature {NONE} -- Implementation
 						formatting_info.set_max (c - '0')
 						state := Max_state
 					else
-						internal_log.error ("Error occured in position " + i + ".%N Was expecting digit, instead got char '" + c + "'.")
+						internal_log.error ("Error occured in position " + i + 
+								    ".%N Was expecting digit, instead got char '" + c + "'.")
 						state := Literal_state
 					end
 				when Max_state then
@@ -182,20 +183,41 @@ feature {NONE} -- Implementation
 			end
 			if current_literal.count /= 0 then 
 				create {LOG_LITERAL_PATTERN_CONVERTER} converter.make (current_literal)
-				add_to_list (converter)
+				converters.force_last (converter)
 			end
 		end
 	
 	finalize_converter (c: CHARACTER) is
 		local
-			category_converter: LOG_CATEGORY_PATTERN_CONVERTER
+			converter: LOG_PATTERN_CONVERTER
 		do
 			inspect c
 			when 'c' then
-				create category_converter.make (formatting_info, extract_precision_option)
-				current_literal.wipe_out
-			when 'C' then
-				-- not supported
+				create {LOG_CATEGORY_PATTERN_CONVERTER} converter.make (formatting_info, 
+										extract_precision_option)
 			when 'd' then
-				
+				create {LOG_DATE_PATTERN_CONVERTER} converter.make (formatting_info, extract_option)
+			when 'm' then
+				create {LOG_MESSAGE_PATTERN_CONVERTER} converter.make (formatting_info)
+			when 'r' then
+				create {LOG_RELATIVE_TIME_PATTERN_CONVERTER} converter.make (formatting_info)
+			else
+				internal_log.error ("Unexpected char [" + c + "at position " + i + " in conversion pattern.")
+				create {LOG_LITERAL_PATTERN_CONVERTER} converter.make (current_literal)
+			end
+			current_literal.wipe_out
+			add_converter (converter)
+		end
+	
+	add_converter (converter: LOG_PATTERN_CONVERTER) is
+			-- Add 'converter' to list of pattern converters.
+		require
+			converter_exists: converter /= Void
+		do
+			current_literal.wipe_out
+			converters.force_last (converter)
+			state := Literal_state
+			formatting_info.reset
+		end
+	
 end -- class LOG_PATTERN_LAYOUT
