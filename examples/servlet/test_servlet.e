@@ -1,8 +1,12 @@
 indexing
-	description: "A test servlet"
-	author: "Glenn Maughan"
+	description: "Example servlet that outputs hard-coded HTML page."
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "examples"
 	date: "$Date$"
 	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
 	TEST_SERVLET

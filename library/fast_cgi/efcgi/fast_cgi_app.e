@@ -1,9 +1,12 @@
 indexing
-	description: "Objects that represent a FastCGI standalone application."
-	usage: "Inherit from this class to perform standard FastCGI initialisation and request processing."
-	author: "Glenn Maughan"
+	description: "Objects that represent a FastCGI standalone application"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "FastCGI protocol"
 	date: "$Date$"
 	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 deferred class
 	FAST_CGI_APP

@@ -3,9 +3,13 @@ indexing
 		% to ensure correct storable functionality. %
 		% When retrieving XMLE_DOCUMENT_WRAPPER objects ensure that %
 		% your application includes a reference to this class."
-	author: "Glenn Maughan"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "XMLE DOM Extensions"
 	date: "$Date$"
 	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
 	XMLE_DOM_STORAGE_REFS

@@ -1,15 +1,18 @@
 indexing
-   title : "Collections that can be accessed by name. %
-           %NamedMaps are not maintained in any particular order. %
-           %Objects contained in an object implementing NamedMap %
-           %may also be accessed by an ordinal index, but this is %
-           %simply to allow convenient enumeration of the contents %
-           %of a NamedMap, and does not imply that the DOM specifies %
-           %an order.";
-   license: "Eiffel Forum Freeware License", "see forum.txt";
-   date: "$Date$";
-   revision: "$Revision$";
-   key: "DOM", "Document Object Model", "DOM Core";
+	description : "Collections that can be accessed by name. %
+      	%NamedMaps are not maintained in any particular order. %
+      	%Objects contained in an object implementing NamedMap %
+      	%may also be accessed by an ordinal index, but this is %
+      	%simply to allow convenient enumeration of the contents %
+      	%of a NamedMap, and does not imply that the DOM specifies %
+      	%an order.";
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "Document Object Model (DOM) Core"
+	date: "$Date$"
+	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 deferred class DOM_NAMED_MAP [G -> DOM_NODE]
 

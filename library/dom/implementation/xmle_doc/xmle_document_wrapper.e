@@ -1,8 +1,12 @@
 indexing
 	description: "Objects that hold a DOM document and provide storable and access capabilities"
-	author: "Glenn Maughan"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "XMLE DOM Extensions"
 	date: "$Date$"
 	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
 	XMLE_DOCUMENT_WRAPPER

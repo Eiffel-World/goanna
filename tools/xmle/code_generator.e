@@ -1,10 +1,12 @@
 indexing
-
 	description: "Eiffel code generator for DOM structuros"
-	author: "Glenn Maughan"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "XMLE Tool"
 	date: "$Date$"
 	revision: "$Revision$"
-
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 class CODE_GENERATOR
 
 inherit

@@ -1,12 +1,15 @@
 indexing
-  title: "The abstraction of an ordered collection of nodes, %
-         %without defining or constraining how this collection %
-         %is implemented.",
-         "The items are accessible via an integral index, starting from 0.";
-   license: "Eiffel Forum Freeware License", "see forum.txt";
-   date: "$Date$";
-   revision: "$Version: $";
-   key: "DOM", "Document Object Model", "DOM Core";
+	description: "The abstraction of an ordered collection of nodes, %
+		%without defining or constraining how this collection %
+		%is implemented.",
+		"The items are accessible via an integral index, starting from 0.";
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "Document Object Model (DOM) Core"
+	date: "$Date$"
+	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 deferred class DOM_NODE_LIST
 

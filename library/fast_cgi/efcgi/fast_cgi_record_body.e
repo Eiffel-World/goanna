@@ -1,8 +1,12 @@
 indexing
-	description: "Abstract notion of a FastCGI record body."
-	author: "Glenn Maughan"
+	description: "Abstract notion of a FastCGI record body"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "FastCGI protocol"
 	date: "$Date$"
 	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 deferred class
 	FAST_CGI_RECORD_BODY

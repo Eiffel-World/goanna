@@ -1,13 +1,12 @@
 indexing
-   title: "Accessing character data in the DOM. For clarity this set %
-          %is defined here rather than on each object that uses these %
-          %attributes and methods. No DOM objects correspond directly %
-          %to CharacterData, though Text and others do inherit %
-          %the interface from it. All offsets in this interface start from 0.";
-   license: "Eiffel Forum Freeware License", "see forum.txt";
-   date: "$Date$";
-   revision: "$Revision$";
-   key: "DOM", "Document Object Model", "DOM Core";
+   	description: "Character data implementation"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "Document Object Model (DOM) Core Implementation"
+	date: "$Date$"
+	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 deferred class DOM_CHARACTER_DATA_IMPL
 

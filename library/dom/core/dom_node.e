@@ -1,9 +1,12 @@
 indexing
-   project: "Eiffel binding for the Level 2 Document Object Model: Core";
-   license: "Eiffel Forum Freeware License", "see forum.txt";
-   date: "$Date$";
-   revision: "$Revision$";
-   key: "DOM", "Document Object Model", "DOM Core";
+	description: "Node"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "Document Object Model (DOM) Core"
+	date: "$Date$"
+	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 deferred class DOM_NODE
 

@@ -1,8 +1,12 @@
 indexing
-	description: "Objects that represent a FastCGI begin raw record body such as stdin or params."
-	author: "Glenn Maughan"
+	description: "Objects that represent a FastCGI begin raw record body such as stdin or params"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "FastCGI protocol"
 	date: "$Date$"
 	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
 	FAST_CGI_RAW_BODY

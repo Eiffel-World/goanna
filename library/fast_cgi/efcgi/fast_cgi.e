@@ -1,9 +1,12 @@
 indexing
-	description: "Objects that can process FastCGI requests."
-	author: "Glenn Maughan"
-	original: "Lyn Headley, http://eiffel-forum.org/archive/headley/small-fcgi.htm"
-	revision: "$Revision$"
+	description: "Objects that can process FastCGI requests"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "FastCGI protocol"
 	date: "$Date$"
+	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class FAST_CGI
 
