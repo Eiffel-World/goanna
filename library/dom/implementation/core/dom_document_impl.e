@@ -182,6 +182,33 @@ feature -- Access
 				new_namespace_uri, qualified_name)
 		end
 
+	get_elements_by_tag_name_ns (a_namespace_uri, localname: DOM_STRING): DOM_NODE_LIST is
+			-- Returns a NodeList of all the Elements with a given local name and
+			-- namespace URI in the order in which they would be encountered in a preorder
+			-- traversal of the Document tree.
+			-- Parameters
+			--    a_namespace_uri	The namespace URI of the elements to match on. The special 
+			--                  special value "*" matches all namespaces.
+			--    localname The local name of the elements to match on. The special value "*"
+			--              matches all local names.
+			-- Return Value
+			--    A new NodeList object containing all the matched Elements.
+			-- This method raises no exceptions.
+		do
+		end
+	
+	get_element_by_id (element_id: DOM_STRING): DOM_ELEMENT is
+			-- Returns the element whose ID is given by 'element_id'. If no such
+			-- element exists, returns Void. Behaviour is not defined if more than
+			-- one element has this ID.
+			-- Parameters
+			--     element_id The unique id value for an element
+			-- Return Value
+			--     The matchine element.
+			-- This method raises no exceptions.
+		do
+		end
+		
 feature -- Document Traversal
 
 	create_node_iterator (root: DOM_NODE; what_to_show: INTEGER;

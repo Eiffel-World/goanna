@@ -13,7 +13,7 @@ class
 
 inherit
 	
-	EXPAT_EVENT_PARSER
+	EP_EVENT_PARSER
 		redefine
 			create_default_parser
 		end

@@ -28,6 +28,7 @@ default
 	disabled_debug(yes)
 	debug("xmle_id_nodes")
 	debug("parser_events")
+	debug("namespace")
 	disabled_debug("unhandled_node_types")
 	debug("find_namespace")
 	debug("normalize")
@@ -102,17 +103,29 @@ cluster
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
-	exml:		"$EXML/lib"
+	exml:		"$EXML/library"
 
 	all exml_factory (exml):		"$/factory"
 
-	all exml_interface (exml):		"$/interface"
+	all exml_general (exml):		"$/general"
 
-	exml_implementation (exml):		"$/implementation"
+	all exml_formater (exml):		"$/formater"
 
-	all exml_implementation_interface (exml_implementation):		"$/implementation_interface"
+	all exml_event (exml):		"$/event"
+
+	all exml_tree (exml):		"$/tree"
+
+	all exml_source (exml):		"$/source"
+
+	all exml_position (exml):		"$/position"
+
+	exml_implementation (exml):		"$/impl"
+
+	all exml_implementation_interface (exml_implementation):		"$/interface"
 
 	exml_expat_implementation (exml_implementation):		"$/expat"
+
+	exml_expat_expat_implementation (exml_expat_implementation):		"$/expat"
 
 	exml_expat_api_implementation (exml_expat_implementation):		"$/api"
 
@@ -125,12 +138,6 @@ cluster
 
 	exml_expat_ise_implementation (exml_expat_implementation):		"$/spec/ise"
 
-	exml_expat_tree_implementation (exml_expat_implementation):		"$/tree"
-
-	all exml_native_implementation (exml_implementation):		"$/native"
-
-	all exml_tree_on_event_implementation (exml_implementation):		"$/tree_on_event"
-
 external
 
 	include_path:
@@ -140,6 +147,6 @@ external
 
 	object:
 		"$EXPAT\lib\Debug\expat.lib",
-		"$EXML/lib/implementation/expat/spec/c/libexml.lib"
+		"$EXML/library/impl/expat/spec/c/libexml.lib"
 
 end

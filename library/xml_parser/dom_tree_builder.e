@@ -13,7 +13,7 @@ class
 
 inherit
    
-   XML_EVENT_PARSER
+   XM_EVENT_PARSER
 		redefine
 			on_attribute_declaration,
 			on_element_declaration,
@@ -65,6 +65,7 @@ feature {NONE} -- Parser call backs
 		local
 			discard: DOM_NODE
 			qname: DOM_STRING
+			dom_ns_prefix: DOM_STRING
 			new_element: DOM_ELEMENT
 			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
 			node_holder: DOM_TREE_NODE
@@ -108,7 +109,8 @@ feature {NONE} -- Parser call backs
 			create node_holder.make_with_attributes (new_attributes)
 			-- build the element
 			qname := build_qualified_name (ns_prefix, name)
-			new_element := document.create_element_ns (nodes.find_namespace_uri (ns_prefix, node_holder), qname)
+			create dom_ns_prefix.make_from_ucstring (ns_prefix)
+			new_element := document.create_element_ns (nodes.find_namespace_uri (dom_ns_prefix, node_holder), qname)
 			-- set new node as root document element if not already set.
 			if document_element = Void then
 				document_element := new_element
@@ -189,11 +191,10 @@ feature {NONE} -- Parser call backs
 			discard := nodes.item_node_as_element.append_child (new_element)
 		end
 
-	on_element_declaration (name: UCSTRING; model: POINTER) is
+	on_element_declaration (name: UCSTRING) is
 		do
 			debug ("parser_events")
 				print ("on_element_declaration:%R%N%Tname=" + quoted_eiffel_string_out (name.out))
-				print (" model=" + quoted_eiffel_string_out (model.out))
 				print ("%R%N")
 			end
 		end
@@ -209,12 +210,12 @@ feature {NONE} -- Parser call backs
 			end
 		end
 
-	on_xml_declaration (xml_version, encoding: UCSTRING; standalone: INTEGER) is
+	on_xml_declaration (xml_version, encoding: UCSTRING; is_standalone: BOOLEAN) is
 		do
 			debug ("parser_events")
 				print ("on_xml_declaration:R%N%Txml_version=" + quoted_eiffel_string_out (xml_version.out) 
 					+ " encoding=" + quoted_eiffel_string_out (encoding.out))
-				print (" standalone=" + standalone.out)
+				print (" is_standalone=" + is_standalone.out)
 				print ("%R%N")
 			end
 		end

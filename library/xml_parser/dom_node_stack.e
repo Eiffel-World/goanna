@@ -49,7 +49,7 @@ feature -- Access
 			end
 		end
 		
-	find_namespace_uri (ns_prefix: UCSTRING; current_node: DOM_TREE_NODE): DOM_STRING is
+	find_namespace_uri (ns_prefix: DOM_STRING; current_node: DOM_TREE_NODE): DOM_STRING is
 			-- Find a namespace URI bound to 'ns_prefix'. Start the search in 
 			-- 'current_node', if specified, then traverse stack of nodes.
 			-- Return an empty string if not found
