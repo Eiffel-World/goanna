@@ -76,6 +76,9 @@ feature -- Status setting
 			req.cookies.search_forth (cookie)
 			if not req.cookies.off then
 				cookie := req.cookies.item_for_iteration
+				debug ("session_management")
+					print ("Cookie value is: " + cookie.value + "%R%N")
+				end	
 				-- check for stale cookie
 				if sessions.has (cookie.value) then
 					debug ("session_management")
