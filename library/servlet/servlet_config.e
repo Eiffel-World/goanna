@@ -11,4 +11,19 @@ indexing
 class
 	SERVLET_CONFIG
 
+feature -- Access
+
+	document_root: STRING
+			-- Root directory for documents
+			
+feature -- Status setting
+
+	set_document_root (dir: STRING) is
+			-- Set the document root to 'dir'
+		require
+			dir_exists: dir /= Void
+		do
+			document_root := dir
+		end
+		
 end -- class SERVLET_CONFIG

@@ -101,7 +101,10 @@ feature {NONE} -- Implementation
 				element := doc.create_element (str)
 				create name.make_from_string ("name")
 				create value.make_from_string (parameter_names.item_for_iteration)
-				element.set_attribute (name, value)				
+				element.set_attribute (name, value)	
+				debug ("dom_test_servlet")
+					print (generator + ".add_parameter_elements name=" + value.out)
+				end			
 				create name.make_from_string ("value")
 				create value.make_from_string (req.get_parameter (parameter_names.item_for_iteration))
 				element.set_attribute (name, value)
@@ -134,6 +137,9 @@ feature {NONE} -- Implementation
 				create name.make_from_string ("name")
 				create value.make_from_string (header_names.item_for_iteration)	
 				element.set_attribute (name, value)
+				debug ("dom_test_servlet")
+					print (generator + ".add_header_elements name=" + value.out)
+				end	
 				create str.make_from_string (req.get_header (header_names.item_for_iteration))
 				text := document.create_text_node (str)
 				discard := element.append_child (text)

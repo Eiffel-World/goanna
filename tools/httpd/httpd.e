@@ -18,11 +18,6 @@ inherit
 			{NONE} all
 		end
 	
-	SHARED_DOCUMENT_ROOT
-		export
-			{NONE} all
-		end
-	
 	SHARED_SERVLET_MANAGER
 		export
 			{NONE} all
@@ -48,6 +43,7 @@ feature -- Initialization
 			-- on 'port' and serving documents from 'doc_root'.
 			-- Start the server
 		do
+			create config
 			parse_arguments
 			if argument_error then
 				print_usage
@@ -68,6 +64,9 @@ feature {NONE} -- Implementation
 	argument_error: BOOLEAN
 			-- Did an error occur parsing arguments?
 
+	config: SERVLET_CONFIG
+			-- Configuration for servlets
+			
 	parse_arguments is
 			-- Parse the command line arguments and store appropriate settings
 		local
@@ -82,7 +81,7 @@ feature {NONE} -- Implementation
 					-- parse document root
 					create dir.make (Arguments.argument (2))
 					if dir.exists and then dir.is_readable then
-						document_root_cell.put (dir.name)
+						config.set_document_root (dir.name)
 					else
 						argument_error := True
 					end
@@ -101,17 +100,16 @@ feature {NONE} -- Implementation
 	init_servlets is
 			-- Initialise servlets
 		local
-			config: SERVLET_CONFIG
-			test_servlet: HTTP_SERVLET
-			
+			test_servlet: HTTP_SERVLET	
 		do
-			create config
 			create {TEST_SERVLET} test_servlet.init (config)
 			servlet_manager.register_servlet (test_servlet, "basic")
 			create {XMLE_TEST_SERVLET} test_servlet.init (config)
 			servlet_manager.register_servlet (test_servlet, "xmle")
 			create {DOM_TEST_SERVLET} test_servlet.init (config)
 			servlet_manager.register_servlet (test_servlet, "dom")
+			create {FILE_SERVLET} test_servlet.init (config)
+			servlet_manager.register_default_servlet (test_servlet)
 		end
 		
 	server_socket: HTTPD_SERVER_SOCKET
@@ -140,7 +138,6 @@ feature {NONE} -- Implementation
 			-- Start serving requests
 		local
 			multiplexed : BOOLEAN
-			count : INTEGER
 			error: INTEGER
 		do
 			from

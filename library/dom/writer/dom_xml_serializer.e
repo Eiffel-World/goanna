@@ -176,9 +176,11 @@ feature {NONE} -- Implementation
 			indent: STRING
 		do
 			if not is_compact_format then
-				create indent.make (level)
-				indent.fill_blank
-				output.put_string (indent)
+				if level > 0 then
+					create indent.make (level)
+					indent.fill_blank
+					output.put_string (indent)	
+				end
 			end
 		end
 	

@@ -25,31 +25,35 @@ inherit
 			{NONE} all
 		end
 	
-	HTTPD_HEADER_VARS
+	HTTPD_CGI_HEADER_VARS
 		export
 			{NONE} all
 		end
-				
+	
+	STRING_MANIPULATION
+		export
+			{NONE} all
+		end
+					
 creation
 
 	make
 	
 feature {NONE} -- Initialisation
 
-	make (buffer: STRING; resp: HTTPD_SERVLET_RESPONSE) is
+	make (http_request: HTTPD_REQUEST; resp: HTTPD_SERVLET_RESPONSE) is
 			-- Create a new fast cgi servlet request wrapper for
 			-- the request information contained in 'fcgi_request'
 		require
-			buffer_exists: buffer /= Void
+			http_request_exists: http_request /= Void
 			response_exists: resp /= Void
 		do
 			debug ("httpd_servlet_request")
-				print (generator + " buffer=%R%N" + buffer)
+--				print (generator + " buffer=%R%N" + buffer)
 			end
-			internal_buffer := buffer
+			internal_request := http_request
 			internal_response := resp
 			create parameters.make (5)
-			create internal_headers.make (5)
 			parse_parameters
 		end
 	
@@ -102,7 +106,7 @@ feature -- Access
 	get_header (name: STRING): STRING is
 			-- Get the value of the specified request header.
 		do
-			Result := clone (internal_headers.item (name))
+			Result := clone (internal_request.parameter (name))
 		end
 
 	get_headers (name: STRING): DS_LINEAR [STRING] is
@@ -134,8 +138,8 @@ feature -- Access
 			cursor: DS_HASH_TABLE_CURSOR [STRING, STRING]
 			array_list: DS_ARRAYED_LIST [STRING]
 		do
-			create array_list.make (internal_headers.count)
-			cursor := internal_headers.new_cursor
+			create array_list.make (internal_request.parameters.count)
+			cursor := internal_request.parameters.new_cursor
 			from
 				cursor.start
 			until
@@ -167,13 +171,19 @@ feature -- Status report
 			end 
 		end
 
-	content_type: STRING 
+	content_type: STRING is
 			-- The MIME type of the body of the request, or Void if the type is
 			-- not known.
+		do
+			Result := get_header (Content_type_var)
+		end
 
-	protocol: STRING
+	protocol: STRING is
 			-- The name and version of the protocol the request uses in the form
 			-- 'protocol/majorVersion.minorVersion', for example, HTTP/1.1.
+		do
+			Result := get_header (Server_protocol_var)
+		end
 
 	scheme: STRING is
 			-- The name of the scheme used to make this request. Such as, http, https
@@ -218,7 +228,7 @@ feature -- Status report
 	has_header (name: STRING): BOOLEAN is
 			-- Does this request contain a header named 'name'?
 		do
-			Result := internal_headers.has (name)
+			Result := internal_request.has_parameter (name)
 		end
 
 	auth_type: STRING is
@@ -271,9 +281,12 @@ feature -- Status report
 			Result := get_header (Path_translated_var)
 		end
 
-	query_string: STRING 
+	query_string: STRING is
 			-- The query string that is contained in the request URL after the path.
 			-- Returns Void if no query string is sent.
+		do
+			Result := get_header (Query_string_var)
+		end
 
 	remote_user: STRING is
 			-- The login of the user making this request, if the user has been
@@ -292,15 +305,12 @@ feature -- Status report
 	
 feature {NONE} -- Implementation
 
-	internal_buffer: STRING
+	internal_request: HTTPD_REQUEST
 		-- Internal request information.
 	
 	internal_response: HTTPD_SERVLET_RESPONSE
 		-- Response object held so that session cookie can be set.
-		
-	internal_headers: DS_HASH_TABLE [STRING, STRING]
-		-- Header name value(s) pairs
-		
+				
 	session_id: STRING
 		-- Id of session. Void until session is bound by first call to get_session.
 		
@@ -312,28 +322,18 @@ feature {NONE} -- Implementation
 			
 	parse_parameters is
 			-- Parse the query string or stdin data for parameters and
-			-- store in params structure.	
-		local
-			tokenizer: STRING_TOKENIZER		
+			-- store in params structure.		
 		do
-			-- parse the request line
-			create tokenizer.make (internal_buffer)
-			tokenizer.start
-			internal_headers.put (tokenizer.token, Request_method_var)
-			tokenizer.forth
-			internal_headers.put (tokenizer.token, Query_string_var)
-			tokenizer.forth
-			internal_headers.put (tokenizer.token, Server_protocol_var)
 			-- If the request is a GET then the parameters are stored in the query
 			-- string. Otherwise, the parameters are in the stdin data.
---			if method.is_equal ("GET") then
+			if method.is_equal ("GET") then
 --				parse_parameter_string (query_string)
---			elseif method.is_equal ("POST") then
+			elseif method.is_equal ("POST") then
 --				parse_parameter_string (internal_request.raw_stdin_content)
---			else
---				-- not sure where the parameters will be for other request methods.
---				-- Need to experiment.
---			end
+			else
+				-- not sure where the parameters will be for other request methods.
+				-- Need to experiment.
+			end
 		end
 	
 	parse_parameter_string (str: STRING) is
@@ -348,30 +348,30 @@ feature {NONE} -- Implementation
 			tokenizer: STRING_TOKENIZER
 		do
 			-- parameters can appear more than once. Add a parameter value for each instance.
---			debug ("query_string_parsing")
----				print (generator + ".parse_parameter_string str = " + quoted_eiffel_string_out (str) + "%R%N")
---			end
---			create tokenizer.make (str)
---			tokenizer.set_token_separator ('&')
---			from
---				tokenizer.start
---			until
---				tokenizer.off
---			loop
---				-- get the parameter pair token
---				pair := tokenizer.token
---				-- find equal character
---				e := index_of_char (pair, '=', 1)
---				if e > 0 then
---					name := pair.substring (1, e - 1)
---					value := pair.substring (e + 1, pair.count)
---					-- add the parameter
---					add_parameter (name, decode_url(value))
---				else
---					-- TODO: check for a coordinate pair
---				end
---				tokenizer.forth
---			end
+			debug ("query_string_parsing")
+				print (generator + ".parse_parameter_string str = " + quoted_eiffel_string_out (str) + "%R%N")
+			end
+			create tokenizer.make (str)
+			tokenizer.set_token_separator ('&')
+			from
+				tokenizer.start
+			until
+				tokenizer.off
+			loop
+				-- get the parameter pair token
+				pair := tokenizer.token
+				-- find equal character
+				e := index_of_char (pair, '=', 1)
+				if e > 0 then
+					name := pair.substring (1, e - 1)
+					value := pair.substring (e + 1, pair.count)
+					-- add the parameter
+					add_parameter (name, decode_url(value))
+				else
+					-- TODO: check for a coordinate pair
+				end
+				tokenizer.forth
+			end
 		end
 		
 	add_parameter (name, value: STRING) is
@@ -400,46 +400,46 @@ feature {NONE} -- Implementation
 		do
 			-- not very efficient but we don't know if we will get any bogus cookies
 			-- along the way
---			create internal_cookies.make
---			create comparator
---			internal_cookies.set_equality_tester (comparator)
---			if has_header (Http_cookie_var) then
---				from
---					create tokenizer.make (get_header (Http_cookie_var))
---					debug ("cookie_parsing")
---						print (generator + ".parse_cookie_header str = "
---							 + quoted_eiffel_string_out (get_header (Http_cookie_var)) + "%R%N")
---					end
---					tokenizer.set_token_separator (';')
---					tokenizer.start
---				until
---					tokenizer.off
---				loop
---					pair := tokenizer.token
---					i := index_of_char (pair, '=', 1)
---					if i > 0 then
---						name := pair.substring (1, i - 1)
---						name.left_adjust
---						name.right_adjust
---						value := pair.substring (i + 1, pair.count)
---						value.left_adjust
---						value.right_adjust
---						-- remove double quotes if they wrap the value
---						if value.item (1) = '%"' then
---							value := value.substring (2, value.count - 1)							
---						end
---						create new_cookie.make (name, value)
---						debug ("cookie_parsing")
---							print (generator + ".parse_cookie_header new_cookie = "
---								+ quoted_eiffel_string_out (new_cookie.header_string) + "%R%N")
---						end		
---						internal_cookies.force_last (new_cookie)
---					else
---						-- bad cookie, ignore it
---					end
---					tokenizer.forth
---				end
---			end
+			create internal_cookies.make
+			create comparator
+			internal_cookies.set_equality_tester (comparator)
+			if has_header (Http_cookie_var) then
+				from
+					create tokenizer.make (get_header (Http_cookie_var))
+					debug ("cookie_parsing")
+						print (generator + ".parse_cookie_header str = "
+							 + quoted_eiffel_string_out (get_header (Http_cookie_var)) + "%R%N")
+					end
+					tokenizer.set_token_separator (';')
+					tokenizer.start
+				until
+					tokenizer.off
+				loop
+					pair := tokenizer.token
+					i := index_of_char (pair, '=', 1)
+					if i > 0 then
+						name := pair.substring (1, i - 1)
+						name.left_adjust
+						name.right_adjust
+						value := pair.substring (i + 1, pair.count)
+						value.left_adjust
+						value.right_adjust
+						-- remove double quotes if they wrap the value
+						if value.item (1) = '%"' then
+							value := value.substring (2, value.count - 1)							
+						end
+						create new_cookie.make (name, value)
+						debug ("cookie_parsing")
+							print (generator + ".parse_cookie_header new_cookie = "
+								+ quoted_eiffel_string_out (new_cookie.header_string) + "%R%N")
+						end		
+						internal_cookies.force_last (new_cookie)
+					else
+						-- bad cookie, ignore it
+					end
+					tokenizer.forth
+				end
+			end
 		end
 	
 end -- class FAST_CGI_SERVLET_REQUEST

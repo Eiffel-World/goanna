@@ -37,7 +37,7 @@ inherit
 			{NONE} all
 		end
 	
-	HTTPD_HEADER_VARS
+	HTTPD_CGI_HEADER_VARS
 		export
 			{NONE} all
 		end
@@ -52,6 +52,7 @@ feature
 			-- this routine is called if there is data ready for
 			-- reading on our socket
 		local
+			http_request: HTTPD_REQUEST
 			resp: HTTPD_SERVLET_RESPONSE
 			req: HTTPD_SERVLET_REQUEST
 			path: STRING
@@ -61,9 +62,10 @@ feature
 			buffer.resize (buffer_size.min (bytes_available))
 			buffer.fill_blank
 			receive_string (buffer)
+			create http_request.make (buffer)
 			-- create request and response objects from request buffer
 			create resp.make (buffer, Current)
-			create req.make (buffer, resp)
+			create req.make (http_request, resp)
 			-- dispatch to the registered servlet using the path info as the registration name.
 			if req.has_header (Query_string_var) then
 				path := req.get_header (Query_string_var)
@@ -72,12 +74,19 @@ feature
 					path.tail (path.count - 1)
 				end
 			end			
-			if path /= Void and servlet_manager.has_registered_servlet (path) then
+			if path /= Void then
 				log (Info, "Servicing request: " + path)
-				servlet_manager.get_servlet (path).service (req, resp)
+				if servlet_manager.has_registered_servlet (path) then
+					servlet_manager.servlet (path).service (req, resp)
+				elseif servlet_manager.has_default_servlet then
+					servlet_manager.default_servlet.service (req, resp)
+				else
+					handle_missing_servlet (resp)
+					log (Error, "Servlet not found for URI " + path)
+				end
 			else
 				handle_missing_servlet (resp)
-				log (Error, "Servlet not found: ") -- + path)
+				log (Error, "Request URI not specified")
 			end	
 			-- close socket after sending reply
 			socket_multiplexer.unregister_managed_socket_read (Current)
