@@ -215,10 +215,41 @@ messages any way required and filter messages based on priority and/or message c
     </section>
     <section>
       <title>The Category Hierarchy</title>
-      <para></para>
+      <para>The category hierarchy, represented by the class <classname>LOG_HIERARCHY</classname>, holds a collection of 
+categories that you define. Multiple independant hierarchies can exist within an application. However, it is more common
+to use one hierarchy with multiple categories to represent different logging areas.</para>
+      <para><classname>LOG_HIERARCHY</classname> provides methods for accessing categories and setting hierarchy level
+logging priorities. The hierarchy is the only object that can create instances of categories 
+(<classname>LOG_CATEGORY</classname> and maintains the parents of each category internally. In addition, each hierarchy
+instance initialises a <emphasis>root</emphasis> category that resides at the top of the category hierarchy. If required,
+the root category can be used as the sole logging category in an application.</para>
       <section>
-	<title>Categories</title>
-	<para>Structure and creation of categories.</para>
+	  <title>Categories</title>
+	  <para>The category hierarchy is determine by the names given to each category---a dot in the name indicates a 
+parent-child relationship between categories. For example, if a category is created with the name 
+<literal>a.b</literal> it identifies the category named <literal>b</literal> with the parent category named 
+<liberal>a</literal>. When this category is created the category hierarchy will also instantiate any intermediate
+parent categories if needed. For the category named <literal>a.b</literal> the hierarchy will create a category
+named <literal>a</literal> if it doesn't already exist and set it as the parent of <literal>b</literal>. A category
+name can contain an arbitrary number of parts separated by dots ('.'). The hierarchy will manage the parents
+automatically for you.</para>
+        <para>The naming of categories follows your requirements for logging. Category hierarchies can be defined that
+provide logging categories for an application as a whole, subsystems and/or source modules. You can create very simple
+logging hierarchies, such as using only the root category, through to very complex hierarchies, such as providing a 
+category for every source file or module in your application.</para>
+        <para>A category can only be created by the category hierarchy by calling the <function>category</function>
+function of <classname>LOG_CATEGORY</classname>. The sole parameter to this function specifies the name of the category
+you would like to access. The hierarchy will create the category (and its parents) if required and return the category
+to you. This ensures that there will only be one instance of a named category in each category hierarchy and that it is
+correctly positioned in the hierarchy. Once you have a reference to the category you can then configure the category's
+priority and appenders and log messages to it.</para>
+        <para>Messages can be sent to a category using the routines <function>debugging</function><footnote>The original 
+log4j library uses the routine name <function>debug</function> however this is a reserved word in Eiffel and has 
+therefore been renamed <function>debugging</function></footnote>,
+<function>warn</function>, <function>info</function>, <function>error</function>, <function>fatal</function or
+<function>log</function> to log at predefined priorities or a specified priority in the case of <function>log</function>.
+
+</para> 
       </section>
       <section>
 	<title>Priorities</title>
