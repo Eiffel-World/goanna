@@ -13,8 +13,6 @@ inherit
 	
 	DOM_NODE_IMPL
 		redefine
-			previous_sibling,
-			next_sibling,
 			parent_node,
 			set_parent_node
 		end

@@ -18,7 +18,7 @@ inherit
 		rename
 			make as cdata_make
 		redefine
-			node_name, node_type, node_value
+			node_value
 		end
 
 creation
