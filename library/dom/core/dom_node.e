@@ -288,7 +288,7 @@ feature
 				attributes /= Void and not attributes.empty) 
 		end
 
-feature {DOM_NODE} -- DOM Status Setting
+feature -- DOM Status Setting
 
 	set_owner_document (doc: like owner_document) is
 			-- Set the owner document of this node
@@ -365,7 +365,7 @@ feature -- Validation Utility
 invariant
 
 	name_exists: node_name /= Void
-	has_owner: node_type /= Document_node implies owner_document /= Void
+	has_owner: (node_type /= Document_node and node_type /= Document_type_node) implies owner_document /= Void
 	has_attributes: node_type = Element_node implies attributes /= Void
 
 end -- class DOM_NODE

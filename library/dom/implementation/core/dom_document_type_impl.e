@@ -33,7 +33,9 @@ feature {DOM_DOCUMENT} -- Factory creation
 			-- 'doc' may be Void.
 		do
 			parent_node_make
-			set_owner_document (doc)
+			if doc /= Void then
+				set_owner_document (doc)		
+			end
 			name := new_qualified_name
 			public_id := new_public_id
 			system_id := new_system_id	

@@ -45,13 +45,15 @@ feature {NONE} -- Initialisation
 			do
 				make_from_imp (parser)
 				create {DOM_IMPLEMENTATION_IMPL} dom_impl
-				document := dom_impl.create_empty_document (Void)
+				document := dom_impl.create_empty_document
 				current_open_composite := document
 			end
 
 feature {ANY} -- Access
    
 	document: DOM_DOCUMENT
+	
+	document_type: DOM_DOCUMENT_TYPE
          
 feature {NONE} -- Parser call backs
 
@@ -174,6 +176,8 @@ feature {NONE} -- Parser call backs
 				print (" standalone=" + standalone.out)
 				print ("%R%N")
 			end
+			-- enable all events
+			parser.register_all_callbacks
 		end
 
 	on_entity_declaration (entity_name: UCSTRING; is_parameter_entity: BOOLEAN; 
@@ -219,6 +223,8 @@ feature {NONE} -- Parser call backs
 	on_start_doctype (name, system_id, public_id: UCSTRING; has_internal_subset: BOOLEAN) is
 			-- This is called for the start of the DOCTYPE declaration, before
 			-- any DTD or internal subset is parsed.
+		local
+			uc_public_id, uc_system_id: DOM_STRING
 		do
 			debug ("parser_events")
 				print ("on_start_doctype: name=" + name.out)
@@ -231,6 +237,19 @@ feature {NONE} -- Parser call backs
 				print (" has_internal_subset=" + has_internal_subset.out)
 				print ("%R%N")
 			end
+			-- create new document type
+			if system_id /= Void then
+				create uc_system_id.make_from_ucstring (system_id)
+			else
+				create uc_system_id.make_from_string ("")
+			end
+			if public_id /= Void then
+				create uc_public_id.make_from_ucstring (public_id)
+			else
+				create uc_public_id.make_from_string ("")
+			end
+			document_type := dom_impl.create_document_type (create {DOM_STRING}.make_from_ucstring (name), 
+				uc_public_id, uc_system_id)
 		end
 
 	on_end_doctype is
@@ -241,6 +260,9 @@ feature {NONE} -- Parser call backs
 				print ("on_end_doctype")
 				print ("%R%N")
 			end
+			-- store the doctype
+			document_type.set_owner_document (document)
+			document.set_doctype (document_type)
 		end
 
 	on_notation_declaration (notation_name, base, system_id, public_id: UCSTRING) is

@@ -264,4 +264,14 @@ feature -- Convenience routines
 			document_element := e
 		end
 
+	set_doctype (new_doctype: DOM_DOCUMENT_TYPE) is
+			-- Set the document type.
+			-- Non DOM utility.
+		local
+			discard: DOM_NODE
+		do
+			doctype := new_doctype
+			discard := append_child (doctype)
+		end
+		
 end -- class DOM_DOCUMENT_IMPL

@@ -78,11 +78,9 @@ feature
 
 feature -- Non DOM Utility 
 
-	create_empty_document (doctype: DOM_DOCUMENT_TYPE): DOM_DOCUMENT is
+	create_empty_document: DOM_DOCUMENT is
 			-- Creates an XML DOCUMENT object of the specified type.
 			-- Non DOM utility routine.
-			-- Parameters:
-			--	`doctype' - The type of document to be created or Void. 
 		require
 			not_wrong_document_err: -- TODO: check for doctype created with different implementation
 		deferred

@@ -34,13 +34,12 @@ feature
 			discard := Result.append_child (document_element)
 		end
 
-	create_empty_document (doctype: DOM_DOCUMENT_TYPE): DOM_DOCUMENT is
+	create_empty_document: DOM_DOCUMENT is
 			-- Creates an empty XML DOCUMENT object of the specified type.
 			-- Non DOM.
 			-- Parameters:
-			--	'doctype' - The type of document to be created or Void. 
 		do
-			!DOM_DOCUMENT_IMPL! Result.make (doctype)
+			!DOM_DOCUMENT_IMPL! Result.make (Void)
 		end
 
 	create_document_type (qualified_name, public_id, system_id: DOM_STRING): DOM_DOCUMENT_TYPE is

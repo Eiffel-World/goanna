@@ -31,11 +31,23 @@ feature -- Serialization
 
 	serialize (doc: DOM_DOCUMENT) is
 			-- Serialize 'doc' to specified output medium.
+		local
+			doc_nodes: DOM_NODE_LIST
+			index: INTEGER
 		do
 			-- output document declaration
 			output.put_string ("<?xml version=%"1.0%" encoding=%"ISO-8859-1%" standalone=%"yes%"?>")
-			serialize_new_line
-			serialize_node_recurse (doc.document_element, 0)
+			from
+				doc_nodes := doc.child_nodes
+			variant
+				doc_nodes.length - index
+			until
+				index >= doc_nodes.length
+			loop
+				serialize_new_line
+				serialize_node_recurse (doc_nodes.item (index), 0)
+				index := index + 1
+			end
 		end
 
 	serialize_node (node: DOM_NODE) is
@@ -138,7 +150,13 @@ feature {NONE} -- Implementation
 				serialize_cdata_section (node, indent_level)
 			when Comment_node then
 				serialize_comment (node, indent_level)
+			when Document_type_node then
+				serialize_doctype (node, indent_level)
 			else
+				debug ("unhandled_node_types")
+					print ("Unhandled node type: " + node.generator + " name: " + node.node_name.out)
+					print ("%R%N")
+				end
 				-- TODO: handle other types
 			end		
 		end
@@ -152,8 +170,6 @@ feature {NONE} -- Implementation
 	
 	serialize_comment (comment: DOM_NODE; indent_level: INTEGER) is
 			-- Serialize 'comment' to output stream
-		local
-			
 		do
 			serialize_indent (indent_level)
 			output.put_string ("<!-- ")
@@ -163,13 +179,60 @@ feature {NONE} -- Implementation
 		end
 	
 	serialize_cdata_section (cdata: DOM_NODE; indent_level: INTEGER) is
-			-- Serialize 'cdata' to output stream
-		local
-			
+			-- Serialize 'cdata' to output stream			
 		do
-			
+			serialize_indent (indent_level)
+			output.put_string ("<!CDATA[")
+			output.put_string (cdata.node_value.out)
+			output.put_string ("]]>")
+			serialize_new_line
 		end
 	
+	serialize_doctype (doctype: DOM_NODE; indent_level: INTEGER) is
+			-- Serialize 'doctype' to output stream
+		local
+			doctype_node: DOM_DOCUMENT_TYPE
+			child_nodes: DOM_NODE_LIST
+			i: INTEGER
+		do
+			doctype_node ?= doctype
+			check
+				doctype_exists: doctype_node /= Void
+			end
+			serialize_indent (indent_level)
+			output.put_string ("<!DOCTYPE ")
+			output.put_string (doctype_node.name.out)
+			if doctype_node.system_id /= Void then
+				output.put_string (" " + doctype_node.system_id.out)
+			end
+			if doctype_node.public_id /= Void then
+				output.put_string (" " + doctype_node.public_id.out)
+			end
+			if doctype_node.has_child_nodes then
+				-- serialize internal subset
+				output.put_string ("[")
+				serialize_new_line
+				from
+					child_nodes := doctype_node.child_nodes
+					i := 0
+				until
+					i >= child_nodes.length
+				loop
+					serialize_node_recurse (child_nodes.item (i), indent_level + indent_amount)
+					i := i + 1
+				end	
+				-- close tag
+				serialize_new_line
+				serialize_indent (indent_level)
+				output.put_string ("]>")
+				serialize_new_line
+			else
+				-- close external subse
+				output.put_string (">")
+				serialize_new_line		
+			end			
+		end
+		
 	serialize_indent (level: INTEGER) is
 			-- 
 		local
