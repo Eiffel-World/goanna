@@ -47,18 +47,55 @@ feature -- Basic operations
 	do_get (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
 		local
-			file_name, file_extension: STRING
+			file_name, file_extension, file_path, s,s2: STRING
 			ctype_code: INTEGER
+			final_slash: BOOLEAN
 		do
 			file_name := clone (servlet_config.document_root)
-			file_name.append (req.path_info)
+			final_slash := file_name.substring(file_name.count, file_name.count).is_equal ("/")
+			debug
+				print ("Document root ends with slash? " + final_slash.out + "%N")
+			end
+			s := req.path_info
+			if
+				s.substring(2, file_servlet_name.count + 1).is_equal(file_servlet_name)
+			 then
+				debug
+					print ("path_info starts with file_servlet_name preceded by /")
+				end
+				if
+					final_slash
+				 then
+					s.keep_tail (s.count - file_servlet_name.count - 2)
+				else
+					s.keep_tail (s.count - file_servlet_name.count - 1)
+				end
+			end
+			create file_path.make_from_string (s)
+			file_name.append (file_path)
+			debug
+				print ("File_servlet_name is " + file_servlet_name + "%N")
+				print ("File_servlet_name count is " + file_servlet_name.count.out + "%N")
+				print ("File path is: " + file_path + "%N")
+				print ("S is: " + s + "%N")
+				print ("Full file name is: " + file_name + "%N")
+				print ("File name is: " + req.path_translated + "%N")
+				print ("Path name is: " + req.path_info + "%N")
+				print ("Servlet path is: " + req.servlet_path + "%N")
+			end
 			if exists (file_name) then
+				debug
+					print ("File found - using " + file_name + "%N")
+				end
 				file_extension := extension (req.path_info)
 				if content_type_codes.has (file_extension) then
 					ctype_code := content_type_codes.item (file_extension)
 				else
 					-- assume html
 					ctype_code := Content_type_text_html
+				end
+				debug
+					print ("About to call content handler for content type " + ctype_code.out + "%N")
 				end
 				content_type_handlers.item (ctype_code).service (file_name, ctype_code, req, resp)
 			else
@@ -72,7 +109,24 @@ feature -- Basic operations
 		do
 			do_get (req, resp)
 		end
-		
+
+feature -- Status Report
+
+	file_servlet_name: STRING
+			-- Qualified name of servlet, including  servlet_mapping_prefix.
+
+feature -- Status setting
+
+	set_name (nm: STRING) is
+			-- Set qualified name of servlet.
+		require
+			valid_name: nm /= Void and then nm.count > 0
+		do
+			file_servlet_name := nm
+		ensure
+			set: file_servlet_name.is_equal (nm)
+		end
+	
 feature {NONE} -- Implementation
 	
 	content_type_handlers: ARRAY [CONTENT_FILE_HANDLER] is

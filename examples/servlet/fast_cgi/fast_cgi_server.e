@@ -93,14 +93,16 @@ feature {NONE} -- Implementation
 	register_servlets is
 			-- Initialise servlets
 		local
-			servlet: HTTP_SERVLET	
+			servlet: HTTP_SERVLET
+			file_servlet: FILE_SERVLET	
 		do
 			-- register servlets
 			servlet_manager.set_servlet_mapping_prefix ("servlet")
 			servlet_manager.set_config (config)
-			create {FILE_SERVLET} servlet.init (config)
-			servlet_manager.register_servlet (servlet, "file")
-			servlet_manager.register_default_servlet (servlet)
+			create file_servlet.init (config)
+			file_servlet.set_name (servlet_manager.servlet_mapping_prefix + "file")
+			servlet_manager.register_servlet (file_servlet, "file")
+			servlet_manager.register_default_servlet (file_servlet)
 			create {SNOOP_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "snoop")
 		end

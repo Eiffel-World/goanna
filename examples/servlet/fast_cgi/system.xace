@@ -17,10 +17,12 @@
 	<option unless="${DEBUG}">
 		<option name="assertion" value="none"/>
 		<option name="finalize" value="true"/>
+		<option name="debug" value="false"/>
 	</option>
 	<option if="${DEBUG}">
 		<option name="assertion" value="require"/>
 		<option name="finalize" value="false"/>
+		<option name="debug" value="true"/>
 	</option>
 
 	<cluster name="root_cluster" location="${GOANNA}/examples/servlet/fast_cgi">

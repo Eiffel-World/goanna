@@ -32,6 +32,8 @@ inherit
 			{NONE} all
 		end
 
+	ASCII
+	
 feature -- Initialisation
 
 	make (port, backlog: INTEGER) is
@@ -47,7 +49,9 @@ feature -- Basic operations
 		local
 			req: FAST_CGI_SERVLET_REQUEST
 			resp: FAST_CGI_SERVLET_RESPONSE
-			path: STRING
+			path, servlet_name: STRING
+			servlet_found: BOOLEAN
+			slash_index: INTEGER
 		do
 			create resp.make (request)
 			create req.make (request, resp)	
@@ -59,19 +63,57 @@ feature -- Basic operations
 					path.tail (path.count - 1)
 				end
 			end			
-			if path /= Void and servlet_manager.has_registered_servlet (path) then
-				info (Servlet_app_log_category, "Servicing request: " + path)
-				servlet_manager.servlet (path).service (req, resp)
-			else
-				handle_missing_servlet (resp)
-				if
-					path /= Void
-				 then
-					error (Servlet_app_log_category, "Servlet not found: " + path)
-				else
-					error (Servlet_app_log_category, "Servlet not found: path was Void")
+			if path /= Void then
+				-- Search upwards through a hierarchy of servlet names.
+				from
+					servlet_name := path
+					slash_index := -1
+				until
+					servlet_found or slash_index = 0
+				loop
+					debug
+						info (Servlet_app_log_category, "Trying servlet: " + servlet_name)
+					end
+					if
+						servlet_manager.has_registered_servlet (servlet_name)
+					 then
+						servlet_found := True
+					else
+						slash_index := servlet_name.last_index_of (Slash.to_character, servlet_name.count)
+						debug
+							info (Servlet_app_log_category, "Slash index is " + slash_index.out)
+						end
+						if slash_index > 0 then
+							servlet_name := servlet_name.substring (1, slash_index - 1)
+						else
+							check
+								servlet_prefix: servlet_name.is_equal (servlet_manager.servlet_mapping_prefix)
+							end
+						end
+					end
 				end
-			end	
+			end
+			if servlet_found then
+				info (Servlet_app_log_category, "Servicing request: " + path)
+				info (Servlet_app_log_category, "Using servlet named: " + servlet_name)
+				servlet_manager.servlet (servlet_name).service (req, resp)
+			else
+				if
+					servlet_manager.has_default_servlet
+				 then
+					info (Servlet_app_log_category, "Using default servlet.")
+					servlet_manager.default_servlet.service (req, resp)
+				else
+					handle_missing_servlet (resp)
+					if
+						path /= Void
+					 then
+						error (Servlet_app_log_category, "Servlet not found: " + path)
+					else
+						error (Servlet_app_log_category, "Servlet not found: path was Void")
+					end
+				end
+			end
 		end
 		
 feature {NONE} -- Implementation
