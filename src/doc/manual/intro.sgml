@@ -116,8 +116,14 @@
   <section>
     <title>Installation and Compilation</title>
     <para>
-      
-
+      Goanna can be installed from a packaged distribution file or directly from the CVS repository.
+      The pre-packaged distributions represent stable releases that are suitable for general use, 
+      while the CVS repository contains the very latest source versions and should be used 
+      only for development and beta testing of new features. 
+    </para>
+    <para>
+      If you are installing from a pre-packaged distribution you only need to extract the archive 
+      into a directory of your choice. 
     </para>
   </section>
 </chapter>

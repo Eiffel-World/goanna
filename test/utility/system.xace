@@ -35,6 +35,7 @@
 			<cluster name="testgen" location="TESTGEN"/>
 		</cluster>
 		<mount location="${GOANNA}/library/cluster.xace"/>
+		<mount location="${GOANNA}/library/yaesockets.xace"/>
 		<mount location="${GOBO}/library/cluster.xace"/>
 		<mount location="${GOBO}/library/kernel.xace"/>
 	</cluster>

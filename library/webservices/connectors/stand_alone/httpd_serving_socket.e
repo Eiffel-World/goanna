@@ -76,12 +76,13 @@ feature
 				end			
 				if path /= Void then
 					log_hierarchy.category (Access_category).info ("Servicing request: /" + path)
+					-- attempt to handle the request and send 'not found' if not handled.
 					if servlet_manager.has_registered_servlet (path) then
 						servlet_manager.servlet (path).service (req, resp)
 					elseif servlet_manager.has_default_servlet then
 						servlet_manager.default_servlet.service (req, resp)
 					else
-						handle_missing_servlet (resp)
+						resp.send_error (Sc_not_found)
 						log_hierarchy.category (Access_category).error ("Servlet not found for URI " + path)
 					end
 				else

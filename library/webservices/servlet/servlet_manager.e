@@ -24,7 +24,7 @@ feature -- Initialization
 		end
 	
 feature -- Access
-
+		
 	servlet (name: STRING): K is
 			-- Retrieve the servlet registered under 'name'
 		require

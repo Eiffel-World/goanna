@@ -17,6 +17,7 @@
 
 	<mount location="${GOANNA}/library/webservices/servlet/cluster.xace"/>
 	<mount location="${GOANNA}/library/webservices/models/dom/cluster.xace"/>
+	<mount location="${GOANNA}/library/webservices/security/cluster.xace"/>
 	<mount location="${GOANNA}/library/webservices/protocols/soap/cluster.xace"/>
 	<mount location="${GOANNA}/library/webservices/protocols/xmlrpc/cluster.xace"/>
 	<mount location="${GOANNA}/library/webservices/connectors/cgi/cluster.xace"/>
