@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 			build_indexing_clause
 			build_inheritance_clause
 			build_creation_routine
-			build_retrieve_document_routine
+			build_bdom_file_name_constant
 			create {PLAIN_TEXT_FILE} dest.make_open_write (class_file_name)
 			xmle_document_class.write (dest)
 			dest.close
@@ -99,39 +99,23 @@ feature {NONE} -- Implementation
 
 	build_creation_routine is
 			-- build creation clause and creation routines
-		local
-			feature_group: EIFFEL_FEATURE_GROUP
-			make_feature: EIFFEL_ROUTINE
 		do
 			xmle_document_class.add_creation_procedure_name ("make")
-			-- build make procedure
-			create feature_group.make ("Initialisation")
-			xmle_document_class.add_feature_group (feature_group)
-			create make_feature.make ("make")
-			make_feature.add_body_line ("retrieve_document")
-			feature_group.add_feature (make_feature)
 		end
 	
-	build_retrieve_document_routine is
-			-- build the retrieve document routine
+	build_bdom_file_name_constant is
+			-- build the constant holding the name of the binary DOM file
 		local
-			feature_group: EIFFEL_FEATURE_GROUP
-			build_doc_routine: EIFFEL_ROUTINE
-			pair: DS_PAIR [STRING, STRING]
+			group: EIFFEL_FEATURE_GROUP
+			attr: EIFFEL_ATTRIBUTE
 		do
-			create feature_group.make ("Implementation")
-			feature_group.add_export ("NONE")
-			xmle_document_class.add_feature_group (feature_group)
-			-- create build document routine
-			create build_doc_routine.make ("retrieve_document")
-			feature_group.add_feature (build_doc_routine)
-			-- add code to retrieve object structure
-			create pair.make ("bdom_file", "RAW_FILE")
-			build_doc_routine.add_local (pair)
-			build_doc_routine.add_body_line ("create bdom_file.make (bdom_file_name)")
-			build_doc_routine.add_body_line ("document ?= bdom_file.retrieved")
-		end		
-	
+			create group.make ("Implementation")
+			xmle_document_class.add_feature_group (group)
+			create attr.make ("bdom_file_name", "STRING")
+			attr.set_value ("%"" + bdom_file_name + "%"")
+			group.add_feature (attr)
+		end	
+
 	store_document is
 			-- Store the document object structure in the file 'bdom_file_name'.
 		do
