@@ -42,6 +42,7 @@ feature -- Access
 			not_empty: not is_empty
 		do
 			mutex.lock
+			debug ("thread_safe_queue") print ("queue next%N") end
 			Result := internal_queue.item
 			internal_queue.remove
 			mutex.unlock
@@ -53,6 +54,7 @@ feature -- Status setting
 			-- Add 'new_item' to end of queue
 		do
 			mutex.lock
+			debug ("thread_safe_queue") print ("queue put%N") end
 			internal_queue.extend (new_item)
 			mutex.unlock
 		end
@@ -64,6 +66,7 @@ feature -- Status report
 		do
 			mutex.lock
 			Result := internal_queue.is_empty
+			debug ("thread_safe_queue") print ("queue is_empty: " + Result.out + "%N") end
 			mutex.unlock
 		end
 
@@ -74,6 +77,7 @@ feature -- Measurement
 		do
 			mutex.lock
 			Result := internal_queue.count
+			debug ("thread_safe_queue") print ("queue count: " + Result.out + "%N") end
 			mutex.unlock
 		end
 		

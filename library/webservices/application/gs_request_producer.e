@@ -71,6 +71,9 @@ feature {NONE} -- Implementation
 			if connector.last_operation_ok then
 				create Result.make (connector.last_request, connector.last_response)
 			end
+			check 
+				next_request_not_void: Result /= Void
+			end
 		end
 		
 	done: BOOLEAN is

@@ -38,6 +38,7 @@ feature {NONE} -- Initialisation
 			app_context_not_void: app_context /= Void
 			queue_not_void: queue /= Void
 		do
+			debugging (generator, "initialising")
 			consumer_make (queue)
 			context := app_context
 		end

@@ -43,9 +43,13 @@ feature {PRODUCER_CONSUMER_CONTROL} -- Basic operations
 			until
 				done
 			loop
+				debug ("producer_consumer") print ("producer locking%N") end
 				mutex.lock
+				debug ("producer_consumer") print ("producer storing next%N") end
 				request_queue.put (generate_next)
+				debug ("producer_consumer") print ("producer unlocking%N") end
 				mutex.unlock
+				debug ("producer_consumer") print ("producer signalling%N") end
 				condition.signal
 			end
 		end
