@@ -7,7 +7,8 @@ then
 fi
 
 echo "Cleaning all build files..."
-(cd $GOANNA; geant -v clean)
+(cd $GOANNA; geant -v clobber)
+(cd $GOANNA; geant -v install)
 
 echo "Packaging: $1"
 tar -c -z -f $1 \
