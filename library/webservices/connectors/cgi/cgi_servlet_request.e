@@ -431,7 +431,7 @@ feature -- Status report
 			Result := internal_content
 		end
 		
-feature {NONE} -- Implementation
+feature {CGI_SERVLET_REQUEST} -- Implementation
 	
 	internal_content: STRING
 			-- Content read from stdin
@@ -447,7 +447,9 @@ feature {NONE} -- Implementation
 		
 	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of parameter values with support for multiple values per parameter name
-			
+
+feature {NONE} -- Implementation
+				
 	parse_parameters is
 			-- Parse the query string or stdin data for parameters and
 			-- store in params structure.			

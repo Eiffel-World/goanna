@@ -124,7 +124,7 @@ feature -- Status report
 			Result := internal_request.parameters.has (name)
 		end
 		
-feature {NONE} -- Implementation
+feature {FAST_CGI_SERVLET_REQUEST} -- Implementation
 
 	internal_request: FAST_CGI_REQUEST
 		-- Internal request information and stream functionality.
