@@ -14,13 +14,13 @@ default
 	inlining(no)
 	multithreaded(no)
 	check_vape(no)
---	arguments("test.xml")
---	arguments("rich_iii.xml")
---	arguments("small.xml")
---	disabled_debug(yes)
---	debug("parser_events")
---	disabled_debug("normalize")
---	debug(no)
+	arguments("test.xml")
+	arguments("rich_iii.xml")
+	arguments("small.xml")
+	disabled_debug(yes)
+	debug("parser_events")
+	disabled_debug("normalize")
+	debug(no)
 	line_generation(no)
 	profile(no)
 	trace(no)
@@ -41,16 +41,26 @@ cluster
 	xmle_codegen:		"$GOANNA\library\codegen"
 	xml_parser:			"$GOANNA\library\xml_parser"
 
-	base:				"$EIFFEL4\library\base";
-	base_kernel (base):	"$\kernel";
-	base_support (base):	"$\support";
+	all base:		"$EIFFEL4\library\base"
+		exclude
+			"desc"; "table_eiffel3"; "CVS"; 
+		end
 
-	gobo: 			"$GOBO\library";
-	gobo_kernel (gobo):	"$\kernel";
-	gobo_ise_kernel (gobo_kernel):	"$\spec\ise";
+	gobo:		"$GOBO\library"
 
-	all gobo_structures (gobo):	"$\structure";
-	all gobo_util (gobo): 		"$\utility";
+	gobo_kernel (gobo):		"$\kernel"
+
+	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
+
+	all gobo_structures (gobo):		"$\structure"
+		exclude
+			"base"; "CVS"; 
+		end
+
+	all gobo_util (gobo):		"$\utility"
+		exclude
+			"CVS"; 
+		end
 		
 	ucstring:				"$UCSTRING";
 	ucstring_lib (ucstring):	"$\lib";

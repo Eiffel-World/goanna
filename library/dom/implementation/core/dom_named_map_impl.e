@@ -146,7 +146,7 @@ feature
 			  from
 				 local_keys.start      
 			  until
-			     current_index > index
+			     current_index >= index
 			  loop
 				 local_keys.forth
 				 current_index := current_index + 1		

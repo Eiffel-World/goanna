@@ -65,9 +65,11 @@ feature {NONE} -- Implementation
 			serializer := serializer_factory.serializer_for_document (document)
 			create stream.make (4096)
 			serializer.set_output (stream)
-			format_param := req.get_parameter ("compact")
-			if format_param /= Void and format_param.to_boolean then
-				serializer.set_compact_format	
+			if req.has_parameter ("compact") then
+				format_param := req.get_parameter ("compact")
+				if format_param.is_boolean and format_param.to_boolean then
+					serializer.set_compact_format	
+				end
 			end
 			serializer.serialize (document)
 			resp.send (stream.to_string)

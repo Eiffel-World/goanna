@@ -5,6 +5,11 @@ root
 	SERVLET_SERVER: make
 
 default
+	assertion(require)
+	assertion(ensure)
+	assertion(check)
+	assertion(loop)
+	assertion(invariant)
 	address_expression(no)
 	array_optimization(yes)
 	console_application(yes)
@@ -15,13 +20,12 @@ default
 	inlining_size("4")
 	multithreaded(no)
 	check_vape(no)
---	arguments("8000 10")
---	disabled_debug(yes)
---	disabled_debug("fcgi_protocol")
---	debug("dom_output")
---	disabled_debug("query_string_parsing")
---	disabled_debug("normalize")
-	debug(no)
+	arguments("8000 10")
+	disabled_debug(yes)
+	debug("fcgi_protocol")
+	disabled_debug("dom_output")
+	disabled_debug("query_string_parsing")
+	disabled_debug("normalize")
 	line_generation(no)
 	profile(no)
 	trace(no)
@@ -60,11 +64,10 @@ cluster
 
 	yaesockets_ise (yaesockets):		"$\spec\ise"
 
-	base:		"$EIFFEL4\library\base"
-
-	base_kernel (base):		"$\kernel"
-
-	base_support (base):		"$\support"
+	all base:		"$EIFFEL4\library\base"
+		exclude
+			"desc"; "table_eiffel3"; "CVS"; 
+		end
 
 	gobo:		"$GOBO\library"
 
@@ -73,8 +76,14 @@ cluster
 	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
 
 	all gobo_structures (gobo):		"$\structure"
+		exclude
+			"base"; "CVS"; 
+		end
 
 	all gobo_util (gobo):		"$\utility"
+		exclude
+			"CVS"; 
+		end
 
 	ucstring:		"$UCSTRING"
 

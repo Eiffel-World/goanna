@@ -355,7 +355,7 @@ feature {NONE} -- Implementation
 				value := raw_param_content.substring (offset, offset + value_length - 1)
 				offset := offset + value_length
 				-- store parameter
-				parameters.put (value, name)
+				parameters.force (value, name)
 				debug ("fcgi_protocol")
 					print (generator + ".process_parameter_raw_data: name = " 
 						+ quoted_eiffel_string_out (name))
