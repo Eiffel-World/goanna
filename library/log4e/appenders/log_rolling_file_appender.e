@@ -43,6 +43,9 @@ feature -- Initialisation
 		do
 			file_appender_make (new_name)
 			stream := make_file_open_write (new_name)
+			if not is_open_write (stream) then
+				internal_log.error ("Failed to open log file: " + new_name)
+			end
 			maximum_file_size := max_size
 			max_number_of_backups := number_of_backups
 		ensure
@@ -74,7 +77,7 @@ feature {NONE} -- Implementation
 	rollover_required: BOOLEAN is
 			-- Has the current log file reached the maximum_file_size?
 		do
---			Result := size (stream) 
+			Result := stream.count >= maximum_file_size 
 		end
 	
 	rollover is
@@ -83,38 +86,41 @@ feature {NONE} -- Implementation
 			-- new file with the same name.
 		local
 			i: INTEGER
---			file: FILE
+			file: FILE
 		do
---  			close_stream (stream)
---  			-- do we need to make a backup
---  			if max_number_of_backups > 0 then
---  				-- remove the oldest backup
---  				create file.name (name + "." + number_of_backups)
---  				if file.exists then
---  					file.remove
---  				end
+  			close_stream (stream)
+  			-- do we need to make a backup
+  			if max_number_of_backups > 0 then
+  				-- remove the oldest backup
+  				create file.name (name + "." + number_of_backups)
+  				if file.exists then
+  					file.remove
+  				end
 				
---  				-- roll all existing backup files to 
---  				-- next number
---  				from
---  					i := max_number_of_backups - 1
---  				until
---  					i < 1
---  				loop
---  					create file.make (name + "." + i)
---  					if file.exists then
---  						file.rename_to (name + "." + (i + 1))
---  					end
---  					i := i - 1
---  				end
+  				-- roll all existing backup files to 
+  				-- next number
+  				from
+  					i := max_number_of_backups - 1
+  				until
+  					i < 1
+  				loop
+  					create file.make (name + "." + i)
+  					if file.exists then
+  						file.rename_to (name + "." + (i + 1))
+  					end
+  					i := i - 1
+  				end
 				
---  				-- rename current log file
---  				file ?= stream
---  				file.rename_to (name + "." + i)
+  				-- rename current log file
+  				file ?= stream
+  				file.rename_to (name + "." + i)
 				
---  				-- open new log
---  				stream := make_file_open_write (new_name)
---			end
+  				-- open new log
+  				stream := make_file_open_write (new_name)
+				if not is_open_write (stream) then
+					internal_log.error ("Failed to open log file: " + new_name)
+				end
+			end
 		end
 	
 end -- class LOG_ROLLING_FILE_APPENDER

@@ -39,8 +39,10 @@ feature -- Initialisation
 			name_not_empty: not new_name.is_empty
 		do
 			Precursor (new_name)
-			stream := make_file_open_write (new_name)
-			
+			stream := make_file_open_write (new_name)			
+			if not is_open_write (stream) then
+				internal_log.error ("Failed to open file stream: " + new_name)
+			end
 		ensure
 			log_file_open: is_open_write (stream)
 		end

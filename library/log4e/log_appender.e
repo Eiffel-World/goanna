@@ -16,7 +16,9 @@ inherit
 --		export
 --			{NONE} all
 --		end
-		
+	
+	LOG_SHARED_LOG_LOG
+	
 feature -- Initialisation
 	
 	make (new_name: STRING) is
