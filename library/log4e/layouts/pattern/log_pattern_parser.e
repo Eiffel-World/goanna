@@ -18,10 +18,10 @@ inherit
 			{NONE} all
 		end
 	
-	ASCII
-		export
-			{NONE} all
-		end
+--	ASCII
+--		export
+--			{NONE} all
+--		end
 		
 creation
 	
@@ -151,7 +151,7 @@ feature {NONE} -- Implementation
 						state := Dot_state
 					else
 						if c >= '0' and c <= '9' then
-							formatting_info.set_min (c.code - Zero)
+							formatting_info.set_min (c.code - ('0').code)
 							state := Min_state
 						else
 							finalize_converter (c)
@@ -160,7 +160,7 @@ feature {NONE} -- Implementation
 				when Min_state then
 					current_literal.append_character (c)
 					if c >= '0' and c <= '9' then
-						formatting_info.set_min (formatting_info.min * 10 + (c.code - Zero))
+						formatting_info.set_min (formatting_info.min * 10 + (c.code - ('0').code))
 					elseif c = '.' then
 						state := Dot_state
 					else
@@ -169,7 +169,7 @@ feature {NONE} -- Implementation
 				when Dot_state then
 					current_literal.append_character (c)
 					if c >= '0' and c <= '9' then
-						formatting_info.set_max (c.code - Zero)
+						formatting_info.set_max (c.code - ('0').code)
 						state := Max_state
 					else
 						internal_log.error ("Error occured in position " + i.out + 
@@ -179,7 +179,7 @@ feature {NONE} -- Implementation
 				when Max_state then
 					current_literal.append_character (c)
 					if c >= '0' and c <= '9' then
-						formatting_info.set_max (formatting_info.max * 10 + (c.code - Zero))
+						formatting_info.set_max (formatting_info.max * 10 + (c.code - ('0').code))
 					else
 						finalize_converter (c)
 						state := Literal_state
@@ -240,4 +240,4 @@ feature {NONE} -- Implementation
 			formatting_info.reset
 		end
 	
-end -- class LOG_PATTERN_LAYOUT
+end -- class LOG_PATTERN_PARSER

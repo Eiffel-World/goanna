@@ -1,16 +1,16 @@
 indexing
 	description: "A flexible layout using a pattern"
-	usage: "[
-		The conversion pattern is closely related to the printf function in C. It 
-		is composed of literal text and format control expression called conversion 
-		specifiers.
-		
-		Each conversion specifier starts with an & character and is followed by
-		optional format modifiers and a conversion character. The conversion 
-		character specifies the type of data, e.g., category, priority, date,
-		message. The format modifiers control such things as field width, padding,
-		left and right justification. 							      
-		]"
+	usage: "[%
+%		The conversion pattern is closely related to the printf function in C. %
+%		is composed of literal text and format control expression called conversion%  
+%		specifiers.%
+%		%
+%		Each conversion specifier starts with an & character and is followed by%
+%		optional format modifiers and a conversion character. The conversion %
+%		character specifies the type of data, e.g., category, priority, date,%
+%		message. The format modifiers control such things as field width, padding,%
+%		left and right justification. %
+%		]"
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	library: "log4e"
 	date: "$Date$"

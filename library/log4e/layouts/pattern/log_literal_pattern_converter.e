@@ -52,4 +52,4 @@ feature {NONE} -- Implementation
 			-- not used
 		end
 	
-end -- LOG_PATTERN_CONVERTER
+end -- class LOG_LITERAL_PATTERN_CONVERTER

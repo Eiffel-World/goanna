@@ -10,6 +10,12 @@ indexing
 	
 class LOG_LOG
 	
+inherit
+	KL_SHARED_STANDARD_FILES
+		export
+			{NONE} all
+		end
+	
 feature -- Status Report
 	
 	quiet_mode: BOOLEAN
@@ -79,9 +85,9 @@ feature {NONE} -- Implementation
 			message_exists: message /= Void
 		do
 			if stderr_mode then			
-				io.error.put_string (message)
+				std.error.put_string (message)
 			else
-				io.put_string (message)
+				std.output.put_string (message)
 			end
 		end	
 	

@@ -98,6 +98,6 @@ feature {NONE} -- Implementation
 			correct_size: str.count >= old str.count + length
 		end
 
-end -- LOG_PATTERN_CONVERTER
+end -- class LOG_PATTERN_CONVERTER
 
 	
