@@ -65,34 +65,51 @@ feature -- Access
 	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of request parameters. Equivalent to the CGI parameter set.
 		
+	raw_stdin_content: STRING
+			-- Request body content. Empty string if no content.
+			
 feature {NONE} -- Implementation
 		
 	set_server_parameters is
 			-- Set server specific parameters for request
 		do
-			parameters.put ("Goanna HTTP Server V1.0", Server_software_var)
-			parameters.put ("CGI/1.1", Gateway_interface_var)
-			parameters.put (serving_socket.servlet_manager.config.server_port.out, Server_port_var)
-			parameters.put (serving_socket.peer_name, Remote_host_var)
-			parameters.put (serving_socket.peer_address, Remote_addr_var)
-			parameters.put (serving_socket.servlet_manager.config.document_root, Document_root_var)
+			parameters.force ("Goanna HTTP Server V1.0", Server_software_var)
+			parameters.force ("CGI/1.1", Gateway_interface_var)
+			parameters.force (serving_socket.servlet_manager.config.server_port.out, Server_port_var)
+			parameters.force (serving_socket.peer_name, Remote_host_var)
+			parameters.force (serving_socket.peer_address, Remote_addr_var)
+			parameters.force (serving_socket.servlet_manager.config.document_root, Document_root_var)
 		end
 		
+	Last_header_line: STRING is "%R%N%R%N"
+			-- String that indicates the last header has been read.
+			--| Specific to the DC_STRING_TOKENIZER token parsing method
+
+	Header_separator_line: STRING is "%R%N"
+			-- String that separates headers.
+			
 	parse_request_buffer (buffer: STRING) is
 			-- Parse request buffer to set parameters
-			-- NOTE: does not support POST requests yet.
 		require
 			buffer_exists: buffer /= Void
 		local
 			t1, t2: DC_STRING_TOKENIZER
 			request, header: STRING
+			content_length: INTEGER
+			index: INTEGER
+			done: BOOLEAN
 		do
+			debug ("raw_snoop")
+				print ("Request buffer:%R%N" + buffer + "%R%N")
+			end
+			--| keep record of the current index so that content data can
+			--| be extracted directly from the buffer, if required.
 			-- parse the request line
-			buffer.right_adjust
-			create t1.make_default (buffer)
+			create t1.make_include_delimiters (buffer, "%R%N")
 			t1.start
 			-- parse request line
 			request := t1.item
+			index := index + request.count
 			request.right_adjust
 			create t2.make (request, " ")
 			t2.start
@@ -105,13 +122,29 @@ feature {NONE} -- Implementation
 			from
 				t1.forth
 			until
-				t1.off
+				t1.off or done
 			loop
 				header := t1.item
-				header.right_adjust
-				-- parse the next header line
-				parse_header (header)
-				t1.forth
+				index := index + header.count
+				if header.is_equal (Last_header_line) then
+					-- at last header, skip forth and collect raw content data if it exists
+					t1.forth
+					if not t1.off then
+						if parameters.has (Content_length_var) then
+							content_length := parameters.item (Content_length_var).to_integer
+							raw_stdin_content := buffer.substring (index + 1, index + content_length)
+						else
+							raw_stdin_content := ""
+						end
+					end
+					done := True
+				else
+					if not header.is_equal (Header_separator_line) then
+						-- parse the next header line
+						parse_header (header)
+					end
+					t1.forth
+				end
 			end
 		end
 			
@@ -120,7 +153,7 @@ feature {NONE} -- Implementation
 		require
 			token_exists: token /= Void
 		local
-			query_index, path_index, slash_index: INTEGER
+			query_index, slash_index: INTEGER
 			query, script, path, servlet_prefix: STRING
 		do
 			
@@ -159,7 +192,10 @@ feature {NONE} -- Implementation
 					Path_translated_var)
 			end
 		end
-		
+	
+	Http_header_prefix: STRING is "HTTP_"
+			-- Prefix for all headers found in the request
+			
 	parse_header (header: STRING) is
 			-- Parse the header and set appropriate CGI variables
 		require
@@ -182,7 +218,7 @@ feature {NONE} -- Implementation
 					name.put ('_', i)
 					i := index_of_char (name, '-', i + 1)
 				end
-				name := "HTTP_" + name 
+				name := Http_header_prefix + name 
 				-- extract the value
 				value := header.substring (colon_index + 1, header.count)
 				value.left_adjust
@@ -190,4 +226,10 @@ feature {NONE} -- Implementation
 			end
 		end
 		
+invariant
+	
+	socket_exists: serving_socket /= Void
+	parameters_exist: parameters /= Void
+	raw_content_exists: raw_stdin_content /= Void
+	
 end -- class HTTPD_REQUEST

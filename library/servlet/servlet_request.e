@@ -96,4 +96,9 @@ feature -- Status report
 		deferred
 		end
 	
+	content: STRING is
+			-- Content data
+		deferred
+		end
+		
 end -- class SERVLET_REQUEST

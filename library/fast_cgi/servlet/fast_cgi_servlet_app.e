@@ -8,10 +8,13 @@ indexing
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-class
+deferred class
 	FAST_CGI_SERVLET_APP
 
 inherit
+	
+	SERVLET_APPLICATION
+	
 	FAST_CGI_APP
 		rename
 			make as fast_cgi_app_make
@@ -19,9 +22,7 @@ inherit
 			{NONE} fast_cgi_app_make
 		end
 	
-	SERVLET_MANAGER [HTTP_SERVLET]
-		rename
-			make as servlet_manager_make
+	SHARED_SERVLET_MANAGER
 		export
 			{NONE} all
 		end
@@ -35,24 +36,17 @@ inherit
 		export
 			{NONE} all
 		end
-		
-creation
-	make
 
 feature -- Initialisation
 
 	make (port, backlog: INTEGER) is
 			-- Create a new fast cgi servlet application
-		require
-			positive_port: port >= 0
-			positive_backlog: backlog >= 0
 		do
-			servlet_manager_make
 			fast_cgi_app_make (port, backlog)
 		end
 	
 feature -- Basic operations
-
+		
 	process_request is
 			-- Process a request.
 		local
@@ -70,9 +64,9 @@ feature -- Basic operations
 					path.tail (path.count - 1)
 				end
 			end			
-			if path /= Void and has_registered_servlet (path) then
+			if path /= Void and servlet_manager.has_registered_servlet (path) then
 				log (Info, "Servicing request: " + path)
-				servlet (path).service (req, resp)
+				servlet_manager.servlet (path).service (req, resp)
 			else
 				handle_missing_servlet (resp)
 				log (Error, "Servlet not found: " + path)

@@ -119,7 +119,7 @@ feature -- Basic operations
 			-- You must set the content_length before sending content data.
 		require
 			data_exists: data /= Void
-			content_length_set: contains_header ("Content-Length")
+--			content_length_set: contains_header ("Content-Length")
 		deferred
 		end
 	

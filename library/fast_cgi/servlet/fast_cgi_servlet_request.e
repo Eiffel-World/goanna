@@ -299,6 +299,12 @@ feature -- Status report
 			Result := get_header (Script_name_var)
 		end
 	
+	content: STRING is
+			-- Content data
+		do
+			Result := internal_request.raw_stdin_content
+		end
+		
 feature {NONE} -- Implementation
 
 	internal_request: FAST_CGI_REQUEST

@@ -13,35 +13,21 @@ class
 
 inherit
 
+	HTTPD_SERVLET_APP
+		rename
+			make as parent_make
+		end
+		
 	KL_SHARED_ARGUMENTS
 		export
 			{NONE} all
 		end
 	
-	SHARED_SERVLET_MANAGER
-		export
-			{NONE} all
-		end
-		
-	SOCKET_MULTIPLEXER_SINGLETON
-		export
-			{NONE} all
-		end
 	
-	SOCKET_ERRORS 		
+	SHARED_SERVICE_REGISTRY
 		export
 			{NONE} all
 		end
-
-	SHARED_STANDARD_LOGGER
---		export
---			{NONE} all
---		end
-	
---	SHARED_SOAP_RPC_REGISTRY
---		export
---			{NONE} all
---		end
 		
 creation
 	make
@@ -58,9 +44,10 @@ feature -- Initialization
 			if argument_error then
 				print_usage
 			else
-				init_servlets
---				init_soap
-				init_server
+				config.set_server_port (port)
+				parent_make (port, 10)
+				register_servlets
+				init_soap
 				run
 			end
 		end
@@ -109,7 +96,7 @@ feature {NONE} -- Implementation
 			print ("Usage: httpd <port-number> <document-root>%R%N")
 		end
 	
-	init_servlets is
+	register_servlets is
 			-- Initialise servlets
 		local
 			servlet: HTTP_SERVLET	
@@ -125,75 +112,26 @@ feature {NONE} -- Implementation
 			-- they uses object serialization and agents
 --			create {XMLE_TEST_SERVLET} servlet.init (config)
 --			servlet_manager.register_servlet (servlet, "xmle")
---			create {DOM_TEST_SERVLET} servlet.init (config)
---			servlet_manager.register_servlet (servlet, "dom")
---			create {SOAP_SERVLET} servlet.init (config)
---			servlet_manager.register_servlet (servlet, "soap")
+			create {DOM_TEST_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "dom")
+			create {SOAP_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "soap")
+			create {SNOOP_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "snoop")
 		end
 		
---	init_soap is
---			-- Initialise SOAP RPC calls
---		local
---			account: SOAP_ACCOUNT
---		do
---			create account
---			registry.register ("deposit", account, account~deposit(?))
---			registry.register ("withdraw", account, account~withdraw(?))
---		end
-		
-	server_socket: HTTPD_SERVER_SOCKET
-			-- Socket for accepting of new connections
-
-	init_server is
-			-- Set up the server
-		require
-			valid_port: port > 0
-		do
-			-- prepare the socket
-			create server_socket.make (port, 10)
-			config.set_server_port (port)
-			socket_multiplexer.register_managed_socket_read (server_socket)
-			log (Info, "Goanna HTTPD Server. Version 1.0")
-			log (Info, "Copyright (C) 2001 Glenn Maughan.")
-			debug ("status_output")
-				print ("Waiting for connections...%N")
-				print ("----------Legend:---------------------%N")
-				print ("#       : new client%N")
-				print ("?       : received data from a client%N")
-				print ("&       : send data to client%N")
-				print ("!       : multiplexed%N")
-				print (".       : idle%N")
-				print ("(n,e,c) : socket error (n), extended error (c), read count (c)%N")
-				print ("--------------------------------------%N")
-			end
-		end	
-		
-	run is
-			-- Start serving requests
+	init_soap is
+			-- Initialise SOAP RPC calls
 		local
-			multiplexed : BOOLEAN
-			error_code: INTEGER
+			account_service: SERVICE
+			account: SOAP_ACCOUNT
 		do
-			from
-				multiplexed := true
-			until
-				error_code = sock_err_select
-			loop
-				multiplexed := socket_multiplexer.multiplex_registered (15 , 0) -- it will exit after 60 seconds of no activity
-				if not multiplexed then
-					debug ("status_output")
-						io.put_character ('.') -- maybe just idle
-					end
-					error_code := socket_multiplexer.last_socket_error_code
-					if error_code /= 0 then
-						log (Error, "Socket error: " + error_code.out)
-					end
-				else
-					debug ("status_output")
-						io.put_character ('!') -- multiplexed
-					end
-				end
-			end
+			create account
+			create account_service.make (account)
+			account_service.agent_registry.register ("deposit", account, account~deposit(?))
+			account_service.agent_registry.register ("withdraw", account, account~withdraw(?))
+			registry.register ("account", account_service)
 		end
+		
 
 end -- class HTTPD

@@ -1,0 +1,32 @@
+<html>
+
+<head>
+<title>Goanna HTTPD</title>
+</head>
+
+<body>
+<h1>Goanna HTTPD</h1>
+<p>Welcome to the Goanna HTTPD server. The following services are available:</p>
+<ul>
+  <li>Test Servlets</li>
+  <li>
+    <ul>
+       <li><a href="http://localhost/servlet/dom">DOM Servlet</a></li>
+	 <li><a href="http://localhost/servlet/xmle">XMLE Order document Servlet</a></li>
+       <li><a href="http://localhost/servlet/basic">Basic text servlet</a></li>
+	 <li><a href="http://localhost/servlet/snoop">Snoop Servlet</a></li>
+    </ul>
+   </li>
+</ul>
+
+<h2>POST requests</h2>
+
+<form method="POST" action="http://localhost/servlet/snoop">
+<input type="text" name="text">
+<input type="submit">
+</form>
+<IMG SRC="images/power.gif">
+ 
+</body>
+
+</html>

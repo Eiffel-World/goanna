@@ -10,16 +10,6 @@ default
 	assertion(check)
 	assertion(loop)
 	assertion(invariant)
-	address_expression(yes)
-	array_optimization(yes)
-	console_application(yes)
-	dead_code_removal(yes)
-	dynamic_runtime(no)
-	exception_trace(yes)
-	inlining(yes)
-	inlining_size("2")
-	multithreaded(no)
-	check_vape(yes)
 	arguments("80 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
 	arguments("9000 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
 	arguments("9000 d:\goanna\tools\httpd\Documentation")
@@ -29,17 +19,35 @@ default
 	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
 	arguments(" ")
 	disabled_debug(yes)
-	disabled_debug("httpd_response_write")
-	disabled_debug("status_output")
-	disabled_debug("base64_encode")
-	disabled_debug("session_management")
 	disabled_debug("cookie_parsing")
-	debug("soap")
-	debug("query_string_parsing")
+	debug("snoop")
+	disabled_debug("status_output")
 	disabled_debug("httpd_servlet_response")
+	disabled_debug("query_string_parsing")
+	debug("parser_events")
+	disabled_debug("normalize")
+	debug("soap")
+	disabled_debug("dom_test_servlet")
+	debug("raw_snoop")
+	disabled_debug("unhandled_node_types")
+	disabled_debug("session_management")
+	disabled_debug("base64_encode")
+	disabled_debug("httpd_response_write")
+	disabled_debug("namespace")
+	debug("dom_output")
 	line_generation(no)
 	profile(no)
 	trace(no)
+	check_vape(yes)
+	console_application(yes)
+	address_expression(yes)
+	array_optimization(yes)
+	dead_code_removal(yes)
+	dynamic_runtime(no)
+	exception_trace(yes)
+	inlining(yes)
+	inlining_size("2")
+	multithreaded(no)
 
 
 --precompiled("$GOANNA/precomp/spec/$PLATFORM/goanna")
@@ -81,6 +89,8 @@ cluster
 
 	servlet_http (servlet):		"$\http"
 
+	all soap (goanna):		"$\soap"
+
 	utility (goanna):		"$\utility"
 
 	utility_ise (utility):		"$\spec\ise"
@@ -95,8 +105,6 @@ cluster
 	xml_parser (goanna):		"$\xml_parser"
 
 	logging (goanna):		"$\logging"
-
-	soap (goanna):		"$\soap"
 
 	yaesockets:		"$YAESOCKETS"
 		exclude
@@ -135,6 +143,41 @@ cluster
 
 	gobo_ise_time (gobo_time):		"$\spec\ise"
 
+	exml:		"$EXML/library"
+
+	all exml_factory (exml):		"$/factory"
+
+	all exml_general (exml):		"$/general"
+
+	all exml_formater (exml):		"$/formater"
+
+	all exml_event (exml):		"$/event"
+
+	all exml_tree (exml):		"$/tree"
+
+	all exml_source (exml):		"$/source"
+
+	all exml_position (exml):		"$/position"
+
+	exml_implementation (exml):		"$/impl"
+
+	all exml_implementation_interface (exml_implementation):		"$/interface"
+
+	exml_expat_implementation (exml_implementation):		"$/expat"
+
+	exml_expat_expat_implementation (exml_expat_implementation):		"$/expat"
+
+	exml_expat_api_implementation (exml_expat_implementation):		"$/api"
+
+	exml_expat_general_implementation (exml_expat_implementation):		"$/general"
+
+	exml_expat_event_implementation (exml_expat_implementation):		"$/event"
+		use
+			".lace"
+		end
+
+	exml_expat_ise_implementation (exml_expat_implementation):		"$/spec/ise"
+
 	ucstring:		"$UCSTRING\lib"
 
 	ucstring_ise (ucstring):		"$\spec\ise"
@@ -142,12 +185,15 @@ cluster
 external
 
 	include_path:
+		"$EXPAT\lib",
 		"$GOBO\library\kernel\include",
 		"$GOBO\library\time\include",
 		"$GOANNA\library\utility\spec\ise4\include"
 
 	object:
 		"$YAESOCKETS\C\Debug\cl.lib",
-		"$GOANNA\library\datetime\clib\Debug\datetime.lib"
+		"$GOANNA\library\datetime\clib\Debug\datetime.lib",
+		"$EXPAT\lib\Debug\expat.lib",
+		"$EXML/library/impl/expat/spec/c/libexml.lib"
 
 end

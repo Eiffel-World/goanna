@@ -134,7 +134,6 @@ feature {NONE} -- Parser call backs
 	on_content (chr_data: UCSTRING) is
 			-- called whenever the parser finds character data
 		local
-			normalized: UCSTRING
 			discard: DOM_NODE
 		do
 			debug ("parser_events")

@@ -299,6 +299,12 @@ feature -- Status report
 			Result := get_header (Script_name_var)
 		end
 	
+	content: STRING is
+			-- Content data
+		do
+			Result := internal_request.raw_stdin_content
+		end
+		
 feature {NONE} -- Implementation
 
 	internal_request: HTTPD_REQUEST
@@ -316,6 +322,9 @@ feature {NONE} -- Implementation
 	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of parameter values with support for multiple values per parameter name
 			
+	Encoded_form_data_content_type: STRING is "application/x-www-form-urlencoded"
+			-- Content type of form data passed in a POST request
+			
 	parse_parameters is
 			-- Parse the query string or stdin data for parameters and
 			-- store in params structure.		
@@ -324,8 +333,8 @@ feature {NONE} -- Implementation
 			-- string. Otherwise, the parameters are in the stdin data.
 			if method.is_equal ("GET") then
 				parse_parameter_string (query_string)
-			elseif method.is_equal ("POST") then
---				parse_parameter_string (internal_request.raw_stdin_content)
+			elseif method.is_equal ("POST") and content_type.substring_index (Encoded_form_data_content_type, 1) = 1 then
+				parse_parameter_string (content)
 			else
 				-- not sure where the parameters will be for other request methods.
 				-- Need to experiment.

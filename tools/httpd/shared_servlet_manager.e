@@ -9,7 +9,7 @@ indexing
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
-	SHARED_SERVLET_MANAGER
+	SHARED_SERVLET_MANAGER 
 
 feature -- Access
 
