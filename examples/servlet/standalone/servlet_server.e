@@ -13,39 +13,97 @@ class
 	
 inherit
 
-	FAST_CGI_SERVLET_APP	
+	HTTPD_SERVLET_APP
 		rename
-			make as fast_cgi_servlet_app_make
-		export
-			{NONE} fast_cgi_servlet_app_make
-		end	
-
+			make as parent_make
+		end
+		
 	KL_SHARED_ARGUMENTS
 		export
 			{NONE} all
 		end
-		
+	
 creation
 
 	make
 
-feature -- Initialisation
+feature -- Initialization
 
 	make is
-			-- Initialise application and begin request processing loop
-		local
-			servlet_config: SERVLET_CONFIG
-			test_servlet: HTTP_SERVLET	
+			-- Create and initialise a new server that will listen for connections
+			-- on 'port' and serving documents from 'doc_root'.
+			-- Start the server
 		do
-			fast_cgi_servlet_app_make (Arguments.argument (1).to_integer, Arguments.argument (2).to_integer)
-			create servlet_config
-			create {TEST_SERVLET} test_servlet.init (servlet_config)
-			register_servlet (test_servlet, "basic")
-			create {XMLE_TEST_SERVLET} test_servlet.init (servlet_config)
-			register_servlet (test_servlet, "xmle")
-			create {DOM_TEST_SERVLET} test_servlet.init (servlet_config)
-			register_servlet (test_servlet, "dom")
-			run
+			create config
+			parse_arguments
+			if argument_error then
+				print_usage
+			else
+				config.set_server_port (port)
+				parent_make (port, 10)
+				register_servlets
+				run
+			end
 		end
-		
+
+feature -- Status report
+
+	port: INTEGER
+			-- Server connection port
+				
+feature {NONE} -- Implementation
+
+	argument_error: BOOLEAN
+			-- Did an error occur parsing arguments?
+
+	config: SERVLET_CONFIG
+			-- Configuration for servlets
+			
+	parse_arguments is
+			-- Parse the command line arguments and store appropriate settings
+		local
+			dir: KL_DIRECTORY
+		do
+			if Arguments.argument_count < 2 then
+				argument_error := True
+			else
+				-- parse port
+				if Arguments.argument(1).is_integer then
+					port := Arguments.argument(1).to_integer
+					-- parse document root
+					create dir.make (Arguments.argument (2))
+					dir.open_read
+					if dir.is_open_read then
+						config.set_document_root (dir.name)
+					else
+						argument_error := True
+					end
+				else
+					argument_error := True
+				end
+			end
+		end
+
+	print_usage is
+			-- Display usage information
+		do
+			print ("Usage: servlet_server <port-number> <document-root>%R%N")
+		end
+	
+
+	register_servlets is
+			-- Initialise servlets
+		local
+			servlet: HTTP_SERVLET	
+		do
+			-- register servlets
+			servlet_manager.set_servlet_mapping_prefix ("servlet")
+			servlet_manager.set_config (config)
+			create {FILE_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "file")
+			servlet_manager.register_default_servlet (servlet)
+			create {SNOOP_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "snoop")
+		end
+
 end -- class SERVLET_SERVER
