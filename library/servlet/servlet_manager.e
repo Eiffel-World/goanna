@@ -43,6 +43,13 @@ feature -- Access
 			Result := internal_default_servlet
 		end
 		
+	count: INTEGER is
+			-- Number of registered servlets, not including the default servlet
+			-- if any.
+		do
+			Result := servlets.count
+		end
+				
 feature -- Status report
 
 	has_registered_servlet (name: STRING): BOOLEAN is
@@ -67,7 +74,7 @@ feature -- Status setting
 			servlet_exists: new_servlet /= Void
 			name_exists: name /= Void
 		do
-			servlets.force (new_servlet, name)
+			servlets.force (new_servlet, virtual_servlet_name (name))
 		end
 
 	register_default_servlet (def_servlet: K) is
@@ -78,12 +85,43 @@ feature -- Status setting
 			internal_default_servlet := def_servlet
 		end
 		
+	set_servlet_mapping_prefix (virtual_prefix: STRING) is
+			-- Set the servlet mapping prefix to 'prefix'. This is used to set
+			-- a virtual prefix name for accessing servlets. eg. "/servlet". The 
+			-- prefix should not begin or end in a slash. It will always be relative
+			-- to the document root.
+			-- If a servlet prefix is to be used, it must be set before any servlets
+			-- have been registered.
+		require
+			prefix_exists: virtual_prefix /= Void
+			prefix_valid: virtual_prefix.item (1) /= '/' 
+				and virtual_prefix.item (virtual_prefix.count) /= '/'
+			no_registered_servlets: count = 0
+		do
+			servlet_mapping_prefix := virtual_prefix + "/"
+		end
+		
 feature {NONE} -- Implementation
 
+	virtual_servlet_name (name: STRING): STRING is
+			-- Construct the actual mapping name for a servlet 'name' using
+			-- the virtual prefix if set.
+		require
+			name_exists: name /= Void
+		do
+			Result := clone (name)
+			if servlet_mapping_prefix /= Void then
+				Result.prepend (servlet_mapping_prefix)
+			end
+		end
+		
 	servlets: DS_HASH_TABLE [K, STRING]
 			-- Managed servlets.
 
 	internal_default_servlet: K
 			-- Default servlet
-			
+		
+	servlet_mapping_prefix: STRING
+			-- Prefix for servlet mappings. No prefix if Void.
+				
 end -- class SERVLET_MANAGER

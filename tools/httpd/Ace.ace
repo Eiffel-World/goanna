@@ -20,6 +20,7 @@ default
 	multithreaded(no)
 	check_vape(yes)
 	arguments("9000 d:\goanna\tools\httpd\docroot")
+	arguments("9000 d:\goanna\tools\httpd\Documentation")
 	arguments("9000 d:\Eiffel50\docs")
 	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
 	disabled_debug(yes)

@@ -80,8 +80,14 @@ feature {NONE} -- Implementation
 			create binary_file_handler
 			create Result.make (First_content_type, Last_content_type)
 			Result.put (text_file_handler, Content_type_text_html)
+			Result.put (text_file_handler, Content_type_text_xml)
+			Result.put (text_file_handler, Content_type_text_css)
+			Result.put (text_file_handler, Content_type_text_xsl)
+			Result.put (text_file_handler, Content_type_text_rtf)
 			Result.put (binary_file_handler, Content_type_image_gif)
 			Result.put (binary_file_handler, Content_type_image_jpeg)
+			Result.put (binary_file_handler, Content_type_image_png)
+			Result.put (binary_file_handler, Content_type_image_tiff)
 		end	
 		
 	file_exists (file_name: STRING): BOOLEAN is

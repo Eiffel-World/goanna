@@ -102,6 +102,7 @@ feature {NONE} -- Implementation
 		local
 			test_servlet: HTTP_SERVLET	
 		do
+			servlet_manager.set_servlet_mapping_prefix ("servlet")
 			create {TEST_SERVLET} test_servlet.init (config)
 			servlet_manager.register_servlet (test_servlet, "basic")
 			create {XMLE_TEST_SERVLET} test_servlet.init (config)
