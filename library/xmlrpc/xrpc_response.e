@@ -25,6 +25,7 @@ feature -- Initialisation
 			-- Initialise response with given 'value'. Parameter may be Void.
 		do
 			value := new_param
+			unmarshall_ok := True
 		end
 
 	make_with_value (new_value: XRPC_VALUE) is
@@ -37,9 +38,10 @@ feature -- Initialisation
 				create param.make (new_value)
 				value := param
 			end
+			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_NODE) is
+	unmarshall (node: DOM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
 		do
 		end

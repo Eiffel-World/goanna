@@ -30,7 +30,7 @@ feature -- Initialisation
 			value := new_value
 		end
 
-	unmarshall (node: DOM_NODE) is
+	unmarshall (node: DOM_ELEMENT) is
 			-- Unmarshall struct value from XML node.
 		do
 		end

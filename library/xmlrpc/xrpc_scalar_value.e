@@ -15,6 +15,11 @@ inherit
 	
 	XRPC_VALUE
 	
+	DOM_NODE_TYPE
+		export
+			{NONE} all
+		end
+		
 creation
 
 	make, make_base64, unmarshall
@@ -75,6 +80,7 @@ feature -- Initialisation
 					end		
 				end
 			end
+			unmarshall_ok := True
 		end
 
 	make_base64 (buffer: STRING) is
@@ -90,9 +96,80 @@ feature -- Initialisation
 			string_value := encoder.encode (buffer)
 		end
 
-	unmarshall (node: DOM_NODE) is
+	unmarshall (node: DOM_ELEMENT) is
 			-- Unmarshall scalar value from XML node.
+		local
+			int_ref: INTEGER_REF
+			double_ref: DOUBLE_REF
+			bool_ref: BOOLEAN_REF
+			text: DOM_TEXT
+--			decoder: BASE64_DECODER
 		do
+			unmarshall_ok := True
+			-- check for untyped scalar which we treat as a string
+			if node.node_type = Text_node then
+				value := clone (node.node_value.out)
+				string_value := value.out
+			else
+				-- check for text child node
+				text ?= node.first_child
+				if text /= Void then
+					type := node.node_name.out
+					string_value := text.node_value.out
+					-- check for string
+					if type.is_equal (String_type) then
+						value := clone (string_value)	
+					-- check for integer
+					elseif type.is_equal (Int_type) or type.is_equal (Alt_int_type) then
+						if string_value.is_integer then
+							create int_ref
+							int_ref.set_item (string_value.to_integer)
+							value := int_ref
+						else
+							unmarshall_ok := False
+							unmarshall_error_code := Invalid_integer_value
+						end
+					-- check for boolean
+					elseif type.is_equal (Bool_type) then
+						if string_value.is_equal ("0") then
+							create bool_ref
+							bool_ref.set_item (False)
+							value := bool_ref
+						elseif string_value.is_equal ("1") then
+							create bool_ref
+							bool_ref.set_item (True)
+							value := bool_ref
+						else
+							unmarshall_ok := False
+							unmarshall_error_code := Invalid_boolean_value
+						end
+					-- check for double
+					elseif type.is_equal (Double_type) then	
+						if string_value.is_double then
+							create double_ref
+							double_ref.set_item (string_value.to_double)
+							value := double_ref
+						else
+							unmarshall_ok := False
+							unmarshall_error_code := Invalid_double_value
+						end
+					-- check for Base64
+					elseif type.is_equal (Base64_type) then
+						-- TODO process base64
+--						create encoder
+--						value := encoder.decode (string_value)
+					-- check for date/time
+					elseif type.is_equal (Date_time_type) then
+						-- TODO process date
+					else
+						unmarshall_ok := False
+						unmarshall_error_code := Invalid_value_type
+					end	
+				else
+					unmarshall_ok := False
+					unmarshall_error_code := Value_text_element_missing
+				end
+			end
 		end
 
 feature -- Mashalling

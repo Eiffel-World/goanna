@@ -21,16 +21,15 @@ creation
 	
 feature -- Initialisation
 
-	make (new_code: INTEGER; new_string: STRING) is
+	make (new_code: INTEGER) is
 			-- Initialise 
-		require
-			new_string_exists: new_string /= Void
 		do
 			code := new_code
-			string := new_string
+			string := fault_code_string (code)
+			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_NODE) is
+	unmarshall (node: DOM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
 		do
 		end

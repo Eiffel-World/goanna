@@ -47,12 +47,8 @@ feature -- Basic operations
 		local
 			response_text: STRING
 		do			
---			create fault.make (Unsupported_method_fault_code, Unsupported_method_fault_string)
---			response_text := fault.marshall
-
-			call := test_call
-			response_text := call.marshall
-
+			create fault.make (Unsupported_method_fault_code)
+			response_text := fault.marshall
 			-- send response
 			resp.set_content_type (Headerval_content_type)
 			resp.set_content_length (response_text.count)
@@ -65,12 +61,13 @@ feature -- Basic operations
 			response_text: STRING
 		do
 			parse_call (req)
-			if valid_call then
+--			if valid_call then
 				-- process call
-			else
+--			else
 				-- return fault
+				create fault.make (999)
 				response_text := fault.marshall
-			end
+--			end
 			-- send response
 			resp.set_content_type (Headerval_content_type)
 			resp.set_content_length (response_text.count)
@@ -99,11 +96,16 @@ feature {NONE} -- Implementation
 					print (serialize_dom_tree (parser.document))
 				end
 				create call.unmarshall (parser.document.document_element)
+				if not call.unmarshall_ok then
+					valid_call := False
+					call := Void
+					create fault.make (call.unmarshall_error_code)
+				end
 			else
 				valid_call := False
 				call := Void
 				-- create fault
-				create fault.make (Bad_payload_fault_code, Bad_payload_fault_string)
+				create fault.make (Bad_payload_fault_code)
 			end	
 		ensure
 			fault_exists_if_invalid: not valid_call implies fault /= Void

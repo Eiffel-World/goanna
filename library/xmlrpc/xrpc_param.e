@@ -28,11 +28,27 @@ feature -- Initialisation
 			new_value_exists: new_value /= Void
 		do
 			value := new_value
+			unmarshall_ok := True
 		end
 
-	unmarshall (node: DOM_NODE) is
+	unmarshall (node: DOM_ELEMENT) is
 			-- Unmarshall array value from XML node.
+		local
+			value_elem, type_elem: DOM_ELEMENT
 		do
+			unmarshall_ok := True
+			-- check for a value child element
+			value_elem ?= node.first_child
+			if value_elem /= Void and then value_elem.node_name.is_equal (Value_element) then
+				value := value_factory.unmarshall (value_elem)
+				if not value.unmarshall_ok then
+					unmarshall_ok := False
+					unmarshall_error_code := value.unmarshall_error_code
+				end
+			else
+				unmarshall_ok := False
+				unmarshall_error_code := Param_value_element_missing
+			end
 		end
 
 feature -- Mashalling

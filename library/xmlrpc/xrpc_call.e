@@ -28,11 +28,54 @@ feature -- Initialisation
 		do
 			method_name := new_method
 			create params.make_default
+			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_NODE) is
+	unmarshall (node: DOM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
+		local
+			method_name_elem, params_elem, next_param: DOM_ELEMENT
+			param_set: DOM_NODE_LIST
+			param: XRPC_PARAM
+			i: INTEGER
 		do
+			unmarshall_ok := True
+			create params.make_default
+			method_name_elem := get_named_element (node, Method_name_element)
+			if method_name_elem /= Void then
+				-- set method name
+				method_name := method_name_elem.first_child.node_value.out
+				-- check for parameters
+				params_elem := get_named_element (node, Params_element)
+				if params_elem /= Void then
+					-- unmarshall all parameters
+					if params_elem.has_child_nodes then		
+						param_set := params_elem.child_nodes
+						-- unmarshall each parameter
+						from
+							i := 0
+						until
+							i >= param_set.length or not unmarshall_ok
+						loop
+							next_param ?= param_set.item (i)
+							check
+								param_is_element: next_param /= Void
+							end
+							create param.unmarshall (next_param)
+							if param.unmarshall_ok then
+								params.force_last (param)
+							else
+								unmarshall_ok := False
+								unmarshall_error_code := param.unmarshall_error_code
+							end
+							i := i + 1
+						end
+					end
+				end
+			else
+				unmarshall_ok := False
+				unmarshall_error_code := Method_name_element_missing
+			end
 		end
 	
 feature -- Access
@@ -91,7 +134,7 @@ feature -- Marshalling
 	
 invariant
 	
-	method_name_set: method_name /= Void
-	params_exists: params /= Void
+	method_name_set: unmarshall_ok implies method_name /= Void
+	params_exists: unmarshall_ok implies params /= Void
 	
 end -- class XRPC_CALL
