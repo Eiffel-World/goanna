@@ -98,10 +98,6 @@ feature
 			previous, next: DOM_NODE
 			node_list_impl: DOM_NODE_LIST_IMPL
 		do
-			-- TODO: raise WRONG_DOCUMENT_ERR if new_child was
-			--       created from a different document than
-			--       the one that created this node
-
 			ensure_child_list_exists
 
 			-- Remove new_child from its parent node
@@ -116,32 +112,31 @@ feature
 			else
 				node_list_impl.start
 				node_list_impl.search_forth (old_child)
-				if node_list_impl.after then
-					-- TODO: raise NOT_FOUND_ERR
-				else
-					previous := old_child.previous_sibling
-					next := old_child.next_sibling
-					node_list_impl.replace_at (new_child)
-
-					-- previous and next may be Void if 'old_child' is an only child
-					if previous /= Void then
-						previous.set_next_sibling (new_child)
-					end
-					if next /= Void then
-						next.set_previous_sibling (new_child)
-					end
-
-					-- update new_child
-					new_child.set_previous_sibling (previous)
-					new_child.set_next_sibling (next)
-					new_child.set_parent_node (old_child.parent_node)
-
-					-- clean up 'old_child' before sending it back
-					old_child.set_previous_sibling (Void)
-					old_child.set_next_sibling (Void)
-					old_child.set_parent_node (Void)
-					Result := old_child 
+				check
+					not node_list_impl.after
 				end
+				previous := old_child.previous_sibling
+				next := old_child.next_sibling
+				node_list_impl.replace_at (new_child)
+
+				-- previous and next may be Void if 'old_child' is an only child
+				if previous /= Void then
+					previous.set_next_sibling (new_child)
+				end
+				if next /= Void then
+					next.set_previous_sibling (new_child)
+				end
+
+				-- update new_child
+				new_child.set_previous_sibling (previous)
+				new_child.set_next_sibling (next)
+				new_child.set_parent_node (old_child.parent_node)
+
+				-- clean up 'old_child' before sending it back
+				old_child.set_previous_sibling (Void)
+				old_child.set_next_sibling (Void)
+				old_child.set_parent_node (Void)
+				Result := old_child 
 			end
 
 		end
