@@ -328,33 +328,31 @@ feature {NONE} -- Implementation
 				set_header ("Date", "Sun, 06 Nov 1994 08:49:37 GMT") -- TODO: set real date	
 			end
 		end
+
+	Expired_date: STRING is "Tue, 01-Jan-1970 00:00:00 GMT"
 	
-	set_cookie_header is
-			-- Add 'SetCookie' header for cookies	
-		local
-			value: STRING		
+	set_cookie_headers is
+			-- Add 'Set-Cookie' header for cookies. Add a separate 'Set-Cookie' header
+			-- for each new cookie.
+			-- Also add cookie caching directive headers.
 		do
 			if not cookies.is_empty then
-				create value.make (20)
 				from
 					cookies.start
 				until
 					cookies.off
 				loop
-					value.append (cookies.item_for_iteration.header_string)
-					if not cookies.is_last then
-						value.append_character (',')
+					add_header ("Set-Cookie", cookies.item_for_iteration.header_string)
+					debug ("cookie_parsing")
+						print (generator + ".set_cookie_header value = "
+							+ quoted_eiffel_string_out (cookies.item_for_iteration.header_string) 
+							+ "%R%N")
 					end
 					cookies.forth
 				end
-				add_header ("Set-Cookie", value)
-				debug ("cookie_parsing")
-					print (generator + ".set_cookie_header value = "
-						 + quoted_eiffel_string_out (value) + "%R%N")
-				end
 				-- add cache control headers for cookie management
-				add_header ("Cache-control", "no-cache=%"set-cookie%"")
-				set_header ("Expires", "Sun, 04 Jan 1998 00:00:00 GMT") -- TODO: set real date
+				add_header ("Cache-control", "no-cache=%"Set-Cookie%"")
+				set_header ("Expires", Expired_date)
 			end
 		end
 	
@@ -366,7 +364,7 @@ feature {NONE} -- Implementation
 			-- NOTE: There is no need to send the HTTP status line because
 			-- the FastCGI protocol does it for us.
 			set_default_headers
-			set_cookie_header
+			set_cookie_headers
 			write (build_headers)
 			write ("%R%N")
 			is_committed := True

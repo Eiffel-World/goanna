@@ -55,14 +55,11 @@ feature -- FGCI interface
     			-- accept the next request
     			Result := accept_request				
       		end
---    	rescue
---    		if request /= Void then
---    			request.set_socket (Void)
---    		end
---    		srv_socket := Void
---    		request := Void
---    		Result := -1 
---    		failed := True
+    	rescue
+    		srv_socket := Void
+    		request := Void
+    		Result := -1 
+    		failed := True
 		end
 
 	finish is 

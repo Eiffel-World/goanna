@@ -127,22 +127,23 @@ feature -- Conversion
 			-- Return string representation of this cookie suitable for
 			-- a request header value. This routine formats the cookie using
 			-- version 0 of the cookie spec (RFC 2109).
+			-- See also http://www.netscape.com/newsref/std/cookie_spec.html
 		do
 			create Result.make (50)
 			Result.append (name)
 			Result.append (Name_value_separator)
-			Result.append ("%"" + value + "%"")
+			Result.append (value)
 			-- version
 			Result.append (Term_separator)
 			Result.append (Version_label)
 			Result.append (Name_value_separator)
-			Result.append ("%"" + version.out + "%"")
+			Result.append (version.out)
 			-- optional comment
 			if comment /= Void and not comment.is_empty then
 				Result.append (Term_separator)
 				Result.append (Comment_label)
 				Result.append (Name_value_separator)
-				Result.append ("%"" + comment + "%"")
+				Result.append (comment)
 			end
 			-- optional expires (depends on version)
 			if max_age >= 0 then
@@ -150,7 +151,7 @@ feature -- Conversion
 				Result.append (Expires_label)
 				Result.append (Name_value_separator)
 				if max_age = 0 then
-					Result.append ("%"0%"")
+					Result.append (Expired_date)
 				else
 					Result.append (max_age_to_date (max_age))
 				end
@@ -160,14 +161,14 @@ feature -- Conversion
 				Result.append (Term_separator)
 				Result.append (Domain_label)
 				Result.append (Name_value_separator)
-				Result.append ("%"" + domain + "%"")
+				Result.append (domain)
 			end
 			-- optional path
 			if path /= Void and not path.is_empty then
 				Result.append (Term_separator)
 				Result.append (Path_label)
 				Result.append (Name_value_separator)
-				Result.append ("%"" + path + "%"")
+				Result.append (path)
 			end
 			-- optional secure, no value
 			if secure then
@@ -182,11 +183,13 @@ feature -- Conversion
 	Expires_label: STRING is "Expires"
 	Max_age_label: STRING is "Max-Age"
 	Path_label: STRING is "Path"
-	Secure_label: STRING is "Secure"
+	Secure_label: STRING is "secure"
 	Version_label: STRING is "Version"
 	
 	Name_value_separator: STRING is "="
 	Term_separator: STRING is "; "
+	
+	Expired_date: STRING is "Tue, 01-Jan-1970 00:00:00 GMT"
 	
 	Default_version: INTEGER is 0
 		
@@ -209,7 +212,6 @@ feature -- Conversion
 			debug ("cookie_parsing")
 				print ("Cookie expiry date formatted: " + Result + "%R%N")
 			end	
-
 		end
 		
 invariant

@@ -384,7 +384,9 @@ feature {NONE} -- Implementation
 	
 	parse_cookie_header is
 			-- Parse the cookie header, if it exists and construct the 'internal_cookies'
-			-- collection
+			-- collection.
+			-- This routine parsed the cookies using version 0 of the cookie spec (RFC 2109).
+			-- See also http://www.netscape.com/newsref/std/cookie_spec.html
 		local
 			tokenizer: STRING_TOKENIZER
 			comparator: COOKIE_NAME_EQUALITY_TESTER
@@ -404,7 +406,7 @@ feature {NONE} -- Implementation
 						print (generator + ".parse_cookie_header str = "
 							 + quoted_eiffel_string_out (get_header (Http_cookie_var)) + "%R%N")
 					end
-					tokenizer.set_token_separator (',')
+					tokenizer.set_token_separator (';')
 					tokenizer.start
 				until
 					tokenizer.off

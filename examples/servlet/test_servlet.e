@@ -35,7 +35,7 @@ feature -- Basic operations
 			visit_count := visit_count + 1
 			send_basic_html (req, resp)
 			set_cookie (req, resp)
---			modify_session (req, resp)
+			modify_session (req, resp)
 		end
 	
 	do_post (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
