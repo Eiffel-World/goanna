@@ -12,6 +12,11 @@ further development before they will become more widely useful.
 
 The following known bugs and issues need to be resolved:
 
+o The project has only been tested under Windows using ISE Eiffel. Due
+to a few bugs in SmallEiffel and lack of support for creation expressions, 
+the source has not yet been ported. Further development will occur on 
+both Linux and Windows (just as soon as I update my Linux compiler --GM).
+
 o The Apache mod_fastcgi module has a few problems. Especially under
 Windows. 
 
@@ -28,6 +33,5 @@ collections. The hash table implementation is a little heavy weight for some
 of the areas it has been used. In particular, as the implementation for
 DOM_NAMED_NODE_LIST. A more light-weight associative array could be used in
 these cases.
-
 
 
