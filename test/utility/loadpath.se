@@ -1,0 +1,5 @@
+${GOBO}/library/loadpath.se
+${GOANNA}/library/utility/
+${GOANNA}/library/utility/spec/se/
+./tests/
+./TESTGEN/
