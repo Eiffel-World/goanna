@@ -7,6 +7,13 @@ indexing
 
 class CODE_GENERATOR
 
+inherit
+
+	DOM_NODE_TYPE
+		export
+			{NONE} all
+		end
+
 creation
 
 	make
@@ -87,7 +94,7 @@ feature {NONE} -- Implementation
 			-- build the build document routine
 		local
 			feature_group: EIFFEL_FEATURE_GROUP
-			pair: DS_PAIR [STRING, STRING]
+			var: DS_PAIR [STRING, STRING]
 		do
 			create feature_group.make ("Document construction")
 			eiffel_code.add_feature_group (feature_group)
@@ -95,7 +102,8 @@ feature {NONE} -- Implementation
 			create build_doc.make ("build_document")
 			feature_group.add_feature (build_doc)
 			-- add creation of implementation
-			build_doc.add_local (create pair.make ("impl", "DOM_IMPLEMENTATION"))
+			create var.make ("impl", "DOM_IMPLEMENTATION")
+			build_doc.add_local (var)
 			build_doc.add_body_line ("create {DOM_IMPLEMENTATION_IMPL}.make")
 			add_node_creation (document, 0)
 		end		
@@ -118,36 +126,38 @@ feature {NONE} -- Implementation
 			-- check node type and create appropriate local variable and 
 			-- creation instruction
 			inspect node.node_type
-			when node.Attribute_node then
+			when Attribute_node then
 				-- create attribute node
 				--build_doc.add_local (create pair.make ("node" + nstr, "DOM_ATTR")
 				
-			when node.Cdata_section_node then
+			when Cdata_section_node then
 
-			when node.Comment_node then
+			when Comment_node then
 	
-			when node.Document_fragment_node then
+			when Document_fragment_node then
 
-			when node.Document_node then
-				build_doc.add_local (create pair.make ("document", "DOM_DOCUMENT")
-				build_doc.add_local (create pair.make ("node" + nstr, "DOM_NODE")
+			when Document_node then
+				create pair.make ("document", "DOM_DOCUMENT")
+				build_doc.add_local (pair)
+				create pair.make ("node" + nstr, "DOM_NODE")
+				build_doc.add_local (pair)
 				build_doc.add_body_line ("create dstr.make_from_string (%"%")")
 				build_doc.add_body_line ("create dstr2.make_from_string (%"%")")
 				build_doc.add_body_line ("document := impl.create_document (dstr, dstr2, Void)")
 				build_doc.add_body_line ("node" + nstr + " := document")
-			when node.Document_type_node then
+			when Document_type_node then
 
-			when node.Element_node then
+			when Element_node then
 					
-			when node.Entity_node then
+			when Entity_node then
 
-			when node.Entity_reference_node then
+			when Entity_reference_node then
 
-			when node.Notation_node then
+			when Notation_node then
 
-			when node.Processing_instruction_node then
+			when Processing_instruction_node then
 
-			when node.Text_node then
+			when Text_node then
 				
 			else
 
@@ -176,7 +186,7 @@ feature {NONE} -- Implementation
 					-- recursively add a node creation for the child
 					add_node_creation (child_nodes.item, next_node_number.out)
 					-- add instructions to append the newly created child to the parent
-					build_doc.add_body_line ("node" + node_number.out + ".append_child (node" + Result.out)"
+					build_doc.add_body_line ("node" + node_number.out + ".append_child (node" + Result.out)
 					Result := Result + 1
 					child_nodes.forth
 				end
