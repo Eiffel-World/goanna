@@ -57,7 +57,7 @@
     <section>
       <title>Categories</title>
       <para>The category hierarchy is determine by the names given to 
-	each category&mdash;a dot in the name indicates a 
+	each category &mdash; a dot in the name indicates a 
 	parent-child relationship between categories. For example, 
 	if a category is created with the name 
 	<literal>a.b</literal> it identifies the category named 
@@ -119,20 +119,92 @@
 
     <section>
       <title>Priorities</title>
-      <para>Each log message has a priority which can determine
+      <para>
+        Each log message has a priority which can determine
 	what should be done with the message, whether it should be written to a
 	log file or discarded. All log4e priorities are defined in the class
-      <classname>LOG_PRIORITY_CONSTANTS</classname> of type
-      <classname>LOG_PRIORITY</classname> and range from the lowest priority
-      <constant>Debug_p</constant> through <constant>Info_p</constant>,
-      <constant>Warning_p</constant> and <constant>Error_p</constant>, to the
-      highest priority <constant>Fatal_p</constant>.
+        <classname>LOG_PRIORITY_CONSTANTS</classname> of type
+        <classname>LOG_PRIORITY</classname> and range from the lowest priority
+        <constant>Debug_p</constant> through <constant>Info_p</constant>,
+        <constant>Warning_p</constant> and <constant>Error_p</constant>, to the
+        highest priority <constant>Fatal_p</constant>. The logging priorities are
+        represented by a positive integer ranging from 50,000 for
+        <constant>Fatal_p</constant> through to 10,000 for
+        <constant>Debug_p</constant>.<footnote>The integers representing
+	  priorities could just as easily ranged from 5 to 1. The numbers were
+	  originally used in the <application>log4j</application> library and it was
+	  decided not to change them.</footnote> This is to facilitate comparisons
+        between priorities to determine if a log message matches or exceeds a set
+        priority and should therefore be written to a log file.
+      </para>
+      <para>
+        A log priority also has a string representation that identifies the
+        priority and can be written to log files. For example, the
+        <constant>Debug_p</constant> has the string representation
+        <literal>DEBUG</literal> which can be inserted into a log message during
+        the formatting process.
+      </para>
+      <para>
+	Each category can have its own priority setting which determines the
+	level of log messages that will be processed or ignored. If a category
+	does not have a priority set it will inherit one from its parent. The
+	category priority determines the level of logging that will take place
+	on that category &emdash; all log messages that meet or exceed the
+	priority will be logged, all others will be discarded.
+      </para>
+      <para>
+	To set the priority of a category you need to call
+	<function>set_priority</function> and pass a priority object from the
+	class <classname>LOG_PRIORITY_CONSTANTS</classname>. For example, you
+	can set the logging priority of the category defined above to
+	<constant>Info_p</constant> using:
+	<programlisting>
+	  category.set_priority (Info_p)
+	</programlisting>
+	after which you can access the category's priority using the function
+	<function>priority</function> which will return the priority or the
+	parent category's priority if one has not been set.
+      </para>
+      <para>
+	In addition to priorities set at the level of categories, a priority can
+	be set at the hierarchy level. A hierarchy's priority is set during
+	initialisation. The creation procedure <function>make</function>
+	specifies a single argument, <literal>priority</literal>, which is used
+	to set its priority level. The hierarchy priority level is checked
+	before any category level priority to determine if a log message should
+	be handled.
+      </para>
+      <para>
+	Fine grained control over priorities can also be performed at the
+	hierarchy level by disabling a particular priority (and and priorities
+	below it). When a hierarchy is first created all priorities are enabled
+	by default. If you need to disable a priority for an entire hierarchy,
+	the most efficient way is to call <function>disable</function> of
+	<classname>LOG_HIERARCHY</classname> passing the priority to
+	disable. Convenience routines are also included to disable the most
+	common priorities including <function>disable_debug</function> and
+	<function>disable_info</function> used to disable debugging and
+	information logging, respectively. You can also enable or disable all
+	levels of logging using the functions <function>enable_all</function>
+	and <function>disable_all</function>.
+      </para>
+      <para>
+	The logging hierarchy typically determines whether to handle a message
+	at a particular priority using internal integer comparisons. You can
+	also determine whether a log message will be handled by calling
+	<function>is_enabled_for</function> and passing the relevant priority
+	object. The function will return <literal>True</literal> if that level
+	of logging or above is enabled.
       </para>
     </section>
+
     <section>
       <title>Additive Categories</title>
-      <para>Describe additive categories.</para>
+      <para>
+       Additive categories.       
+      </para>
     </section>
+
     <section>
       <title>Logging</title>
       <para>

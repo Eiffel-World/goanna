@@ -14,14 +14,6 @@ class
 inherit
 	
 	LOG_SHARED_LOG_LOG
-		export
-			{NONE} all
-		end
-	
---	ASCII
---		export
---			{NONE} all
---		end
 		
 creation
 	

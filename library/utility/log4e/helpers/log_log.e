@@ -11,10 +11,8 @@ indexing
 class LOG_LOG
 	
 inherit
+
 	KL_SHARED_STANDARD_FILES
-		export
-			{NONE} all
-		end
 	
 feature -- Status Report
 	

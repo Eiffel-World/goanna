@@ -16,6 +16,7 @@ inherit
 	LOG_SHARED_LOG_LOG
 		export
 			{NONE} all
+			{ANY} is_equal, standard_is_equal
 		end
 	
 	LOG_PRIORITY_CONSTANTS
@@ -270,7 +271,7 @@ feature {NONE} -- Implementation
 			element_exists: element /= Void
 		local
 			file, append: STRING
-			max_size, number_of_backups: INTEGER_REF
+			number_of_backups: INTEGER_REF
 		do
 			-- retrieve mandatory file name param
 			file := retrieve_param_value (Filename_param_name, element)

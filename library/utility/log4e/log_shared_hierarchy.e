@@ -16,6 +16,7 @@ inherit
 	LOG_PRIORITY_CONSTANTS
 		export
 			{NONE} all
+			{ANY} is_equal, standard_is_equal
 		end
 		
 feature -- Access
