@@ -20,8 +20,8 @@ create
 
 feature -- Initialisation
 
-	unmarshall (doc: DOM_DOCUMENT) is
-			-- Initialise SOAP header from DOM document.
+	unmarshall (element: DOM_ELEMENT) is
+			-- Initialise SOAP header from DOM element.
 		do
 			
 		end

@@ -9,23 +9,32 @@ indexing
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 deferred class
+
 	SOAP_ELEMENT
 
+inherit
+	
+	SOAP_CONSTANTS
+		export
+			{NONE} all
+		end
+		
 feature -- Initialization
 
 	make is
 			-- Initialise new SOAP envelope
 		do
 			create attributes.make_default
+			create entries.make_default
 		end
 	
-	unmarshall (doc: DOM_DOCUMENT) is
-			-- Initialise SOAP envelope from DOM document.
+	unmarshall (element: DOM_ELEMENT) is
+			-- Initialise SOAP envelope from DOM element.
 		require
-			doc_exists: doc /= Void
+			element_exists: element /= Void
 		deferred			
 		end
-	
+
 feature -- Mashalling
 
 	marshall (sink: IO_MEDIUM) is
@@ -37,9 +46,13 @@ feature -- Mashalling
 
 feature -- Access
 
-	attributes: DS_HASH_TABLE [STRING, STRING]
+	entries: DS_LINKED_LIST [DOM_ELEMENT]
+			-- Child elements of this element.
 
-feature -- Status setting
+	attributes: DS_HASH_TABLE [STRING, STRING]
+			-- Element attributes.
+
+feature -- Element change
 
 	add_attribute (name, value: STRING) is
 			-- Add attribute named 'name' with 'value'
@@ -73,4 +86,19 @@ feature -- Status setting
 			removed: not attributes.has (name)
 		end
 
+	set_entries (new_entries: DS_LINKED_LIST [DOM_ELEMENT]) is
+			-- Assign `new_entries' to `elements'.
+		require
+			new_entries_exist: new_entries /= Void
+		do
+			entries := new_entries
+		ensure
+			entries_assigned: entries = new_entries
+		end
+
+invariant
+
+	entries_exist: entries /= Void
+	attributes_exist: attributes /= Void
+	
 end -- class SOAP_ELEMENT
