@@ -7,57 +7,64 @@ class
 
 inherit
 
-	FAST_CGI
+	FAST_CGI_APP
+		rename
+			make as fast_cgi_app_make
+		end
 
 creation
 
 	make
 
-feature -- Initialization
+feature -- Initialisation
+
+	make is
+			-- Initialise application and begin request processing loop
+		do
+			fast_cgi_app_make (8000, 5)
+			run
+		end
+	
+feature -- Basic Operations
 
 	count: INTEGER
 
-	make is
+	process_request is
 		local
 			read_str: STRING
-			accept_result, content_length: INTEGER
+			length: INTEGER
 		do
-			from
-				accept_result := accept
-			until 
-				accept_result < 0
-			loop
-				warn ("Accepted -- YEAH! %N")
+			warn ("Accepted -- YEAH! %N")
 
-				content_length := getparam_integer ("CONTENT_LENGTH")
+			length := getparam_integer (Content_length)
 
-				putstr ("Content-type: text/html%R%N%R%N")
-				putstr ("TESTING<br>%N")
+			print (generator + ".process_request: length=" + length.out)
+			
+--			putstr ("Content-type: text/html%R%N%R%N")
+--			putstr ("TESTING<br>%N")
 
-				putstr ("Content Length: ")
-				putstr (content_length.out)
-				putstr ("<br>%N")
-	    
-				putstr ("Visits: ")
-				putstr (count.out)
-				putstr ("<br>%N")
-				count := count + 1
+--			putstr ("Content Length: ")
+--			putstr (length.out)
+--			putstr ("<br>%N")
+    
+--			putstr ("Visits: ")
+--			putstr (count.out)
+--			putstr ("<br>%N")
+			count := count + 1
 
-				putstr ("Server name: ")
-				putstr (getparam ("SERVER_NAME"))
-				putstr ("<br>%N")
+--			putstr ("Server name: ")
+--			putstr (getparam (Server_name))
+--			putstr ("<br>%N")
 
-				putstr ("User agent: ")
-				putstr (getparam ("HTTP_USER_AGENT"))
-				putstr ("<br>%N")
+--			putstr ("User agent: ")
+--			putstr (getparam (Http_user_agent))
+--			putstr ("<br>%N")
 
-				if content_length > 0 then
-					read_str := getstr (content_length)
-					putstr ("Content: ")
-					putstr (read_str)
-					putstr ("%N")
-				end
-				accept_result := accept
+			if length > 0 then
+--				read_str := getstr (length)
+--				putstr ("Content: ")
+--				putstr (read_str)
+--				putstr ("%N")
 			end
 		end
 

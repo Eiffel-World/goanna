@@ -21,4 +21,5 @@ extern EIF_REFERENCE c_fcgi_getstr(EIF_INTEGER len);
 extern EIF_REFERENCE c_fcgi_getline(EIF_INTEGER len);
 extern void c_fcgi_finish();
 extern EIF_REFERENCE c_fcgi_getparam(EIF_POINTER name);
-extern EIF_BOOLEAN c_is_cgi(void);
+extern EIF_POINTER c_fcgx_init_request(EIF_INTEGER sock, EIF_INTEGER flags);
+extern EIF_INTEGER c_fcgx_init(void);

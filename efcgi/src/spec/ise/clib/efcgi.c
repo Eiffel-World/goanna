@@ -5,6 +5,8 @@ static FCGX_Stream *stream_out = NULL;
 static FCGX_Stream *stream_err = NULL;
 static FCGX_ParamArray envp = NULL;
 
+static FCGX_Request request;
+
 void
 c_fcgi_flush(void)
 {
@@ -71,9 +73,16 @@ c_fcgi_getparam(EIF_POINTER name)
 	return retval;
 }
 
-EIF_BOOLEAN
-c_is_cgi(void)
+EIF_POINTER
+c_fcgx_init_request(EIF_INTEGER sock, EIF_INTEGER flags)
 {
-	return (EIF_BOOLEAN) FCGX_IsCGI();
+	int result; 
+	result = FCGX_InitRequest(&request, (int)sock, (int)flags);
+	return (result == 0) ? (EIF_POINTER) &request : (EIF_POINTER) NULL;
 }
 
+EIF_INTEGER
+c_fcgx_init(void)
+{
+	return (EIF_INTEGER) FCGX_Init();
+}
