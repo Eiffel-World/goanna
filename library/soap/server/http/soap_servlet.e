@@ -325,7 +325,8 @@ feature {NONE} -- Implementation
 					value := element.first_child.node_value.out
 					create q_name.make (Ns_pre_schema_xsi, Attr_type)
 					type := element.get_attribute (create {DOM_STRING}.make_from_string (q_name.out)).out
-					if encodings.valid_type (scheme, type) then
+					create q_name.make_from_qname (type)
+					if encodings.valid_type (scheme, q_name.local_name) then
 						Result.force (encodings.unmarshall (scheme, type, value), i + 1)
 						i := i + 1	
 					else

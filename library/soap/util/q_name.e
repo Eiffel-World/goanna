@@ -19,7 +19,7 @@ inherit
 		end
 
 create
-	make, make_from_node
+	make, make_from_node, make_from_qname
 
 feature -- Initialization
 
@@ -43,6 +43,20 @@ feature -- Initialization
 		do
 			namespace := node.namespace_uri.out
 			local_name := node.local_name.out
+		end
+
+	make_from_qname (qname: STRING) is
+			-- Initialise a new fully qualified name from
+			-- separated 'qname'. Separator is ':'.
+		require
+			qname_exists: qname /= Void
+			qname_has_separator: qname.occurrences (':') = 1
+		local
+			index: INTEGER
+		do
+			index := qname.index_of (':', 1)
+			namespace := qname.substring (1, index - 1)
+			local_name := qname.substring (index + 1, qname.count)
 		end
 		
 feature -- Access
