@@ -32,9 +32,6 @@ cluster
 	base_kernel:		"$EIFFEL4\library\base\kernel";
 	base_support:		"$EIFFEL4\library\base\support";
 
-	-- EiffelThread
-	thread:				"$EIFFEL4\library\thread"
-	
 	-- GOBO
 	gobo_kernel:		"$GOBO\library\kernel";
 	gobo_ise_kernel:	"$GOBO\library\kernel\spec\ise";

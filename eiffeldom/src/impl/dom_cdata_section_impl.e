@@ -22,7 +22,7 @@ inherit
 
 feature {DOM_DOCUMENT} -- Factory creation
 
-	make (new_owner: DOM_DOCUMENT_IMPL; new_data: DOM_STRING) is
+	make (new_owner: DOM_DOCUMENT; new_data: DOM_STRING) is
 			-- Create character data
 		require
 			owner_exists: new_owner /= Void

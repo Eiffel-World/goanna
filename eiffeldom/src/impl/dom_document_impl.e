@@ -229,4 +229,12 @@ feature -- Validation Utility
 			Result := True
 		end
 
+feature {DOM_IMPLEMENTATION} -- Convenience routines
+
+	set_document_element (e: DOM_ELEMENT) is
+			-- Set the root document element.
+		do
+			document_element := e
+		end
+
 end -- class DOM_DOCUMENT_IMPL

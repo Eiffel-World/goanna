@@ -67,7 +67,7 @@ feature
 	  do
 	  end
 
-   attributes: DOM_NAMED_NODE_MAP
+   attributes: DOM_NAMED_MAP [DOM_ATTR]
          -- A NamedNodeMap containing the attributes of this node
          -- (if it is an Element) or `Void' otherwise.
 	

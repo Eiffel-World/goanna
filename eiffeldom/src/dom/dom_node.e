@@ -82,8 +82,8 @@ feature
       deferred
       end
 
-   attributes: DOM_NAMED_NODE_MAP is
-         -- A NamedNodeMap containing the attributes of this node
+   attributes: DOM_NAMED_MAP [DOM_ATTR] is
+         -- A NamedMap containing the attributes of this node
          -- (if it is an Element) or `Void' otherwise.
       deferred
       end

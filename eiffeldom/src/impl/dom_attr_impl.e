@@ -11,6 +11,8 @@ inherit
 	DOM_ATTR
 
 	DOM_PARENT_NODE
+		rename
+			make as parent_make
 		redefine
 			set_node_value, node_value
 		end
@@ -27,10 +29,19 @@ feature -- Factory creation
 			owner_doc_exists: owner_doc /= Void
 			new_name_exists: new_name /= Void
 		do
-			parent_make
+			make_without_owner (new_name)
 			set_owner_document (owner_doc)
+		end
+
+	make_without_owner (new_name: DOM_STRING) is
+			-- Create a new attribute node without an owner document.
+		require
+			new_name_exists: new_name /= Void
+		do
+			parent_make
 			name := new_name
 			specified := true
+			create {DOM_STRING} value.make_from_string ("")
 		end
 
 feature

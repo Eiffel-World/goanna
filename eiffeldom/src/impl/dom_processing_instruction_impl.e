@@ -23,14 +23,14 @@ creation
 
 feature -- Factory creation
 
-	make (owner_doc: DOM_DOCUMENT; new_target, data: DOM_STRING) is
+	make (owner_doc: DOM_DOCUMENT; new_target, new_data: DOM_STRING) is
 			-- Create a new processing instruction node
 		require
 			owner_doc_exists: owner_doc /= Void
 			target_exists: target /= Void
-			data_exists: data /= Void
+			data_exists: new_data /= Void
 		do
-			cdata_make (owner_doc, data)
+			cdata_make (owner_doc, new_data)
 			target := new_target
 		end
 

@@ -33,7 +33,7 @@ feature {DOM_DOCUMENT} -- Factory creation
 			new_name_exists: new_name /= Void
 		do
 			parent_node_make
-			create {DOM_NAMED_NODE_MAP_IMPL} attributes
+			create {DOM_NAMED_MAP_IMPL [DOM_ATTR]} attributes.make (Current)
 			set_owner_document (doc)
 			tag_name := new_name
 		end
@@ -70,6 +70,7 @@ feature
          --    The Attr value as a string, or the empty string if that
          --    attribute does not have a specified or default value.
 	  do
+		  Result := attributes.get_named_item (name).node_value
       end
 
    set_attribute (name: DOM_STRING; value: DOM_STRING) is
@@ -87,7 +88,12 @@ feature
          -- Parameters
          --    name    The name of the attribute to create or alter.
          --    value   Value to set in string form.
+	  local
+		  new_attr, discard: DOM_ATTR
 	  do
+		  new_attr := owner_document.create_attribute (name)
+		  new_attr.set_value (value)
+		  discard := set_attribute_node (new_attr)
       end
 
    remove_attribute (name: DOM_STRING) is
@@ -95,7 +101,10 @@ feature
          -- has a default value it is immediately replaced.
          -- Parameters
          --    name   The name of the attribute to remove.
+	  local
+		  discard: DOM_NODE
 	  do
+		  discard := attributes.remove_named_item (name)
       end
 
    get_attribute_node (name: DOM_STRING): DOM_ATTR is
@@ -106,6 +115,7 @@ feature
          --    The Attr node with the specified attribute `name' or null
          --    if there is no such attribute.
 	  do
+		  Result := attributes.get_named_item (name)
       end
 
    set_attribute_node (new_attr: DOM_ATTR): DOM_ATTR is
@@ -118,6 +128,7 @@ feature
          --    with the same name, the previously existing Attr node is
          --    returned, otherwise null is returned.
 	  do
+		  Result := attributes.set_named_item (new_attr)
       end
 
    remove_attribute_node (old_attr: DOM_ATTR): DOM_ATTR is
@@ -129,6 +140,7 @@ feature
          -- Return Value
          --    The Attr node that was removed.
 	  do
+		  Result := attributes.remove_named_item (old_attr.name)
       end
 
    get_elements_by_tag_name (name: DOM_STRING): DOM_NODE_LIST is
@@ -151,6 +163,7 @@ feature
 			-- on this element or has a default value, false otherwise.
 			-- DOM Level 2.
 		do
+			Result := attributes.has_named_item (name)
 		end
 
 	-- TODO: add has_attribute_ns
@@ -194,6 +207,7 @@ feature -- Validation Utility
 	valid_name_chars (new_name: DOM_STRING): BOOLEAN is
 			-- Does 'new_name' consist of valid name characters?
 		do
+			Result := True
 		end
 
 end -- class DOM_ELEMENT_IMPL

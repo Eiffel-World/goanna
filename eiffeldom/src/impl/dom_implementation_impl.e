@@ -23,10 +23,13 @@ feature
 			--	`qualified_name' - The qualified name of the document element to be created.
 			--	`doctype' - The type of document to be created or Void. 
 		local
+			document_element: DOM_ELEMENT
 			discard: DOM_NODE
 		do
 			create {DOM_DOCUMENT_IMPL} Result.make (doctype)
-			discard := Result.append_child (Result.create_element_ns (namespace_uri, qualified_name))
+			document_element := Result.create_element_ns (namespace_uri, qualified_name)
+			discard := Result.append_child (document_element)
+			Result.set_document_element (document_element)
 		end
 
 	create_document_type (qualified_name, public_id, system_id: DOM_STRING): DOM_DOCUMENT_TYPE is

@@ -274,6 +274,18 @@ feature -- Validation Utility
 		deferred
 		end
 
+feature {DOM_IMPLEMENTATION} -- Convenience routines
+
+	set_document_element (e: DOM_ELEMENT) is
+			-- Set the root document element.
+		require
+			element_exists: e /= Void
+			-- document_has_element: has_child (e)
+		deferred
+		ensure
+			document_element_set: document_element = e
+		end
+
 invariant
 
 	no_owner_document: owner_document = Void
