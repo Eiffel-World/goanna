@@ -87,7 +87,7 @@ cluster
 			"bit_manipulation.e"; 
 		end
 
-	goanna_uitlity_ise4 (goanna_utility):		"$\spec\ise4"
+	goanna_utility_ise4 (goanna_utility):		"$\spec\ise4"
 
 
 	logging:		"$GOANNA\library\logging"

@@ -14,10 +14,109 @@
   any external clauses point to the correct libraries.</p>
 <p class="indentp">If building under ISE Eiffel open a new project in the location 
   of the <span class="code">Ace</span> file and build. For SmallEiffel, run the 
-  <span class="code">build-se</span> file.</p>
+  <span class="code">se.bat</span> file.</p>
 <p class="indentp">Compile the examples exactly the same way as building the tools. 
   Check your environment variables and, for each example, compile using the supplied 
-  <span class="code">Ace</span> or <span class="code">build-se</span> files.<span class="indentp"><br>
+  <span class="code">Ace</span> or <span class="code">se.bat</span> files.</p>
+<p class="indentp"><span class="indentp">Note, some of the library clusters and 
+  examples will not compile under SmallEiffel. They will be ported to SmallEiffel 
+  when time permits. The following table shows the progress of the porting effort.</span></p>
+<div class="indentp">
+  <table border="0" class="p" width="75%">
+    <tr bgcolor="lightgrey" align="center"> 
+      <td align="left" width="48%"><b>Cluster/Application</b></td>
+      <td width="26%"><b>ISE Eiffel 5.0</b></td>
+      <td width="26%"><b>SmallEiffel -0.76</b></td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">library/codegen</td>
+      <td width="26%">Yes</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">library/datetime</td>
+      <td width="26%">Yes (obsolete)</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">library/dom</td>
+      <td width="26%">Yes</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">library/fast_cgi</td>
+      <td width="26%">Yes</td>
+      <td width="26%">Yes</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">library/logging</td>
+      <td width="26%">Yes</td>
+      <td width="26%">Yes</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">library/servlet</td>
+      <td width="26%">Yes</td>
+      <td width="26%">Yes</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">library/utility</td>
+      <td width="26%">Yes</td>
+      <td width="26%">Yes</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">library/xmlparser</td>
+      <td width="26%">Yes</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">tools/bdom_viewer</td>
+      <td width="26%">Yes</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">tools/httpd</td>
+      <td width="26%">Yes</td>
+      <td width="26%">Yes</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">tools/xmle</td>
+      <td width="26%">Yes</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">examples/all_classes</td>
+      <td width="26%">Yes</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">examples/emu_httpd</td>
+      <td width="26%">Yes (obsolete)</td>
+      <td width="26%">Yes (obsolete)</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">examples/servlet</td>
+      <td width="26%">Yes (obsolete)</td>
+      <td width="26%">Yes (obsolete)</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">examples/simple_fast_cgi</td>
+      <td width="26%">Yes</td>
+      <td width="26%">Yes</td>
+  </tr>
+  <tr bgcolor="white"> 
+      <td width="48%">examples/test_dom_notes</td>
+      <td width="26%">Yes</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+  <tr bgcolor="white">
+      <td width="48%">examples/test_xml_parser</td>
+      <td width="26%">Yes</td>
+      <td width="26%" bgcolor="#FFCC00">No</td>
+  </tr>
+</table>
+</div>
+<p class="indentp">&nbsp;</p>
+<p class="indentp"><span class="indentp"><br>
   </span> </p>
 <p>&nbsp; </p>
 </body>
