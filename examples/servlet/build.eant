@@ -82,6 +82,6 @@
 
 		<geant file="build.eant" target="${target}" dir="cgi"/>
 		<geant file="build.eant" target="${target}" dir="fast_cgi"/>
-		<geant file="build.eant" target="${target}" dir="standalong"/>
+		<geant file="build.eant" target="${target}" dir="standalone"/>
 
 </project>

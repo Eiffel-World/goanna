@@ -82,7 +82,7 @@ feature {NONE} -- Implementation
 	print_usage is
 			-- Display usage information
 		do
-			print ("Usage: xrpcclient <host> <port-number>%R%N")
+			print ("Usage: test <host> <port-number>%R%N")
 		end
 	
 	client: XRPC_LITE_CLIENT

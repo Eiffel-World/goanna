@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="xmlrpc" inherit="${GOBO}/misc/eiffel.eant" default="help">
+<project name="server" inherit="${GOBO}/misc/eiffel.eant" default="help">
 
 	<description>
 		description: "XMLRPC server Example"

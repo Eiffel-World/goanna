@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<system name="xrpcclient">
+<system name="test">
 	<description>
 		description: "XAce file for Goanna XMLRPC test example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"

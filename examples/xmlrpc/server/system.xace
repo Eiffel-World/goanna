@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<system name="xmlrpc">
+<system name="server">
 	<description>
 		description: "XAce file for Goanna XMLRPC server example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"

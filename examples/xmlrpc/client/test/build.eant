@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="xrpcclient" inherit="${GOBO}/misc/eiffel.eant" default="help">
+<project name="test" inherit="${GOBO}/misc/eiffel.eant" default="help">
 
 	<description>
 		description: "XMLRPC Calculator Example"
