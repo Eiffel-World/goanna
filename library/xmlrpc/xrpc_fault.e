@@ -31,7 +31,61 @@ feature -- Initialisation
 		
 	unmarshall (node: DOM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
+		local
+			value: XRPC_STRUCT_VALUE
+			member_value: XRPC_SCALAR_VALUE
+			value_elem: DOM_ELEMENT
+			int_ref: INTEGER_REF
 		do
+			unmarshall_ok := True
+			-- can assume that the <fault> element exists
+			-- get fault value and attempt to unmarshall
+			value_elem ?= node.first_child.first_child
+			if value_elem /= Void then
+				value ?= Value_factory.unmarshall (value_elem)
+				-- check that it was a struct
+				if value /= Void then
+					-- get faultCode
+					if value.value.has (Fault_code_member) then
+						member_value ?= value.value.item (Fault_code_member) 
+						if member_value /= Void then
+							int_ref ?= member_value.value
+							if int_ref /= Void then
+								code := int_ref.item
+								-- get faultString
+								if value.value.has (Fault_string_member) then
+									member_value ?= value.value.item (Fault_string_member)
+									if member_value /= Void then
+										string ?= member_value.value
+										if string = Void then
+											unmarshall_ok := False
+											unmarshall_error_code := Invalid_fault_string					
+										end	
+									else
+										unmarshall_ok := False
+										unmarshall_error_code := Invalid_fault_string	
+									end				
+								end
+							else
+								unmarshall_ok := False
+								unmarshall_error_code := Invalid_fault_code	
+							end	
+						else
+							unmarshall_ok := False
+							unmarshall_error_code := Invalid_fault_code	
+						end	
+					else
+						unmarshall_ok := False
+						unmarshall_error_code := Fault_code_member_missing	
+					end
+				else
+					unmarshall_ok := False
+					unmarshall_error_code := Invalid_fault_value
+				end
+			else
+				unmarshall_ok := False
+				unmarshall_error_code := Fault_value_element_missing
+			end
 		end
 	
 feature -- Access

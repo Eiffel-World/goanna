@@ -21,8 +21,16 @@ feature -- Access
 	type: STRING
 			-- Type of parameter (used as the tag value)
 
+feature -- Conversion
+
+	as_object: ANY is
+			-- Return value as an object. ie, extract the actual 
+			-- object value from the XRPC_VALUE.
+		deferred
+		end
+		
 invariant
 	
-	type_exists: type /= Void
+	type_exists: unmarshall_ok implies type /= Void
 		
 end -- class XRPC_VALUE

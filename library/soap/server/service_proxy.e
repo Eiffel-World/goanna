@@ -18,6 +18,18 @@ inherit
 creation
 	
 	make
+	
+feature -- Status report
+
+	valid_operands (name: STRING; args: TUPLE [ANY]): BOOLEAN is
+			-- Are 'args' valid operands for the function named 'name'?
+		require
+			name_exists: name /= Void
+			service_exists: has (name)
+			args_exist: args /= Void
+		do
+			Result := get (name).valid_operands (args)
+		end
 		
 feature -- Status setting
 

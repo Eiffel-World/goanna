@@ -68,6 +68,32 @@ feature -- Factory
 			end
 		end
 
+	build (value: ANY): XRPC_VALUE is
+			-- Build a new XML-RPC value from 'value'. Return Void if 'value' is not
+			-- a valid XML-RPC type.
+		require
+			value_exists: value /= Void
+		local
+			array: ARRAY [ANY]
+			struct: DS_HASH_TABLE [ANY, STRING]
+		do
+			-- check type and create appropriate concrete value type
+			if valid_scalar_type (value) then
+				create {XRPC_SCALAR_VALUE} Result.make (value)
+			elseif valid_array_type (value) then
+				array ?= value
+				create {XRPC_ARRAY_VALUE} Result.make_from_array (array)
+			elseif valid_struct_type (value) then	
+				struct ?= value
+				create {XRPC_STRUCT_VALUE} Result.make_from_struct (struct)
+			end
+		ensure
+			value_exists_if_valid_type: valid_scalar_type (value) 
+				or valid_array_type (value)
+				or valid_struct_type (value)
+				implies Result /= Void
+		end
+		
 invariant
 	
 	unmarshall_error: not unmarshall_ok implies unmarshall_error_code > 0

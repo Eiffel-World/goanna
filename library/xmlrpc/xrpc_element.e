@@ -17,6 +17,7 @@ inherit
 	XRPC_CONSTANTS
 		export
 			{NONE} all
+			{ANY} valid_scalar_type, valid_array_type, valid_struct_type
 		end
 	
 feature -- Initialization

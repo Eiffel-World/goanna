@@ -86,6 +86,72 @@ feature -- Access
 	params: DS_LINKED_LIST [XRPC_PARAM]
 			-- Call parameters
 
+	extract_service_name: STRING is
+			-- Extract the service name from the call's 'method_name'. The 'method_name'
+			-- should be in the form 'service.action', where 'service' is the service name.
+			-- If a '.' does not exist in the 'method_name' then the service name is returned
+			-- as an empty string.
+		require
+			method_name_exists: method_name /= Void
+		local
+			i: INTEGER
+		do
+			i := method_name.index_of ('.', 1)
+			if i = 0 then
+				Result := ""
+			else
+				Result := method_name.substring (1, i - 1)
+			end
+		ensure
+			empty_service_name_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")
+		end
+	
+	extract_action: STRING is
+			-- Extract the service name from the call's 'method_name'. The 'method_name'
+			-- should be in the form 'service.action', where 'action' is the action to be invoked.
+			-- If a '.' does not exist in the 'method_name' then the action is returned
+			-- as an empty string.
+		require
+			method_name_exists: method_name /= Void
+		local
+			i: INTEGER
+		do
+			i := method_name.index_of ('.', 1)
+			if i = 0 then
+				Result := ""
+			else
+				Result := method_name.substring (i + 1, method_name.count)
+			end		
+		ensure
+			empty_action_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")	
+		end	
+		
+	extract_parameters: TUPLE [ANY] is
+			-- Convert params to a tuple suitable for passing to an agent.
+		require
+			params_exists: params /= Void
+		local
+			c: DS_LINKED_LIST_CURSOR [XRPC_PARAM]
+			i: INTEGER
+		do
+			create Result.make
+			Result.resize (1, params.count)
+			from
+				c := params.new_cursor
+				c.start
+				i := 1
+			until
+				c.off
+			loop
+				Result.force (c.item.value.as_object, i)
+				c.forth
+				i := i + 1
+			end
+		ensure
+			param_tuple_exists: Result /= Void
+			valid_number_of_params: Result.count = params.count
+		end
+		
 feature -- Status setting
 
 	set_method_name (new_name: STRING) is

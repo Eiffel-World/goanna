@@ -46,8 +46,6 @@ feature {NONE} -- Implementation
 
 	serialize_node_recurse (node: DOM_NODE; indent_level: INTEGER) is
 			-- Serialize 'node' to specified output medium
-		local
-			element: DOM_ELEMENT
 		do
 			-- check node type and serialize accordingly
 			inspect
@@ -531,7 +529,7 @@ feature {NONE} -- Helper features
 			end
 		ensure
 			non_void_result: Result /= Void
-			non_empty_result: not Result.empty
+			non_empty_result: not Result.is_empty
 		end
 
 	hexadecimal_digits: STRING is "0123456789abcdef"

@@ -194,35 +194,14 @@ feature -- Status report
 	
 	string_value: STRING
 			-- String representation of value
-			
-	valid_scalar_type (new_value: ANY): BOOLEAN is
-			-- Is 'new_value' one of the supported XML-RPC scalar types?
-		require
-			new_value /= Void
-		local
-			int_ref: INTEGER_REF
-			bool_ref: BOOLEAN_REF
-			string: STRING
-			double_ref: DOUBLE_REF
-			date_time: DT_DATE_TIME
+
+feature -- Conversion
+
+	as_object: ANY is
+			-- Return value as an object. ie, extract the actual 
+			-- object value from the XRPC_VALUE.
 		do
-			Result := True
-			int_ref ?= new_value
-			if int_ref = Void then
-				double_ref ?= new_value
-				if double_ref = Void then
-					bool_ref ?= new_value
-					if bool_ref = Void then
-						string ?= new_value
-						if string = Void then
-							date_time ?= new_value
-							if date_time = Void then
-								Result := False
-							end
-						end
-					end
-				end
-			end
+			Result := value
 		end
 
 feature {NONE} -- Implementation
@@ -253,7 +232,6 @@ feature {NONE} -- Implementation
 		
 invariant
 	
-	value_exists: value /= Void
-	string_value_exists: string_value /= Void
+	string_value_exists: unmarshall_ok implies string_value /= Void
 	
 end -- class XRPC_SCALAR_VALUE

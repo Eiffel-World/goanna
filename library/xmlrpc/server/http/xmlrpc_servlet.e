@@ -59,15 +59,56 @@ feature -- Basic operations
 			-- Process POST request
 		local
 			response_text: STRING
+			service_name, action: STRING
+			agent_service: SERVICE_PROXY
+			parameters: TUPLE [ANY]
+			result_value: XRPC_VALUE
 		do
 			parse_call (req)
---			if valid_call then
-				-- process call
---			else
-				-- return fault
-				create fault.make (999)
+			if valid_call then
+				-- extract service details
+				service_name := call.extract_service_name
+				action := call.extract_action
+				parameters := call.extract_parameters
+				-- retrieve service and execute call
+				if registry.has (service_name) then
+					agent_service := registry.get (service_name)
+					if agent_service.has (action) then
+						if agent_service.valid_operands (action, parameters) then
+							agent_service.call (action, parameters)
+							if agent_service.process_ok then
+								result_value := Value_factory.build (agent_service.last_result)
+								if result_value /= Void then
+									create response.make (create {XRPC_PARAM}.make (result_value))
+									response_text := response.marshall	
+								else
+									-- construct fault response for invalid return type
+									create fault.make (Invalid_action_return_type)
+									response_text := fault.marshall
+								end
+							else
+								-- construct fault response for failed call
+								create fault.make (Unable_to_execute_service_action)
+								response_text := fault.marshall
+							end	
+						else
+							-- construct fault response for invalid service action
+							create fault.make (Invalid_operands_for_service_action)
+							response_text := fault.marshall
+						end
+					else
+						-- construct fault response for invalid service action
+						create fault.make (Action_not_found_for_service)
+						response_text := fault.marshall
+					end
+				else
+					-- construct fault response for invalid service
+					create fault.make (Service_not_found)
+					response_text := fault.marshall
+				end		
+			else
 				response_text := fault.marshall
---			end
+			end
 			-- send response
 			resp.set_content_type (Headerval_content_type)
 			resp.set_content_length (response_text.count)
@@ -94,6 +135,7 @@ feature {NONE} -- Implementation
 			if parser.is_correct then
 				debug ("xlmrpc")
 					print (serialize_dom_tree (parser.document))
+					print ("%N")
 				end
 				create call.unmarshall (parser.document.document_element)
 				if not call.unmarshall_ok then
@@ -112,8 +154,13 @@ feature {NONE} -- Implementation
 		end
 
 	call: XRPC_CALL
+			-- Received call
+			
 	response: XRPC_RESPONSE
+			-- Response to send to client. Void if a fault occurred.
+			
 	fault: XRPC_FAULT
+			-- Fault to send to client. Void if a valid response was generated.
 	
 	serialize_dom_tree (document: DOM_DOCUMENT): STRING is
 			-- Display dom tree to standard out.
@@ -134,36 +181,5 @@ feature {NONE} -- Implementation
 		once
 			create Result
 		end
-		
-	test_call: XRPC_CALL is
-			-- Build a test response
-		local
-			value, value2, value3, value4, value5: XRPC_VALUE
-			sc: DT_SYSTEM_CLOCK
-			array_value: ARRAY [XRPC_VALUE]
-			struct_value: DS_HASH_TABLE [XRPC_VALUE, STRING]
-			param: XRPC_PARAM
-		do
-			create array_value.make (1, 3)
-			create sc.make
-			create {XRPC_SCALAR_VALUE} value.make (sc.date_time_now)			
-			array_value.put (value, 1)
-			create {XRPC_SCALAR_VALUE} value.make (100)
-			array_value.put (value, 2)
 
-			create struct_value.make_default
-			create {XRPC_SCALAR_VALUE} value3.make ("this is a test")
-			create {XRPC_SCALAR_VALUE} value4.make ("another test")
-			struct_value.put (value3, "index1")
-			struct_value.put (value4, "index2")
-			create {XRPC_STRUCT_VALUE} value5.make (struct_value)
-			array_value.put (value5, 3)
-			
-			create {XRPC_ARRAY_VALUE} value2.make (array_value)
-			create param.make (value2)
---			create Result.make (param)
-			create Result.make ("methodX")
-			Result.add_param (param)
-		end
-		
 end -- class XMLRPC_SERVLET

@@ -34,7 +34,7 @@ feature -- Initialisation
 	unmarshall (node: DOM_ELEMENT) is
 			-- Unmarshall array value from XML node.
 		local
-			value_elem, type_elem: DOM_ELEMENT
+			value_elem: DOM_ELEMENT
 		do
 			unmarshall_ok := True
 			-- check for a value child element
@@ -55,8 +55,6 @@ feature -- Mashalling
 
 	marshall: STRING is
 			-- Serialize this array param to XML format
-		local
-			i: INTEGER
 		do	
 			create Result.make (1024)
 			Result.append ("<param>")
@@ -71,6 +69,6 @@ feature -- Access
 
 invariant
 
-	value_exists: value /= Void
+	value_exists: unmarshall_ok implies value /= Void
 
 end -- class XRPC_PARAM

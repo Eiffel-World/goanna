@@ -126,7 +126,6 @@ feature {NONE} -- implementation
 			-- extract the tokens excluding delimiters
 		local
 			ll: DS_LINKED_LIST [STRING]
-			ix: INTEGER
 			start_idx, finish_idx: INTEGER
 		do
 			!!ll.make
@@ -147,7 +146,6 @@ feature {NONE} -- implementation
 			-- extract the tokens including delimiters
 		local
 			ll: DS_LINKED_LIST [STRING]
-			ix: INTEGER
 			start_idx, finish_idx: INTEGER
 		do
 			!!ll.make
