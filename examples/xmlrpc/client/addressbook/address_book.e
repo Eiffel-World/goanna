@@ -113,25 +113,25 @@ feature -- Basic routines
 			p: XRPC_PARAM
 			str: STRING
 		do
-			create call.make ("addressbook.getEntry")
-	
-			-- add name param
-			create v.make (main_window.names.text)
-			create p.make (v)
-			call.add_param (p)
-			
-			-- invoke
-			client.invoke (call)
-			if client.invocation_ok then
-				str ?= client.response.value.value.as_object
-				check
-					string_address: str /= Void
-				end
-				main_window.update_address (str)
-				main_window.update_error_message ("Address retrieved.")
-			else
-				main_window.update_error_message ("Fault received: (" + client.fault.code.out + ") " + client.fault.string)	
-			end	
+			if not refreshing then
+				create call.make ("addressbook.getEntry")		
+				-- add name param
+				create v.make (main_window.names.text)
+				create p.make (v)
+				call.add_param (p)				
+				-- invoke
+				client.invoke (call)
+				if client.invocation_ok then
+					str ?= client.response.value.value.as_object
+					check
+						string_address: str /= Void
+					end
+					main_window.update_address (str)
+					main_window.update_error_message ("Address retrieved.")
+				else
+					main_window.update_error_message ("Fault received: (" + client.fault.code.out + ") " + client.fault.string)	
+				end						
+			end
 		end	
 		
 	refresh is
@@ -140,6 +140,7 @@ feature -- Basic routines
 			call: XRPC_CALL
 			names: ARRAY [ANY]
 		do
+			refreshing := True
 			create call.make ("addressbook.getNames")
 			client.invoke (call)
 			if client.invocation_ok then		
@@ -157,11 +158,16 @@ feature -- Basic routines
 					main_window.update_error_message ("Fault received: (" + client.fault.code.out + ") " + client.fault.string)	
 				end
 			end	
-
+			refreshing := False
 		end
 		
 feature {NONE} -- Implementation
 	
+	refreshing: BOOLEAN
+			-- Is the list currently being refreshed. This is used to
+			-- stop callbacks from performing remote calls when new items
+			-- are added to the names combo box.
+			
 	client: XRPC_LITE_CLIENT
 			-- XML-RPC client
 		

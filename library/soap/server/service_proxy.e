@@ -13,8 +13,8 @@ class
 	
 inherit
 	
-	REGISTRY [FUNCTION [ANY, TUPLE, ANY]]
-
+--	REGISTRY [FUNCTION [ANY, TUPLE, ANY]]
+	REGISTRY [ROUTINE [ANY, TUPLE]]
 	
 creation
 	
@@ -38,14 +38,21 @@ feature -- Status setting
 			-- Call named function
 		local
 			function: FUNCTION [ANY, TUPLE, ANY]
+			routine: ROUTINE [ANY, TUPLE]
 		do
+			last_result := Void
 			if has (name) then
-				function := get (name)
-				function.call (args)
-				last_result := function.last_result
+				routine := get (name)
+				-- check if it is a function so that a result is returned
+				function ?= routine
+				if function /= Void then
+					function.call (args)
+					last_result := function.last_result
+				else
+					routine.call (args)
+				end
 				process_ok := True
 			else
-				--last_result := Void
 				process_ok := False
 			end	
 		end

@@ -136,7 +136,7 @@ feature -- Status setting
 					string_name: str /= Void
 				end
 				create list_item.make_with_text (str)
-				names.extend (list_item)
+				names.force (list_item)
 				i := i + 1
 			end
 			-- clear address

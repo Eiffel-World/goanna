@@ -26,8 +26,6 @@ feature -- Initialization
 
 	make is
 			-- Create a few addresses
-		local
-			discard: STRING
 		do
 			Precursor
 			create addresses.make_default
@@ -37,18 +35,24 @@ feature -- Access
 			
 	get_entry (name: STRING): STRING is
 			-- Locate address by name
+		require
+			has_entry: has_entry (name).item
 		do
 			Result := addresses.item (name)
+		ensure
+			entry_exists: Result /= Void
 		end
 	
-	add_entry (name: STRING; address: STRING): STRING is
+	add_entry (name: STRING; address: STRING) is
 			-- Add 'address' for 'name'.
 		require
 			name_exists: name /= Void
 			address_exists: address /= Void
+			new_entry: not has_entry (name).item
 		do
 			addresses.force (address, name)
-			Result := address
+		ensure
+			has_entry: has_entry (name).item
 		end
 	
 	has_entry (name: STRING): BOOLEAN_REF is
@@ -60,13 +64,12 @@ feature -- Access
 			Result.set_item (addresses.has (name))
 		end
 		
-	remove_entry (name: STRING): STRING is
+	remove_entry (name: STRING) is
 			-- Remove 'address' for 'name'
 		require
 			name_exists: name /= Void
 			has_name: has_entry (name).item
 		do
-			Result := get_entry (name)
 			addresses.remove (name)
 		end
 	

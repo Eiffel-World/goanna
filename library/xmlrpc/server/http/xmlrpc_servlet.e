@@ -84,14 +84,20 @@ feature -- Basic operations
 							if agent_service.valid_operands (action, parameters) then
 								agent_service.call (action, parameters)
 								if agent_service.process_ok then
-									result_value := Value_factory.build (agent_service.last_result)
-									if result_value /= Void then
-										create response.make (create {XRPC_PARAM}.make (result_value))
-										response_text := response.marshall	
+									-- check for a result, if so pack it up to send back
+									if agent_service.last_result /= Void then
+										result_value := Value_factory.build (agent_service.last_result)
+										if result_value /= Void then
+											create response.make (create {XRPC_PARAM}.make (result_value))
+											response_text := response.marshall	
+										else
+											-- construct fault response for invalid return type
+											create fault.make (Invalid_action_return_type)
+											response_text := fault.marshall
+										end
 									else
-										-- construct fault response for invalid return type
-										create fault.make (Invalid_action_return_type)
-										response_text := fault.marshall
+										create response.make (Void)
+										response_text := response.marshall	
 									end
 								else
 									-- construct fault response for failed call
