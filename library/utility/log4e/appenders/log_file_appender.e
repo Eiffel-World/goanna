@@ -63,19 +63,24 @@ feature -- Basic Operations
 	
 feature -- Stream
 	
-	stream: KL_TEXT_OUTPUT_FILE
+	stream: KI_TEXT_OUTPUT_FILE
 			-- Stream to write log events to
 
 feature {NONE} -- Implementation
 
 	open_log is
 			-- Open the log file taking into account 'append_mode'
+		local
+			env: expanded KL_OPERATING_SYSTEM
 		do
+			if env.is_windows then
+				stream := create {KL_WINDOWS_OUTPUT_FILE}.make (name)
+			else
+				stream := create {KL_UNIX_OUTPUT_FILE}.make (name)
+			end
 			if append_mode then
-				create stream.make (name)
 				stream.open_append
 			else
-				create stream.make (name)		
 				stream.open_write
 			end	
 			if not stream.is_open_write then
