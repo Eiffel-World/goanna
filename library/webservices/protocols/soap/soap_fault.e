@@ -13,59 +13,61 @@ class
 
 inherit
 
-	SOAP_ELEMENT
+	SOAP_BLOCK
 		rename
-			entries as detail_entries,
-			set_entries as set_detail_entries
+			make as block_make
+		export
+			{NONE} block_make
 		redefine
-			make
+			unmarshall, marshall
 		end
+	
+creation
 
-create
-	make, unmarshall
+	make, make_with_detail, unmarshall
 
 feature -- Initialization
 
-	make is
-			-- Initialise new SOAP envelope
+	make (new_fault_code, new_fault_string: UC_STRING) is
+			-- Initialise new fault
+		require
+			new_fault_code_exists: new_fault_code /= Void
+			new_fault_string_exists: new_fault_string /= Void
 		do
-			create attributes.make_default
-			create fault_entries.make_default
-			create detail_entries.make_default
+			fault_code := new_fault_code
+			fault_string := new_fault_string
+			unmarshall_ok := True	
+		end
+	make_with_detail (new_fault_code, new_fault_string: UC_STRING; new_detail_node: XM_ELEMENT) is
+			-- Initialise new fault
+		require
+			new_fault_string_exists: new_fault_string /= Void
+			new_fault_code_exists: new_fault_code /= Void
+			new_fault_node_exists: new_detail_node /= Void
+		do
+			block_make (new_detail_node)
+			fault_string := new_fault_string
+			fault_code := new_fault_code
+			unmarshall_ok := True	
 		end
 
-	unmarshall (node: DOM_NODE) is
-			-- Initialise SOAP fault from DOM node.
+	unmarshall (init_node: XM_ELEMENT) is
+			-- Initialise SOAP fault from XML node.
 		do
-			make
+			unmarshall_ok := True
 		end
 
 feature -- Access
 
-	fault_actor: STRING
-			-- Information about who causes the fault to happen within the message path. 
-			-- Indicates the source of the fault.
-
-	fault_string: STRING
+	fault_string: UC_STRING
 			-- Human readable explanation of the fault.
 
-	fault_code: STRING
+	fault_code: UC_STRING
 			-- Provides an algorithmic mechanism for identifying the fault.
-
-	fault_entries: DS_LINKED_LIST [DOM_ELEMENT]
-			-- Child elements of this element.
-
+			
 feature -- Element change
 
-	set_fault_actor (a_fault_actor: STRING) is
-			-- Assign `a_fault_actor' to `fault_actor'.
-		do
-			fault_actor := a_fault_actor
-		ensure
-			fault_actor_assigned: fault_actor = a_fault_actor
-		end
-
-	set_fault_string (a_fault_string: STRING) is
+	set_fault_string (a_fault_string: UC_STRING) is
 			-- Assign `a_fault_string' to `fault_string'.
 		do
 			fault_string := a_fault_string
@@ -73,7 +75,7 @@ feature -- Element change
 			fault_string_assigned: fault_string = a_fault_string
 		end
 
-	set_fault_code (a_fault_code: STRING) is
+	set_fault_code (a_fault_code: UC_STRING) is
 			-- Assign `a_fault_code' to `fault_code'.
 		do
 			fault_code := a_fault_code
@@ -81,25 +83,35 @@ feature -- Element change
 			fault_code_assigned: fault_code = a_fault_code
 		end
 
-	set_fault_entries (new_entries: DS_LINKED_LIST [DOM_ELEMENT]) is
-			-- Assign `new_entries' to `fault_entries'.
-		require
-			new_entries_exist: new_entries /= Void
-		do
-			fault_entries := new_entries
-		ensure
-			entries_assigned: fault_entries = new_entries
-		end
-
 feature -- Mashalling
 
-	marshall (sink: IO_MEDIUM) is
-			-- Serialize this envelope on 'sink' in XML format
-		do	
+	marshall: STRING is
+			-- Serialize this envelope to XML format
+		do
+			create Result.make (100)
+			-- start Header element
+			Result.append ("<env:Fault>")
+			-- add faultcode element
+			Result.append ("<faultcode>")
+			Result.append (fault_code.out)
+			Result.append ("</faultcode>")
+			-- add faultstring element
+			Result.append ("<faultstring>")
+			Result.append (fault_string.out)
+			Result.append ("</faultstring>")
+			-- add actor if it exists
+			Result.append ("<faultactor>")
+			Result.append (actor.out)
+			Result.append ("</faultactor>")
+			-- add detail nodes if they exist
+			
+			-- end element
+			Result.append ("</env:Fault>")
 		end
 
 invariant
 	
-	fault_entries_exist: fault_entries /= Void
+	fault_code_exists: unmarshall_ok implies fault_code /= Void
+	fault_string_exists: unmarshall_ok implies fault_string /= Void
 	
 end -- class SOAP_FAULT

@@ -14,81 +14,85 @@ class
 inherit
 	
 	SOAP_ELEMENT
-		rename
-			make as element_make
-		export
-			{NONE} element_make
-		end
 	
 creation
 	
-	make, unmarshall
+	make, make_with_header, unmarshall
 	
 feature -- Initialisation
 
-	make is
-			-- Initialise with default namespace declarations
+	make_with_header (new_header: SOAP_HEADER; new_body: SOAP_BODY) is
+			-- Initialise envelope with header and body
+		require
+			new_header_exists: new_header /= Void
+			new_body_exists: new_body /= Void
 		do
-			element_make
-			declare_namespace (Ns_pre_soap_env, Ns_uri_soap_env)
-			declare_namespace (Ns_pre_schema_xsi, Ns_uri_schema_xsi_2001)
-			declare_namespace (Ns_pre_schema_xsd, Ns_uri_schema_xsd_2001)
+			header := new_header
+			body := new_body
+			unmarshall_ok := True
 		end
-		
-	unmarshall (node: DOM_NODE) is
-			-- Initialise SOAP header from DOM element.
-		local
-			root: DOM_ELEMENT
-			header_element, body_element, temp_element: DOM_ELEMENT
-			new_entries: like entries
+	
+	make (new_body: SOAP_BODY) is
+			-- Initialise envelope with body
+		require
+			new_body_exists: new_body /= Void
 		do
-			element_make
-			root ?= node
-			check root /= Void end
-			if Q_elem_envelope.matches (root) then
-				-- deserialize attributes into this element.
-				unmarshall_attributes (root)
-				-- deserialize sub-elements
-				temp_element ?= root.first_child
-				check temp_element /= Void end
-				if Q_elem_header.matches (temp_element) then
-					header_element := temp_element
-					temp_element ?= header_element.next_sibling
-				end
-				if Q_elem_body.matches (temp_element) then
-					body_element := temp_element
-					temp_element ?= body_element.next_sibling
-				end
-				-- deserialize header if found
-				if header_element /= Void then
-					create header.unmarshall (header_element)
-				end
-				if body_element /= Void then
-					create body.unmarshall (body_element)
-				end
-				-- deserialize any further elements to entries collection
-				if temp_element /= Void then
-					from
-						create new_entries.make_default
-					until
-						temp_element = Void
-					loop
-						new_entries.force_last (temp_element)
-						temp_element ?= temp_element.next_sibling
+			body := new_body
+			unmarshall_ok := True
+		end	
+		
+	unmarshall (node: XM_ELEMENT) is
+			-- Initialise SOAP envelope from XML element.
+		local
+			header_elem, body_elem: XM_ELEMENT
+			encoding_attr: XM_ATTRIBUTE
+		do
+			unmarshall_ok := True
+			
+			if node.is_root_node and node.name.is_equal (Envelope_element_name) then
+				-- search for optional encodingStyle attribute
+				unmarshall_encoding_style_attribute (node)
+				if unmarshall_ok then
+					-- search for a header element and unmarshall (optional)
+					header_elem := get_named_element (node, Header_element_name)
+					if header_elem /= Void then
+						create header.unmarshall (header_elem)
+						if not header.unmarshall_ok then
+							unmarshall_ok := False
+							unmarshall_fault := header.unmarshall_fault
+						end
 					end
-					set_entries (new_entries)
+					-- search for a body element and unmarshall. Only continue if header unmarshalling
+					-- was ok.
+					if unmarshall_ok then
+						body_elem := get_named_element (node, Body_element_name)
+						if body_elem /= Void then
+							create body.unmarshall (body_elem)
+							if not body.unmarshall_ok then
+								unmarshall_ok := False
+								unmarshall_fault := body.unmarshall_fault
+							end
+						else
+							-- missing mandatory body element
+							unmarshall_ok := False
+							unmarshall_fault := create_fault (Client_fault_code, Missing_body_element_fault_code)
+						end
+					end
 				end
-			end	
+			else
+				unmarshall_ok := False
+				unmarshall_fault := create_fault (Client_fault_code, Missing_envelope_element_fault_code)
+			end
 		end
 	
 feature -- Access
 
 	header: SOAP_HEADER
-			-- Envelope header
+			-- Envelope header. Void if no header
 			
 	body: SOAP_BODY
 			-- Envelope body
-	
+
 feature -- Status Setting
 
 	set_header (new_header: like header) is
@@ -109,14 +113,34 @@ feature -- Status Setting
 		
 feature -- Marshalling
 
-	marshall (sink: IO_MEDIUM) is
-			-- Serialize this envelope on 'sink' in XML format
-		do
-			
+	marshall: STRING is
+			-- Serialize this envelope to XML format
+		do	
+			create Result.make (100)
+			-- start Envelope element
+			Result.append ("<env:Envelope")
+			-- add all globally used namespaces
+			Result.append (" xmlns:env=%"http://www.w3.org/2001/09/soap-envelope%"")
+			Result.append (" xmlns:enc=%"http://www.w3.org/2001/09/soap-encoding%"")
+			Result.append (" xmlns:xs=%"http://www.w3.org/2001/XMLSchema%"")
+			Result.append (" xmlns:xsi=%"http://www.w3.org/2001/XMLSchema-instance%"")
+			-- add encoding style attribute if it exists
+			if encoding_style /= Void then
+				Result.append (encoding_style_attribute)
+			end
+			Result.append (">")
+			-- marshall header if it exists
+			if header /= Void then
+				Result.append (header.marshall)
+			end
+			-- marshall body
+			Result.append (body.marshall)
+			-- end Envelope element
+			Result.append ("</env:Envelope>")
 		end
 	
 invariant
-	
-	attributes_exists: attributes /= Void
+
+	body_exists: unmarshall_ok implies body /= Void
 	
 end -- class SOAP_ENVELOPE
