@@ -113,9 +113,10 @@ feature {NONE} -- Implementation
 	init_soap is
 			-- Initialise SOAP RPC calls
 		local
-			account_service, address_service, calculator_service: SERVICE
+			account_service, address_service, calculator_service, test_service: SERVICE
 			addresses: ADDRESS_REGISTER
 			calculator: CALCULATOR
+			test: TEST_SOAP
 		do
 			create addresses.make
 			create address_service.make
@@ -128,6 +129,14 @@ feature {NONE} -- Implementation
 			calculator_service.register (calculator~minus (?, ?), "minus")
 			calculator_service.register (calculator~plus(?, ?), "plus")
 			registry.register (calculator_service, "urn:xml-soap-demo-calculator")
+			create test_service.make
+			create test
+			test_service.register (test~test_boolean (?), "testBoolean")
+			test_service.register (test~test_decimal (?), "testDecimal")
+			test_service.register (test~test_float (?), "testFloat")
+			test_service.register (test~test_double (?), "testDouble")
+			test_service.register (test~test_string (?), "testString")
+			registry.register (test_service, "urn:testSOAP")
 		end
 
 end -- class SOAP

@@ -44,4 +44,17 @@ feature -- Transformation
 			Result := get (scheme).unmarshall (type, value)
 		end
 
+	marshall (scheme: STRING; value: ANY): DS_PAIR [STRING, STRING] is
+			-- Marshall 'value' to pair containing type and string value
+			-- using the registered 'scheme'
+		require
+			scheme_exists: scheme /= Void
+			value_exists: value /= Void
+			scheme_registered: has (scheme)
+		do
+			Result := get (scheme).marshall (value)
+		ensure
+			value_pair_exists: Result /= Void
+		end
+		
 end -- class SOAP_ENCODING_REGISTRY

@@ -89,14 +89,14 @@ feature -- Basic operations
 						else
 							-- construct fault response for invalid service action
 							create fault.make
-							fault.set_fault_code (Fault_code_server)
+							fault.set_fault_code (Fault_code_client)
 							fault.set_fault_string ("Service action '" + action + "' for service '" + service_name + "' not found")
 							response := build_fault_response
 						end
 					else
 						-- construct fault response for invalid service
 						create fault.make
-						fault.set_fault_code (Fault_code_server)
+						fault.set_fault_code (Fault_code_client)
 						fault.set_fault_string ("Service '" + service_name + "' not found")
 						response := build_fault_response
 					end
@@ -232,12 +232,12 @@ feature {NONE} -- Implementation
 			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
 				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_soap_env),
 				create {DOM_STRING}.make_from_string (Ns_uri_soap_env))
-			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
-				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsi),
-				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsi))
-			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
-				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsd),
-				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsd))
+--			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+--				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsi),
+--				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsi))
+--			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+--				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsd),
+--				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsd))
 			-- create body element	
 			body := doc.create_element_ns (create {DOM_STRING}.make_from_string (Ns_uri_soap_env), 
 				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Elem_body))
@@ -248,11 +248,11 @@ feature {NONE} -- Implementation
 			discard := body.append_child (fault_elem)
 			-- create fault code element
 			code := doc.create_element (create {DOM_STRING}.make_from_string (Elem_fault_code))
-			discard := code.append_child (doc.create_text_node (create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + fault.fault_code)))
+			discard := code.append_child (doc.create_text_node (create {DOM_STRING}.make_from_string (fault.fault_code)))
 			discard := fault_elem.append_child (code)
 			-- create fault string element
 			string := doc.create_element (create {DOM_STRING}.make_from_string (Elem_fault_string))
-			discard := string.append_child (doc.create_text_node (create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + fault.fault_string)))
+			discard := string.append_child (doc.create_text_node (create {DOM_STRING}.make_from_string (fault.fault_string)))
 			discard := fault_elem.append_child (string)
 			debug ("soap")
 				print (serialize_dom_tree (doc))
@@ -339,23 +339,6 @@ feature {NONE} -- Implementation
 				last_error := "Unknown encoding scheme " + scheme
 			end
 		end		
-	
-	unmarshall_parameter (type, value: STRING): ANY is
-			-- Unmarshall 'value' according to 'type'.
-		require
-			type_exists: type /= Void
-			value_exists: value /= Void
-		local
-			double: DOUBLE_REF
-		do
-			if type.is_equal ("xsd:string") then
-				Result := value
-			elseif type.is_equal ("xsd:double") then
-				create double
-				double.set_item (value.to_double)
-				Result := double
-			end
-		end
 		
 	marshall_return_element (doc: DOM_DOCUMENT; last_result: ANY): DOM_ELEMENT is
 			-- Determine type of 'last_result' and create return element
@@ -363,28 +346,18 @@ feature {NONE} -- Implementation
 		require
 			doc_exists: doc /= Void
 		local
-			double_type: DOUBLE_REF
-			string_type, value: STRING
 			value_node: DOM_TEXT
 			discard: DOM_NODE
 			type: DOM_ATTR
+			value_pair: DS_PAIR [STRING, STRING]
 		do
 			-- create return element
 			Result := doc.create_element (create {DOM_STRING}.make_from_string ("return"))
 			type := doc.create_attribute (create {DOM_STRING}.make_from_string (Ns_pre_schema_xsi + ":" + Attr_type))
 			discard := Result.set_attribute_node (type)
-			
-			-- determine type of last_result and set type and value
-			double_type ?= last_result
-			if double_type /= Void then
-				type.set_node_value (create {DOM_STRING}.make_from_string (Ns_pre_schema_xsd + ":double"))
-				value := double_type.out
-			else
-				-- string type
-				type.set_node_value (create {DOM_STRING}.make_from_string (Ns_pre_schema_xsd + ":string"))
-				value := last_result.out
-			end
-			value_node := doc.create_text_node (create {DOM_STRING}.make_from_string (value))
+			value_pair := encodings.marshall (Ns_uri_soap_enc, last_result)
+			type.set_node_value (create {DOM_STRING}.make_from_string (value_pair.first))
+			value_node := doc.create_text_node (create {DOM_STRING}.make_from_string (value_pair.second))
 			discard := Result.append_child (value_node)
 		end
 		

@@ -31,6 +31,10 @@ feature -- Constants
 			-- Decimal value within the set i*10^-n, where i and n are integers such
 			-- that n >= 0.
 			
+	Xsd_int: STRING is "int"
+			-- Same as Xsd_decimal. Java SOAP seems to use this type instead of the 
+			-- standard 'decimal' name.
+			
 	Xsd_float: STRING is "float"
 			-- IEEE single-precision 32-bit floating point type including INF (infinity)
 			
@@ -131,6 +135,7 @@ feature -- Constants
 			Result := type.is_equal (Xsd_string)
 				or type.is_equal (Xsd_boolean)
 				or type.is_equal (Xsd_decimal)
+				or type.is_equal (Xsd_int)
 				or type.is_equal (Xsd_float)
 				or type.is_equal (Xsd_double)
 		end

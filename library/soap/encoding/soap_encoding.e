@@ -30,5 +30,18 @@ feature -- Unmarshalling
 			value_exists: value /= Void
 		deferred
 		end
+	
+feature -- Marshalling
+
+	marshall (value: ANY): DS_PAIR [STRING, STRING] is
+			-- Marshall 'value' to appropriate type and string representation.
+			-- The first element in the resulting pair will represent the type
+			-- and the second the value.
+		require
+			value_exists: value /= Void
+		deferred
+		ensure
+			value_pair_exists: Result /= Void
+		end
 		
 end -- class SOAP_ENCODING
