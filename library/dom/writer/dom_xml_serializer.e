@@ -52,18 +52,28 @@ feature {NONE} -- Implementation
 			-- check node type and serialize accordingly
 			inspect
 				node.node_type
-			when Element_node                then serialize_element_recurse (node, indent_level)
-			when Attribute_node              then serialize_attribute (node)
-			when Text_node                   then serialize_text (node)
-			when Cdata_section_node          then serialize_cdata_section (node)
-			when Entity_reference_node       then serialize_entity_reference (node)
-			-- TODO: when Entity_node                 then serialize_entity (node)
-			when Processing_instruction_node then serialize_processing_instruction (node)
-			when Comment_node                then serialize_comment (node)
-			when Document_node               then serialize_document (node)
-			when Document_type_node          then serialize_document_type (node)
-			-- TODO: when Document_fragment_node      then serialize_document_fragment (node)
-			when Notation_node               then serialize_notation (node)
+			when Element_node then 
+				serialize_element_recurse (node, indent_level)
+			when Attribute_node then 
+				serialize_attribute (node)
+			when Text_node then 
+				serialize_text (node)
+			when Cdata_section_node then 
+				serialize_cdata_section (node)
+			when Entity_reference_node then 
+				serialize_entity_reference (node)
+			-- TODO: when Entity_node then serialize_entity (node)
+			when Processing_instruction_node then 
+				serialize_processing_instruction (node)
+			when Comment_node then 
+				serialize_comment (node)
+			when Document_node then 
+				serialize_document (node)
+			when Document_type_node then 
+				serialize_document_type (node)
+			-- TODO: when Document_fragment_node then serialize_document_fragment (node)
+			when Notation_node then 
+				serialize_notation (node)
 			else
 				debug ("unhandled_node_types")
 					print ("Unhandled node type: " + node.generator + " name: " + node.node_name.out)
@@ -393,6 +403,7 @@ feature {NONE} -- Helper features
 			i: INTEGER
 			char: UCCHAR
 			is_printable: BOOLEAN
+			code: INTEGER
 		do
 			from
 				i := 1
@@ -407,30 +418,41 @@ feature {NONE} -- Helper features
 					output.put_string (character_entity_reference.item (char.code))
 					output.put_character (';')
 				else
-					inspect char.code
-					when
-						9,               --     0x9
-						10,              --     0xA
-						13,              --     0xD
-						32 .. 55295,     --  0x0020 -   0xD7FF
-                                                57344 .. 65533,  --  0xE000 -   0xFFFD
-                                                65536 .. 1114111 -- 0x10000 - 0x10FFFF
-					then
-						is_printable := True
-					else
-						is_printable := False
-					end
-       					-- The character is printable if
-       					-- the encoding allows that
+-- The following inspect statement causes the ISE Eiffel compiler to generate
+-- C code that cannot be compiled. ie, a huge case statement. The boolean expression
+-- replacement below is equivalent in functionality but not as efficient.
+--					inspect char.code
+--					when
+--						9,               -- 0x9
+--						10,              -- 0xA
+--						13,              -- 0xD
+--						32 .. 55295,     -- 0x0020 -   0xD7FF
+--                      57344 .. 65533,  -- 0xE000 -   0xFFFD
+--                      65536 .. 1114111 -- 0x10000 - 0x10FFFF
+--					then
+--						is_printable := True
+--					else
+--						is_printable := False
+--					end
+					code := char.code
+					is_printable := 
+						(code = 9 
+						or code = 10 
+						or code = 13
+						or (code >= 32 and code <= 55295)
+						or (code >= 57344 and code <= 65533)
+						or (code >= 65536 and code <= 1114111))
+       				-- The character is printable if
+       				-- the encoding allows that
 					-- The encoding should be handled here
 					-- Let's default to ISO-8859-1
-       					if is_printable and then char.code <= 255 then
-       						output.put_character (integer_routines.to_character (char.code))
-       					else
+       				if is_printable and then char.code <= 255 then
+       					output.put_character (integer_routines.to_character (char.code))
+       				else
 						output.put_string ("&#x")
 						output.put_string (as_hexadecimal_number (char))
 						output.put_character (';')
-       					end
+       				end
 				end
 				i := i + 1
 			end
