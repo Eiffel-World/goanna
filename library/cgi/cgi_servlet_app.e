@@ -71,15 +71,19 @@ feature -- Basic operations
 					path.tail (path.count - 1)
 				end
 			end			
-			if path = Void then
-				handle_missing_servlet (resp)
-				log (Error, "Servlet path not specified")
-			elseif servlet_manager.has_registered_servlet (path) then
+			if path /= Void then
 				log (Info, "Servicing request: " + path)
-				servlet_manager.servlet (path).service (req, resp)
+				if servlet_manager.has_registered_servlet (path) then
+					servlet_manager.servlet (path).service (req, resp)
+				elseif servlet_manager.has_default_servlet then
+					servlet_manager.default_servlet.service (req, resp)
+				else
+					handle_missing_servlet (resp)
+					log (Error, "Servlet not found for URI " + path)
+				end
 			else
 				handle_missing_servlet (resp)
-				log (Error, "Servlet not found: " + path)
+				log (Error, "Request URI not specified")
 			end	
 		end
 		

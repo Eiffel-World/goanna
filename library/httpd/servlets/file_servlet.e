@@ -58,7 +58,7 @@ feature -- Basic operations
 					ctype_code := content_type_codes.item (file_extension)
 				else
 					-- assume html
-					ctype_code := 1
+					ctype_code := Content_type_text_html
 				end
 				content_type_handlers.item (ctype_code).service (file_name, ctype_code, req, resp)
 			else
