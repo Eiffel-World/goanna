@@ -14,11 +14,23 @@ class
 inherit
 
 	GS_SERVLET_APPLICATION
+		redefine
+			default_create
+		end
 	
 creation
 
 	default_create
 
+feature {NONE} -- Initialisation
+
+	default_create is
+			-- Initialise
+		do
+			create queue
+			Precursor
+		end
+		
 feature {NONE} -- Implementation
 
 	register_servlets is
@@ -43,9 +55,7 @@ feature {NONE} -- Implementation
 			producer: GS_REQUEST_PRODUCER
 			fast_cgi: GS_FAST_CGI_CONNECTOR
 			standalone: GS_STANDALONE_CONNECTOR
-		do
-			create queue
-			
+		do			
 			-- FastCGI connector on 9090
 --			create fast_cgi.make (9090, 5)
 --			create producer.make (Current, fast_cgi, queue)

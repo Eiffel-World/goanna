@@ -14,7 +14,7 @@
 	</description>
 
 	<cluster name="spec" abstract="True">
-		<cluster name="compiler" location="${GOANNA}/library/utility/spec/${GOBO_EIFFEL}"/>
+		<cluster name="${GOBO_EIFFEL}"/>
 	</cluster>
 
 	<mount location="${GOANNA}/library/utility/log4e/cluster.xace"/>

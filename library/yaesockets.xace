@@ -13,10 +13,9 @@
 		thanks: "Modified version of GOBO cluster.xace files"
 	</description>
 
-	<cluster name="spec_ise" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=ise"/>
-	<cluster name="spec_hact" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=hact"/>
-	<cluster name="spec_se" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=se"/>
-	<cluster name="ve" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=ve"/>
+	<cluster name="spec">
+		<cluster name="${GOBO_EIFFEL}"/>
+	</cluster>
 
 	<external>
 		<link_library location="$(YAESOCKETS)/C/cl.obj" if="${GOBO_OS}=windows"/>
