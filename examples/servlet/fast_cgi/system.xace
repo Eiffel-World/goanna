@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<system name="cgi">
+<system name="fast_cgi">
 	<description>
-		description: "XAce file for Goanna CGI server example"
+		description: "XAce file for Goanna FastCGI server example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -12,7 +12,7 @@
 		thanks: "Modified version of GOBO ant files"
 	</description>
 
-	<root class="CGI" creation="make"/>
+	<root class="FAST_CGI_SERVER" creation="make"/>
 	<cluster>
 		<option unless="${DEBUG}">
 			<require enable="False"/>
@@ -31,7 +31,7 @@
 			<optimize enable="False"/>
 		</option>
 
-		<cluster name="root_cluster" location="${GOANNA}/examples/servlet/cgi">
+		<cluster name="root_cluster" location="${GOANNA}/examples/servlet/fast_cgi">
 		</cluster>
 		
 		<cluster name="logging" location="${GOANNA}/library/obsolete/logging"/>
