@@ -1,0 +1,47 @@
+system
+	simple
+
+root
+	SIMPLE: "make"
+
+default
+	assertion (all)
+	multithreaded (no)
+	console_application (yes)
+	dynamic_runtime (no)
+	dead_code_removal (yes)
+	profile (no)
+	line_generation (no)
+	debug  (no)
+	array_optimization (yes)
+	inlining (yes)
+	inlining_size ("4")
+
+
+cluster
+	
+	   root_cluster:		"$GOANNA\efcgi\src\samples\simple";
+
+	fcgi:			"$GOANNA\efcgi\src\efcgi";
+	fcgi_external:	"$GOANNA\efcgi\src\spec\ise";
+	
+	-- EiffelBase
+	base_kernel:		"$EIFFEL4\library\base\kernel";
+	base_support:		"$EIFFEL4\library\base\support";
+
+	-- GOBO
+	gobo_kernel:		"$GOBO\library\kernel";
+	gobo_ise_kernel:	"$GOBO\library\kernel\spec\ise";
+	all gobo_structures:"$GOBO\library\structure";
+	all gobo_util: 		"$GOBO\library\utility";
+
+external
+
+	include_path:		"$GOANNA\efcgi\src\spec\ise\clib",
+				"$FCGI\include",
+				"$GOBO\library\kernel\include";
+
+	object:		"$GOANNA\efcgi\src\spec\ise\clib\Debug\efcgi.lib",
+				"$FCGI\libfcgi\Debug\libfcgi.lib";
+
+end
