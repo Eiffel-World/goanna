@@ -55,7 +55,7 @@ feature -- Basic operations
 			end
 			-- get SOAP action header
 			parse_envelope (req)
-			if envelope /= Void then	
+			if valid_envelope then	
 				-- extract call information from envelope
 				first := envelope.body.entries.first
 				service_name := extract_service_name (first)
@@ -63,44 +63,75 @@ feature -- Basic operations
 				parameters := extract_parameters (first)
 				
 				-- retrieve service and execute call
-				agent_service := registry.get (service_name)
-				agent_service.call (action, parameters)
+				if registry.has (service_name) then
+					agent_service := registry.get (service_name)
+					if agent_service.has (action) then
+						agent_service.call (action, parameters)
+					else
+						create fault.make
+						fault.set_fault_code (Fault_code_server)
+						fault.set_fault_string ("Service action '" + action + "' for service '" + service_name + "' not found")
+						response := build_fault_response
+					end
+				else
+					create fault.make
+					fault.set_fault_code (Fault_code_server)
+					fault.set_fault_string ("Service '" + service_name + "' not found")
+					response := build_fault_response
+				end
 				
 				-- process result
 				if agent_service.process_ok then
 					response := build_response (service_name, action, agent_service.last_result)
-					resp.set_content_type (Headerval_content_type)
-					resp.set_content_length (response.count)
-					resp.send (response)
 				end
 			else
-				resp.send_error (Sc_not_implemented)
+				-- construct fault response and send
+				response := build_fault_response
 			end
+			resp.set_content_type (Headerval_content_type)
+			resp.set_content_length (response.count)
+			resp.send (response)
 		end
 
 feature {NONE} -- Implementation
 
 	envelope: SOAP_ENVELOPE
 			-- SOAP envelope. Void on unmarshall error.
-			
+		
+	valid_envelope: BOOLEAN
+			-- Did the request contain a valid envelope?
+	
+	fault: SOAP_FAULT
+			-- Fault element created for an error. Void if no error.
+	
 	Soap_service: STRING is "service"
 	Soap_action: STRING is "action"
 	
 	parse_envelope (req: HTTP_SERVLET_REQUEST) is
-			-- Parse SOAP envelope from request data
+			-- Parse SOAP envelope from request data. Will set 'valid_envelope' 
+			-- if the request contained a valid SOAP envelope. If an error is
+			-- detected then a SOAP_FAULT element will be created that represents
+			-- the problem encountered.
 		local
 			parser: DOM_TREE_BUILDER
 		do
-			create parser.make
-			parser.parse_from_string (req.content)
-			if parser.is_correct then
-				debug ("soap")
-					print (serialize_dom_tree (parser.document))
-				end
-				create envelope.unmarshall (parser.document.document_element)
-			else
-				envelope := Void
-			end			
+			valid_envelope := True
+			validate_request_header (req)
+			if valid_envelope then
+				create parser.make
+				parser.parse_from_string (req.content)
+				if parser.is_correct then
+					debug ("soap")
+						print (serialize_dom_tree (parser.document))
+					end
+					create envelope.unmarshall (parser.document.document_element)
+				else
+					valid_envelope := False
+					envelope := Void
+				end	
+			end
+		ensure
+			fault_exists_if_invalid: not valid_envelope implies fault /= Void
 		end
 		
 	build_response (service_name, action: STRING; last_result: ANY): STRING is
@@ -112,6 +143,53 @@ feature {NONE} -- Implementation
 			impl: DOM_IMPLEMENTATION
 			doc: DOM_DOCUMENT
 			env, body, response, return: DOM_ELEMENT
+			discard: DOM_NODE
+		do
+			create {DOM_IMPLEMENTATION_IMPL} impl
+			-- create XML document and envelope element with appropriate namespace attributes
+			doc := impl.create_document (create {DOM_STRING}.make_from_string (Ns_uri_soap_env), 
+				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Elem_envelope), Void)
+			env := doc.document_element
+			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_soap_env),
+				create {DOM_STRING}.make_from_string (Ns_uri_soap_env))
+			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsi),
+				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsi))
+			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsd),
+				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsd))
+			-- create body element	
+			body := doc.create_element_ns (create {DOM_STRING}.make_from_string (Ns_uri_soap_env), 
+				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Elem_body))
+			discard := env.append_child (body)
+			-- create fault element
+			response := doc.create_element_ns (create {DOM_STRING}.make_from_string (service_name), 
+				create {DOM_STRING}.make_from_string ("ns1:" + action + "Response"))
+			response.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":ns1"),
+				create {DOM_STRING}.make_from_string (service_name))
+			response.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Attr_encoding_style),
+				create {DOM_STRING}.make_from_string (Ns_uri_soap_enc))		
+			discard := body.append_child (response)
+			-- create result element
+			return := marshall_return_element (doc, last_result)
+			discard := response.append_child (return)
+			debug ("soap")
+				print (serialize_dom_tree (doc))
+			end
+			Result := serialize_dom_tree (doc)
+		end
+		
+	build_fault_response: STRING is
+			-- Build fault response
+		require
+			fault_exists: fault /= Void
+		local
+			impl: DOM_IMPLEMENTATION
+			doc: DOM_DOCUMENT
+			env, body, fault_elem, code, string: DOM_ELEMENT
 			value_text: DOM_TEXT
 			discard: DOM_NODE
 		do
@@ -133,19 +211,18 @@ feature {NONE} -- Implementation
 			body := doc.create_element_ns (create {DOM_STRING}.make_from_string (Ns_uri_soap_env), 
 				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Elem_body))
 			discard := env.append_child (body)
-			-- create response element
-			response := doc.create_element_ns (create {DOM_STRING}.make_from_string (service_name), 
-				create {DOM_STRING}.make_from_string ("ns1:" + action + "Response"))
-			response.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
-				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":ns1"),
-				create {DOM_STRING}.make_from_string (service_name))
-			response.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
-				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Attr_encoding_style),
-				create {DOM_STRING}.make_from_string (Ns_uri_soap_enc))		
-			discard := body.append_child (response)
-			-- create result element
-			return := marshall_return_element (doc, last_result)
-			discard := response.append_child (return)
+			-- create fault element
+			fault_elem := doc.create_element_ns (create {DOM_STRING}.make_from_string (Ns_uri_soap_env), 
+				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Elem_fault))	
+			discard := body.append_child (fault_elem)
+			-- create fault code element
+			code := doc.create_element (create {DOM_STRING}.make_from_string (Elem_fault_code))
+			discard := code.append_child (doc.create_text_node (create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + fault.fault_code)))
+			discard := fault_elem.append_child (code)
+			-- create fault string element
+			string := doc.create_element (create {DOM_STRING}.make_from_string (Elem_fault_string))
+			discard := string.append_child (doc.create_text_node (create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + fault.fault_string)))
+			discard := fault_elem.append_child (string)
 			debug ("soap")
 				print (serialize_dom_tree (doc))
 			end
@@ -267,6 +344,22 @@ feature {NONE} -- Implementation
 			end
 			value_node := doc.create_text_node (create {DOM_STRING}.make_from_string (value))
 			discard := Result.append_child (value_node)
+		end
+		
+	Soap_action_header: STRING is "HTTP_SOAPACTION"
+	
+	validate_request_header (req: HTTP_SERVLET_REQUEST) is
+			-- Validate the HTTP request for valid header elements for a 
+			-- SOAP request.
+		require
+			req_exists: req /= Void
+		do
+			if not req.has_header (Soap_action_header) then
+				valid_envelope := False
+				create fault.make
+				fault.set_fault_code (Fault_code_client)
+				fault.set_fault_string ("SOAPAction HTTP header not found")
+			end
 		end
 		
 end -- class SOAP_SERVLET

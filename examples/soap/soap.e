@@ -106,8 +106,6 @@ feature {NONE} -- Implementation
 			create {FILE_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "file")
 			servlet_manager.register_default_servlet (servlet)
-			-- SOAP is not compatible with SmallEiffel because
-			-- is uses object serialization and agents
 			create {SOAP_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "soap")
 		end
@@ -125,7 +123,7 @@ feature {NONE} -- Implementation
 			registry.register (address_service, "urn:AddressFetcher")
 			create calculator
 			create calculator_service.make
-			calculator_service.register (calculator~times (?, ?), "times")
+			--calculator_service.register (calculator~times (?, ?), "times")
 			calculator_service.register (calculator~divide (?, ?), "divide")
 			calculator_service.register (calculator~minus (?, ?), "minus")
 			calculator_service.register (calculator~plus(?, ?), "plus")
