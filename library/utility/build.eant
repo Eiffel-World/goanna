@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="kernel" inherit="${GOBO}/misc/ge2e.eant" default="help">
+<project name="utility" inherit="${GOBO}/misc/ge2e.eant" default="help">
 
 	<description>
 		description: "Eiffel Ant file for the Goanna Utility Library"

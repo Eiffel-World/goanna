@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<project name="fast_cgi" default="help">
+<project name="fast_cgi" inherit="${GOBO}/misc/eiffel.eant" default="help">
 
 	<description>
-		description: "FastCGI server Example"
+		description: "FastCGI servlet Example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -30,188 +30,31 @@
 		<echo message="   geant clobber"/>
 	</target>
 
-	<target name="install" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Install ${system} directory.
-		</description>
-		<gexace command="build" command_options="ise">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
-		</gexace>
-		<gexace command="build" command_options="hact">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
-		</gexace>
-		<gexace command="build" command_options="se">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
-		</gexace>
-		<gexace command="build" command_options="ve">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
-		</gexace>
-	</target>
-
-	<target name="install_debug" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Install ${system} directory.
-		</description>
-		<gexace command="build" command_options="ise">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
-			<define name="DEBUG" value="true"/>
-		</gexace>
-		<gexace command="build" command_options="hact">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
-			<define name="DEBUG" value="true"/>
-		</gexace>
-		<gexace command="build" command_options="se">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
-			<define name="DEBUG" value="true"/>
-		</gexace>
-		<gexace command="build" command_options="ve">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
-			<define name="DEBUG" value="true"/>
-		</gexace>
-	</target>
-
-	<target name="compile" depend="init, install">
-		<description>
-			Compile '${system}'.
-			Use Eiffel compiler set in ${GOBO_EIFFEL}
-			or 'ise' if this variable is not defined.
-		</description>
-
-		<geant target="compile_${eiffel}"/>
-	</target>
-
-	<target name="compile_ise" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with ISE Eiffel.
-		</description>
-
-		<gexace command="build" command_options="ise"/>
-		<ise ace="ise.ace" system="${system}" finalize="true" finish_freezing="true"/>
-	</target>
-
-	<target name="compile_hact" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with Halstenbach Eiffel.
-		</description>
-
-		<gexace command="build" command_options="hact"/>
-		<hact ace="hact.ace" system="${system}" finalize="true" fish="true"/>
-	</target>
-
-	<target name="compile_ve" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with Visual Eiffel.
-		</description>
-
-		<gexace command="build" command_options="ve"/>
-		<ve esd="ve.esd"/>
-	</target>
-
-	<target name="compile_se" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with SmallEiffel.
-		</description>
-
-		<gexace command="build" command_options="se"/>
-		<se ace="se.ace"/>
-	</target>
-
-	<target name="compile_debug" depend="init, install">
-		<description>
-			Compile '${system}' in debug mode.
-			Use Eiffel compiler set in ${GOBO_EIFFEL}
-			or 'ise' if this variable is not defined.
-		</description>
-
-		<geant target="compile_debug_${eiffel}"/>
-	</target>
-
-	<target name="compile_debug_ise" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with ISE Eiffel in debug mode.
-		</description>
-
-		<ise ace="ise.ace" system="${system}" finalize="false" finish_freezing="true"/>
-	</target>
-
-	<target name="compile_debug_hact" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with Halstenbach Eiffel in debug mode.
-		</description>
-
-		<hact ace="hact.ace" system="${system}" finalize="false" fish="true"/>
-	</target>
-
-	<target name="compile_debug_ve" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with Visual Eiffel in debug mode.
-		</description>
-
-		<ve esd="ve.esd"/>
-	</target>
-
-	<target name="compile_debug_se" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with SmallEiffel in debug mode.
-		</description>
-
-		<se ace="se.ace"/>
-	</target>
-
-	<target name="clean" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Remove intermediary generated files.
-		</description>
-
-		<ise clean="${system}"/>
-		<hact clean="${system}"/>
-		<se clean="${system}"/>
-		<ve clean="${system}"/>
-	</target>
-
-	<target name="clobber" depend="init" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Remove all generated files.
-		</description>
-
-		<geant target="clean"/>
-		<delete file="ise.ace"/>
-		<delete file="hact.ace"/>
-		<delete file="se.ace"/>
-		<delete file="ve.esd"/>
-		<delete file="cecil.se"/>
-		<delete file="${system}${exe}"/>
-		<delete file="${system}.melted"/>
-		<delete file="${system}.h2o"/>
-	</target>
-
-
 <!-- Implementation -->
 
-	<target name="init">
+	<target name="xace" depend="init">
+		<description>
+			Build Ace file or ESD file for Eiffel compiler ${eiffel}.
+			Generate file in ${gexace_output} if specified.
+			Pass $DEBUG option to 'gexace' if ${debug} is defined.
+			Redefined to include GOBO_OS variable.
+		</description>
+
+		<gexace system="${eiffel}" output="${gexace_output}" xace="${system_dir}/system.xace" if="${gexace_output}">
+			<define name="DEBUG" value="${debug}" if="${debug}"/>
+			<define name="GOBO_OS" value="${GOBO_OS}" if="${GOBO_OS}"/>
+		</gexace>
+		<gexace system="${eiffel}" xace="${system_dir}/system.xace" unless="${gexace_output}">
+			<define name="DEBUG" value="${debug}" if="${debug}"/>
+			<define name="GOBO_OS" value="${GOBO_OS}" if="${GOBO_OS}"/>
+		</gexace>
+	</target>
+
+
+	<target name="init_system">
 		<set name="system" value="fast_cgi"/>
 		<set name="library" value="servlet"/>
-		<set name="example" value="fast_cgi"/>
-		<set name="eiffel" value="ise"/>
-		<geant target="init_eiffel"/>
-		<geant target="init_os"/>
-	</target>
-
-	<target name="init_eiffel" if="${GOBO_EIFFEL}">
-		<set name="eiffel" value="${GOBO_EIFFEL}"/>
-	</target>
-
-	<target name="init_os">
-		<geant target="init_windows"/>
-		<geant target="init_unix"/>
-	</target>
-
-	<target name="init_windows" if="${GOBO_OS}=windows">
-		<set name="exe" value=".exe"/>
-	</target>
-
-	<target name="init_unix" unless="${GOBO_OS}=windows">
-		<set name="exe" value=""/>
+		<set name="system_dir" value="${GOANNA}/examples/${library}/${system}"/>
 	</target>
 
 </project>

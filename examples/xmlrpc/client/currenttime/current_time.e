@@ -60,7 +60,7 @@ feature -- Basic routines
 			call: XRPC_CALL
 			date: DT_DATE_TIME
 		do
-			create call.make ("currentTime.getCurrentTime")
+			create call.make_from_string ("currentTime.getCurrentTime")
 			client.invoke (call)
 			if client.invocation_ok then		
 				date ?= client.response.value.value.as_object

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<project name="addressbook" default="help">
+<project name="addressbook" inherit="${GOBO}/misc/eiffel.eant" default="help">
 
 	<description>
-		description: "XMLRPC Address Book Example"
+		description: "XMLRPC Address book Example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -18,105 +18,43 @@
 		<echo message="   geant install"/>
 		<echo message="   geant compile"/>
 		<echo message="   geant compile_ise"/>
+		<echo message="   geant compile_hact"/>
+		<echo message="   geant compile_se"/>
+		<echo message="   geant compile_ve"/>
 		<echo message="   geant compile_debug"/>
 		<echo message="   geant compile_debug_ise"/>
+		<echo message="   geant compile_debug_hact"/>
+		<echo message="   geant compile_debug_se"/>
+		<echo message="   geant compile_debug_ve"/>
 		<echo message="   geant clean"/>
 		<echo message="   geant clobber"/>
 	</target>
 
-	<target name="install" depend="init" dir="${GOANNA}/examples/${library}/${example}">
+<!-- Implementation -->
+
+	<target name="xace" depend="init">
 		<description>
-			Install ${system} directory.
+			Build Ace file or ESD file for Eiffel compiler ${eiffel}.
+			Generate file in ${gexace_output} if specified.
+			Pass $DEBUG option to 'gexace' if ${debug} is defined.
+			Redefined to include GOBO_OS variable.
 		</description>
 
-		<gexace command="build" command_options="ise">
-			<define name="GOBO_OS" value="${GOBO_OS}"/>
+		<gexace system="${eiffel}" output="${gexace_output}" xace="${system_dir}/system.xace" if="${gexace_output}">
+			<define name="DEBUG" value="${debug}" if="${debug}"/>
+			<define name="GOBO_OS" value="${GOBO_OS}" if="${GOBO_OS}"/>
+		</gexace>
+		<gexace system="${eiffel}" xace="${system_dir}/system.xace" unless="${gexace_output}">
+			<define name="DEBUG" value="${debug}" if="${debug}"/>
+			<define name="GOBO_OS" value="${GOBO_OS}" if="${GOBO_OS}"/>
 		</gexace>
 	</target>
 
-	<target name="compile" depend="install">
-		<description>
-			Compile '${system}'.
-			Use Eiffel compiler set in ${GOBO_EIFFEL}
-			or 'ise' if this variable is not defined.
-		</description>
 
-		<geant target="compile_${eiffel}"/>
-	</target>
-
-	<target name="compile_ise" depend="install" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with ISE Eiffel.
-		</description>
-		<ise ace="ise.ace" system="${system}" finalize="true" finish_freezing="true"/>
-	</target>
-
-	<target name="compile_debug" depend="install">
-		<description>
-			Compile '${system}' in debug mode.
-			Use Eiffel compiler set in ${GOBO_EIFFEL}
-			or 'ise' if this variable is not defined.
-		</description>
-		<geant target="compile_debug_${eiffel}"/>
-	</target>
-
-	<target name="compile_debug_ise" depend="install" dir="${GOANNA}/examples/${library}/${example}">
-		<description>
-			Compile '${system}' with ISE Eiffel in debug mode.
-		</description>
-		<ise ace="ise.ace" system="${system}" finalize="false" finish_freezing="true"/>
-	</target>
-
-	<target name="clean" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
-		<description>
-			Remove intermediary generated files.
-		</description>
-
-		<ise clean="${system}"/>
-		<hact clean="${system}"/>
-		<se clean="${system}"/>
-		<ve clean="${system}"/>
-	</target>
-
-	<target name="clobber" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
-		<description>
-			Remove all generated files.
-		</description>
-
-		<geant target="clean"/>
-		<delete file="ise.ace"/>
-		<delete file="${system}${exe}"/>
-		<delete file="${system}.melted"/>
-		<delete file="${system}.h2o"/>
-	</target>
-
-
-<!-- Implementation -->
-
-	<target name="init">
+	<target name="init_system">
 		<set name="system" value="addressbook"/>
-		<set name="library" value="xmlrpc"/>
-		<set name="example" value="client/addressbook"/>
-		<set name="eiffel" value="ise"/>
-		<geant target="init_eiffel"/>
-		<geant target="init_os"/>
-	</target>
-
-	<target name="init_eiffel" if="${GOBO_EIFFEL}">
-		<set name="eiffel" value="${GOBO_EIFFEL}"/>
-	</target>
-
-	<target name="init_os">
-		<geant target="init_windows"/>
-		<geant target="init_unix"/>
-	</target>
-
-	<target name="init_windows" if="${GOBO_OS}=windows">
-		<set name="exe" value=".exe"/>
-	</target>
-
-	<target name="init_unix" unless="${GOBO_OS}=windows">
-		<set name="exe" value=""/>
+		<set name="library" value="xmlrpc/client"/>
+		<set name="system_dir" value="${GOANNA}/examples/${library}/${system}"/>
 	</target>
 
 </project>

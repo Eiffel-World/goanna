@@ -62,7 +62,7 @@ feature -- Basic routines
 			p: XRPC_PARAM
 		do
 			if not exists then
-				create call.make ("addressbook.addEntry")
+				create call.make_from_string ("addressbook.addEntry")
 		
 				-- add name param
 				create v.make (main_window.names.text)
@@ -94,7 +94,7 @@ feature -- Basic routines
 			p: XRPC_PARAM
 			ref: BOOLEAN_REF
 		do
-			create call.make ("addressbook.hasEntry")
+			create call.make_from_string ("addressbook.hasEntry")
 	
 			-- add name param
 			create v.make (main_window.names.text)
@@ -124,7 +124,7 @@ feature -- Basic routines
 			v: XRPC_SCALAR_VALUE
 			p: XRPC_PARAM
 		do
-			create call.make ("addressbook.removeEntry")
+			create call.make_from_string ("addressbook.removeEntry")
 	
 			-- add name param
 			create v.make (main_window.names.text)
@@ -149,7 +149,7 @@ feature -- Basic routines
 			str: STRING
 		do
 			if not refreshing then
-				create call.make ("addressbook.getEntry")		
+				create call.make_from_string ("addressbook.getEntry")		
 				-- add name param
 				create v.make (main_window.names.text)
 				create p.make (v)
@@ -176,7 +176,7 @@ feature -- Basic routines
 			names: ARRAY [ANY]
 		do
 			refreshing := True
-			create call.make ("addressbook.getNames")
+			create call.make_from_string ("addressbook.getNames")
 			client.invoke (call)
 			if client.invocation_ok then		
 				names ?= client.response.value.value.as_object

@@ -270,7 +270,7 @@ feature {NONE} -- Implementation
 			end
 			if next_operation /= Void then
 				-- use 'last_operation' as the method name
-				create call.make (next_operation)
+				create call.make_from_string (next_operation)
 		
 				-- create parameter with 'value'
 				create v.make (value)

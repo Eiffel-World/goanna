@@ -62,7 +62,7 @@ feature -- Basic routines
 			options: DS_HASH_TABLE [ANY, STRING]
 			value: STRING
 		do
-			create call.make ("speller.spellCheck")
+			create call.make_from_string ("speller.spellCheck")
 			create param.make (Value_factory.build (main_window.text.text))		
 			call.add_param (param)
 			create options.make (0)

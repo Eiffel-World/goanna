@@ -17,7 +17,7 @@
 	<cluster name="traversal_range"/>
 	<cluster name="writer"/>
 	<cluster name="parser"/>
-	<cluster name="implementation">
+	<cluster name="impl">
 		<cluster name="core"/>
 		<cluster name="traversal_range"/>
 		<cluster name="xmle_doc"/>
