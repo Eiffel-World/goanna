@@ -61,7 +61,7 @@ feature -- Status report
 		deferred
 		end
 	
-	cookies: ARRAY [COOKIE] is
+	cookies: DS_LINEAR [COOKIE] is
 			-- Cookies sent with this request.
 		deferred
 		ensure

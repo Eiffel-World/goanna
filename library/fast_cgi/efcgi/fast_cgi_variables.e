@@ -35,5 +35,6 @@ feature -- Access
 	Http_accept_var: STRING is "HTTP_ACCEPT"
 	Http_user_agent_var: STRING is "HTTP_USER_AGENT"
 	Http_referer_var: STRING is "HTTP_REFERER"
+	Http_cookie_var: STRING is "HTTP_COOKIE"
 
 end -- class FAST_CGI_VARIABLES

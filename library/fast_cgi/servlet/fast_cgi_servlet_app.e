@@ -57,11 +57,13 @@ feature -- Basic operations
 			create req.make (request)
 			create resp.make (request)
 			-- dispatch to the registered servlet using the path info as the registration name.
-			path := req.get_header (Path_info_var)
-			if path /= Void then
-				-- remove leading slash from path
-				path.tail (path.count - 1)
-			end
+			if req.has_header (Path_info_var) then
+				path := req.get_header (Path_info_var)
+				if path /= Void then
+					-- remove leading slash from path
+					path.tail (path.count - 1)
+				end
+			end			
 			if path /= Void and has_registered_servlet (path) then
 				get_servlet (path).service (req, resp)
 			else

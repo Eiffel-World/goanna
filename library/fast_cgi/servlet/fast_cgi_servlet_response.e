@@ -324,8 +324,8 @@ feature {NONE} -- Implementation
 			end
 		end
 	
-	set_cookie_headers is
-			-- Add headers for cookies	
+	set_cookie_header is
+			-- Add 'SetCookie' header for cookies	
 		local
 			value: STRING		
 		do
@@ -335,15 +335,13 @@ feature {NONE} -- Implementation
 			until
 				cookies.off
 			loop
-				value.append (cookies.item_for_iteration.name)
-				value.append_character ('=')
-				value.append (cookies.item_for_iteration.value)
+				value.append (cookies.item_for_iteration.header_string)
 				if not cookies.is_last then
-					value.append_character (';')
+					value.append_character (',')
 				end
 				cookies.forth
 			end
-			set_header ("cookies", value)
+			add_header ("Set-Cookie", value)
 		end
 	
 	write_headers is
@@ -354,7 +352,7 @@ feature {NONE} -- Implementation
 			-- NOTE: There is no need to send the HTTP status line because
 			-- the FastCGI protocol does it for us.
 			set_default_headers
-			set_cookie_headers
+			set_cookie_header
 			write (build_headers)
 			write ("%R%N")
 			is_committed := True

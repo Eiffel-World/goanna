@@ -34,6 +34,7 @@ feature -- Basic operations
 		do
 			visit_count := visit_count + 1
 			send_basic_html (req, resp)
+			set_cookie (req, resp)
 		end
 	
 	do_post (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
@@ -75,10 +76,33 @@ feature {NONE} -- Implementation
 				resp.send (header_names.item_for_iteration + " = " 
 					+ quoted_eiffel_string_out (req.get_header (header_names.item_for_iteration)) + "<br>%R%N")
 				header_names.forth
-			end			
+			end		
 			resp.send ("</body></html>%R%N")	
 		end	
 
 	visit_count: INTEGER
 		
+	set_cookie (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+			-- Set/unset a cookie for this session	
+		local
+			found: BOOLEAN	
+			cookie: COOKIE
+		do
+			-- check if cookie is set. If so set it, otherwise remove it.
+			from
+				req.cookies.start
+			until
+				req.cookies.off
+			loop
+				found := req.cookies.item_for_iteration.name.is_equal ("servlet_server")
+				req.cookies.forth
+			end
+			create cookie.make ("servlet_server", "testing")
+			if found then
+				-- remove the cookie by setting its age to zero
+				cookie.set_max_age (0)		
+			end
+			resp.add_cookie (cookie)	
+		end
+	
 end -- class TEST_SERVLET

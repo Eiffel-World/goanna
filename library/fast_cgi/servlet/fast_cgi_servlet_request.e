@@ -222,7 +222,7 @@ feature -- Status report
 			Result := get_header (Auth_type_var)
 		end
 
-	cookies: ARRAY [COOKIE] is
+	cookies: DS_LINKED_LIST [COOKIE] is
 			-- Cookies sent with this request.
 		do
 			if internal_cookies = Void then
@@ -281,7 +281,7 @@ feature {NONE} -- Implementation
 	internal_request: FAST_CGI_REQUEST
 		-- Internal request information and stream functionality.
 	
-	internal_cookies: ARRAY [COOKIE]
+	internal_cookies: DS_LINKED_LIST [COOKIE]
 		-- Cached collection of request cookies
 		
 	parameters: DS_HASH_TABLE [STRING, STRING]
@@ -360,17 +360,16 @@ feature {NONE} -- Implementation
 			tokenizer: STRING_TOKENIZER
 			pair, name, value: STRING
 			new_cookie: COOKIE
-			i, index: INTEGER
+			i: INTEGER
 		do
 			-- not very efficient but we don't know if we will get any bogus cookies
 			-- along the way
-			create internal_cookies.make (1, 1)
+			create internal_cookies.make
 			if has_header ("cookies") then
 				from
-					create tokenizer.make (get_header ("Cookie"))
+					create tokenizer.make (get_header (Http_cookie_var))
 					tokenizer.set_token_separator (',')
 					tokenizer.start
-					index := 1
 				until
 					tokenizer.off
 				loop
@@ -380,8 +379,7 @@ feature {NONE} -- Implementation
 						name := pair.substring (1, i)
 						value := pair.substring (i + 1, pair.count)
 						create new_cookie.make (name, value)
-						internal_cookies.force (new_cookie, 1)
-						index := index + 1
+						internal_cookies.force_last (new_cookie)
 					else
 						-- bad cookie, ignore it
 					end

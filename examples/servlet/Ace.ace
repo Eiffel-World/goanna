@@ -5,6 +5,11 @@ root
 	SERVLET_SERVER: make
 
 default
+	assertion(require)
+	assertion(ensure)
+	assertion(check)
+	assertion(loop)
+	assertion(invariant)
 	address_expression(no)
 	array_optimization(yes)
 	console_application(yes)
@@ -22,7 +27,6 @@ default
 	disabled_debug("dom_output")
 	disabled_debug("query_string_parsing")
 	disabled_debug("normalize")
-	debug(no)
 	line_generation(no)
 	profile(yes)
 	trace(no)
@@ -60,6 +64,8 @@ cluster
 	servlet:		"$GOANNA\library\servlet"
 
 	goanna_utility:		"$GOANNA\library\utility"
+
+	goanna_utility_spec (goanna_utility):		"$\spec\ise"
 
 	yaesockets:		"$YAESOCKETS"
 

@@ -26,7 +26,8 @@ feature -- Initialization
 		do
 			name := new_name
 			value := new_value
-			max_age := -1
+			set_max_age (-1)
+			set_version (Default_version)
 		end
 	
 feature -- Access
@@ -41,19 +42,19 @@ feature -- Access
 			-- Optional cookie comment
 			
 	domain: STRING
-			-- Optional domain that will see cookie
+			-- Optional dDomain that will see cookie
 			
 	max_age: INTEGER
-			-- The maximum age of this cookie, -1 if no expiry.
+			-- Optional maximum age of this cookie, -1 if no expiry.
 			
 	path: STRING
 			-- Optional URL that will see cookie
 			
 	secure: BOOLEAN
-			-- Use SSL?
+			-- Optional use SSL?
 			
 	version: INTEGER
-			-- Optional version
+			-- Version
 			
 feature -- Status setting
 
@@ -119,7 +120,71 @@ feature -- Validation
 				or lower_word.is_equal ("secure")
 				or lower_word.is_equal ("version")
 		end
-			
+	
+feature -- Conversion
+
+	header_string: STRING is
+			-- Return string representation of this cookie suitable for
+			-- a request header value.
+		do
+			create Result.make (50)
+			Result.append (name)
+			Result.append (Name_value_separator)
+			Result.append ("%"" + value + "%"")
+			-- version
+			Result.append (Term_separator)
+			Result.append (Version_label)
+			Result.append (Name_value_separator)
+			Result.append ("%"" + version.out + "%"")
+			-- optional comment
+			if comment /= Void and not comment.is_empty then
+				Result.append (Term_separator)
+				Result.append (Comment_label)
+				Result.append (Name_value_separator)
+				Result.append ("%"" + comment + "%"")
+			end
+			-- optional expires
+			if max_age >= 0 then
+				Result.append (Term_separator)
+				Result.append (Max_age_label)
+				Result.append (Name_value_separator)
+				Result.append ("%"" + max_age.out + "%"")	
+			end
+			-- optional domain
+			if domain /= Void and not domain.is_empty then
+				Result.append (Term_separator)
+				Result.append (Domain_label)
+				Result.append (Name_value_separator)
+				Result.append ("%"" + domain + "%"")
+			end
+			-- optional path
+			if path /= Void and not path.is_empty then
+				Result.append (Term_separator)
+				Result.append (Path_label)
+				Result.append (Name_value_separator)
+				Result.append ("%"" + path + "%"")
+			end
+			-- optional secure, no value
+			if secure then
+				Result.append (Term_separator)
+				Result.append (Secure_label)
+			end
+		end
+
+	Comment_label: STRING is "Comment"
+	Discard_label: STRING is "Discard"
+	Domain_label: STRING is "Domain"
+	Expires_label: STRING is "Expires"
+	Max_age_label: STRING is "Max-Age"
+	Path_label: STRING is "Path"
+	Secure_label: STRING is "Secure"
+	Version_label: STRING is "Version"
+	
+	Name_value_separator: STRING is "="
+	Term_separator: STRING is "; "
+	
+	Default_version: INTEGER is 1
+		
 invariant
 
 	name_exists: name /= Void
