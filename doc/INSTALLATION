@@ -27,7 +27,7 @@ Due to a few limitations of CVS, and a major restructuring of the source
 tree, you may end up with a number of empty directories when you checkout
 the source. If you execute:
 
-	cvs update -P
+	cvs update -Pd
 
 these directories will be removed. You can also add the '-P' option to the
 initial checkout command.
