@@ -22,7 +22,7 @@ feature -- Initialization
 	make (new_name, new_value: STRING) is
 			-- Create a new cookie with 'new_name' and 'new_value'
 		require
-			name_not_reserved_word: not reserved_cookie_word (new_name)
+			name_not_reserved_word: not is_reserved_cookie_word (new_name)
 		do
 			name := new_name
 			value := new_value
@@ -101,7 +101,7 @@ feature -- Status setting
 	
 feature -- Validation
 
-	reserved_cookie_word (word: STRING): BOOLEAN is
+	is_reserved_cookie_word (word: STRING): BOOLEAN is
 			-- Is 'word' a reserved cookie word?
 		require
 			word_exists: word /= Void	
