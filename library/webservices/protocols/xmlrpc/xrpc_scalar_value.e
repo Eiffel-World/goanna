@@ -227,20 +227,19 @@ feature {NONE} -- Implementation
 		require
 			date_exists: date /= Void
 		local
-			int_format: FORMAT_INTEGER
+			int_format: INTEGER_FORMATTER
 		do
-			create int_format.make (2)
-			int_format.zero_fill
+			create int_format
 			create Result.make (17)
 			Result.append (date.year.out)
-			Result.append (int_format.formatted (date.month))
-			Result.append (int_format.formatted (date.day))
+			Result.append (int_format.zero_fill (date.month, 2))
+			Result.append (int_format.zero_fill (date.day, 2))
 			Result.append_character ('T')
-			Result.append (int_format.formatted (date.hour))
+			Result.append (int_format.zero_fill (date.hour, 2))
 			Result.append_character (':')
-			Result.append (int_format.formatted (date.minute))
+			Result.append (int_format.zero_fill (date.minute, 2))
 			Result.append_character (':')
-			Result.append (int_format.formatted (date.second))
+			Result.append (int_format.zero_fill (date.second, 2))
 		ensure
 			formatted_string_exists: Result /= Void
 		end
