@@ -18,6 +18,16 @@ inherit
 			{NONE} all
 		end
 
+	YAES_HELPER
+		export
+			{NONE} all
+		end
+		
+	UT_STRING_FORMATTER
+		export
+			{NONE} all
+		end
+		
 feature -- Initialization
 
 	read (header: FAST_CGI_RECORD_HEADER; socket: TCP_SOCKET) is

@@ -38,18 +38,18 @@ feature -- Basic Operations
 
 			length := getparam_integer (Content_length)
 
-			print (generator + ".process_request: length=" + length.out)
+--			print (generator + ".process_request: length=" + length.out)
 			
---			putstr ("Content-type: text/html%R%N%R%N")
---			putstr ("TESTING<br>%N")
+			putstr ("Content-type: text/html%R%N%R%N")
+			putstr ("TESTING<br>%N")
 
---			putstr ("Content Length: ")
---			putstr (length.out)
---			putstr ("<br>%N")
+			putstr ("Content Length: ")
+			putstr (length.out)
+			putstr ("<br>%N")
     
---			putstr ("Visits: ")
---			putstr (count.out)
---			putstr ("<br>%N")
+			putstr ("Visits: ")
+			putstr (count.out)
+			putstr ("<br>%N")
 			count := count + 1
 
 --			putstr ("Server name: ")
@@ -60,12 +60,12 @@ feature -- Basic Operations
 --			putstr (getparam (Http_user_agent))
 --			putstr ("<br>%N")
 
-			if length > 0 then
+--			if length > 0 then
 --				read_str := getstr (length)
 --				putstr ("Content: ")
 --				putstr (read_str)
 --				putstr ("%N")
-			end
+--			end
 		end
 
 end -- class SIMPLE

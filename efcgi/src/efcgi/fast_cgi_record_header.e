@@ -84,6 +84,7 @@ feature -- Basic operations
 			enc_data: STRING
 		do
 			create enc_data.make (Fcgi_header_len)
+			enc_data.fill_blank
 			enc_data.put (character_from_code (version), 1)
 			enc_data.put (character_from_code (type), 2)
 			enc_data.put (character_from_code (request_id.bit_shift_right (8).bit_and (255)), 3)

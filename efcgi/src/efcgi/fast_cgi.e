@@ -73,9 +73,8 @@ feature -- FGCI interface
 
 	putstr (str: STRING) is 
       		-- Print 'str' to standard output stream.
-		local
-			c_str: ANY
 		do 
+			request.write_stdout (str)
 		end
 
 	warn (str: STRING) is 
@@ -155,6 +154,7 @@ feature {NONE} -- Implementation
 			-- specified. Otherwise create a new one.
 			if request /= Void then
 				-- complete the previous request
+				request.end_request
 				if request.failed or not request.keep_connection then
 					request.socket.close
 					request.make -- reset the request

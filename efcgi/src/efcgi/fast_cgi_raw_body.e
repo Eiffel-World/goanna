@@ -41,10 +41,15 @@ feature -- Basic operations
 			valid_socket: socket.is_valid
 		local
 			enc_data: STRING
+			padding: STRING
 		do
 			create enc_data.make (raw_content_data.count + padding_length)
-			enc_data.fill_blank
 			enc_data.append (raw_content_data)
+			if padding_length > 0 then
+				create padding.make (padding_length)
+				padding.fill_blank
+				enc_data.append (padding)
+			end
 			socket.send_string (enc_data)
 			debug("fcgi_protocol")
 				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")

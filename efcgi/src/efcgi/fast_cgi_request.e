@@ -138,18 +138,55 @@ feature -- Basic operations
 			socket_exists: socket /= Void
 			valid_socket: socket.is_valid	
 		local
-			stderr_record_header: FAST_CGI_RECORD_HEADER
-			stderr_record_body: FAST_CGI_RAW_BODY
+			record_header: FAST_CGI_RECORD_HEADER
+			record_body: FAST_CGI_RAW_BODY
 		do 
 			-- send it all in one record. May need to split into smaller records in the
 			-- future.
-			create stderr_record_header.make (version, request_id, Fcgi_stderr, str.count, 0)
-			create stderr_record_body.make (str, 0)
-			stderr_record_header.write (socket)
-			stderr_record_body.write (socket)
-			-- create empty stream record
-			create stderr_record_header.make (version, request_id, Fcgi_stderr, 0, 0)
-			stderr_record_header.write (socket)
+			create record_header.make (version, request_id, Fcgi_stderr, str.count, 0)
+			create record_body.make (str, 0)
+			record_header.write (socket)
+			record_body.write (socket)
+			-- end stderr stream record
+			create record_header.make (version, request_id, Fcgi_stderr, 0, 0)
+			record_header.write (socket)
+		end
+	
+	write_stdout (str: STRING) is
+			-- Write 'str' as a stdout record to the socket
+		require
+			socket_exists: socket /= Void
+			valid_socket: socket.is_valid	
+		local
+			record_header: FAST_CGI_RECORD_HEADER
+			record_body: FAST_CGI_RAW_BODY
+		do 
+			-- send it all in one record. May need to split into smaller records in the
+			-- future.
+			create record_header.make (version, request_id, Fcgi_stdout, str.count, 0)
+			create record_body.make (str, 0)
+			record_header.write (socket)
+			record_body.write (socket)
+			-- end stdout stream record
+			create record_header.make (version, request_id, Fcgi_stdout, 0, 0)
+			record_header.write (socket)
+		end
+		
+	end_request is
+			-- Notify the web server that this request has completed.
+		require
+			socket_exists: socket /= Void
+			valid_socket: socket.is_valid	
+		local
+			record_header: FAST_CGI_RECORD_HEADER
+			record_body: FAST_CGI_END_REQUEST_BODY
+		do 
+			-- send end request record
+			create record_header.make (version, request_id, Fcgi_end_request, 
+				Fcgi_end_req_body_len, 0)
+			create record_body.make (Fcgi_request_complete, 0)
+			record_header.write (socket)
+			record_body.write (socket)
 		end
 	
 feature {NONE} -- Implementation
@@ -332,7 +369,7 @@ feature {NONE} -- Implementation
 				-- store parameter
 				parameters.put (name, value)
 				debug ("fcgi_protocol")
-					print (generator + "process_parameter_raw_data: name = " 
+					print (generator + ".process_parameter_raw_data: name = " 
 						+ quoted_eiffel_string_out (name))
 					print (" value = " + quoted_eiffel_string_out (value) + "%R%N")
 				end
