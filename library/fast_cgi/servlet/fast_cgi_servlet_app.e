@@ -54,8 +54,8 @@ feature -- Basic operations
 			resp: FAST_CGI_SERVLET_RESPONSE
 			path: STRING
 		do
-			create req.make (request)
 			create resp.make (request)
+			create req.make (request, resp)	
 			-- dispatch to the registered servlet using the path info as the registration name.
 			if req.has_header (Path_info_var) then
 				path := req.get_header (Path_info_var)

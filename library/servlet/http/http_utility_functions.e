@@ -1,7 +1,7 @@
 indexing
 	description: "Mixin class of HTTP utility functions"
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
-	library: "Servlet API"
+	library: "HTTP Servlet API"
 	date: "$Date$"
 	revision: "$Revision$"
 	author: "Glenn Maughan <glennmaughan@optushome.com.au>"

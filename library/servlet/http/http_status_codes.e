@@ -1,7 +1,7 @@
 indexing
 	description: "HTTP status code constants from RFC 2068."
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
-	library: "Servlet API"
+	library: "HTTP Servlet API"
 	date: "$Date$"
 	revision: "$Revision$"
 	author: "Glenn Maughan <glennmaughan@optushome.com.au>"

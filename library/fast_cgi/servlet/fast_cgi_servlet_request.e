@@ -14,6 +14,11 @@ class
 inherit
 	HTTP_SERVLET_REQUEST
 
+	SHARED_HTTP_SESSION_MANAGER
+		export
+			{NONE} all
+		end
+	
 	FAST_CGI_VARIABLES
 		export
 			{NONE} all
@@ -30,13 +35,15 @@ create
 	
 feature {NONE} -- Initialisation
 
-	make (fcgi_request: FAST_CGI_REQUEST) is
+	make (fcgi_request: FAST_CGI_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
 			-- Create a new fast cgi servlet request wrapper for
 			-- the request information contained in 'fcgi_request'
 		require
 			request_exists: fcgi_request /= Void
+			response_exists: resp /= Void
 		do
 			internal_request := fcgi_request
+			internal_response := resp
 			create parameters.make (5)
 			parse_parameters
 		end
@@ -233,6 +240,17 @@ feature -- Status report
 			Result := internal_cookies
 		end
 
+	session: HTTP_SESSION is
+			-- Return the session associated with this request. Create a new session
+			-- if one does not already exist.
+		do
+			if session_id = Void then
+				Session_manager.bind_session (Current, internal_response)
+				session_id := Session_manager.last_session_id
+			end
+			Result := Session_manager.get_session (session_id)
+		end
+		
 	method: STRING is
 			-- The name of the HTTP method with which this request was made, for
 			-- example, GET, POST, or HEAD.
@@ -281,6 +299,12 @@ feature {NONE} -- Implementation
 	internal_request: FAST_CGI_REQUEST
 		-- Internal request information and stream functionality.
 	
+	internal_response: FAST_CGI_SERVLET_RESPONSE
+		-- Response object held so that session cookie can be set.
+		
+	session_id: STRING
+		-- Id of session. Void until session is bound by first call to get_session.
+		
 	internal_cookies: DS_LINKED_LIST [COOKIE]
 		-- Cached collection of request cookies
 		
@@ -358,6 +382,7 @@ feature {NONE} -- Implementation
 			-- collection
 		local
 			tokenizer: STRING_TOKENIZER
+			comparator: COOKIE_NAME_EQUALITY_TESTER
 			pair, name, value: STRING
 			new_cookie: COOKIE
 			i: INTEGER
@@ -365,6 +390,8 @@ feature {NONE} -- Implementation
 			-- not very efficient but we don't know if we will get any bogus cookies
 			-- along the way
 			create internal_cookies.make
+			create comparator
+			internal_cookies.set_equality_tester (comparator)
 			if has_header (Http_cookie_var) then
 				from
 					create tokenizer.make (get_header (Http_cookie_var))
@@ -381,7 +408,15 @@ feature {NONE} -- Implementation
 					i := pair.index_of ('=', 1)
 					if i > 0 then
 						name := pair.substring (1, i - 1)
+						name.left_adjust
+						name.right_adjust
 						value := pair.substring (i + 1, pair.count)
+						value.left_adjust
+						value.right_adjust
+						-- remove double quotes if they wrap the value
+						if value.item (1) = '%"' then
+							value := value.substring (2, value.count - 1)							
+						end
 						create new_cookie.make (name, value)
 						debug ("cookie_parsing")
 							print (generator + ".parse_cookie_header new_cookie = "

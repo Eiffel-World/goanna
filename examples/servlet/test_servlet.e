@@ -29,15 +29,16 @@ create
 	
 feature -- Basic operations
 
-	do_get (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+	do_get (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
 		do
 			visit_count := visit_count + 1
 			send_basic_html (req, resp)
-			set_cookie (req, resp)
+--			set_cookie (req, resp)
+			modify_session (req, resp)
 		end
 	
-	do_post (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+	do_post (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
 		do
 			do_get (req, resp)
@@ -45,7 +46,7 @@ feature -- Basic operations
 		
 feature {NONE} -- Implementation
 
-	send_basic_html (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+	send_basic_html (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 		local
 			parameter_names: DS_LINEAR [STRING]
 			header_names: DS_LINEAR [STRING]
@@ -82,7 +83,7 @@ feature {NONE} -- Implementation
 
 	visit_count: INTEGER
 		
-	set_cookie (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+	set_cookie (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Set/unset a cookie for this session	
 		local
 			found: BOOLEAN	
@@ -116,4 +117,17 @@ feature {NONE} -- Implementation
 			resp.add_cookie (cookie)
 		end
 	
+	modify_session (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
+			-- Add an attribute to session and display it if it is there.	
+		local
+			str: STRING
+		do
+			if req.session.has_attribute ("test_variable") then
+				str ?= req.session.get_attribute ("test_variable")
+				resp.send ("Session variable set: " + str + "%R%N")
+			else
+				req.session.set_attribute ("test_variable", "Hello there!")
+			end
+		end
+		
 end -- class TEST_SERVLET

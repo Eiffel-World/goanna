@@ -1,7 +1,7 @@
 indexing
 	description: "Objects that represent HTTP request information."
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
-	library: "Servlet API"
+	library: "HTTP Servlet API"
 	date: "$Date$"
 	revision: "$Revision$"
 	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
@@ -12,8 +12,9 @@ deferred class
 	HTTP_SERVLET_REQUEST
 
 inherit
-	SERVLET_REQUEST
 
+	SERVLET_REQUEST
+	
 feature -- Access
 
 	get_header (name: STRING): STRING is
@@ -65,7 +66,15 @@ feature -- Status report
 			-- Cookies sent with this request.
 		deferred
 		ensure
-			result_exists: cookies /= Void
+			cookies_exist: Result /= Void
+		end
+	
+	session: HTTP_SESSION is
+			-- Return the session associated with this request. Create a new session
+			-- if one does not already exist.
+		deferred
+		ensure
+			session_exists: Result /= Void
 		end
 	
 	method: STRING is

@@ -5,6 +5,11 @@ root
 	SERVLET_SERVER: make
 
 default
+	assertion(require)
+	assertion(ensure)
+	assertion(check)
+	assertion(loop)
+	assertion(invariant)
 	address_expression(no)
 	array_optimization(yes)
 	console_application(yes)
@@ -19,9 +24,9 @@ default
 	disabled_debug(yes)
 	disabled_debug("fcgi_protocol")
 	debug("cookie_parsing")
-	disabled_debug("xmle_id_nodes")
 	disabled_debug("dom_output")
 	disabled_debug("query_string_parsing")
+	disabled_debug("xmle_id_nodes")
 	disabled_debug("normalize")
 	line_generation(no)
 	profile(yes)
@@ -58,6 +63,8 @@ cluster
 	xmle:		"$GOANNA\tools\xmle"
 
 	servlet:		"$GOANNA\library\servlet"
+
+	servlet_http (servlet):		"$\http"
 
 	goanna_utility:		"$GOANNA\library\utility"
 

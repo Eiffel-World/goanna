@@ -29,13 +29,13 @@ create
 	
 feature -- Basic operations
 
-	do_get (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+	do_get (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
 		do
 			send_dom_html (req, resp)
 		end
 	
-	do_post (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+	do_post (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
 		do
 			do_get (req, resp)
@@ -43,7 +43,7 @@ feature -- Basic operations
 		
 feature {NONE} -- Implementation
 
-	send_dom_html (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+	send_dom_html (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 		local
 			serializer: DOM_SERIALIZER
 			stream: IO_STRING
@@ -79,7 +79,7 @@ feature {NONE} -- Implementation
 			resp.send (stream.to_string)
 		end
 
-	add_parameter_elements (req: FAST_CGI_SERVLET_REQUEST; parent: DOM_ELEMENT; doc: DOM_DOCUMENT) is
+	add_parameter_elements (req: HTTP_SERVLET_REQUEST; parent: DOM_ELEMENT; doc: DOM_DOCUMENT) is
 			-- Add an element for each request parameter
 		require
 			req_exists: req /= Void
@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 			end
 		end
 	
-	add_header_elements (req: FAST_CGI_SERVLET_REQUEST; parent: DOM_ELEMENT; doc: DOM_DOCUMENT) is
+	add_header_elements (req: HTTP_SERVLET_REQUEST; parent: DOM_ELEMENT; doc: DOM_DOCUMENT) is
 			-- Add an element for each request header
 		require
 			req_exists: req /= Void
