@@ -1,0 +1,44 @@
+system
+	testdom
+
+root
+	ALL_NODES: "make"
+
+default
+	assertion (all)
+	multithreaded (no)
+	console_application (yes)
+	dynamic_runtime (no)
+	dead_code_removal (yes)
+	profile (no)
+	line_generation (no)
+	debug  (no)
+	array_optimization (no)
+	inlining (no)
+	inlining_size ("4")
+
+	--precompiled ("$EIFFEL4\precomp\spec\$PLATFORM\base")
+
+cluster
+	
+	root_cluster:		"d:\goanna\eiffeldom\src\test"
+	dom:				"d:\goanna\eiffeldom\src\dom";
+	dom_impl:			"d:\goanna\eiffeldom\src\impl";
+
+		-- EiffelBase
+	base_kernel:		"$EIFFEL4\library\base\kernel";
+	base_support:		"$EIFFEL4\library\base\support";
+	
+		-- GOBO
+	gobo_kernel:		"$GOBO\library\kernel";
+	gobo_ise_kernel:	"$GOBO\library\kernel\spec\ise";
+	all gobo_structures:"$GOBO\library\structure";
+	all gobo_util: 		"$GOBO\library\utility";
+		
+	thread:			"$EIFFEL4\library\thread"
+
+external
+
+	include_path: "$GOBO\library\kernel\include";
+
+end
