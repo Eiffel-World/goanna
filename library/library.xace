@@ -18,4 +18,6 @@
 	<mount location="${GOANNA}/library/webservices/library.xace"/>
 	<mount location="${GOANNA}/library/utility/library.xace"/>
 
+	<mount location="${LOG4E}/library/library.xace"/>
+
 </library>

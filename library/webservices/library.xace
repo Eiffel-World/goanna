@@ -19,7 +19,7 @@
 		<cluster name="connectors">
 			<cluster name="cgi"/>
 			<cluster name="fast_cgi">
-				cluster name="protocol"/>
+				<cluster name="protocol"/>
 			</cluster>
 			<cluster name="stand_alone"/>
 		</cluster>

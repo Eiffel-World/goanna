@@ -16,9 +16,11 @@
 
 	<option unless="${DEBUG}">
 		<option name="assertion" value="none"/>
+		<option name="finalize" value="true"/>
 	</option>
 	<option if="${DEBUG}">
-		<option name="assertion" value="all"/>
+		<option name="assertion" value="require"/>
+		<option name="finalize" value="false"/>
 	</option>
 
 	<cluster name="root_cluster" location="${GOANNA}/examples/servlet/standalone">

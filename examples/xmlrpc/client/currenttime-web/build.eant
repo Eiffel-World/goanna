@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="currenttimeweb" inherit="${GOBO}/misc/eiffel.eant" default="help">
+<project name="currenttimeweb" default="help">
 
 	<description>
 		description: "XMLRPC Current Time Web interface Example"
@@ -12,6 +12,13 @@
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO ant files"
 	</description>
+
+	<inherit>
+		<parent location="${GOBO}/misc/eiffel.eant">
+			<redefine target="init_system"/>
+			<redefine target="help"/>
+		</parent>
+	</inherit>
 
 	<target name="help">
 		<echo message="usage:"/>
@@ -31,25 +38,6 @@
 	</target>
 
 <!-- Implementation -->
-
-	<target name="xace" depend="init">
-		<description>
-			Build Ace file or ESD file for Eiffel compiler ${eiffel}.
-			Generate file in ${gexace_output} if specified.
-			Pass $DEBUG option to 'gexace' if ${debug} is defined.
-			Redefined to include GOBO_OS variable.
-		</description>
-
-		<gexace system="${eiffel}" output="${gexace_output}" xace="${system_dir}/system.xace" if="${gexace_output}">
-			<define name="DEBUG" value="${debug}" if="${debug}"/>
-			<define name="GOBO_OS" value="${GOBO_OS}" if="${GOBO_OS}"/>
-		</gexace>
-		<gexace system="${eiffel}" xace="${system_dir}/system.xace" unless="${gexace_output}">
-			<define name="DEBUG" value="${debug}" if="${debug}"/>
-			<define name="GOBO_OS" value="${GOBO_OS}" if="${GOBO_OS}"/>
-		</gexace>
-	</target>
-
 
 	<target name="init_system">
 		<set name="system" value="currenttime-web"/>

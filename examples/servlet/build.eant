@@ -80,9 +80,9 @@
 			in all subdirectories.
 		</description>
 
-		<geant file="build.eant" target="${target}" dir="cgi"/>
-		<geant file="build.eant" target="${target}" dir="fast_cgi"/>
-		<geant file="build.eant" target="${target}" dir="standalone"/>
-		<geant file="build.eant" target="${target}" dir="application"/>
+	<geant file="build.eant" target="${target}" dir="cgi"/>
+	<geant file="build.eant" target="${target}" dir="fast_cgi"/>
+	<geant file="build.eant" target="${target}" dir="standalone"/>
+	<geant file="build.eant" target="${target}" dir="application"/>
 
 </project>

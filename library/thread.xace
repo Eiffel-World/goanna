@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<cluster name="thread" location="${ISE_EIFFEL}/library/thread" abstract="False">
+<library name="thread" prefix="ise_">
 
 	<description>
 		description: "Cluster definition for ISE EiffelThread classes"
@@ -13,4 +13,6 @@
 		thanks: "Modified version of GOBO cluster.xace files"
 	</description>
 
-</cluster>
+	<cluster name="eiffel_thread" location="${ISE_EIFFEL}/library/thread"/>
+
+</library>

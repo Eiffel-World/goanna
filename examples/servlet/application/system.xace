@@ -14,23 +14,25 @@
 
 	<root class="APPLICATION" creation="default_create"/>
 
-	<cluster>
+	<option unless="${DEBUG}">
+		<option name="assertion" value="none"/>
+		<option name="finalize" value="true"/>
+	</option>
+	<option if="${DEBUG}">
+		<option name="assertion" value="require"/>
+		<option name="finalize" value="false"/>
+	</option>
 
-		<option name="assertion" value="none" unless="${DEBUG}"/>
-		<option name="assertion" value="all" if="${DEBUG}"/>
+	<option name="console_application" value="true"/>
+	<option name="multithreaded" value="true"/>
 
-		<option name="console_application" value="true"/>
-		<option name="multithreaded" value="true"/>
-
-		<cluster name="root_cluster" location="${GOANNA}/examples/servlet/application">
-		</cluster>
-	
-		<mount location="${GOBO}/library/kernel.xace"/>
-		<mount location="${GOBO}/library/cluster.xace"/>
-		<mount location="${GOANNA}/library/cluster.xace"/>
-		<mount location="${GOANNA}/library/yaesockets.xace"/>
-		<mount location="${GOANNA}/library/thread.xace"/>
-
+	<cluster name="root_cluster" location="${GOANNA}/examples/servlet/application">
 	</cluster>
+	
+	<mount location="${GOBO}/library/kernel.xace"/>
+	<mount location="${GOBO}/library/library.xace"/>
+	<mount location="${GOANNA}/library/library.xace"/>
+	<mount location="${GOANNA}/library/yaesockets.xace"/>
+	<mount location="${GOANNA}/library/thread.xace"/>
 
 </system>

@@ -23,6 +23,4 @@
 		<cluster name="thread" if="${GOBO_EIFFEL}=ise"/>
 	</cluster>
 
-<!--	<mount location="${GOANNA}/library/utility/log4e/library.xace"/> -->
-
 </library>

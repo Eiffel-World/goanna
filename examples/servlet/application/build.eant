@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="application" inherit="${GOBO}/misc/eiffel.eant" default="help">
+<project name="application" default="help">
 
 	<description>
 		description: "Servlet Application"
@@ -12,6 +12,14 @@
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO ant files"
 	</description>
+
+	<inherit>
+		<parent location="${GOBO}/misc/eiffel.eant">
+			<redefine target="init_system"/>
+			<redefine target="install"/>
+			<redefine target="help"/>
+		</parent>
+	</inherit>
 
 	<target name="help">
 		<echo message="usage:"/>
