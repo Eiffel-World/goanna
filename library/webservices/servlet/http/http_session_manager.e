@@ -102,14 +102,14 @@ feature -- Status setting
 				from
 					sessions.start
 				until
-					sessions.after
+					sessions.off
 				loop
 					session := sessions.item_for_iteration
 					key := sessions.key_for_iteration
 					notify_listeners (session, Expiring_code)
 					sessions.remove (key)
 					notify_listeners (session, Expired_code)
-					sessions.forth
+					if not sessions.off then sessions.forth end
 				end
 			end
 		end
