@@ -150,7 +150,7 @@ feature -- Basic operations
 					set_content_length (content_buffer.count)
 					write_headers	
 				end
-				if not content_buffer.empty then
+				if not content_buffer.is_empty then
 					write (content_buffer)
 				end
 			end
@@ -325,9 +325,25 @@ feature {NONE} -- Implementation
 		end
 	
 	set_cookie_headers is
-			-- Add headers for cookies			
+			-- Add headers for cookies	
+		local
+			value: STRING		
 		do
-			
+			create value.make (20)
+			from
+				cookies.start
+			until
+				cookies.off
+			loop
+				value.append (cookies.item_for_iteration.name)
+				value.append_character ('=')
+				value.append (cookies.item_for_iteration.value)
+				if not cookies.is_last then
+					value.append_character (';')
+				end
+				cookies.forth
+			end
+			set_header ("cookies", value)
 		end
 	
 	write_headers is

@@ -98,8 +98,22 @@ feature -- Access
 			-- header has comma-separated values they are separated and added to the
 			-- result. If only one value exists, it is added as the sole entry in the
 			-- list.
+		local
+			tokenizer: STRING_TOKENIZER
+			list: DS_LINKED_LIST [STRING]
 		do
-			
+			create list.make
+			create tokenizer.make (get_header (name))
+			tokenizer.set_token_separator (',')
+			from
+				tokenizer.start
+			until
+				tokenizer.off
+			loop
+				list.force_last (tokenizer.token)
+				tokenizer.forth
+			end
+			Result := list
 		end
 		
 	get_header_names: DS_LINEAR [STRING] is
@@ -126,6 +140,7 @@ feature -- Status report
 	has_parameter (name: STRING): BOOLEAN is
 			-- Does this request have a parameter named 'name'?
 		do
+			Result := parameters.has (name)
 		end
 
 	content_length: INTEGER is
@@ -157,7 +172,9 @@ feature -- Status report
 	scheme: STRING is
 			-- The name of the scheme used to make this request. Such as, http, https
 			-- or ftp.
-		do	
+		do
+			Result := "http"
+			-- TODO: may need to change this when we support https	
 		end
 
 	server_name: STRING is
@@ -188,6 +205,8 @@ feature -- Status report
 	is_secure: BOOLEAN is
 			-- Was this request made using a secure channel, such as HTTPS?
 		do
+			Result := False
+			-- TODO: may need to change this when we support https.
 		end
 		
 	has_header (name: STRING): BOOLEAN is
@@ -206,6 +225,12 @@ feature -- Status report
 	cookies: ARRAY [COOKIE] is
 			-- Cookies sent with this request.
 		do
+			if internal_cookies = Void then
+				-- iterate across cookie header and collect all cookie values
+				-- TODO: handle multiple cookie headers
+				parse_cookie_header
+			end
+			Result := internal_cookies
 		end
 
 	method: STRING is
@@ -256,6 +281,9 @@ feature {NONE} -- Implementation
 	internal_request: FAST_CGI_REQUEST
 		-- Internal request information and stream functionality.
 	
+	internal_cookies: ARRAY [COOKIE]
+		-- Cached collection of request cookies
+		
 	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of parameter values with support for multiple values per parameter name
 			
@@ -323,6 +351,43 @@ feature {NONE} -- Implementation
 					+ " value = " + quoted_eiffel_string_out (value) + "%R%N")
 			end	
 			parameters.force (value, name)
+		end
+	
+	parse_cookie_header is
+			-- Parse the cookie header, if it exists and construct the 'internal_cookies'
+			-- collection
+		local
+			tokenizer: STRING_TOKENIZER
+			pair, name, value: STRING
+			new_cookie: COOKIE
+			i, index: INTEGER
+		do
+			-- not very efficient but we don't know if we will get any bogus cookies
+			-- along the way
+			create internal_cookies.make (1, 1)
+			if has_header ("cookies") then
+				from
+					create tokenizer.make (get_header ("Cookie"))
+					tokenizer.set_token_separator (',')
+					tokenizer.start
+					index := 1
+				until
+					tokenizer.off
+				loop
+					pair := tokenizer.token
+					i := pair.index_of ('=', 1)
+					if i > 0 then
+						name := pair.substring (1, i)
+						value := pair.substring (i + 1, pair.count)
+						create new_cookie.make (name, value)
+						internal_cookies.force (new_cookie, 1)
+						index := index + 1
+					else
+						-- bad cookie, ignore it
+					end
+					tokenizer.forth
+				end
+			end
 		end
 	
 end -- class FAST_CGI_SERVLET_REQUEST
