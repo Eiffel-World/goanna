@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<system name="goanna">
+<system name="goanna" inherit="${GOBO}/misc/eiffel.eant">
 	<description>
 		description: "XAce file for Goanna test harnesses"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"

@@ -14,9 +14,10 @@
 	</description>
 
 	<cluster name="appenders">
-		<cluster name="net"/>
+		<cluster name="net" if="${GOBO_EIFFEL}=ise"/>
 		<cluster name="nt" if="${GOBO_OS}=windows"/>
 	</cluster>
+
 	<cluster name="config"/>
 	<cluster name="filters"/>
 	<cluster name="helpers"/>

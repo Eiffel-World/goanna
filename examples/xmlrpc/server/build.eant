@@ -34,14 +34,17 @@
 		<description>
 			Install ${system} directory.
 		</description>
-
 		<gexace command="build" command_options="ise">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
 		</gexace>
 		<gexace command="build" command_options="hact">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
 		</gexace>
 		<gexace command="build" command_options="se">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
 		</gexace>
 		<gexace command="build" command_options="ve">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
 		</gexace>
 	</target>
 

@@ -19,7 +19,8 @@
 	<cluster name="ve" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=ve"/>
 
 	<external>
-		<link_library location="$(YAESOCKETS)/C/Debug/cl.lib"/>
+		<link_library location="$(YAESOCKETS)/C/Debug/cl.lib" if="${GOBO_OS}=windows"/>
+		<link_library location="${YAESOCKETS}/C/cl.o" unless="${GOBO_OS}=windows"/>
 	</external>
 
 </cluster>
