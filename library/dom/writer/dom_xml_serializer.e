@@ -93,7 +93,6 @@ feature {NONE} -- Node-specific serialization
 			i: INTEGER
 			attrs: DOM_NAMED_MAP [DOM_ATTR]
 			attr: DOM_ATTR
-			attr_name, attr_value: DOM_STRING
 			child_nodes : DOM_NODE_LIST
 			use_indentation: BOOLEAN
 			child_nodes_length: INTEGER
@@ -120,7 +119,7 @@ feature {NONE} -- Node-specific serialization
 				-- print the attribute if it was specified
 				if attr.specified then
 					output.put_character (' ')
-					serialize_attribute (attrs.item (i))
+					serialize_attribute (attr)
 				end
 				i := i + 1
 			end	
@@ -177,16 +176,14 @@ feature {NONE} -- Node-specific serialization
 		require
 			valid_node_type: attribute.node_type = Attribute_node
 		local
-			attr_name: DOM_STRING
 			attr_value: DOM_STRING
 		do
-			attr_name := attribute.node_name
+			output.put_string (attribute.node_name.out)
+			output.put_character ('=')
 			attr_value := attribute.node_value
 			if attr_value = Void then
 				create attr_value.make_from_string ("")
 			end
-			output.put_string (attr_name.out)
-			output.put_character ('=')
 			serialize_quoted (attr_value)
 			character_entity_reference := text_character_entity_reference
 		end
