@@ -119,7 +119,8 @@ feature {NONE} -- Implementation
 	print_usage is
 			-- Display usage information
 		do
-			print ("Usage: spellchecker <host> <port-number>%R%N")
+			print ("Usage: spellchecker <host> <port-number>%N")
+			print ("       eg. spellchecker www.stuffeddog.com 80%N")
 		end
 
 	update_error_message (message: STRING) is

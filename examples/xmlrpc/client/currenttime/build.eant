@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<project name="calculator" default="help">
+<project name="currenttime" default="help">
 
 	<description>
-		description: "XMLRPC Calculator Example"
+		description: "XMLRPC Current Time Example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -18,34 +18,23 @@
 		<echo message="   geant install"/>
 		<echo message="   geant compile"/>
 		<echo message="   geant compile_ise"/>
-		<echo message="   geant compile_hact"/>
-		<echo message="   geant compile_se"/>
-		<echo message="   geant compile_ve"/>
 		<echo message="   geant compile_debug"/>
 		<echo message="   geant compile_debug_ise"/>
-		<echo message="   geant compile_debug_hact"/>
-		<echo message="   geant compile_debug_se"/>
-		<echo message="   geant compile_debug_ve"/>
 		<echo message="   geant clean"/>
 		<echo message="   geant clobber"/>
 	</target>
 
-	<target name="install" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="install" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Install ${system} directory.
 		</description>
 
 		<gexace command="build" command_options="ise">
-		</gexace>
-		<gexace command="build" command_options="hact">
-		</gexace>
-		<gexace command="build" command_options="se">
-		</gexace>
-		<gexace command="build" command_options="ve">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
 		</gexace>
 	</target>
 
-	<target name="compile" depend="init, install">
+	<target name="compile" depend="install">
 		<description>
 			Compile '${system}'.
 			Use Eiffel compiler set in ${GOBO_EIFFEL}
@@ -55,94 +44,27 @@
 		<geant target="compile_${eiffel}"/>
 	</target>
 
-	<target name="compile_ise" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_ise" depend="install" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with ISE Eiffel.
 		</description>
-
-		<gexace command="build" command_options="ise"/>
 		<ise ace="ise.ace" system="${system}" finalize="true" finish_freezing="true"/>
 	</target>
 
-	<target name="compile_hact" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
-		<description>
-			Compile '${system}' with Halstenbach Eiffel.
-		</description>
-
-		<gexace command="build" command_options="hact"/>
-		<hact ace="hact.ace" system="${system}" finalize="true" fish="true"/>
-	</target>
-
-	<target name="compile_ve" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
-		<description>
-			Compile '${system}' with Visual Eiffel.
-		</description>
-
-		<gexace command="build" command_options="ve"/>
-		<ve esd="ve.esd"/>
-	</target>
-
-	<target name="compile_se" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
-		<description>
-			Compile '${system}' with SmallEiffel.
-		</description>
-
-		<gexace command="build" command_options="se"/>
-		<se ace="se.ace"/>
-	</target>
-
-	<target name="compile_debug" depend="init">
+	<target name="compile_debug" depend="install">
 		<description>
 			Compile '${system}' in debug mode.
 			Use Eiffel compiler set in ${GOBO_EIFFEL}
 			or 'ise' if this variable is not defined.
 		</description>
-
 		<geant target="compile_debug_${eiffel}"/>
 	</target>
 
-	<target name="compile_debug_ise" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_debug_ise" depend="install" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with ISE Eiffel in debug mode.
 		</description>
-
-		<gexace command="build" command_options="ise">
-			<define name="DEBUG" value="true"/>
-		</gexace>
 		<ise ace="ise.ace" system="${system}" finalize="false" finish_freezing="true"/>
-	</target>
-
-	<target name="compile_debug_hact" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
-		<description>
-			Compile '${system}' with Halstenbach Eiffel in debug mode.
-		</description>
-
-		<gexace command="build" command_options="hact">
-			<define name="DEBUG" value="true"/>
-		</gexace>
-		<hact ace="hact.ace" system="${system}" finalize="false" fish="true"/>
-	</target>
-
-	<target name="compile_debug_ve" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
-		<description>
-			Compile '${system}' with Visual Eiffel in debug mode.
-		</description>
-
-		<gexace command="build" command_options="ve">
-			<define name="DEBUG" value="true"/>
-		</gexace>
-		<ve esd="ve.esd"/>
-	</target>
-
-	<target name="compile_debug_se" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
-		<description>
-			Compile '${system}' with SmallEiffel in debug mode.
-		</description>
-
-		<gexace command="build" command_options="se">
-			<define name="DEBUG" value="true"/>
-		</gexace>
-		<se ace="se.ace"/>
 	</target>
 
 	<target name="clean" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
@@ -163,10 +85,6 @@
 
 		<geant target="clean"/>
 		<delete file="ise.ace"/>
-		<delete file="hact.ace"/>
-		<delete file="se.ace"/>
-		<delete file="ve.esd"/>
-		<delete file="cecil.se"/>
 		<delete file="${system}${exe}"/>
 		<delete file="${system}.melted"/>
 		<delete file="${system}.h2o"/>
@@ -177,8 +95,8 @@
 
 	<target name="init">
 		<set name="system" value="currenttime"/>
-		<set name="library" value="client"/>
-		<set name="example" value="currenttime"/>
+		<set name="library" value="currenttime"/>
+		<set name="example" value="client/currenttime"/>
 		<set name="eiffel" value="ise"/>
 		<geant target="init_eiffel"/>
 		<geant target="init_os"/>

@@ -2,7 +2,7 @@
 
 <system name="calculator">
 	<description>
-		description: "XAce file for Goanna XMLRPC client examples"
+		description: "XAce file for Goanna XMLRPC Address Book example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -31,8 +31,8 @@
 			<optimize enable="False"/>
 		</option>
 
-		<cluster name="calculator" location="${GOANNA}/examples/xmlrpc/client/calculator"/>
-
+		<cluster name="root_cluster" location="${GOANNA}/examples/xmlrpc/client/calculator"/>
+		
 		<mount location="${GOBO}/library/cluster.xace"/>
 		<mount location="${GOBO}/library/kernel.xace"/>
 		<mount location="${GOANNA}/library/cluster.xace"/>
@@ -41,3 +41,4 @@
 		<mount location="${GOANNA}/library/vision2.xace"/>
 	</cluster>
 </system>
+

@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 
-<project name="xmlrpc" default="help">
+<project name="xmlrpcclients" default="help">
 
 	<description>
 		description: "Ant file for Goanna XMLRPC client examples"
-		project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
-		author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
 		copyright: "Copyright (c) 2001 Glenn Maughan and others"
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO ant files"
@@ -50,10 +50,10 @@
 		</description>
 
 		<geant file="addressbook/build.eant" target="clobber"/>
-		<geant file="calculator/build.eant" target="clean"/>
-		<geant file="currenttime/build.eant" target="clean"/>
-		<geant file="spellchecker/build.eant" target="clean"/>
-		<geant file="test/build.eant" target="clean"/>
+		<geant file="calculator/build.eant" target="clobber"/>
+		<geant file="currenttime/build.eant" target="clobber"/>
+		<geant file="spellchecker/build.eant" target="clobber"/>
+		<geant file="test/build.eant" target="clobber"/>
 	</target>
 
 <!-- Implementation -->

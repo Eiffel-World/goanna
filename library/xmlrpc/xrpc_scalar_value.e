@@ -14,11 +14,6 @@ class
 inherit
 	
 	XRPC_VALUE
-	
-	DOM_NODE_TYPE
-		export
-			{NONE} all
-		end
 		
 creation
 

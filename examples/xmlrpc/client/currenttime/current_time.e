@@ -111,6 +111,7 @@ feature {NONE} -- Implementation
 			-- Display usage information
 		do
 			print ("Usage: currenttime <host> <port-number>%R%N")
+			print ("       eg. currenttime time.xmlrpc.com 80%R%N")
 		end
 
 	update_error_message (message: STRING) is

@@ -325,10 +325,6 @@ feature {NONE} -- Implementation
 			parser := parser_factory.new_toe_eiffel_tree_parser
 			parser.parse_from_string (content)
 			if parser.is_correct then
---				debug ("xlmrpc")
---					print (serialize_dom_tree (parser.document))
---					print ("%N")
---				end
 				-- peek at response elements to determine if it is a fault or not
 				child ?= parser.document.first
 				if child /= Void and then child.name.is_equal (Fault_element) then
@@ -355,25 +351,5 @@ feature {NONE} -- Implementation
 				create fault.make (Bad_payload_fault_code)
 			end	
 		end
-
---	serialize_dom_tree (document: DOM_DOCUMENT): STRING is
---			-- Display dom tree to standard out.
---		require
---			document_exists: document /= Void	
---		local
---			writer: DOM_SERIALIZER
---			string_stream: IO_STRING
---		do
---			create string_stream.make (1024)
---			writer := serializer_factory.serializer_for_document (document)
---			writer.set_output (string_stream)
---			writer.serialize (document)		
---			Result := string_stream.to_string
---		end
---	
---	serializer_factory: DOM_SERIALIZER_FACTORY is
---		once
---			create Result
---		end
 		
 end -- XRPC_LITE_CLIENT
