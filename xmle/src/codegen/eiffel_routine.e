@@ -46,7 +46,7 @@ feature -- Access
 	is_function: BOOLEAN is
 			-- Is this routine a function?
 		do
-			Result := type = Void
+			Result := type /= Void
 		end
 
 	is_deferred: BOOLEAN is
@@ -72,7 +72,7 @@ feature -- Status setting
 			parameter_name_exists: new_parameter.first /= Void
 			parameter_value_exists: new_parameter.second /= Void
 		do
-			params.put (new_parameter)
+			params.extend (new_parameter)
 		end
 
 	add_local (new_local: DS_PAIR [STRING, STRING]) is
@@ -86,7 +86,7 @@ feature -- Status setting
 				create body.make
 				create locals.make
 			end
-			locals.put (new_local)
+			locals.extend (new_local)
 		end
 
 	add_body_line (line: STRING) is
@@ -98,7 +98,7 @@ feature -- Status setting
 				create body.make
 				create locals.make
 			end
-			body.put (line)
+			body.extend (line)
 		end
 
 feature -- Basic operations
@@ -139,7 +139,7 @@ feature {NONE} -- Implementation
 				params.off
 			loop
 				output.put_string (params.item.first + ": " + params.item.second)
-				if not params.is_last then
+				if not params.islast then
 					output.put_string ("; ")
 				end
 				params.forth

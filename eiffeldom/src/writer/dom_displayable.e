@@ -38,8 +38,8 @@ feature {NONE}
 			!! Result.make (level * 2)
 			if level > 0 then
 				-- SmallEiffel doesn't recognise fill_character
-				-- Result.fill_character (' ')
-				Result.fill (' ')
+				Result.fill_character (' ')
+				--Result.fill (' ')
 			end
 		ensure
 			result_exists: Result /= Void

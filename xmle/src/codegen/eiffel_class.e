@@ -57,7 +57,7 @@ feature -- Status setting
 		require
 			new_parent_exists: new_parent /= Void
 		do
-			parents.put (new_parent)
+			parents.extend (new_parent)
 		end
 
 	add_creation_procedure_name (new_name: STRING) is
@@ -65,7 +65,7 @@ feature -- Status setting
 		require
 			new_name_exists: new_name /= Void
 		do
-			creation_procedure_names.put (new_name)
+			creation_procedure_names.extend (new_name)
 		end
 
 	add_feature_group (new_group: EIFFEL_FEATURE_GROUP) is
@@ -73,7 +73,7 @@ feature -- Status setting
 		require
 			new_group_exists: new_group /= Void
 		do
-			feature_groups.put (new_group)
+			feature_groups.extend (new_group)
 		end
 
 feature -- Basic operations
@@ -85,7 +85,7 @@ feature -- Basic operations
 			if not parents.empty then	
 				write_parents (output)
 			end
-			if not creation_names.empty then
+			if not creation_procedure_names.empty then
 				write_creation_names (output)
 			end
 			if not feature_groups.empty then
@@ -119,7 +119,7 @@ feature {NONE} -- Implementation
 				creation_procedure_names.off
 			loop
 				output.put_string ("%T" + creation_procedure_names.item)
-				if not creation_procedure_names.is_last then
+				if not creation_procedure_names.islast then
 					output.put_string (", ")
 				else
 					output.put_new_line

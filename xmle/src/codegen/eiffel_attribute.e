@@ -19,7 +19,7 @@ creation
 
 feature -- Initialization
 
-	make is
+	make (new_name, new_type: STRING) is
 			-- Create a new attribute
 		require
 			new_name_exists: new_name /= Void

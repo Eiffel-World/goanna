@@ -53,7 +53,7 @@ feature -- Status setting
 		require
 			class_name_exists: class_name /= Void
 		do
-			exports.put (class_name)
+			exports.extend (class_name)
 		end
 
 	add_feature (new_feature: EIFFEL_FEATURE) is
@@ -61,7 +61,7 @@ feature -- Status setting
 		require
 			new_feature_exists: new_feature /= Void
 		do
-			features.put (new_feature)
+			features.extend (new_feature)
 		end 
 
 feature -- Basic operations
@@ -69,8 +69,8 @@ feature -- Basic operations
 	write (output: IO_MEDIUM) is
 			-- Print code representation of this feature group to 'output'
 		do
-			write_header
-			write_features
+			write_header (output)
+			write_features (output)
 		end
 
 feature {NONE} -- Implementation
@@ -95,7 +95,7 @@ feature {NONE} -- Implementation
 				exports.off
 			loop
 				output.put_string (exports.item)
-				if not exports.is_last then
+				if not exports.islast then
 					output.put_string (", ")
 				end
 				exports.forth
