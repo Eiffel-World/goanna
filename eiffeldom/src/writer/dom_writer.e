@@ -6,6 +6,8 @@ indexing
 class
 	DOM_WRITER
 	
+obsolete "Use SERIALIZER classes instead"
+
 feature -- Transformation
 
 	output (node: DOM_NODE) is

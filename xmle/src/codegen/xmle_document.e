@@ -45,4 +45,13 @@ feature -- Access
 		deferred
 		end
 
+feature -- Basic Operations
+
+	to_document: STRING is
+			-- Generate string representation of this document suitable for sending.
+		require
+			document_loaded: document /= Void
+		deferred
+		end
+		
 end -- class XMLE_DOCUMENT

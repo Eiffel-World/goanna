@@ -48,6 +48,9 @@ feature -- Basic operations
 				header_names.forth
 			end
 			resp.send ("</body></html>%R%N")
+			
+			-- test XMLE generated document
+			create document.make
 		end
 	
 	do_post (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
@@ -58,6 +61,10 @@ feature -- Basic operations
 		
 feature {NONE} -- Implementation
 
+	document: ORDER_XMLE
+	
 	visit_count: INTEGER
+	
+	dom_nodes_refs: XMLE_DOM_STORAGE_REFS
 	
 end -- class TEST_SERVLET
