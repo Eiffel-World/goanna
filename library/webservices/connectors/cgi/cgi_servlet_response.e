@@ -107,8 +107,13 @@ feature -- Status setting
 			-- Set hte content type of the response being sent to the client.
 			-- The content type may include the type of character encoding used, for
 			-- example, 'text/html; charset=ISO-885904'
+
 		do
-			set_header ("Content-Type", type)
+			if type.substring_index ("charset", 1) = 0 then
+				set_header ("Content-Type", type + latin1)
+			else
+				set_header ("Content-Type", type)
+			end
 		end
 
 	set_header (name, value: STRING) is
@@ -390,5 +395,10 @@ feature {NONE} -- Implementation
 			std.output.put_string (data)
 			-- TODO: check ok and handle errors
 		end
+
+feature {NONE} -- Implementation
+
+	latin1: STRING is "; charset=ISO-8859-1"
+			-- Define the Latin-1 character set.
 	
 end -- class CGI_SERVLET_RESPONSE
