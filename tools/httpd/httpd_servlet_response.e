@@ -19,8 +19,8 @@ inherit
 		export
 			{NONE} all
 		end	
-
-	BASIC_ROUTINES
+	
+	STRING_MANIPULATION
 		export
 			{NONE} all
 		end
@@ -163,7 +163,7 @@ feature -- Basic operations
 				end
 				if not content_buffer.is_empty then
 					write (content_buffer)
-					content_buffer.clear_all
+					clear_buffer (content_buffer)
 				end
 			end
 		end
@@ -232,8 +232,8 @@ feature -- Basic operations
 			-- write the data in chunks
 			from
 				data_index := 1 
-			invariant
-				content_buffer.capacity = initial_buffer_size
+--			invariant
+--				content_buffer.capacity = initial_buffer_size
 			until
 				data_index > data.count
 			loop
@@ -241,7 +241,7 @@ feature -- Basic operations
 				end_index := data.count.min (data_index + buffer_space - 1)
 				content_buffer.append (data.substring (data_index, end_index))
 				data_index := end_index + 1
-				if content_buffer.full then
+				if is_buffer_full (content_buffer) then
 					flush_buffer
 				end
 			end
@@ -423,4 +423,4 @@ feature {NONE} -- Implementation
 			-- TODO: check for internal_socket errors
 		end
 	
-end -- class FAST_CGI_SERVLET_RESPONSE
+end -- class HTTPD_SERVLET_RESPONSE

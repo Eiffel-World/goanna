@@ -13,13 +13,24 @@ class
 	STANDARD_LOGGER
 
 inherit
+
 	LOGGER
 		rename
 			make as logger_make
 		export
 			{NONE} logger_make
 		end
-
+	
+	KL_STANDARD_FILES
+		export
+			{NONE} all
+		end
+	
+	KL_OUTPUT_STREAM_ROUTINES
+		export
+			{NONE} all
+		end
+		
 creation
 	make
 
@@ -30,12 +41,11 @@ feature -- Initialization
 		require
 			log_file_name_exists: log_file_name /= Void
 		local
-			file: PLAIN_TEXT_FILE
+			file: like output_stream_type
 			new_channel: LOG_CHANNEL
 		do
 			logger_make
-			create file.make (log_file_name)
-			file.open_append
+			file := make_file_open_write (log_file_name)
 			create new_channel.make (file)
 			add_channel (Standard_facility, new_channel)
 		end

@@ -34,9 +34,9 @@ inherit
 		end
 
 	SHARED_STANDARD_LOGGER
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 creation
 	make
@@ -75,7 +75,7 @@ feature {NONE} -- Implementation
 	parse_arguments is
 			-- Parse the command line arguments and store appropriate settings
 		local
-			dir: DIRECTORY
+			dir: KL_DIRECTORY
 		do
 			if Arguments.argument_count < 2 then
 				argument_error := True
@@ -85,7 +85,8 @@ feature {NONE} -- Implementation
 					port := Arguments.argument(1).to_integer
 					-- parse document root
 					create dir.make (Arguments.argument (2))
-					if dir.exists and then dir.is_readable then
+					dir.open_read
+					if dir.is_open_read then
 						config.set_document_root (dir.name)
 					else
 						argument_error := True
@@ -111,10 +112,12 @@ feature {NONE} -- Implementation
 			servlet_manager.set_config (config)
 			create {TEST_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "basic")
-			create {XMLE_TEST_SERVLET} servlet.init (config)
-			servlet_manager.register_servlet (servlet, "xmle")
-			create {DOM_TEST_SERVLET} servlet.init (config)
-			servlet_manager.register_servlet (servlet, "dom")
+			-- XMLE is not compatible with SmallEiffel because
+			-- it uses object serialization.
+--			create {XMLE_TEST_SERVLET} servlet.init (config)
+--			servlet_manager.register_servlet (servlet, "xmle")
+--			create {DOM_TEST_SERVLET} servlet.init (config)
+--			servlet_manager.register_servlet (servlet, "dom")
 			create {FILE_SERVLET} servlet.init (config)
 			servlet_manager.register_default_servlet (servlet)
 			servlet_manager.register_servlet (servlet, "file")
@@ -129,7 +132,7 @@ feature {NONE} -- Implementation
 			valid_port: port > 0
 		do
 			-- prepare the socket
-			!!server_socket.make (port, 10)
+			create server_socket.make (port, 10)
 			config.set_server_port (port)
 			socket_multiplexer.register_managed_socket_read (server_socket)
 			log (Info, "Goanna HTTPD Server. Version 1.0")

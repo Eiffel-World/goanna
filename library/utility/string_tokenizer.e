@@ -14,9 +14,9 @@ class
 inherit
 
 	STRING_MANIPULATION
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 creation
 	make

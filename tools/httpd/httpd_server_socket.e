@@ -59,6 +59,6 @@ feature
 			end
 		end
 
-end -- class HTTP_SERVER_SOCKET
+end -- class HTTPD_SERVER_SOCKET
 
 

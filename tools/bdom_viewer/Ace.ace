@@ -18,6 +18,7 @@ default
 	arguments("..\..\..\xmle\EIFGEN\W_code\order_xmle")
 	arguments("order_xmle")
 	arguments("root_xmle")
+	arguments(" ")
 	disabled_debug(yes)
 	disabled_debug("xmle_id_nodes")
 	debug("unhandled_node_types")
@@ -28,7 +29,8 @@ default
 
 
 cluster
-	"retrieve":		"$GOANNA\tools\bdom_viewer"
+	retrieve:		"$GOANNA\tools\bdom_viewer"
+
 
 	dom:		"$GOANNA\library\dom"
 
@@ -75,9 +77,7 @@ cluster
 			"CVS"; 
 		end
 
-	ucstring:		"$UCSTRING"
-
-	ucstring_lib (ucstring):		"$\lib"
+	ucstring:		"$UCSTRING\lib"
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 

@@ -22,6 +22,7 @@ default
 	arguments("test.xml")
 	arguments("rich_iii.xml")
 	arguments("small.xml")
+	arguments(" ")
 	disabled_debug(yes)
 	disabled_debug("xmle_id_nodes")
 	debug("parser_events")
@@ -34,7 +35,7 @@ default
 -- eXML
 
 cluster
-	"xmle":		"$GOANNA\tools\xmle"
+	xmle:		"$GOANNA\tools\xmle"
 
 	dom:		"$GOANNA\library\dom"
 
@@ -81,74 +82,35 @@ cluster
 			"CVS"; 
 		end
 
-	ucstring:		"$UCSTRING"
-
-	ucstring_lib (ucstring):		"$\lib"
+	ucstring:		"$UCSTRING\lib"
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
-	exml:		"$EXML/lib"
-
-	exml_interface (exml):		"$/interface"
-
-	exml_general_interface (exml_interface):		"$/general"
-
-	exml_event_interface (exml_interface):		"$/event"
-
-	exml_tree_interface (exml_interface):		"$/tree"
-
-	exml_factory_interface (exml_interface):		"$/factory"
-
-	exml_formater_interface (exml_interface):		"$\formater"
-
-	exml_position_interface (exml_interface):		"$\position"
-
-	exml_source_interface (exml_interface):		"$\source"
-
-	exml_implementation (exml):		"$\implementation"
-
-	exml_implementation_interface (exml_implementation):		"$\implementation_interface"
-
-	exml_general_implementation_interface (exml_implementation_interface):		"$\general"
-
-	exml_event_implementation_interface (exml_implementation_interface):		"$\event"
-
-	exml_tree_implementation_interface (exml_implementation_interface):		"$\tree"
-
-	exml_expat_implementation (exml_implementation):		"$\expat"
-
-	exml_expat_api_implementation (exml_expat_implementation):		"$\api"
-
-	exml_expat_general_implementation (exml_expat_implementation):		"$\general"
-
-	exml_expat_event_implementation (exml_expat_implementation):		"$\event"
+	eXML: "$EXML/lib";
+	all eXML_factory (eXML): "$/factory";
+	all eXML_interface (eXML): "$/interface";
+	eXML_implementation (eXML): "$/implementation";
+	all eXML_implementation_interface (eXML_implementation): "$/implementation_interface";
+	eXML_expat_implementation (eXML_implementation): "$/expat"
+	eXML_expat_api_implementation (eXML_expat_implementation): "$/api"
+	eXML_expat_general_implementation (eXML_expat_implementation): "$/general"
+	eXML_expat_event_implementation (eXML_expat_implementation): "$/event"
 		use
-			".lace"
-		end
-
-	exml_expat_ise_implementation (exml_expat_implementation):		"$\spec\ise"
-
-	exml_expat_factory_implementation (exml_expat_implementation):		"$\factory"
-
-	exml_expat_position_implementation (exml_expat_implementation):		"$\position"
-
-	exml_expat_source_implementation (exml_expat_implementation):		"$\source"
-
-	exml_tree_on_event_implementation (exml_implementation):		"$\tree_on_event"
-
-	exml_tree_on_event_tree_implementation (exml_tree_on_event_implementation):		"$\tree"
-
-	exml_tree_on_event_factory_implementation (exml_tree_on_event_implementation):		"$\factory"
+                    ".lace"
+                end
+	eXML_expat_ise_implementation (eXML_expat_implementation): "$/spec/ise"
+	eXML_expat_tree_implementation (eXML_expat_implementation): "$/tree"
+	all eXML_native_implementation (eXML_implementation): "$/native"
+	all eXML_tree_on_event_implementation (eXML_implementation): "$/tree_on_event"
 
 external
 
 	include_path:
 		"$EXPAT\lib",
-		"$EXML\lib\implementation\expat\compiler_specific\ise\clib",
 		"$GOBO\library\kernel\include"
 
 	object:
-		"$EXML\lib\implementation\expat\spec\c\libexml.lib",
-		"$EXPAT\lib\Debug\expat.lib"
+		"$EXPAT\lib\Debug\expat.lib",
+		"$(EXML)/lib/implementation/expat/spec/c/libexml.lib"
 
 end

@@ -14,9 +14,9 @@ class
 inherit
 
 	BIT_MANIPULATION
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 feature -- Basic operations
 

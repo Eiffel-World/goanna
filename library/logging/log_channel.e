@@ -15,27 +15,45 @@ inherit
 
 	LOG_LEVELS
 	
+	DT_SHARED_SYSTEM_CLOCK
+		export
+			{NONE} all
+		end
+	
+	KL_STANDARD_FILES
+		rename
+			Error as Output_error
+		export
+			{NONE} all
+		end
+	
+	KL_OUTPUT_STREAM_ROUTINES
+		export
+			{NONE} all;
+			{ANY} is_open_write
+		end
+
 creation
 	make
 
 feature -- Initialization
 
-	make (medium: IO_MEDIUM) is
+	make (medium: like sink) is
 			-- Create new log channel to write to 'medium'
 		require
 			medium_exists: medium /= Void
-			medium_open_write: medium.is_open_write
+			medium_open_write: is_open_write (medium)
 		do
 			sink := medium 
 			set_filter (Emergency, Debug9)
 		end
 	
-	make_filter (medium: IO_MEDIUM; min_level, max_level: INTEGER) is
+	make_filter (medium: like sink; min_level, max_level: INTEGER) is
 			-- Create a new log channel to write log message with level between
 			-- 'min_level' and 'max_level' to 'medium'.
 		require
 			medium_exists: medium /= Void
-			medium_open_write: medium.is_open_write
+			medium_open_write: is_open_write (medium)
 			valid_log_filter: valid_log_level (min_level) 
 				and valid_log_level (max_level)
 				and min_level <= max_level
@@ -65,13 +83,13 @@ feature -- Status setting
 		do
 			if level >= min_filter and level <= max_filter then
 				sink.put_string (format (level, message))
-				sink.put_new_line
+				sink.put_string ("%R%N")
 			end
 		end
 		
 feature {NONE} -- Implementation
 	
-	sink: IO_MEDIUM
+	sink: like OUTPUT_STREAM_TYPE
 			-- The sink to write messages to
 		
 	min_filter, max_filter: INTEGER
@@ -80,10 +98,10 @@ feature {NONE} -- Implementation
 	format (level: INTEGER; message: STRING): STRING is
 			-- Format the message for logging
 		local
-			date: DATE_AND_TIME
+			date: DT_DATE_TIME
 		do
 			create Result.make (100)
-			create date.make_to_now
+			date := system_clock.date_time_now
 			Result.append (date.out)
 			Result.append (" (" + log_level_name (level) + "): ")
 			Result.append (message)

@@ -18,6 +18,11 @@ inherit
 			export
 				{NONE} all
 			end
+		
+		STRING_MANIPULATION
+--			export
+--				{NONE} all
+--			end
 			
 creation
 	make
@@ -78,36 +83,34 @@ feature {NONE} -- Implementation
 		require
 			buffer_exists: buffer /= Void
 		local
-			t1, t2: STRING_TOKENIZER
+			t1, t2: DC_STRING_TOKENIZER
 			request, header: STRING
 		do
 			-- parse the request line
-			create t1.make (buffer)
-			t1.set_token_separator ('%N')
+			buffer.right_adjust
+			create t1.make_default (buffer)
 			t1.start
 			-- parse request line
-			request := t1.token
+			request := t1.item
 			request.right_adjust
-			create t2.make (request)
+			create t2.make (request, " ")
 			t2.start
-			parameters.force (t2.token, Request_method_var)
+			parameters.force (t2.item, Request_method_var)
 			t2.forth
-			parse_request_uri (t2.token)
+			parse_request_uri (t2.item)
 			t2.forth
-			parameters.force (t2.token, Server_protocol_var)
+			parameters.force (t2.item, Server_protocol_var)
 			-- parse remaining header lines
 			from
 				t1.forth
-				header := t1.token
-				header.right_adjust
 			until
-				header.is_empty
+				t1.off
 			loop
+				header := t1.item
+				header.right_adjust
 				-- parse the next header line
 				parse_header (header)
 				t1.forth
-				header := t1.token
-				header.right_adjust	
 			end
 		end
 			
@@ -120,7 +123,7 @@ feature {NONE} -- Implementation
 			query, script, path, servlet_prefix: STRING
 		do
 			
-			query_index := token.index_of ('?', 1)
+			query_index := index_of_char (token, '?', 1)
 			if query_index /= 0 then
 				query := token.substring (1, query_index - 1)
 				parameters.force (token.substring (query_index + 1, token.count), Query_string_var)
@@ -137,7 +140,7 @@ feature {NONE} -- Implementation
 			script := query
 			if query.count > servlet_prefix.count + 1 then
 				if query.substring (1, servlet_prefix.count).is_equal (servlet_prefix) then
-					slash_index := query.index_of ('/', servlet_prefix.count + 1)
+					slash_index := index_of_char (query, '/', servlet_prefix.count + 1)
 					if slash_index /= 0 then
 						script := query.substring (1, slash_index - 1)
 						path := query.substring (slash_index, query.count)
@@ -165,23 +168,25 @@ feature {NONE} -- Implementation
 			name, value: STRING
 		do
 			-- split the header
-			colon_index := header.index_of (':', 1)
-			-- extract the name
-			name := header.substring (1, colon_index - 1)
-			name.to_upper
-			from
-				i := name.index_of ('-', 1)
-			until
-				i = 0
-			loop
-				name.put ('_', i)
-				i := name.index_of ('-', i + 1)
+			colon_index := index_of_char (header, ':', 1)
+			if colon_index >= 1 then
+				-- extract the name
+				name := header.substring (1, colon_index - 1)
+				name.to_upper
+				from
+					i := index_of_char (name, '-', 1)
+				until
+					i = 0
+				loop
+					name.put ('_', i)
+					i := index_of_char (name, '-', i + 1)
+				end
+				name := "HTTP_" + name 
+				-- extract the value
+				value := header.substring (colon_index + 1, header.count)
+				value.left_adjust
+				parameters.force (value, name)
 			end
-			name := "HTTP_" + name 
-			-- extract the value
-			value := header.substring (colon_index + 1, header.count)
-			value.left_adjust
-			parameters.force (value, name)
 		end
 		
 end -- class HTTPD_REQUEST

@@ -11,6 +11,13 @@ indexing
 class
 	HTTP_SESSION
 
+inherit
+	
+	DT_SHARED_SYSTEM_CLOCK
+--		export
+--			{NONE} all
+--		end
+		
 creation
 	make
 
@@ -29,7 +36,7 @@ feature {HTTP_SESSION_MANAGER}-- Initialization
 			is_new := True
 			max_inactive_interval := 120
 			create attributes.make (5)
-			create creation_time.make_to_now
+			creation_time := system_clock.date_time_now
 			touch
 		ensure
 			valid_session: validated
@@ -61,10 +68,10 @@ feature -- Status report
 	id: STRING
 			-- Session id
 			
-	creation_time: DATE_AND_TIME
+	creation_time: DT_DATE_TIME
 			-- Date and time session was created
 			
-	last_accessed_time: DATE_AND_TIME
+	last_accessed_time: DT_DATE_TIME
 			-- The last time a client sent a request associated with this session
 			
 	max_inactive_interval: INTEGER
@@ -148,9 +155,9 @@ feature {HTTP_SESSION_MANAGER}
 	touch is
 			-- Update the last accessed time.
 		require
-			valid_session: validated			
+			valid_session: validated
 		do
-			create last_accessed_time.make_to_now
+			last_accessed_time := system_clock.date_time_now
 			debug ("session_management")
 				print ("Touching session: " + id + " at " + last_accessed_time.out + "%R%N")
 			end

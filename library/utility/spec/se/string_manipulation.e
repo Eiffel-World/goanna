@@ -36,4 +36,25 @@ feature -- Basic operations
 			Result := str.substring_index (char.out, start)
 		end
 
+	clear_buffer (buffer: STRING) is
+			-- Clear buffer of all characters
+		require
+			buffer_exists: buffer /= Void
+		do
+			buffer.wipe_out
+		ensure
+			same_capacity: old buffer.capacity = buffer.capacity
+			empty: buffer.is_empty
+		end
+
+	is_buffer_full (buffer: STRING): BOOLEAN is
+			-- Is 'buffer' full to capacity?
+		require
+			buffer_exists: buffer /= Void
+		do
+			Result := buffer.count = buffer.capacity
+		ensure
+			full_result: Result = (buffer.count = buffer.capacity)
+		end	
+
 end -- class STRING_MANIPULATION

@@ -13,32 +13,42 @@ class
 
 inherit
 	CONTENT_FILE_HANDLER
-
+	
+	KL_INPUT_STREAM_ROUTINES
+--		export
+--			{NONE} all
+--		end
+		
 feature -- Basic operations
 
 	service (file_name: STRING; content_type_code: INTEGER;
 		req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Service the file request for the specified 'file_name' and
 			-- 'content_type_code'. Send the file to 'resp'.
+			--| There is currently no difference between this method and
+			--| the equivalent method in BINARY_CONTENT_FILE_HANDLER
 		local
-			file: PLAIN_TEXT_FILE
+			file: like input_stream_type
 		do
-			create file.make (file_name)
-			file.open_read
-			-- setup response
-			resp.set_content_type (content_types.item (content_type_code))
-			resp.set_content_length (file.count)
-			resp.set_status (Sc_ok)
-			-- write file data to response
+			file := make_file_open_read (file_name)
+			-- This is really inefficient because the whole file has
+			-- to be read into memory. I had to do it this way because 
+			-- I couldn't find a portable way to get the file.count to
+			-- set the content length earlier
 			from
 				buffer.wipe_out
 			until
-				file.end_of_file
+				end_of_input (file)
 			loop
-				file.read_stream (Max_line_length)
-				resp.send (file.last_string)
+				buffer.append (read_string (file, Max_line_length))
 			end
-			file.close
+			close (file)	
+			-- setup response
+			resp.set_content_type (content_types.item (content_type_code))
+			resp.set_content_length (buffer.count)
+			resp.set_status (Sc_ok)
+			-- write file data to response
+			resp.send (buffer)
 		end
 		
 feature {NONE} -- Implementation

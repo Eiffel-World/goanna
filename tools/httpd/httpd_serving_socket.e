@@ -110,4 +110,4 @@ feature {NONE}
 			Result.fill_blank
 		end
 
-end -- HTTP_SERVING_SOCKET
+end -- HTTPD_SERVING_SOCKET

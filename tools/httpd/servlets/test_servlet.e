@@ -31,11 +31,19 @@ feature -- Basic operations
 
 	do_get (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
+		local
+			response: STRING
 		do
 			visit_count := visit_count + 1
-			send_basic_html (req, resp)
+			create response.make (1024)
+			response.append ("<html><head><title>Test Servlet</title></head>%R%N")
+			response.append ("<body><h1>This is a test.</h1>%R%N")
+			response.append (basic_html (req, resp))
 			set_cookie (req, resp)
-			modify_session (req, resp)
+			response.append (modify_session (req, resp))
+			response.append ("</body></html>%R%N")	
+			resp.set_content_length (response.count)
+			resp.send (response)
 		end
 	
 	do_post (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
@@ -46,43 +54,37 @@ feature -- Basic operations
 		
 feature {NONE} -- Implementation
 
-	send_basic_html (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
+	basic_html (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE): STRING is
 		local
 			parameter_names: DS_LINEAR [STRING]
 			header_names: DS_LINEAR [STRING]
-			response: STRING
 		do
-			create response.make (255)
-			response.append ("<html><head><title>Test Servlet</title></head>%R%N")
-			response.append ("<body><h1>This is a test.</h1>%R%N")
-			response.append ("<p>Visits = " + visit_count.out + "</p>%R%N")
+			create Result.make (255)
+			Result.append ("<p>Visits = " + visit_count.out + "</p>%R%N")
 			-- display all parameters
-			response.append ("<h2>Parameters</h2>%R%N")
+			Result.append ("<h2>Parameters</h2>%R%N")
 			from
 				parameter_names := req.get_parameter_names
 				parameter_names.start
 			until
 				parameter_names.off
 			loop
-				response.append (parameter_names.item_for_iteration + " = " 
+				Result.append (parameter_names.item_for_iteration + " = " 
 					+ quoted_eiffel_string_out (req.get_parameter (parameter_names.item_for_iteration)) + "<br>%R%N")
 				parameter_names.forth
 			end				
 			-- display all variables
-			response.append ("<h2>Headers</h2>%R%N")
+			Result.append ("<h2>Headers</h2>%R%N")
 			from
 				header_names := req.get_header_names
 				header_names.start
 			until
 				header_names.off
 			loop
-				response.append (header_names.item_for_iteration + " = " 
+				Result.append (header_names.item_for_iteration + " = " 
 					+ quoted_eiffel_string_out (req.get_header (header_names.item_for_iteration)) + "<br>%R%N")
 				header_names.forth
 			end		
-			response.append ("</body></html>%R%N")	
-			resp.set_content_length (response.count)
-			resp.send (response)
 		end	
 
 	visit_count: INTEGER
@@ -121,17 +123,18 @@ feature {NONE} -- Implementation
 			resp.add_cookie (cookie)
 		end
 	
-	modify_session (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
+	modify_session (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE): STRING is
 			-- Add an attribute to session and display it if it is there.	
 		local
 			str: STRING
 		do
 			if req.session.has_attribute ("test_variable") then
 				str ?= req.session.get_attribute ("test_variable")
-				resp.send ("Session variable set: " + str + " (removing)%R%N")
+				Result := "Session variable set: " + str + " (removing)%R%N"
 				req.session.remove_attribute ("test_variable")
 			else
 				req.session.set_attribute ("test_variable", "Hello there!")
+				Result := ""
 			end
 		end
 		

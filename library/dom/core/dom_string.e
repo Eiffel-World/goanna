@@ -27,7 +27,8 @@ feature -- Initialisation
 		local
 			i: INTEGER
 		do
-			resize(other.count)
+			make (other.count)
+			resize (other.count)
 			from
 				i := 1
 			--variant

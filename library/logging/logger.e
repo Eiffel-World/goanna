@@ -72,7 +72,7 @@ feature -- Removal
 		
 feature {NONE} -- Implementation
 
-	channels: HASH_TABLE [LOG_CHANNEL, STRING]
+	channels: DS_HASH_TABLE [LOG_CHANNEL, STRING]
 			-- Log channels indexed by facility
 
 end -- class LOGGER

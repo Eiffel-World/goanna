@@ -32,7 +32,12 @@ inherit
 		export
 			{NONE} all
 		end
-			
+	
+	KL_INPUT_STREAM_ROUTINES
+		export
+			{NONE} all
+		end
+		
 creation
 
 	init
@@ -47,7 +52,7 @@ feature -- Basic operations
 		do
 			file_name := clone (servlet_config.document_root)
 			file_name.append (req.path_info)
-			if file_exists (file_name) then
+			if exists (file_name) then
 				file_extension := extension (req.path_info)
 				if content_type_codes.has (file_extension) then
 					ctype_code := content_type_codes.item (file_extension)
@@ -90,13 +95,18 @@ feature {NONE} -- Implementation
 			Result.put (binary_file_handler, Content_type_image_tiff)
 		end	
 		
-	file_exists (file_name: STRING): BOOLEAN is
+	exists (file_name: STRING): BOOLEAN is
 			-- Does a file named 'file_name' exists and is it readable?
+			--| Not called file_exists because a SmallEiffel developer thought
+			--| it was a good idea to put file manipulation routines in GENERAL!
 		local
-			file: RAW_FILE
+			file: like input_stream_type
 		do
-			create file.make (file_name)
-			Result := file.exists and then file.is_readable
+			file := make_file_open_read (file_name)
+			Result := is_open_read (file)
+			if is_open_read (file) then
+				close (file)		
+			end
 		end
 		
 end -- class FILE_SERVLET

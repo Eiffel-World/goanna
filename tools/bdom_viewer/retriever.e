@@ -25,7 +25,6 @@ feature -- Initialization
 
 	make is
 		local
-			node_impl: DOM_NODE_IMPL
 			doc: XMLE_DOCUMENT_WRAPPER
 			writer: DOM_SERIALIZER
 		do
@@ -59,8 +58,6 @@ feature {NONE} -- Implementation
 
 	parse_arguments is
 			-- Parse and validate the command line arguments
-		local
-			str: STRING
 		do
 			if arguments.argument_count = 1 then
 				name := arguments.argument (1)

@@ -13,7 +13,7 @@ class
 
 feature -- Transformation
 
-	format_fixed_variant (date: DATE_AND_TIME): STRING is
+	format_fixed_variant (date: DT_DATE_TIME): STRING is
 			-- Format 'date' using the long display format.
 			-- ie, "Wdy, DD-Mon-YY HH:MM:SS GMT".
 			-- This format is suitable for cookie expiry dates.
@@ -21,56 +21,46 @@ feature -- Transformation
 		require
 			date_exists: date /= Void
 		local
-			formatter: FORMAT_INTEGER
 			century: STRING
 		do
-			create formatter.make (2)
-			formatter.right_justify
-			formatter.zero_fill
-
 			create Result.make (27)
 			-- weekday
-			Result.append (short_weekdays.item (date.day_of_week + 1))
+			Result.append (short_weekdays.item (date.week_day))
 			Result.append (", ")
 			-- date
-			Result.append (formatter.formatted (date.day))
+			Result.append (zero_fill (date.day.out, 2))
 			Result.append_character ('-')
-			Result.append (short_months.item (date.month))
+			Result.append (short_months.item (date.month + 1))
 			Result.append_character ('-')
 			century := date.year.out
 			century.tail (2)
 			Result.append (century)
 			-- time
 			Result.append_character (' ')
-			Result.append (formatter.formatted (date.hour))
+			Result.append (zero_fill (date.hour.out, 2))
 			Result.append_character (':')
-			Result.append (formatter.formatted (date.minute))
+			Result.append (zero_fill (date.minute.out, 2))
 			Result.append_character (':')
-			Result.append (formatter.formatted (date.second))
+			Result.append (zero_fill (date.second.out, 2))
 			-- timezone
 			Result.append (" GMT")
 		ensure
 			formatted_date_exists: Result /= Void
 		end
 		
-	format_compact_sortable (date: DATE_AND_TIME): STRING is
+	format_compact_sortable (date: DT_DATE_TIME): STRING is
 			-- Format suitable for string sorting.
 			-- ie, YYYYMMDDHHMMSS
 		require
 			date_exists: date /= Void
-		local
-			formatter: FORMAT_INTEGER
 		do
-			create formatter.make (2)
-			formatter.right_justify
-			formatter.zero_fill
 			create Result.make (14)
 			Result.append (date.year.out)
-			Result.append (formatter.formatted (date.month))
-			Result.append (formatter.formatted (date.day))
-			Result.append (formatter.formatted (date.hour))
-			Result.append (formatter.formatted (date.minute))
-			Result.append (formatter.formatted (date.second))
+			Result.append (zero_fill (date.month.out, 2))
+			Result.append (zero_fill (date.day.out, 2))
+			Result.append (zero_fill (date.hour.out, 2))
+			Result.append (zero_fill (date.minute.out, 2))
+			Result.append (zero_fill (date.second.out, 2))
 		ensure
 			formatted_date_exists: Result /= Void
 		end
@@ -92,6 +82,30 @@ feature {NONE} -- Implementation
 				"Sep", "Oct", "Nov", "Dec" >>
 		ensure
 			twelve_months: Result.count = 12
+		end
+	
+	zero_fill (value: STRING; length: INTEGER): STRING is
+			-- Extend 'value' to 'length' and pad with
+			-- zeros on left if required.
+		require
+			valid_exists: value /= Void
+			valid_length: length >= value.count
+		local
+			pad_chars, i: INTEGER
+		do
+			pad_chars := length - value.count
+			create Result.make (pad_chars)
+			from
+				i := 1
+			until
+				i > pad_chars
+			loop
+				Result.append_character ('0')
+				i := i + 1
+			end
+			Result.append (value)
+		ensure
+			correct_length: Result.count = length
 		end
 		
 end -- class DATE_FORMATTER

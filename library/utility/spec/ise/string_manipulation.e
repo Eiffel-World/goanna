@@ -37,4 +37,25 @@ feature -- Basic operations
 			Result := str.index_of (char, start)
 		end
 		
+	clear_buffer (buffer: STRING) is
+			-- Clear buffer of all characters
+		require
+			buffer_exists: buffer /= Void
+		do
+			buffer.clear_all
+		ensure
+			same_capacity: old buffer.capacity = buffer.capacity
+			empty: buffer.is_empty
+		end
+		
+	is_buffer_full (buffer: STRING): BOOLEAN is
+			-- Is 'buffer' full to capacity?
+		require
+			buffer_exists: buffer /= Void
+		do
+			Result := buffer.full
+		ensure
+			full_result: Result = buffer.full
+		end	
+		
 end -- class STRING_MANIPULATION

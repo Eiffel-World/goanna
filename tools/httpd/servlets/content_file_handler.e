@@ -21,9 +21,9 @@ inherit
 		end
 
 	HTTP_STATUS_CODES
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 feature -- Basic operations
 
@@ -44,7 +44,7 @@ feature {NONE} -- Implemtation
 
 	buffer : STRING is
 		once
-			create Result.make (256 * 1024) -- 256 KB initiallly
+			create Result.make (4 * 1024) -- 4KB initially
 			Result.fill_blank
 		end
 	

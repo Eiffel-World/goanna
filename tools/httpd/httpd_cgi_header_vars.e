@@ -37,4 +37,4 @@ feature -- Access
 	Http_referer_var: STRING is "HTTP_REFERER"
 	Http_cookie_var: STRING is "HTTP_COOKIE"
 
-end -- class HTTPD_HEADER_VARS
+end -- class HTTPD_CGI_HEADER_VARS

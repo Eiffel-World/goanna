@@ -13,6 +13,13 @@ indexing
 class
 	COOKIE
 
+inherit
+	
+	DT_SHARED_SYSTEM_CLOCK
+--		export
+--			{NONE} all
+--		end
+		
 creation
 
 	make
@@ -139,7 +146,7 @@ feature -- Conversion
 			Result.append (Name_value_separator)
 			Result.append (version.out)
 			-- optional comment
-			if comment /= Void and not comment.is_empty then
+			if comment /= Void and then not comment.is_empty then
 				Result.append (Term_separator)
 				Result.append (Comment_label)
 				Result.append (Name_value_separator)
@@ -157,14 +164,14 @@ feature -- Conversion
 				end
 			end
 			-- optional domain
-			if domain /= Void and not domain.is_empty then
+			if domain /= Void and then not domain.is_empty then
 				Result.append (Term_separator)
 				Result.append (Domain_label)
 				Result.append (Name_value_separator)
 				Result.append (domain)
 			end
 			-- optional path
-			if path /= Void and not path.is_empty then
+			if path /= Void and then not path.is_empty then
 				Result.append (Term_separator)
 				Result.append (Path_label)
 				Result.append (Name_value_separator)
@@ -196,10 +203,10 @@ feature -- Conversion
 	max_age_to_date (age: INTEGER): STRING is
 			-- Convert max_age to a date
 		local
-			date: DATE_AND_TIME
+			date: DT_DATE_TIME
 			formatter: DATE_FORMATTER
 		do
-			create date.make_to_now
+			date := system_clock.date_time_now
 			debug ("cookie_parsing")
 				print ("Cookie expiry date today: " + date.out + "%R%N")
 			end	

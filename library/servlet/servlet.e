@@ -14,9 +14,9 @@ deferred class
 inherit
 
 	HTTP_STATUS_CODES
-		export
-			{NONE} all
-		end
+--		export
+--			{NONE} all
+--		end
 		
 feature -- Initialization
 

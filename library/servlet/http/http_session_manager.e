@@ -11,6 +11,13 @@ indexing
 class
 	HTTP_SESSION_MANAGER
 
+inherit
+	
+	DT_SHARED_SYSTEM_CLOCK
+--		export
+--			{NONE} all
+--		end
+		
 creation
 	make
 
@@ -98,7 +105,7 @@ feature {NONE} -- Implementation
 		do
 			last_session_id := generate_session_id
 			create session.make (last_session_id)
-			sessions.put (session, last_session_id)
+			sessions.force (session, last_session_id)
 			create cookie.make (Session_cookie_name, last_session_id)
 			resp.add_cookie (cookie)
 		end
@@ -108,12 +115,16 @@ feature {NONE} -- Implementation
 			-- Key is generated from a random number and the current date and time.
 			-- TODO: make this secure
 		local
-			date: DATE_AND_TIME
+			date: DT_DATE_TIME
 			formatter: DATE_FORMATTER
 		do
-			current_random := current_random + 1
-			Result := random.next_random (current_random).out
-			create date.make_to_now
+			-- Not using RANDOM because SmallEiffel has a different random
+			-- class and I'm tired of building non-OO classes to support
+			-- porting!
+			--current_random := current_random + 1
+			--Result := random.next_random (current_random).out
+			create Result.make (15)
+			date := system_clock.date_time_now
 			create formatter
 			Result.append (formatter.format_compact_sortable (date))
 			Result := base64_encoder.encode (Result)
@@ -127,24 +138,24 @@ feature {NONE} -- Implementation
 			create Result
 		end
 	
-	random: RANDOM is
-			-- Random number generator
-		do
-			create Result.make
-		end
+--	random: RANDOM is
+--			-- Random number generator
+--		do
+--			create Result.make
+--		end
 	
-	current_random: INTEGER
-			-- Current position in random number stream
+--	current_random: INTEGER
+--			-- Current position in random number stream
 		
 	expire_sessions is
 			-- Check all current sessions and expire if appropriate.
 		local
 			cursor: DS_HASH_TABLE_CURSOR [HTTP_SESSION, STRING]
 			session: HTTP_SESSION
-			now, idle: DATE_AND_TIME
+			now, idle: DT_DATE_TIME
 			expired_sessions: DS_LINKED_LIST [STRING]
 		do
-			create now.make_to_now
+			now := system_clock.date_time_now
 			create expired_sessions.make
 			from
 				cursor := sessions.new_cursor

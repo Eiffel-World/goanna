@@ -11,15 +11,19 @@ default
 	assertion(loop)
 	assertion(invariant)
 	address_expression(yes)
-	array_optimization(no)
+	array_optimization(yes)
 	console_application(yes)
 	dead_code_removal(yes)
 	dynamic_runtime(no)
-	exception_trace(no)
-	inlining(no)
+	exception_trace(yes)
+	inlining(yes)
+	inlining_size("2")
 	multithreaded(no)
 	check_vape(yes)
+	arguments("80 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
+	arguments("9000 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
 	arguments("9000 d:\goanna\tools\httpd\Documentation")
+	arguments("9000 d:\dev\goanna\tools\httpd\Documentation")
 	arguments("9000 d:\goanna\tools\httpd\docroot")
 	arguments("9000 d:\Eiffel50\docs")
 	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
@@ -42,8 +46,11 @@ default
 	trace(no)
 
 
+--arguments(" ")
+
 cluster
 	httpd:		"$GOANNA/tools/httpd"
+
 
 	servlets:		"$GOANNA/tools/httpd/servlets"
 
@@ -75,19 +82,16 @@ cluster
 
 	goanna_utility_ise (goanna_utility):		"$\spec\ise"
 		exclude
-			"bit_manipulation.e"
+			"bit_manipulation.e"; 
 		end
-	
-	goanna_utility_ise4 (goanna_utility):		"$\spec\ise4"
 
+	goanna_utility_ise4 (goanna_utility):		"$\spec\ise4"
 
 	logging:		"$GOANNA\library\logging"
 
 	datetime:		"$GOANNA\library\datetime"
 
-	ucstring:		"$UCSTRING"
-
-	ucstring_lib (ucstring):		"$\lib"
+	ucstring:		"$UCSTRING\lib"
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
@@ -103,23 +107,33 @@ cluster
 	gobo:		"$GOBO\library"
 
 	gobo_kernel (gobo):		"$\kernel"
+		exclude
+			"spec"; "include"; 
+		end
 
 	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
 
 	all gobo_structures (gobo):		"$\structure"
-		exclude
-			"base"; "CVS"; 
-		end
 
 	all gobo_util (gobo):		"$\utility"
 		exclude
-			"CVS"; 
+			"spec"; 
 		end
+
+	gobo_ise_util (gobo_util):		"$\spec\ise"
+
+	all gobo_time (gobo):		"$\time"
+		exclude
+			"spec"; "include"; 
+		end
+
+	gobo_ise_time (gobo_time):		"$\spec\ise"
 
 external
 
 	include_path:
 		"$GOBO\library\kernel\include",
+		"$GOBO\library\time\include",
 		"$GOANNA\library\utility\spec\ise4\include"
 
 	object:

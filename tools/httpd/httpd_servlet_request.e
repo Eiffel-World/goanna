@@ -112,18 +112,17 @@ feature -- Access
 			-- result. If only one value exists, it is added as the sole entry in the
 			-- list.
 		local
-			tokenizer: STRING_TOKENIZER
+			tokenizer: DC_STRING_TOKENIZER
 			list: DS_LINKED_LIST [STRING]
 		do
 			create list.make
-			create tokenizer.make (get_header (name))
-			tokenizer.set_token_separator (',')
+			create tokenizer.make_default (get_header (name))
 			from
 				tokenizer.start
 			until
 				tokenizer.off
 			loop
-				list.force_last (tokenizer.token)
+				list.force_last (tokenizer.item)
 				tokenizer.forth
 			end
 			Result := list
@@ -342,21 +341,20 @@ feature {NONE} -- Implementation
 		local
 			e: INTEGER
 			pair, name, value: STRING
-			tokenizer: STRING_TOKENIZER
+			tokenizer: DC_STRING_TOKENIZER
 		do
 			-- parameters can appear more than once. Add a parameter value for each instance.
 			debug ("query_string_parsing")
 				print (generator + ".parse_parameter_string str = " + quoted_eiffel_string_out (str) + "%R%N")
 			end
-			create tokenizer.make (str)
-			tokenizer.set_token_separator ('&')
+			create tokenizer.make (str, "&")
 			from
 				tokenizer.start
 			until
 				tokenizer.off
 			loop
 				-- get the parameter pair token
-				pair := tokenizer.token
+				pair := tokenizer.item
 				-- find equal character
 				e := index_of_char (pair, '=', 1)
 				if e > 0 then
@@ -389,7 +387,7 @@ feature {NONE} -- Implementation
 			-- This routine parsed the cookies using version 0 of the cookie spec (RFC 2109).
 			-- See also http://www.netscape.com/newsref/std/cookie_spec.html
 		local
-			tokenizer: STRING_TOKENIZER
+			tokenizer: DC_STRING_TOKENIZER
 			comparator: COOKIE_NAME_EQUALITY_TESTER
 			pair, name, value: STRING
 			new_cookie: COOKIE
@@ -402,17 +400,16 @@ feature {NONE} -- Implementation
 			internal_cookies.set_equality_tester (comparator)
 			if has_header (Http_cookie_var) then
 				from
-					create tokenizer.make (get_header (Http_cookie_var))
+					create tokenizer.make (get_header (Http_cookie_var), ";")
 					debug ("cookie_parsing")
 						print (generator + ".parse_cookie_header str = "
 							 + quoted_eiffel_string_out (get_header (Http_cookie_var)) + "%R%N")
 					end
-					tokenizer.set_token_separator (';')
 					tokenizer.start
 				until
 					tokenizer.off
 				loop
-					pair := tokenizer.token
+					pair := tokenizer.item
 					i := index_of_char (pair, '=', 1)
 					if i > 0 then
 						name := pair.substring (1, i - 1)
@@ -439,4 +436,4 @@ feature {NONE} -- Implementation
 			end
 		end
 	
-end -- class FAST_CGI_SERVLET_REQUEST
+end -- class HTTPD_SERVLET_REQUEST
