@@ -1,7 +1,6 @@
 ${GOBO}/library/loadpath.se
-${YAESOCKETS}/loadpath.se
 ${UCSTRING}/lib/
 ${UCSTRING}/spec/se/
 ${GOANNA}/library/loadpath.se
-${GOANNA}/examples/fast_cgi_server/
+${GOANNA}/examples/text_xml_parser/
 

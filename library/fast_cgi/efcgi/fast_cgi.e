@@ -22,9 +22,7 @@ inherit
 			{NONE} all
 		end
 	
-	EXECUTION_ENVIRONMENT
-		rename
-			system as environment_system
+	KL_SHARED_EXECUTION_ENVIRONMENT
 		export
 			{NONE} all
 		end
@@ -61,23 +59,23 @@ feature -- FGCI interface
 			-- Returns zero for a successful call, -1 for error.
 		local
 			failed: BOOLEAN
-      	do
-      		if not failed then
-      			-- if first call mark it and create server socket
-      			if not accept_called then
-      				accept_called := True
-    				create srv_socket.make (svr_port, server_backlog) 
-    			end
-    			-- finish the previous request
-    			finish
-    			-- accept the next request
-    			Result := accept_request				
-      		end
-    	rescue
-    		srv_socket := Void
-    		request := Void
-    		Result := -1 
-    		failed := True
+		do
+			if not failed then
+				-- if first call mark it and create server socket
+				if not accept_called then
+					accept_called := True
+					create srv_socket.make (svr_port, server_backlog) 
+				end
+				-- finish the previous request
+				finish
+				-- accept the next request
+				Result := accept_request				
+			end
+		rescue
+			srv_socket := Void
+			request := Void
+			Result := -1 
+			failed := True
 		end
 
 	finish is 
@@ -103,9 +101,9 @@ feature -- FGCI interface
 		end
 
 	putstr (str: STRING) is 
-      		-- Print 'str' to standard output stream.
-      	require
-      		request_exists: request /= Void
+			-- Print 'str' to standard output stream.
+		require
+			request_exists: request /= Void
 		do 
 			request.write_stdout (str)
 		end
@@ -195,7 +193,7 @@ feature {NONE} -- Implementation
 			addrs, address: STRING
 			tokenizer: STRING_TOKENIZER
 		do
-			addrs := get (Fcgi_web_server_addrs)
+			addrs := Execution_environment.variable_value (Fcgi_web_server_addrs)
 			if addrs /= Void and then not addrs.is_empty then
 				create valid_peer_addresses.make
 				create tokenizer.make (addrs)
