@@ -82,14 +82,18 @@ feature -- Factory
 			struct: DS_HASH_TABLE [ANY, STRING]
 		do
 			-- check type and create appropriate concrete value type
-			if valid_scalar_type (value) then
-				create {XRPC_SCALAR_VALUE} Result.make (value)
-			elseif valid_array_type (value) then
-				array ?= value
-				create {XRPC_ARRAY_VALUE} Result.make_from_array (array)
-			elseif valid_struct_type (value) then	
-				struct ?= value
-				create {XRPC_STRUCT_VALUE} Result.make_from_struct (struct)
+			-- if already a value then leave it
+			Result ?= value
+			if Result = Void then
+				if valid_scalar_type (value) then
+					create {XRPC_SCALAR_VALUE} Result.make (value)
+				elseif valid_array_type (value) then
+					array ?= value
+					create {XRPC_ARRAY_VALUE} Result.make_from_array (array)
+				elseif valid_struct_type (value) then	
+					struct ?= value
+					create {XRPC_STRUCT_VALUE} Result.make_from_struct (struct)
+				end
 			end
 		ensure
 			value_exists_if_valid_type: valid_scalar_type (value) 

@@ -15,6 +15,13 @@ inherit
 	
 	SERVICE
 
+	XRPC_CONSTANTS
+		rename
+			Double_type as Xrpc_double_type
+		export
+			{NONE} all
+		end
+		
 	SHARED_SERVICE_REGISTRY
 		export
 			{NONE} all
@@ -24,7 +31,12 @@ inherit
 		export
 			{NONE} all
 		end
-		
+	
+	HTTPD_LOGGER
+		export
+			{NONE} all
+		end
+	
 create
 
 	make
@@ -130,7 +142,98 @@ feature -- Access
 		ensure
 			result_exists: Result /= Void
 		end
-			
+		
+	multi_call (calls: ARRAY [ANY]): ARRAY [ANY] is
+			-- Execute all 'calls' and return results in an array.
+		require
+			calls_exist: calls /= Void
+		local
+			i: INTEGER
+			sub_call: XRPC_CALL
+			fault: XRPC_FAULT
+			result_table: DS_HASH_TABLE [ANY, STRING]
+			result_array: ARRAY [ANY]
+			service_name, action: STRING
+			agent_service: SERVICE_PROXY
+			parameters: TUPLE
+			result_value: XRPC_VALUE
+		do
+			create Result.make (calls.lower, calls.upper)
+			from
+				i := calls.lower
+			until
+				i > calls.upper
+			loop
+				fault := Void
+				result_value := Void
+				result_table := Void
+				result_array := Void
+				create sub_call.unmarshall_for_multi_call (calls.item (i))
+				if sub_call.unmarshall_ok then
+					-- check for recursion attempt
+					if sub_call.method_name.is_equal ("system.multiCall") then
+						create fault.make (Multi_call_recursion)
+					else
+						-- call as normal and process result
+						service_name := sub_call.extract_service_name
+						action := sub_call.extract_action
+						parameters := sub_call.extract_parameters
+						log_hierarchy.category (Xmlrpc_category).info ("Multicall calling: " + sub_call.method_name)
+						-- retrieve service and execute call
+						if registry.has (service_name) then
+							agent_service := registry.get (service_name)
+							if agent_service.has (action) then
+								if agent_service.valid_operands (action, parameters) then
+									agent_service.call (action, parameters)
+									if agent_service.process_ok then
+										-- check for a result, if so pack it up to send back
+										if agent_service.last_result /= Void then
+											result_value := Value_factory.build (agent_service.last_result)
+											if result_value = Void then	
+												-- construct fault response for invalid return type
+												create fault.make (Invalid_action_return_type)
+											end
+										end
+									else
+										-- construct fault response for failed call
+										create fault.make_with_detail (Unable_to_execute_service_action, " " + sub_call.method_name)
+									end	
+								else
+									-- construct fault response for invalid action operands
+									create fault.make_with_detail (Invalid_operands_for_service_action, " " + sub_call.method_name)
+								end
+							else
+								-- construct fault response for invalid service action
+								create fault.make_with_detail (Action_not_found_for_service, " " + sub_call.method_name)
+							end
+						else
+							-- construct fault response for invalid service
+							create fault.make_with_detail (Service_not_found, " " + service_name)
+						end	
+					end
+				else
+					-- call unmarshall fault
+					create fault.make (sub_call.unmarshall_error_code)
+				end
+				-- construct result_table
+				if fault /= Void then
+					create result_table.make (2)
+					result_table.force (fault.code, "faultCode")
+					result_table.force (fault.string, "faultString")
+					Result.force (result_table, i)
+				else
+					-- TODO: handle empty result
+					create result_array.make (1, 1)
+					result_array.force (result_value, 1)
+					Result.force (result_array, i)
+				end
+				i := i + 1
+			end
+		ensure
+			results_exist: Result /= Void
+			correct_result_count: Result.count = calls.count
+		end
+		
 feature {NONE} -- Initialisation
 
 	self_register is
@@ -140,6 +243,7 @@ feature {NONE} -- Initialisation
 --			register_with_help (agent method_signature, "methodSignature", "Return the possible signatures for the named method")
 			register_with_help (agent method_help, "methodHelp", "Return the documentation string for the named method")
 			register_with_help (agent has_method, "hasMethod", "Determine if a named method implemented by this server")
+			register_with_help (agent multi_call, "multiCall", "Execute multiple calls")
 		end
 
 end -- class XRPC_SYSTEM

@@ -42,6 +42,7 @@ feature -- Initialization
 				create factory.make
 				perform_echo_tests
 				perform_introspection_tests
+				perform_multicall_tests
 			end
 		end
 
@@ -151,6 +152,29 @@ feature {NONE} -- Implementation
 			execute_call (call)	
 		end
 		
+	perform_multicall_tests is
+			-- Call multicall methods
+		local
+			multi_call: XRPC_MULTI_CALL
+			call: XRPC_CALL
+			param: XRPC_PARAM
+			methods: ARRAY [ANY]
+		do		
+			create multi_call.make
+			
+			create call.make ("system.methodHelp")
+			create param.make (factory.build ("system.listMethods"))
+			call.add_param (param)
+			multi_call.add_call (call)
+
+			create call.make ("system.hasMethod")
+			create param.make (factory.build ("system.listMethods"))
+			call.add_param (param)
+			multi_call.add_call (call)
+			
+			execute_multi_call (multi_call)
+		end
+		
 	execute_call (call: XRPC_CALL) is
 			-- Invoke call and check result
 		require
@@ -161,6 +185,19 @@ feature {NONE} -- Implementation
 				display_success (call.method_name)
 			else
 				display_fail (call.method_name, "Fault received: (" + client.fault.code.out + ") " + client.fault.string)
+			end
+		end
+		
+	execute_multi_call (multi_call: XRPC_MULTI_CALL) is
+			-- Invoke call and check result
+		require
+			call_exists: multi_call /= Void
+		do
+			client.invoke (multi_call)
+			if client.invocation_ok then
+				display_success (multi_call.method_name)
+			else
+				display_fail (multi_call.method_name, "Fault received: (" + client.fault.code.out + ") " + client.fault.string)
 			end
 		end
 		

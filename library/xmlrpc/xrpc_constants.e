@@ -193,6 +193,15 @@ feature -- Error codes
 		
 	Invalid_date_time_value: INTEGER is 31
 			-- Invalid date time value
+		
+	Multi_call_recursion: INTEGER is 32
+			-- Method 'system.multiCall' cannot be called within a multi call invocation.
+			
+	Invalid_multi_call_params: INTEGER is 33
+			-- Invalid parameters for multi call
+			
+	Invalid_multi_call_method_name: INTEGER is 34
+			-- Invalid method name for multi call
 			
 	fault_code_string (code: INTEGER): STRING is
 			-- Return error message for fault 'code'.
@@ -240,7 +249,10 @@ feature -- Error codes
 				"Invalid operands for service action",						-- 28
 				"Socket error",												-- 29
 				"Assertion violation",										-- 30
-				"Invalid date time value"									-- 31
+				"Invalid date time value",									-- 31
+				"Method 'system.multiCall' cannot be called within a multi call invocation",	-- 32
+				"Invalid parameters for multi call",						-- 33
+				"Invalid method name for multi call"						-- 34
 			>>
 		end
 

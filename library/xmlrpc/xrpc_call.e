@@ -19,6 +19,10 @@ creation
 	
 	make, unmarshall
 	
+creation {XRPC_SYSTEM}
+
+	unmarshall_for_multi_call
+	
 feature -- Initialisation
 
 	make (new_method: STRING) is
@@ -78,6 +82,50 @@ feature -- Initialisation
 			end
 		end
 	
+feature {XRPC_SYSTEM} -- Initialisation
+
+	unmarshall_for_multi_call (struct: ANY) is
+			-- Initialise XML-RPC call from struct containing methodName and param members.
+			-- Used by multiCall.
+		require
+			struct_exists: struct /= Void
+		local
+			table: DS_HASH_TABLE [ANY, STRING]
+			param_array: ARRAY [ANY]
+			param_value: XRPC_VALUE 
+			i: INTEGER
+		do
+			unmarshall_ok := True
+			table ?= struct
+			if table /= Void then
+				method_name ?= table.item ("methodName")
+				if method_name /= Void then
+					param_array ?= table.item ("params")
+					if param_array /= Void then
+						from
+							i := param_array.lower
+							create params.make
+						until
+							i > param_array.upper
+						loop
+							param_value := Value_factory.build (param_array.item (i))
+							params.force_last (create {XRPC_PARAM}.make (param_value))
+							i := i + 1
+						end
+					else
+						unmarshall_ok := False
+						unmarshall_error_code := Invalid_multi_call_params
+					end
+				else
+					unmarshall_ok := False
+					unmarshall_error_code := Invalid_multi_call_method_name
+				end
+			else
+				unmarshall_ok := False
+				unmarshall_error_code := Invalid_multi_call_params
+			end
+		end
+		
 feature -- Access
 
 	method_name: STRING
