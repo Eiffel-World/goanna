@@ -94,7 +94,6 @@ feature {NONE} -- Implementation
 			-- Initialise servlets
 		local
 			servlet: HTTP_SERVLET	
-			doc_root: STRING
 		do
 			-- register servlets
 			servlet_manager.set_servlet_mapping_prefix ("servlet")

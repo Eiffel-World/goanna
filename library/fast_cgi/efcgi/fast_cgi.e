@@ -32,7 +32,9 @@ inherit
 			{NONE} all
 		end
 		
-	SHARED_STANDARD_LOGGER
+	LOG_SHARED_HIERARCHY
+		rename
+			warn as log_warn
 		export
 			{NONE} all
 		end
@@ -46,6 +48,7 @@ feature -- Initialisation
 			positive_port: port >= 0
 			positive_backlog: backlog >= 0
 		do
+			initialise_logger
 			svr_port := port
 			server_backlog := backlog
 			set_valid_peer_addresses
@@ -207,7 +210,7 @@ feature {NONE} -- Implementation
 					address.right_adjust
 					address.left_adjust
 					valid_peer_addresses.force_last (address)
-					log (Info, "Web server address " + address + " added to ACL")
+					info (Servlet_app_log_category, "Web server address " + address + " added to ACL")
 					tokenizer.forth
 				end
 			end
@@ -276,7 +279,7 @@ feature {NONE} -- Implementation
 					end
 				else
 					-- reset and attempt a new connection
-					log (Error, "Connection from address " + peer + " rejected.")				
+					error (Servlet_app_log_category, "Connection from address " + peer + " rejected.")				
 					request.socket.close
 					request.set_socket (Void)
 					is_new_connection := False
@@ -308,5 +311,19 @@ feature {NONE} -- Implementation
 			end
 		end
 		
+	Servlet_app_log_category: STRING is "servlet.app"
+	
+	initialise_logger is
+			-- Set logger appenders
+		local
+			appender: LOG_APPENDER
+			layout: LOG_LAYOUT
+		do
+			create {LOG_FILE_APPENDER} appender.make ("log.txt", True)
+			create {LOG_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
+			appender.set_layout (layout)
+			log_hierarchy.category (Servlet_app_log_category).add_appender (appender)
+		end
+	
 end -- class FAST_CGI
 

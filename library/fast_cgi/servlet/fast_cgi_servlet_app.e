@@ -31,11 +31,6 @@ inherit
 		export
 			{NONE} all
 		end
-		
-	SHARED_STANDARD_LOGGER
-		export
-			{NONE} all
-		end
 
 feature -- Initialisation
 
@@ -65,11 +60,11 @@ feature -- Basic operations
 				end
 			end			
 			if path /= Void and servlet_manager.has_registered_servlet (path) then
-				log (Info, "Servicing request: " + path)
+				info (Servlet_app_log_category, "Servicing request: " + path)
 				servlet_manager.servlet (path).service (req, resp)
 			else
 				handle_missing_servlet (resp)
-				log (Error, "Servlet not found: " + path)
+				error (Servlet_app_log_category, "Servlet not found: " + path)
 			end	
 		end
 		

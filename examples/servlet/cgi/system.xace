@@ -34,8 +34,6 @@
 		<cluster name="root_cluster" location="${GOANNA}/examples/servlet/cgi">
 		</cluster>
 		
-		<cluster name="logging" location="${GOANNA}/library/obsolete/logging"/>
-
 		<mount location="${GOBO}/library/cluster.xace"/>
 		<mount location="${GOBO}/library/kernel.xace"/>
 		<mount location="${GOANNA}/library/cluster.xace"/>
