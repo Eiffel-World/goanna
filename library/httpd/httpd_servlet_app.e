@@ -29,10 +29,10 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_STANDARD_LOGGER
---		export
---			{NONE} all
---		end
+	HTTPD_LOGGER
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialization
 
@@ -42,8 +42,8 @@ feature {NONE} -- Initialization
 			-- prepare the socket
 			create server_socket.make (port, backlog)
 			socket_multiplexer.register_managed_socket_read (server_socket)
-			log (Info, "Goanna HTTPD Server. Version 1.0")
-			log (Info, "Copyright (C) 2001 Glenn Maughan.")
+			internal_category.info ("Goanna HTTPD Server. Version 1.0")
+			internal_category.info ("Copyright (C) 2001 Glenn Maughan.")
 			debug ("status_output")
 				print ("Waiting for connections...%N")
 				print ("----------Legend:---------------------%N")
@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 					end
 					error_code := socket_multiplexer.last_socket_error_code
 					if error_code /= 0 then
-						log (Error, "Socket error: " + error_code.out)
+						internal_category.error ("Socket error: " + error_code.out)
 					end
 				else
 					debug ("status_output")

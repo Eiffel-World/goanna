@@ -21,8 +21,7 @@ inherit
 	KL_SHARED_ARGUMENTS
 		export
 			{NONE} all
-		end
-	
+		end	
 	
 	SHARED_SERVICE_REGISTRY
 		export

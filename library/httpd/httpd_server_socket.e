@@ -23,7 +23,7 @@ inherit
 			{NONE} all
 		end
 
-	SHARED_STANDARD_LOGGER
+	HTTPD_LOGGER
 		export
 			{NONE} all
 		end
@@ -53,7 +53,7 @@ feature
 			if socket /= Void then
 				socket_multiplexer.register_managed_socket_read (socket)
 			else
-				log (Error, "Socket error: " + socket_multiplexer.last_socket_error_code.out + ","
+				internal_category.error ("Socket error: " + socket_multiplexer.last_socket_error_code.out + ","
 					+ socket_multiplexer.last_extended_socket_error_code.out + " read_bytes=" 
 					+ socket_multiplexer.managed_read_count.out)
 			end

@@ -2,12 +2,12 @@ system
 	httpd
 
 root
-	httpd: make
+	HTTPD: make
 
 default
+	assertion(check)
 	assertion(require)
 	assertion(ensure)
-	assertion(check)
 	assertion(loop)
 	assertion(invariant)
 	arguments("9000 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
@@ -19,25 +19,20 @@ default
 	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
 	arguments(" ")
 	disabled_debug(yes)
-	disabled_debug("cookie_parsing")
-	disabled_debug("snoop")
-	disabled_debug("status_output")
-	disabled_debug("httpd_servlet_response")
-	disabled_debug("query_string_parsing")
-	disabled_debug("parser_events")
-	disabled_debug("normalize")
-	disabled_debug("soap")
-	disabled_debug("dom_test_servlet")
-	disabled_debug("raw_snoop")
-	disabled_debug("unhandled_node_types")
-	disabled_debug("session_management")
 	disabled_debug("base64_encode")
+	disabled_debug("cookie_parsing")
 	disabled_debug("httpd_response_write")
-	disabled_debug("namespace")
-	disabled_debug("dom_output")
+	disabled_debug("httpd_servlet_response")
+	debug("query_string_parsing")
+	debug("raw_snoop")
+	disabled_debug("session_management")
+	debug("snoop")
+	disabled_debug("status_output")
 	line_generation(no)
 	profile(no)
 	trace(no)
+	il_verifiable(no)
+	msil_generation_type("exe")
 	check_vape(yes)
 	console_application(yes)
 	address_expression(yes)
@@ -52,9 +47,17 @@ default
 
 --precompiled("$GOANNA/precomp/spec/$PLATFORM/goanna")
 --arguments(" ")
+-- Gobo Eiffel Kernel Library
+--	kl_unicode (gobo):		"$/kernel/unicode";
+--	kl_kernel_os (gobo):		"$/kernel/spec/$GOBO_OS";
+-- Gobo Eiffel Structure Library
+-- Gobo Eiffel Test Library
+-- Gobo Eiffel Time Library
+-- Gobo Eiffel Utility Library
 
 cluster
 	root_cluster:		"$GOANNA/tools/httpd"
+
 
 	root_servlets (root_cluster):		"$\servlets"
 
@@ -107,7 +110,7 @@ cluster
 
 	all log4e (goanna):		"$\log4e"
 		exclude
-			"CVS"; "net"; "nt"
+			"CVS"; "net"; "nt"; 
 		end
 
 	yaesockets:		"$YAESOCKETS"
@@ -121,31 +124,6 @@ cluster
 		exclude
 			"desc"; "table_eiffel3"; "event"; "CVS"; 
 		end
-
-	gobo:		"$GOBO\library"
-
-	gobo_kernel (gobo):		"$\kernel"
-		exclude
-			"spec"; "include"; 
-		end
-
-	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
-
-	all gobo_structures (gobo):		"$\structure"
-
-	all gobo_util (gobo):		"$\utility"
-		exclude
-			"spec"; 
-		end
-
-	gobo_ise_util (gobo_util):		"$\spec\ise"
-
-	all gobo_time (gobo):		"$\time"
-		exclude
-			"spec"; "include"; 
-		end
-
-	gobo_ise_time (gobo_time):		"$\spec\ise"
 
 	exml:		"$EXML/library"
 
@@ -187,6 +165,52 @@ cluster
 	ucstring_ise (ucstring):		"$\spec\ise"
 
 	cgi (goanna):		"d:\dev\Eiffel\goanna\library\cgi"
+
+	gobo:		"$GOBO/library"
+
+	kl_kernel (gobo):		"$/kernel"
+
+	kl_io (gobo):		"$/kernel/io"
+
+	kl_misc (gobo):		"$/kernel/misc"
+
+	kl_kernel_spec (gobo):		"$/kernel/spec/ise"
+
+	ds_container (gobo):		"$/structure/container"
+
+	ds_dispenser (gobo):		"$/structure/dispenser"
+
+	ds_list (gobo):		"$/structure/list"
+
+	ds_set (gobo):		"$/structure/set"
+
+	ds_sort (gobo):		"$/structure/sort"
+
+	ds_support (gobo):		"$/structure/support"
+
+	ds_table (gobo):		"$/structure/table"
+
+	ts_generation (gobo):		"$/test/generation"
+
+	ts_harness (gobo):		"$/test/harness"
+
+	dt_clock (gobo):		"$/time/clock"
+
+	dt_date (gobo):		"$/time/date"
+
+	dt_spec (gobo):		"$/time/spec/ise"
+
+	dt_time_zone (gobo):		"$/time/time_zone"
+
+	ut_command (gobo):		"$/utility/command"
+
+	ut_error (gobo):		"$/utility/error"
+
+	ut_formatter (gobo):		"$/utility/formatter"
+
+	ut_support (gobo):		"$/utility/support"
+
+	ut_spec (gobo):		"$/utility/spec/ise"
 
 external
 

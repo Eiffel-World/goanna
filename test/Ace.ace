@@ -57,44 +57,46 @@ cluster
 			"desc"; "table_eiffel3"; "CVS"; "EIFGEN"; 
 		end
 
-	gobo:		"$GOBO\library"
-
-	gobo_kernel (gobo):		"$\kernel"
-		exclude
-			"spec"; "include"; 
-		end
-
-	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
-
-	all gobo_structures (gobo):		"$\structure"
-
-	all gobo_util (gobo):		"$\utility"
-		exclude
-			"spec"; 
-		end
-
-	gobo_ise_util (gobo_util):		"$\spec\ise"
-
-	all gobo_time (gobo):		"$\time"
-		exclude
-			"spec"; "include"; 
-		end
-
-	gobo_ise_time (gobo_time):		"$\spec\ise"
-
-	gobo_test (gobo):		"$\test\harness"
-
 	utility_tests:		"$GOANNA\test\utility"
 
 	log4e_tests:		"$GOANNA\test\log4e"
 
 	testgen:		"$GOANNA\test\TESTGEN"
 
-	all thread:		"$ISE_EIFFEL/library/thread"
-
 	yaesockets:		"$YAESOCKETS"
 
 	yaesockets_ise (yaesockets):		"$\spec\ise"
+
+		-- Gobo Eiffel Kernel Library
+	gobo:				"$GOBO/library";
+	kl_kernel (gobo):			"$/kernel";
+	kl_io (gobo):			"$/kernel/io";
+	kl_misc (gobo):			"$/kernel/misc";
+	kl_unicode (gobo):		"$/kernel/unicode";
+	kl_kernel_spec (gobo):		"$/kernel/spec/ise";
+--	kl_kernel_os (gobo):		"$/kernel/spec/$GOBO_OS";
+		-- Gobo Eiffel Structure Library
+	ds_container (gobo):		"$/structure/container";
+	ds_dispenser (gobo):		"$/structure/dispenser";
+	ds_list (gobo):			"$/structure/list";
+	ds_set (gobo):			"$/structure/set";
+	ds_sort (gobo):			"$/structure/sort";
+	ds_support (gobo):		"$/structure/support";
+	ds_table (gobo):			"$/structure/table";
+		-- Gobo Eiffel Test Library
+	ts_generation (gobo):		"$/test/generation";
+	ts_harness (gobo):		"$/test/harness";
+		-- Gobo Eiffel Time Library
+	dt_clock (gobo):			"$/time/clock";
+	dt_date (gobo):			"$/time/date";
+	dt_spec (gobo):			"$/time/spec/ise";
+	dt_time_zone (gobo):		"$/time/time_zone";
+			-- Gobo Eiffel Utility Library
+	ut_command (gobo):		"$/utility/command";
+	ut_error (gobo):			"$/utility/error";
+	ut_formatter (gobo):		"$/utility/formatter";
+	ut_support (gobo):		"$/utility/support";
+	ut_spec (gobo):			"$/utility/spec/ise";
 
 external
 

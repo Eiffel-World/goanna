@@ -24,7 +24,7 @@ inherit
 
 	SHARED_SERVLET_MANAGER
 		
-	SHARED_STANDARD_LOGGER
+	HTTPD_LOGGER
 		export
 			{NONE} all
 		end
@@ -74,18 +74,18 @@ feature
 				end
 			end			
 			if path /= Void then
-				log (Info, "Servicing request: " + path)
+				access_category.info ("Servicing request: " + path)
 				if servlet_manager.has_registered_servlet (path) then
 					servlet_manager.servlet (path).service (req, resp)
 				elseif servlet_manager.has_default_servlet then
 					servlet_manager.default_servlet.service (req, resp)
 				else
 					handle_missing_servlet (resp)
-					log (Error, "Servlet not found for URI " + path)
+					access_category.error ("Servlet not found for URI " + path)
 				end
 			else
 				handle_missing_servlet (resp)
-				log (Error, "Request URI not specified")
+				access_category.error ("Request URI not specified")
 			end	
 			-- close socket after sending reply
 			socket_multiplexer.unregister_managed_socket_read (Current)
