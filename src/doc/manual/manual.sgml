@@ -193,24 +193,29 @@ OF THE USE OF THIS PACKAGE.</para>
     </section>
   </chapter>
 
-<!--
-  ----------------------------- 
-  -- Log4e Chapter
-  -----------------------------
--->
   <chapter>
     <title>Logging (log4e)</title>
     <para>The <literal>log4e</literal> library provides a complete framework for logging messages in an application.
-Logged messages can be processed based on priority and content and sent to multiple destinations. A destination, in Goanna log4e, is known as an appender. The types of appenders include files and the NT event log.</para>
-    <para>The classes in <literal>log4e</literal> are a direct port of the Jakarta log4j classes which can be found at http://jakarta.apache.org.</para>
+Logged messages can be processed based on priority and content and sent to multiple destinations. A destination, 
+in Goanna log4e, is known as an appender. The types of appenders include files and the NT event log.</para>
+    <para>The classes in <literal>log4e</literal> are a direct port of Jakarta log4j  which can be found at 
+http://jakarta.apache.org. For the most part, the source has been ported as is. A number of Eiffel-like 
+improvements have been made such as appropriate contracts, and the use of generic types. The general struture and
+usage of the library remains very similar to the original Java version.</para>
 
     <section>
       <title>Overview</title>
-      <para>Describe log4e Library.</para>
+      <para>The central object of the log4e library is the <emphasis>hierarchy</emphasis>. The hierarchy holds each of the
+logging <emphasis>catregories</emphasis> on which messages can be logged. As its name suggests, the hierarchy maintains the
+collection of categories in a hierarchy with a predefined root category at the top and user defined sub-categories
+beneath.</para>
+      <para>Each category has a name, a logging priority and zero or more <emphasis>appenders</emphasis>. Different types
+of appenders can log messages to different destinations, be it a file, NT event log or socket. They can also format those
+messages any way required and filter messages based on priority and/or message content.</para>
     </section>
     <section>
       <title>The Category Hierarchy</title>
-      <para>Describe the category hierarchy. Creating categories, logging to categories and customising categories.</para>
+      <para></para>
       <section>
 	<title>Categories</title>
 	<para>Structure and creation of categories.</para>
