@@ -170,6 +170,7 @@
 		<delete file="hact.ace"/>
 		<delete file="se.ace"/>
 		<delete file="ve.esd"/>
+		<delete file="cecil.se"/>
 		<delete file="${system}${exe}"/>
 		<delete file="${system}.melted"/>
 		<delete file="${system}.h2o"/>
