@@ -16,6 +16,7 @@
 	<target name="help">
 		<echo message="usage:"/>
 		<echo message="   geant install"/>
+		<echo message="   geant compile"/>
 		<echo message="   geant clean"/>
 		<echo message="   geant clobber"/>
 	</target>
@@ -26,6 +27,16 @@
 		</description>
 
 		<geant file="xmlrpc/build.eant" target="install"/>
+		<geant file="servlet/build.eant" target="install"/>
+	</target>
+
+	<target name="compile" depend="init" dir="${GOANNA}/examples">
+		<description>
+			Compile the Goanna examples.
+		</description>
+
+		<geant file="xmlrpc/build.eant" target="compile"/>
+		<geant file="servlet/build.eant" target="compile"/>
 	</target>
 
 	<target name="clean" depend="init" dir="${GOANNA}/examples">
@@ -34,6 +45,7 @@
 		</description>
 
 		<geant file="xmlrpc/build.eant" target="clean"/>
+		<geant file="servlet/build.eant" target="clean"/>
 	</target>
 
 	<target name="clobber" depend="init" dir="${GOBO}/example">
@@ -42,6 +54,7 @@
 		</description>
 
 		<geant file="xmlrpc/build.eant" target="clobber"/>
+		<geant file="servlet/build.eant" target="clobber"/>
 	</target>
 
 

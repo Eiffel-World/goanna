@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<project name="servlet" default="help">
+
+	<description>
+		description: "Ant file for Goanna servlet examples"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO ant files"
+	</description>
+
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message="   geant install"/>
+		<echo message="   geant compile"/>
+		<echo message="   geant clean"/>
+		<echo message="   geant clobber"/>
+	</target>
+
+	<target name="install" depend="init" dir="${GOANNA}/examples/servlet">
+		<description>
+			Install the Goanna servlet examples.
+		</description>
+
+		<geant file="cgi/build.eant" target="install"/>
+		<geant file="fast_cgi/build.eant" target="install"/>
+		<geant file="standalone/build.eant" target="install"/>
+	</target>
+
+
+	<target name="compile" depend="init" dir="${GOANNA}/examples/servlet">
+		<description>
+			Compile the Goanna servlet examples.
+		</description>
+
+		<geant file="cgi/build.eant" target="compile"/>
+		<geant file="fast_cgi/build.eant" target="compile"/>
+		<geant file="standalone/build.eant" target="compile"/>
+	</target>
+
+	<target name="clean" depend="init" dir="${GOANNA}/examples/servlet">
+		<description>
+			Remove intermediary generated files.
+		</description>
+
+		<geant file="cgi/build.eant" target="clean"/>
+		<geant file="fast_cgi/build.eant" target="clean"/>
+		<geant file="standalone/build.eant" target="clean"/>
+	</target>
+
+	<target name="clobber" depend="init" dir="${GOANNA}/examples/servlet">
+		<description>
+			Remove all generated files.
+		</description>
+
+		<geant file="cgi/build.eant" target="clobber"/>
+		<geant file="fast_cgi/build.eant" target="clobber"/>
+		<geant file="standalone/build.eant" target="clobber"/>
+	</target>
+
+
+<!-- Implementation -->
+
+	<target name="init">
+		<!-- do nothing -->
+	</target>
+
+</project>
