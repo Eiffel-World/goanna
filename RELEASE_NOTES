@@ -3,11 +3,19 @@ Project Goanna Release Notes
 
 Release 0.4
 -----------
-TBA
+12 January 2002
 
 o Fixed FastCGI response handling for responses over 65535 bytes. Reported by Harald Erdbrugger.
 
+o Now using geant and gexace build files. This requires the CVS version of GOBO.
 
+o Log3e implemented. Complete port of Jakarta Log4j.
+
+o XMLRPC implemented.
+
+o Restructured source and example trees.
+
+o Many bug fixes.
 
 Release 0.3
 -----------

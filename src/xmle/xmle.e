@@ -24,11 +24,13 @@ creation
 feature -- Initialization
 
 	make is
+		local
+			factory: DOM_TREE_BUILDER_FACTORY
 		do
 			-- check arguments
 			parse_arguments
 			if arguments_ok then
-				create parser.make
+				parser := factory.create_parser
 				print ("Parsing file: " + file_name.out + "...%R%N")
 				parser.parse_from_file_name (file_name)
 				if parser.last_error = parser.Xml_err_none then
