@@ -86,8 +86,9 @@ feature -- Basic operations
 			until
 				i > str.count
 			loop
-				inspect
-					str.item (i)
+				inspect str.item (i)
+				when ' ' then
+			 		Result.append ("+")
 				when '<' then
 					Result.append ("&lt;")
 				when '>' then
