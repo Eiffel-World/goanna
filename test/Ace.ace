@@ -40,6 +40,8 @@ cluster
 
 	log4e_appenders (goanna_log4e):		"$\appenders"
 
+	log4e_nt_appenders (log4e_appenders):		"$\nt"
+
 	log4e_filters (goanna_log4e):		"$\filters"
 
 	log4e_helpers (goanna_log4e):		"$\helpers"
@@ -86,6 +88,7 @@ external
 
 	include_path:
 		"$GOBO\library\kernel\include",
-		"$GOBO\library\time\include"
+		"$GOBO\library\time\include",
+		"$GOANNA\library\log4e\appenders\nt\lib"
 
 end

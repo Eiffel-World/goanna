@@ -70,7 +70,6 @@ feature {NONE} -- Implementation
 	rollover_required: BOOLEAN is
 			-- Has the current log file reached the maximum_file_size?
 		do
-		
 			Result := stream.count >= maximum_file_size 
 		end
 	

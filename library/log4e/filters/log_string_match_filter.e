@@ -44,8 +44,6 @@ feature -- Status report
 	decide (event: LOG_EVENT): INTEGER is
 			-- Should 'event' be logged. Return one of Filter_accept,
 			-- Filter_reject, or Filter_neutral.
-		local
-			match_occurred: BOOLEAN
 		do
 			if event.rendered_message.substring_index (string_match, 1) = 0 then
 				Result := Filter_neutral

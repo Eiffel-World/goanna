@@ -30,6 +30,7 @@ feature -- Initialisation
 		do
 			name := new_name
 			create filters.make
+			is_open := True
 		end
 	
 feature -- Status Report
@@ -44,17 +45,23 @@ feature -- Status Report
 		deferred
 		end
 
+	is_open: BOOLEAN
+			-- Is the appender open for appending?
+			
 feature -- Status Setting
 	
 	close is
 			-- Release any resources for this appender.
 		deferred
+		ensure
+			closed: not is_open
 		end
 	
 	append (event: LOG_EVENT) is
 			-- Log event on this appender.
 		require
 			event_exists: event /= Void
+			is_open: is_open
 		local
 			done, accept: BOOLEAN
 			c: DS_LINKED_LIST_CURSOR [LOG_FILTER]
@@ -138,6 +145,7 @@ feature {NONE} -- Implementation
 			-- Append 'event' to this appender
 		require
 			event_exists: event /= Void
+			is_open: is_open
 		deferred
 		end
 		

@@ -29,7 +29,7 @@ inherit
 		
 creation
 	
-	make, make_daily, make_minutely
+	make, make_daily, make_minutely, make_hourly
 	
 feature -- Initialisation
 	
@@ -44,6 +44,7 @@ feature -- Initialisation
 			positive_number_of_backups: number_of_backups >= 0
 		do
 			file_appender_make (new_name, appending)
+			max_number_of_backups := number_of_backups
 			rollover_period := Daily
 			last_rollover := System_clock.date_time_now
 		ensure
@@ -61,12 +62,30 @@ feature -- Initialisation
 			positive_number_of_backups: number_of_backups >= 0
 		do
 			file_appender_make (new_name, appending)
+			max_number_of_backups := number_of_backups
 			rollover_period := Minutely
 			last_rollover := System_clock.date_time_now
 		ensure
 			log_file_open: stream.is_open_write
 		end
 		
+	make_hourly (new_name: STRING; number_of_backups: INTEGER; appending: BOOLEAN) is
+			-- Create a new file appender on the file 
+			-- with 'new_name'. Roll the log over to a backup file every hour.
+			-- Keep a maximum of 'number_of_backups' backup files.
+			-- Append to an existing log file if 'appending'.
+		require
+			name_exists: new_name /= Void
+			name_not_empty: not new_name.is_empty
+			positive_number_of_backups: number_of_backups >= 0
+		do
+			file_appender_make (new_name, appending)
+			max_number_of_backups := number_of_backups
+			rollover_period := Hourly
+			last_rollover := System_clock.date_time_now
+		ensure
+			log_file_open: stream.is_open_write
+		end
 feature {NONE} -- Implementation		
 			
 	rollover_period: INTEGER
@@ -100,7 +119,6 @@ feature {NONE} -- Implementation
 			check_time := clone (last_rollover)
 			inspect rollover_period
 			when Minutely then
-				print ("########### adding minute ##############%N")
 				check_time.add_minutes (1)
 			when Hourly then
 				check_time.add_hours (1)
@@ -116,9 +134,7 @@ feature {NONE} -- Implementation
 			Result := current_time >= check_time
 			if Result then
 				last_rollover := current_time
-				print ("**************Rollover*************************%N")
 			end
-			print ("current_time=" + current_time.out + " last_rollover=" + last_rollover.out + " check_time=" + check_time.out + "%N")
 		end
 
 	last_rollover: DT_DATE_TIME

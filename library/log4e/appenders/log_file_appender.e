@@ -34,6 +34,7 @@ feature -- Initialisation
 			appender_make (new_name)
 			append_mode := appending
 			open_log
+			is_open := True
 		ensure
 			log_stream_open: stream.is_open_write
 		end
@@ -56,6 +57,7 @@ feature -- Basic Operations
 		do
 			if not stream.is_closed then
 				stream.close
+				is_open := False
 			end
 		end
 	

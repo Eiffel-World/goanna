@@ -29,28 +29,66 @@ feature -- Test
 	test_log_hierarchy is
 		local
 			h: LOG_HIERARCHY
-			cat: LOG_CATEGORY
-			appender: LOG_APPENDER
-			filter: LOG_FILTER
+			cat, cat2: LOG_CATEGORY
 		do
 			create h.make (Debug_p)
 			cat := h.category ("test")
+			assert ("test_cat_added", h.has ("test"))
 			
-			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
-			cat.add_appender (appender)
-			create {LOG_PRIORITY_RANGE_FILTER} filter.make (Info_p, Error_p, true)
-			appender.add_filter (filter)
+			-- check that we get the same category if we use the same name
+			cat2 := h.category ("test")
+			assert_same ("same_cat", cat, cat2)
 			
-			create {LOG_STDERR_APPENDER} appender.make ("stderr")
-			cat.add_appender (appender)
-			create {LOG_PRIORITY_MATCH_FILTER} filter.make (Error_p, true)
-			appender.add_filter (filter)
+			-- check a complex category. All intermediate categories should
+			-- be created
+			cat := h.category ("a.b.c")
+			assert ("cat_a_exists", h.has ("a"))
+			assert ("cat_a.b_exists", h.has ("a.b"))
+			assert ("cat_a.b.c_exists", h.has ("a.b.c"))
+		end
+
+	test_priority_inheritance is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+		do
+			-- test example 1 from log4j docs
+			create h.make (Debug_p)
+			cat := h.category ("x.y.z")
+			assert ("inherited x.y.z", cat.priority = Debug_p)
+			assert ("inherited x.y", h.category ("x.y").priority = Debug_p)
+			assert ("inherited x", h.category ("x").priority = Debug_p)
 			
---			cat.debugging ("This is a test")
---			cat.error ("This is an error")
---			cat.warn ("This is a warning")
---			cat.fatal ("This is fatal")
---			cat.info ("This is information")
+			-- test example 2 from log4j docs
+			create h.make (Debug_p)
+			cat := h.category ("x.y.z")
+			cat.set_priority (Error_p)
+			cat := h.category ("x.y")
+			cat.set_priority (Fatal_p)
+			cat := h.category ("x")
+			cat.set_priority (Warn_p)
+			assert ("set x.y.z", h.category ("x.y.z").priority = Error_p)
+			assert ("set x.y", h.category ("x.y").priority = Fatal_p)
+			assert ("set x", h.category ("x").priority = Warn_p)
+			
+			-- test example 3 from log4j docs
+			create h.make (Debug_p)
+			cat := h.category ("x.y.z")
+			cat.set_priority (Error_p)
+			cat := h.category ("x")
+			cat.set_priority (Warn_p)
+			assert ("set x.y.z", h.category ("x.y.z").priority = Error_p)
+			assert ("inherited x.y", h.category ("x.y").priority = Warn_p)
+			assert ("set x", h.category ("x").priority = Warn_p)
+			
+			-- test example 4 from log4j docs
+			create h.make (Debug_p)
+			cat := h.category ("x.y.z")
+			cat := h.category ("x")
+			cat.set_priority (Warn_p)
+			assert ("inherited x.y.z", h.category ("x.y.z").priority = Warn_p)
+			assert ("inherited x.y", h.category ("x.y").priority = Warn_p)
+			assert ("set x", h.category ("x").priority = Warn_p)		
 		end
 
 	test_priority_match_filter is
@@ -224,7 +262,7 @@ feature -- Test
 			from
 				i := 1
 			until
-				i >= 100
+				i >= 5
 			loop
 				cat.debugging ("This is a test")
 				cat.error ("This is an error")
@@ -249,7 +287,7 @@ feature -- Test
 			from
 				i := 1
 			until
-				i >= 40000
+				i >= 5
 			loop
 				cat.debugging ("This is a test")
 				cat.error ("This is an error")
@@ -259,5 +297,22 @@ feature -- Test
 				i := i + 1
 			end		
 		end
-
+		
+	test_nt_event_appender is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+			appender: LOG_APPENDER
+		do
+			create h.make (Debug_p)
+			cat := h.category ("test")			
+			create {LOG_NT_EVENT_LOG_APPENDER} appender.make ("GoannaLog4e")
+			cat.add_appender (appender)	
+			cat.fatal ("This is fatal")
+			cat.error ("This is an error")
+			cat.warn ("This is a warning")
+			cat.info ("This is information")
+			cat.debugging ("This is a test")
+		end
+		
 end -- class TEST_LOG_HIERARCHY

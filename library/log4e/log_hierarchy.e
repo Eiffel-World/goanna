@@ -43,9 +43,9 @@ feature -- Category Factory
 			-- Return a category for 'name'. Initialise a new 
 			-- category instance if necessary.
 		require
-			cat_name_exists: cat_name /= Void
-		local
-			new_cat: LOG_CATEGORY
+			cat_name_exists: cat_name /= Void and then not cat_name.is_empty
+			no_start_or_end_dots: cat_name.item (1) /= '.' and then cat_name.item (cat_name.count) /= '.'
+			no_consecutive_dots: cat_name.substring_index ("..", 1) = 0
 		do
 			if categories.has (cat_name) then
 				Result := categories.item (cat_name)
@@ -77,7 +77,7 @@ feature -- Status Report
 	
 	Disable_off: INTEGER is -1
 			-- Priority disabled off
-	
+
 feature -- Status Setting
 	
 	disable (priority: LOG_PRIORITY) is
@@ -147,7 +147,7 @@ feature {NONE} -- Implementation
 				-- not "w.x.y.z". If a parent does 
 				-- not exist with the sub category 
 				-- then create it
-				sub_name := cat_name.substring (1, last_index_of (cat_name, '.', cat_name.count))
+				sub_name := cat_name.substring (1, last_index_of (cat_name, '.', cat_name.count) - 1)
 				if not categories.has (sub_name) then
 					surrogate := category (sub_name)
 					new_cat.set_parent (surrogate)
