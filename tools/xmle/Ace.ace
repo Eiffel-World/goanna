@@ -29,6 +29,7 @@ default
 	debug("xmle_id_nodes")
 	debug("parser_events")
 	disabled_debug("unhandled_node_types")
+	debug("find_namespace")
 	debug("normalize")
 	line_generation(no)
 	profile(no)

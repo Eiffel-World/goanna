@@ -56,9 +56,6 @@ cluster
 	logging (goanna):				"$\logging"
 
 	yaesockets:					"$YAESOCKETS"
-		exclude
-			"udp_socket.e"
-		end
 
 	yaesockets_ise (yaesockets):		"$\spec\ise"
 
@@ -130,6 +127,6 @@ external
 	object:
 		"$EXML\lib\implementation\expat\spec\c\libexml.lib",
 		"$EXPAT\lib\Debug\expat.lib",
-		"$YAESOCKETS\C\Final\cl.lib"
+		"$YAESOCKETS\C\Release\cl.lib"
 
 end

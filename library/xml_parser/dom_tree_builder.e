@@ -16,18 +16,14 @@ inherit
    XML_EVENT_PARSER
 		redefine
 			on_attribute_declaration,
-			on_default,
-			on_default_expanded,
 			on_element_declaration,
 			on_end_cdata_section,
 			on_end_doctype,
-			on_end_namespace_declaration,
 			on_entity_declaration,
 			on_not_standalone,
 			on_notation_declaration,
 			on_start_cdata_section,
 			on_start_doctype,
-			on_start_namespace_declaration,
 			on_xml_declaration,
 			on_start_tag,
 			on_content,
@@ -52,7 +48,7 @@ feature {NONE} -- Initialisation
 				make_from_imp (parser)
 				create {DOM_IMPLEMENTATION_IMPL} dom_impl
 				document := dom_impl.create_empty_document
-				current_open_composite := document
+				create nodes.make_default
 			end
 
 feature {ANY} -- Access
@@ -67,9 +63,13 @@ feature {NONE} -- Parser call backs
 		attributes: DS_BILINEAR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]) is
 			-- called whenever the parser findes a start element
 		local
-			qualified_name, attr_prefix: DOM_STRING
-			new_node: DOM_ELEMENT
+			discard: DOM_NODE
+			qname: DOM_STRING
+			new_element: DOM_ELEMENT
 			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
+			node_holder: DOM_TREE_NODE
+			new_attribute: DOM_ATTR_IMPL
+			new_attributes: DS_LINKED_LIST [DOM_ATTR]
 		do
 			debug ("parser_events")
 				print ("on_start_tag:%R%N%Tname=" + quoted_eiffel_string_out (name.out) 
@@ -77,10 +77,8 @@ feature {NONE} -- Parser call backs
 				print ("%R%N")
 				if not attributes.is_empty then
 					print ("%Tattributes:%R%N")
-					from
-						attributes.start
-					until
-						attributes.off
+					from attributes.start
+					until attributes.off
 					loop
 						pair := attributes.item_for_iteration
 						print ("%T%Tname=" + quoted_eiffel_string_out (pair.first.first.out))
@@ -90,49 +88,52 @@ feature {NONE} -- Parser call backs
 						attributes.forth
 					end
 				end
-			end
---			if ns_prefix.empty then
-				new_node := document.create_element (create {DOM_STRING}.make_from_ucstring (name))
---			else
---				create qualified_name.make_from_ucstring (ns_prefix)
---				qualified_name.append_string (":")
---				qualified_name.append_ucstring (name)
---				new_node := document.create_element_ns (current_namespace_uri, qualified_name)
---			end
-			-- set new node as root document element if not already set.
-			if document_element = Void then
-				document_element := new_node
-				document.set_document_element (document_element)
-			end
-			current_node ?= new_node
-			current_open_composite := current_open_composite.append_child (current_node)
-			-- add the node attributes
+			end	
+			-- build attributes collection
 			-- attributes are stored with DS_PAIR [DS_PAIR [name, prefix], value]]
 			from
 				attributes.start
+				create new_attributes.make
 			until
 				attributes.off
 			loop
 				pair := attributes.item_for_iteration
-				create attr_prefix.make_from_ucstring (pair.first.second)
---				if attr_prefix.empty then
-					new_node.set_attribute (create {DOM_STRING}.make_from_ucstring (pair.first.first), 
-						create {DOM_STRING}.make_from_ucstring (pair.second))
---				else
---					create qualified_name.make_from_ucstring (attr_prefix)
---					qualified_name.append_string (":")
---					qualified_name.append_ucstring (pair.first.first)
---					new_node.set_attribute_ns (current_namespace_uri, qualified_name, 
---						create {DOM_STRING}.make_from_ucstring (pair.second))
---				end
+				qname := build_qualified_name (pair.first.second, pair.first.first)
+				create new_attribute.make_with_namespace (document, nodes.find_namespace_uri_qname (qname), qname)
+				new_attribute.set_value (create {DOM_STRING}.make_from_ucstring (pair.second))
+				new_attributes.force_last (new_attribute)
 				attributes.forth
 			end
+			-- build a node holder and extract namespace attributes
+			create node_holder.make_with_attributes (new_attributes)
+			-- build the element
+			qname := build_qualified_name (ns_prefix, name)
+			new_element := document.create_element_ns (nodes.find_namespace_uri (ns_prefix, node_holder), qname)
+			-- set new node as root document element if not already set.
+			if document_element = Void then
+				document_element := new_element
+				document.set_document_element (document_element)
+				node_holder.set_node (document.append_child (document_element))
+			else
+				node_holder.set_node (nodes.item_node_as_element.append_child (new_element))
+			end
+			-- add the attributes
+			from
+				new_attributes.start
+			until
+				new_attributes.off
+			loop
+				discard := new_element.set_attribute_node (new_attributes.item_for_iteration)
+				new_attributes.forth
+			end
+			nodes.force (node_holder)
 		end
 
 	on_content (chr_data: UCSTRING) is
 			-- called whenever the parser finds character data
 		local
 			normalized: UCSTRING
+			discard: DOM_NODE
 		do
 			debug ("parser_events")
 				print ("on_content:%R%N%Tchr_data=" + quoted_eiffel_string_out (chr_data.out))
@@ -144,8 +145,7 @@ feature {NONE} -- Parser call backs
 				normalize (chr_data)
 			end
 			if not chr_data.empty then
-				current_node := current_open_composite.append_child (document.create_text_node 
-						(create {DOM_STRING}.make_from_ucstring (chr_data)))
+				discard := nodes.item_node_as_element.append_child (document.create_text_node (create {DOM_STRING}.make_from_ucstring (chr_data)))
 			end
 		end
 
@@ -158,14 +158,13 @@ feature {NONE} -- Parser call backs
 				print ("%R%N")
 			end
 			-- if the current node is Void then the parent node has ended
-			current_open_composite := current_open_composite.parent_node
-			current_node := current_open_composite
+			nodes.remove
 		end
    
 	on_processing_instruction (target, data: UCSTRING) is
 			-- called whenever the parser findes a processing instruction.
 		local
-			new_element: DOM_NODE
+			new_element, discard: DOM_NODE
 		do
 			debug ("parser_events")
 				print ("on_processing_instruction:%R%N%Ttarget=" + quoted_eiffel_string_out (target.out) + " data=" 
@@ -174,28 +173,20 @@ feature {NONE} -- Parser call backs
 			end
 			new_element := document.create_processing_instruction (create {DOM_STRING}.make_from_ucstring (target), 
 				create {DOM_STRING}.make_from_ucstring (data))
-			if current_open_composite = Void then
-				current_node := document.append_child (new_element)
-			else
-				current_node := current_open_composite.append_child (new_element)
-			end
+			discard := document.append_child (new_element)
 		end
    
 	on_comment (com: UCSTRING) is
 			-- called whenever the parser finds a comment.
 		local
-			new_element: DOM_NODE
+			new_element, discard: DOM_NODE
 		do
 			debug ("parser_events")
 				print ("on_comment:%R%N%Tcom=" + quoted_eiffel_string_out (com.out))
 				print ("%R%N")
 			end
 			new_element := document.create_comment (create {DOM_STRING}.make_from_ucstring (com))
-			if current_open_composite = Void then
-				current_node := document.append_child (new_element)
-			else
-				current_node := current_open_composite.append_child (new_element)
-			end
+			discard := nodes.item_node_as_element.append_child (new_element)
 		end
 
 	on_element_declaration (name: UCSTRING; model: POINTER) is
@@ -259,22 +250,6 @@ feature {NONE} -- Parser call backs
 			in_cdata_section := False
 		end
 
-	on_default (data: UCSTRING) is
-		do
-			debug ("parser_events")
-				print ("on_default:%R%N%Tdata=" + quoted_eiffel_string_out (data.out))
-				print ("%R%N")
-			end
-		end
-
-	on_default_expanded (data: UCSTRING) is
-		do
-			debug ("parser_events")
-				print ("on_default_expanded:%R%N%Tdata=" + quoted_eiffel_string_out (data.out))
-				print ("%R%N")
-			end
-		end
-
 	on_start_doctype (name, system_id, public_id: UCSTRING; has_internal_subset: BOOLEAN) is
 			-- This is called for the start of the DOCTYPE declaration, before
 			-- any DTD or internal subset is parsed.
@@ -330,39 +305,6 @@ feature {NONE} -- Parser call backs
 			end
 		end
 
-	on_start_namespace_declaration (namespace_prefix, uri: UCSTRING) is
-		do
-			debug ("parser_events")
-				print ("on_start_namespace_declaration:%R%N%T")
-				if (namespace_prefix /= Void) then
-					print ("namespace_prefix=" + quoted_eiffel_string_out (namespace_prefix.out) + " ")
-				else
-					print ("(default) ");
-				end
-				print ("uri=" + quoted_eiffel_string_out (uri.out))
-				print ("%R%N")
-			end
-			if namespace_prefix /= Void then
-				create current_namespace_prefix.make_from_ucstring (namespace_prefix)				
-			end
-			create current_namespace_uri.make_from_ucstring (uri)
-		end
-
-	on_end_namespace_declaration (namespace_prefix: UCSTRING) is
-		do
-			debug ("parser_events")
-				print ("on_end_namespace_declaration:%R%N%T")
-				if namespace_prefix /= Void then
-					print ("namespace_prefix=" + quoted_eiffel_string_out (namespace_prefix.out))
-				else
-					print ("(default)")
-				end
-				print ("%R%N")
-			end
-			current_namespace_prefix := Void
-			current_namespace_uri := Void
-		end
-
 	on_not_standalone: BOOLEAN is
 		do
 			debug ("parser_events")
@@ -373,9 +315,8 @@ feature {NONE} -- Parser call backs
 		
 feature {NONE} -- Implementation
 
-	current_node: DOM_NODE
-	
-	current_open_composite: DOM_NODE
+	nodes: DOM_NODE_STACK
+			-- Stack of nodes currently being processed
 	
 	in_cdata_section: BOOLEAN
 	
@@ -402,6 +343,21 @@ feature {NONE} -- Implementation
 			str.right_adjust
 		ensure
 			normalized_exists: str /= Void
+		end
+		
+	build_qualified_name (ns_prefix, name: UCSTRING): DOM_STRING is
+			-- Build a fully qualified name from ns_prefix and name.
+			-- Include the prefix and colon separator if the prefix  
+			-- is not empty
+		require
+			ns_prefix_exists: ns_prefix /= Void
+			name_exists: name /= Void
+		do
+			create Result.make_from_ucstring (ns_prefix)
+			if not Result.is_empty then
+				Result.append_string (":")
+			end
+			Result.append_ucstring (name)
 		end
 		
 end -- class DOM_TREE_BUILDER

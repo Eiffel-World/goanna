@@ -13,6 +13,9 @@ class DOM_STRING
 inherit
 
 	UCSTRING
+		rename
+			empty as is_empty
+		end
 
 creation
 
@@ -50,5 +53,5 @@ feature -- Status report
 		do
 			Result := count
 		end
-
+		
 end -- class DOM_STRING

@@ -1,8 +1,12 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "An eXML event parser for Goanna DOM structures"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "XML Parser"
 	date: "$Date$"
 	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
 	DOM_EVENT_PARSER
