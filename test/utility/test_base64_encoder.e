@@ -1,7 +1,7 @@
 indexing
 
 	description: "Test features of class BASE64_ENCODER"
-	library:    "Gobo Eiffel Structure Library"
+	library:    "Goanna Utility Test Harnesses"
 	author:     "Glenn Maughan <glennmaughan@optushome.com.au>"
 	copyright:  "Copyright (c) 2001, Glenn Maughan and others"
 	license:    "Eiffel Forum Freeware License v1 (see forum.txt)"
