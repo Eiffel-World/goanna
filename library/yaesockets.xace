@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<cluster name="yaesockets" location="${YAESOCKETS">
+<cluster name="yaesockets" location="${YAESOCKETS}">
 
 	<description>
 		description: "Cluster definition for Yaesockets classes"

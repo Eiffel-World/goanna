@@ -4,10 +4,10 @@
 
 	<description>
 		description: "XMLRPC Address Book Example"
-		project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
-		author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
 		copyright: "Copyright (c) 2001 Glenn Maughan and others"
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO ant files"
@@ -30,18 +30,22 @@
 		<echo message="   geant clobber"/>
 	</target>
 
-	<target name="install" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="install" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Install ${system} directory.
 		</description>
 
-		<gexace command="build" command_options="ise"/>
-		<gexace command="build" command_options="hact"/>
-		<gexace command="build" command_options="se"/>
-		<gexace command="build" command_options="ve"/>
+		<gexace command="build" command_options="ise">
+		</gexace>
+		<gexace command="build" command_options="hact">
+		</gexace>
+		<gexace command="build" command_options="se">
+		</gexace>
+		<gexace command="build" command_options="ve">
+		</gexace>
 	</target>
 
-	<target name="compile" depend="init">
+	<target name="compile" depend="init, install">
 		<description>
 			Compile '${system}'.
 			Use Eiffel compiler set in ${GOBO_EIFFEL}
@@ -51,7 +55,7 @@
 		<geant target="compile_${eiffel}"/>
 	</target>
 
-	<target name="compile_ise" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_ise" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with ISE Eiffel.
 		</description>
@@ -60,7 +64,7 @@
 		<ise ace="ise.ace" system="${system}" finalize="true" finish_freezing="true"/>
 	</target>
 
-	<target name="compile_hact" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_hact" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with Halstenbach Eiffel.
 		</description>
@@ -69,7 +73,7 @@
 		<hact ace="hact.ace" system="${system}" finalize="true" fish="true"/>
 	</target>
 
-	<target name="compile_ve" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_ve" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with Visual Eiffel.
 		</description>
@@ -78,7 +82,7 @@
 		<ve esd="ve.esd"/>
 	</target>
 
-	<target name="compile_se" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_se" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with SmallEiffel.
 		</description>
@@ -97,7 +101,7 @@
 		<geant target="compile_debug_${eiffel}"/>
 	</target>
 
-	<target name="compile_debug_ise" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_debug_ise" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with ISE Eiffel in debug mode.
 		</description>
@@ -108,7 +112,7 @@
 		<ise ace="ise.ace" system="${system}" finalize="false" finish_freezing="true"/>
 	</target>
 
-	<target name="compile_debug_hact" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_debug_hact" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with Halstenbach Eiffel in debug mode.
 		</description>
@@ -119,7 +123,7 @@
 		<hact ace="hact.ace" system="${system}" finalize="false" fish="true"/>
 	</target>
 
-	<target name="compile_debug_ve" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_debug_ve" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with Visual Eiffel in debug mode.
 		</description>
@@ -130,7 +134,7 @@
 		<ve esd="ve.esd"/>
 	</target>
 
-	<target name="compile_debug_se" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="compile_debug_se" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with SmallEiffel in debug mode.
 		</description>
@@ -162,6 +166,7 @@
 		<delete file="hact.ace"/>
 		<delete file="se.ace"/>
 		<delete file="ve.esd"/>
+		<delete file="cecil.se"/>
 		<delete file="${system}${exe}"/>
 		<delete file="${system}.melted"/>
 		<delete file="${system}.h2o"/>
@@ -173,7 +178,7 @@
 	<target name="init">
 		<set name="system" value="addressbook"/>
 		<set name="library" value="xmlrpc"/>
-		<set name="example" value="addressbook"/>
+		<set name="example" value="client/addressbook"/>
 		<set name="eiffel" value="ise"/>
 		<geant target="init_eiffel"/>
 		<geant target="init_os"/>

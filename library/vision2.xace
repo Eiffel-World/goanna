@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<cluster name="vision2" location="${ISE_EIFFEL}/library/vision2" abstract="True">
+
+	<description>
+		description: "Cluster definition for ISE EiffelVision classes"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO cluster.xace files"
+	</description>
+
+	<cluster name="contrib" abstract="True">
+		<cluster name="implementation" abstract="True">
+			<cluster name="gtk" if="${GOBO_OS}=unix"/>
+			<cluster name="mswin" if="${GOBO_OS}=windows"/>
+		</cluster>
+	</cluster>
+
+	<cluster name="implementation" abstract="True">
+		<cluster name="implementation_interface" abstract="True">
+			<cluster name="events"/>
+			<cluster name="items"/>
+			<cluster name="kernel"/>
+			<cluster name="properties"/>
+			<cluster name="support"/>
+			<cluster name="widgets" abstract="True">
+				<cluster name="containers"/>
+				<cluster name="dialogs"/>
+				<cluster name="primitives"/>
+			</cluster>
+		<cluster name="mswin" abstract="True" if="${GOBO_OS}=windows">
+			<cluster name="events"/>
+			<cluster name="items"/>
+			<cluster name="kernel"/>
+			<cluster name="properties"/>
+			<cluster name="support"/>
+			<cluster name="widgets" abstract="True">
+				<cluster name="containers"/>
+				<cluster name="dialogs"/>
+				<cluster name="primitives"/>
+			</cluster>
+		</cluster>
+
+		<!-- insert GTK impl clusters -->
+	</cluster>
+
+	<cluster name="interface" abstract="True">
+		<cluster name="events"/>
+		<cluster name="figures"/>
+		<cluster name="items"/>
+		<cluster name="kernel"/>
+		<cluster name="properties"/>
+		<cluster name="support"/>
+		<cluster name="widgets" abstract="True">
+			<cluster name="containers"/>
+			<cluster name="dialogs"/>
+			<cluster name="primitives"/>
+		</cluster>
+	</cluster>
+
+	<external>
+		<include_dir location="${ISE_EIFFEL}/library/vision2/spec/include"/>
+		<link_library location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib"/>
+		<link_library location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib"/>
+		<link_library location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib"/>
+	</external>
+
+</cluster>
