@@ -28,6 +28,7 @@
 		</description>
 
 		<set name="target" value="install"/>
+		<geant file="build.eant" target="${target}" dir="library"/>
 		<geant target="do_all"/>
 	</target>
 
@@ -79,10 +80,8 @@
 			Call 'geant' with the same target ${target}
 			in all subdirectories.
 		</description>
-		<geant file="build.eant" target="${target}" dir="library"/>
 		<geant file="build.eant" target="${target}" dir="examples"/>
 		<geant file="build.eant" target="${target}" dir="src"/>
-		<geant file="build.eant" target="${target}" dir="test"/>
 	</target>
 
 </project>

@@ -9,7 +9,6 @@ fi
 echo "Packaging: $1"
 (cd $GOANNA/doc; tar -c -z -f $1 \
 	--exclude "_notes" \
-	--exclude "layout" \
 	--exclude "CVS" \
 	--exclude "*~" \
 	. )
