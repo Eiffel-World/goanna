@@ -49,7 +49,10 @@ feature -- Access
 		do
 			Result := servlets.count
 		end
-				
+		
+	config: SERVLET_CONFIG
+			-- Servlet configuration
+					
 feature -- Status report
 
 	has_registered_servlet (name: STRING): BOOLEAN is
@@ -99,6 +102,14 @@ feature -- Status setting
 			no_registered_servlets: count = 0
 		do
 			servlet_mapping_prefix := virtual_prefix + "/"
+		end
+		
+	set_config (new_config: SERVLET_CONFIG) is
+			-- Set the configuration information
+		require
+			config_exists: new_config /= Void
+		do
+			config := new_config
 		end
 		
 feature {NONE} -- Implementation

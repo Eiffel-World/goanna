@@ -36,7 +36,8 @@ feature {NONE}-- Initialization
 			-- Initialise the response information to allow a successful (Sc_ok) response
 			-- to be sent immediately.
 		require
-			buffer_exists: buffer /= Void	
+			buffer_exists: buffer /= Void
+			socket_exists: request_socket /= Void	
 		do
 			internal_buffer := buffer
 			internal_socket := request_socket

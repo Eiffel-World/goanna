@@ -24,12 +24,15 @@ creation
 	
 feature -- Initialisation
 
-	make (buffer: STRING) is
+	make (serving_socket: HTTPD_SERVING_SOCKET; buffer: STRING) is
 			-- Parse 'buffer' to initialise the request parameters
+		require
+			socket_exists: serving_socket /= Void
+			buffer_exists: buffer /= Void
 		do
 			create parameters.make (15)
 			parse_request_buffer (buffer)
-			set_server_parameters
+			set_server_parameters (serving_socket)
 		end
 		
 feature -- Access
@@ -56,10 +59,16 @@ feature -- Access
 		
 feature {NONE} -- Implementation
 		
-	set_server_parameters is
+	set_server_parameters (serving_socket: HTTPD_SERVING_SOCKET) is
 			-- Set server specific parameters for request
+		require
+			serving_socket_exists: serving_socket /= Void
 		do
-			
+			parameters.put ("Goanna HTTP Server V1.0", Server_software_var)
+			parameters.put ("CGI/1.1", Gateway_interface_var)
+			parameters.put (serving_socket.peer_name, Remote_host_var)
+			parameters.put (serving_socket.peer_address, Remote_addr_var)
+			parameters.put (serving_socket.servlet_manager.config.document_root, Document_root_var)
 		end
 		
 	parse_request_buffer (buffer: STRING) is
@@ -74,9 +83,11 @@ feature {NONE} -- Implementation
 			tokenizer.start
 			parameters.put (tokenizer.token, Request_method_var)
 			tokenizer.forth
-			parameters.put (tokenizer.token, Query_string_var)
+			parameters.put (tokenizer.token, Script_name_var)
 			tokenizer.forth
 			parameters.put (tokenizer.token, Server_protocol_var)
+			-- debug
+			parameters.put (buffer, Http_from_var)
 		end
 			
 end -- class HTTPD_REQUEST

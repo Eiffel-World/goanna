@@ -23,9 +23,6 @@ inherit
 		end
 
 	SHARED_SERVLET_MANAGER
-		export
-			{NONE} all
-		end
 		
 	SHARED_STANDARD_LOGGER
 		export
@@ -64,13 +61,13 @@ feature
 			buffer.resize (buffer_size.min (bytes_available))
 			buffer.fill_blank
 			receive_string (buffer)
-			create http_request.make (buffer)
+			create http_request.make (Current, buffer)
 			-- create request and response objects from request buffer
 			create resp.make (buffer, Current)
 			create req.make (http_request, resp)
 			-- dispatch to the registered servlet using the path info as the registration name.
-			if req.has_header (Query_string_var) then
-				path := req.get_header (Query_string_var)
+			if req.has_header (Script_name_var) then
+				path := req.get_header (Script_name_var)
 				if path /= Void then
 					-- remove leading slash from path
 					path.tail (path.count - 1)

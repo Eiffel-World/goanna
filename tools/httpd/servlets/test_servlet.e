@@ -50,35 +50,39 @@ feature {NONE} -- Implementation
 		local
 			parameter_names: DS_LINEAR [STRING]
 			header_names: DS_LINEAR [STRING]
+			response: STRING
 		do
-			resp.send ("<html><head><title>Test Servlet</title></head>%R%N")
-			resp.send ("<body><h1>This is a test.</h1>%R%N")
-			resp.send ("<p>Visits = " + visit_count.out + "</p>%R%N")
+			create response.make (255)
+			response.append ("<html><head><title>Test Servlet</title></head>%R%N")
+			response.append ("<body><h1>This is a test.</h1>%R%N")
+			response.append ("<p>Visits = " + visit_count.out + "</p>%R%N")
 			-- display all parameters
-			resp.send ("<h2>Parameters</h2>%R%N")
+			response.append ("<h2>Parameters</h2>%R%N")
 			from
 				parameter_names := req.get_parameter_names
 				parameter_names.start
 			until
 				parameter_names.off
 			loop
-				resp.send (parameter_names.item_for_iteration + " = " 
+				response.append (parameter_names.item_for_iteration + " = " 
 					+ quoted_eiffel_string_out (req.get_parameter (parameter_names.item_for_iteration)) + "<br>%R%N")
 				parameter_names.forth
 			end				
 			-- display all variables
-			resp.send ("<h2>Headers</h2>%R%N")
+			response.append ("<h2>Headers</h2>%R%N")
 			from
 				header_names := req.get_header_names
 				header_names.start
 			until
 				header_names.off
 			loop
-				resp.send (header_names.item_for_iteration + " = " 
+				response.append (header_names.item_for_iteration + " = " 
 					+ quoted_eiffel_string_out (req.get_header (header_names.item_for_iteration)) + "<br>%R%N")
 				header_names.forth
 			end		
-			resp.send ("</body></html>%R%N")	
+			response.append ("</body></html>%R%N")	
+			resp.set_content_length (response.count)
+			resp.send (response)
 		end	
 
 	visit_count: INTEGER
