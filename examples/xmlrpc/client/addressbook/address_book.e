@@ -61,29 +61,64 @@ feature -- Basic routines
 			v: XRPC_SCALAR_VALUE
 			p: XRPC_PARAM
 		do
-			create call.make ("addressbook.addEntry")
+			if not exists then
+				create call.make ("addressbook.addEntry")
+		
+				-- add name param
+				create v.make (main_window.names.text)
+				create p.make (v)
+				call.add_param (p)
+				
+				-- add address param
+				create v.make (main_window.address.text)
+				create p.make (v)
+				call.add_param (p)
+				
+				-- invoke
+				client.invoke (call)
+				if client.invocation_ok then
+					refresh
+				else
+					main_window.update_error_message ("Fault received: (" + client.fault.code.out + ") " + client.fault.string)	
+				end	
+			else
+				main_window.update_error_message ("Address already exists.")	
+			end				
+		end
+	
+	exists: BOOLEAN is
+			-- Check if selected name already exists in address book
+		local
+			call: XRPC_CALL
+			v: XRPC_SCALAR_VALUE
+			p: XRPC_PARAM
+			ref: BOOLEAN_REF
+		do
+			create call.make ("addressbook.hasEntry")
 	
 			-- add name param
 			create v.make (main_window.names.text)
 			create p.make (v)
 			call.add_param (p)
-			
-			-- add address param
-			create v.make (main_window.address.text)
-			create p.make (v)
-			call.add_param (p)
-			
+
 			-- invoke
 			client.invoke (call)
 			if client.invocation_ok then
-				refresh
+				ref ?= client.response.value.value.as_object
+				check
+					boolean_result: ref /= Void
+				end
+				Result := ref.item
 			else
-				main_window.update_error_message ("Fault received: (" + client.fault.code.out + ") " + client.fault.string)	
+				main_window.update_error_message ("Fault received: (" + client.fault.code.out + ") " + client.fault.string)
+				Result := False
 			end	
 		end
-	
+		
 	remove is
-			-- Remove name (and its address) from address book
+			-- Remove name (and its address) from address book.
+			-- NOTE: This will fail if an attempt is made to remove a name
+			-- that doesn't exist. Used to demonstrate assertion faults.
 		local
 			call: XRPC_CALL
 			v: XRPC_SCALAR_VALUE

@@ -58,6 +58,8 @@ feature -- Basic routines
 		require
 			call_exists: call /= Void
 		do
+			response := Void
+			fault := Void
 			send_call (call)
 			if socket_ok then
 				receive_response	
