@@ -15,7 +15,7 @@ feature -- Basic operations
 
 	set_char_code (ch: CHARACTER_REF; code: INTEGER): CHARACTER is
 			-- Set code of 'ch' to 'code'
-		obsolete "User int_to_char"
+		obsolete "Use int_to_char"
 		require
 			ch_exists: ch /= Void
 		do
