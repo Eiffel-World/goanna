@@ -130,10 +130,15 @@
         highest priority <constant>Fatal_p</constant>. The logging priorities are
         represented by a positive integer ranging from 50,000 for
         <constant>Fatal_p</constant> through to 10,000 for
-        <constant>Debug_p</constant>.<footnote>The integers representing
-	  priorities could just as easily ranged from 5 to 1. The numbers were
-	  originally used in the <application>log4j</application> library and it was
-	  decided not to change them.</footnote> This is to facilitate comparisons
+        <constant>Debug_p</constant>.
+	<footnote>
+	  <para>
+	    The integers representing
+	    priorities could just as easily ranged from 5 to 1. The numbers were
+	    originally used in the <application>log4j</application> library and
+	    it was decided not to change them.
+	  </para>
+	</footnote> This is to facilitate comparisons
         between priorities to determine if a log message matches or exceeds a set
         priority and should therefore be written to a log file.
       </para>
@@ -149,7 +154,7 @@
 	level of log messages that will be processed or ignored. If a category
 	does not have a priority set it will inherit one from its parent. The
 	category priority determines the level of logging that will take place
-	on that category &emdash; all log messages that meet or exceed the
+	on that category &mdash; all log messages that meet or exceed the
 	priority will be logged, all others will be discarded.
       </para>
       <para>
@@ -201,8 +206,67 @@
     <section>
       <title>Additive Categories</title>
       <para>
-       Additive categories.       
+	Once a category has handled a log message it can pass it on to its parent
+	for additional handling. This is known as an
+	<firstterm>additive</firstterm> category. The parent can then handle the
+	log message and pass on to its parent if it is also additive. A category
+	is additive by default as indicated by the query
+	<function>is_additive</function>. If you need to change the additive
+	status of a category call <function>set_additive</function> passing
+	<literal>True</literal> or <literal>False</literal> depending on the
+	status you need.
       </para>
+      <para>
+	The following table shows the affect of the
+	<function>is_additive</function> flag.
+      </para>
+      <table frame="all">
+	<title>Affect of <function>is_additive</function> flag.</title>
+	<tgroup cols="3" align="left" colsep="1" rowsep="1">
+	  <thead>
+	    <row>
+	      <entry>Category Name</entry>
+	      <entry><function>is_additive</function></entry>
+	      <entry>Handled by</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry><literal>root</literal></entry>
+	      <entry>not applicable</entry>
+	      <entry><literal>root</literal></entry>
+	    </row>
+	    <row>
+	      <entry><literal>x</literal></entry>
+	      <entry><literal>True</literal></entry>
+	      <entry><literal>x</literal>, <literal>root</literal></entry>
+	    </row>
+	    <row>
+	      <entry><literal>x.y</literal></entry>
+	      <entry><literal>True</literal></entry>
+	      <entry><literal>x</literal>, <literal>y</literal> and
+		<literal>root</literal></entry>
+	    </row>
+	    <row>
+	      <entry><literal>x.y.z</literal></entry>
+	      <entry><literal>True</literal></entry>
+	      <entry><literal>x</literal>, <literal>y</literal>,
+		<literal>z</literal> and <literal>root</literal></entry>
+	    </row>	    
+	    <row>
+	      <entry><literal>security</literal></entry>
+	      <entry><literal>False</literal></entry>
+	      <entry><literal>security</literal></entry>
+	    </row>
+	    <row>
+	      <entry><literal>security.access</literal></entry>
+	      <entry><literal>True</literal></entry>
+	      <entry><literal>access</literal> and
+	      <literal>security</literal></entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
     </section>
 
     <section>
