@@ -4,3 +4,5 @@
 *.se
 *.log
 TESTGEN
+EIFGEN
+*.epr
