@@ -9,7 +9,7 @@ o Fixed FastCGI response handling for responses over 65535 bytes. Reported by Ha
 
 o Now using geant and gexace build files. This requires the CVS version of GOBO.
 
-o Log3e implemented. Complete port of Jakarta Log4j.
+o Log4e implemented. Complete port of Jakarta Log4j.
 
 o XMLRPC implemented.
 
