@@ -43,10 +43,18 @@ feature -- Basic operations
 feature {NONE} -- Implementation
 	
 	send_xmle_document (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+		local
+			element: DOM_ELEMENT
+			str, str2: DOM_STRING
 		do
 			-- test XMLE generated document
 			resp.set_content_type ("text/xml")
 			create document.make
+			-- modify a few fields
+			element := document.get_node_customer1
+			create str.make_from_string ("newAttribute")
+			create str2.make_from_string ("newValue")
+			element.set_attribute (str, str2)
 			resp.send (document.to_document)
 		end
 		

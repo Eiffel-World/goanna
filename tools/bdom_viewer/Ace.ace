@@ -42,8 +42,6 @@ cluster
 
 	dom_writer (dom):		"$\writer"
 
-	xmle_doc (dom_impl):		"$\xmle_doc"
-
 	servlet:		"$GOANNA\library\servlet"
 
 	all base:		"$EIFFEL4\library\base"

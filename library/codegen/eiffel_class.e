@@ -27,6 +27,7 @@ feature -- Initialization
 			class_name_exists: class_name /= Void
 		do
 			set_name (class_name)
+			create indexing_clauses.make			
 			create parents.make
 			create creation_procedure_names.make
 			create feature_groups.make
@@ -37,6 +38,9 @@ feature -- Access
 	name: STRING
 			-- Class name
 
+	indexing_clauses: DS_LINKED_LIST [STRING]
+			-- Indexing clauses
+			
 	parents: DS_LINKED_LIST [STRING]
 			-- Class parents
 
@@ -56,6 +60,14 @@ feature -- Status setting
 			name := new_name
 		end
 
+	add_indexing_clause (new_indexing: STRING) is
+			-- Add 'new_indexing' as an indexing clause for this class
+		require
+			new_clause_exists: new_indexing /= Void
+		do
+			indexing_clauses.force_last (new_indexing)
+		end
+	
 	add_parent (new_parent: STRING) is
 			-- Add 'new_parent' to parents
 		require
@@ -79,12 +91,15 @@ feature -- Status setting
 		do
 			feature_groups.force_last (new_group)
 		end
-
+		
 feature -- Basic operations
 
 	write (output: IO_MEDIUM) is
 			-- Print source code representation of this class
 		do
+			if not indexing_clauses.is_empty then
+				write_indexing (output)			
+			end
 			write_header (output)
 			if not parents.is_empty then	
 				write_parents (output)
@@ -100,6 +115,23 @@ feature -- Basic operations
 
 feature {NONE} -- Implementation
 
+	write_indexing (output: IO_MEDIUM) is
+		do
+			output.put_string ("indexing")
+			output.put_new_line
+			output.put_new_line
+			from
+				indexing_clauses.start
+			until
+				indexing_clauses.off
+			loop
+				output.put_string ("%T" + indexing_clauses.item_for_iteration)
+				output.put_new_line
+				indexing_clauses.forth
+			end
+			output.put_new_line			
+		end
+	
 	write_header (output: IO_MEDIUM) is
 		do
 			output.put_string ("class " + name)

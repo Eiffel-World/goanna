@@ -5,11 +5,6 @@ root
 	SERVLET_SERVER: make
 
 default
-	assertion(require)
-	assertion(ensure)
-	assertion(check)
-	assertion(loop)
-	assertion(invariant)
 	address_expression(no)
 	array_optimization(yes)
 	console_application(yes)
@@ -23,6 +18,7 @@ default
 	arguments("8000 10")
 	disabled_debug(yes)
 	debug("fcgi_protocol")
+	disabled_debug("xmle_id_nodes")
 	disabled_debug("dom_output")
 	disabled_debug("query_string_parsing")
 	disabled_debug("normalize")
@@ -41,13 +37,13 @@ cluster
 
 	dom_core (dom):		"$\core"
 
-	dom_traversal_range (dom):	"$\traversal-range"
+	dom_traversal_range (dom):		"$\traversal-range"
 
 	dom_impl (dom):		"$\implementation"
 
 	dom_impl_core (dom_impl):		"$\core"
 
-	dom_impl_traversal_range: (dom_impl):	"$\traversal-range"
+	dom_impl_traversal_range (dom_impl):		"$\traversal-range"
 
 	dom_writer (dom):		"$\writer"
 

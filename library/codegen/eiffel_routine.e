@@ -37,6 +37,12 @@ feature -- Access
 	type: STRING
 			-- Type of this feature if it is a function
 
+	preconditions: DS_LINKED_LIST [DS_PAIR [STRING, STRING]]
+			-- Preconditions (label, expression) of this routine.
+			
+	postconditions: DS_LINKED_LIST [DS_PAIR [STRING, STRING]]
+			-- Postconditions (label, expression) of this routine.
+			
 	params: DS_LINKED_LIST [DS_PAIR [STRING, STRING]]
 			-- Parameter pairs (name, type) of this routine.
 
@@ -104,6 +110,30 @@ feature -- Status setting
 			body.force_last (line)
 		end
 
+	add_precondition (precondition: DS_PAIR [STRINg, STRING]) is
+			-- Add a precondition with the expression 'precondition.first' and
+			-- label 'precondition.second' to this routine.
+		require
+			precondition_exists: precondition /= Void		
+		do
+			if preconditions = Void then
+				create preconditions.make
+			end
+			preconditions.force_last (precondition)
+		end
+	
+	add_postcondition (postcondition: DS_PAIR [STRING, STRING]) is
+			-- Add a postcondition with the expression 'postcondition.first' and
+			-- label 'postcondition.second' to this routine.
+		require
+			postcondition_exists: postcondition /= Void		
+		do
+			if postconditions = Void then
+				create postconditions.make
+			end
+			postconditions.force_last (postcondition)
+		end
+		
 feature -- Basic operations
 
 	write (output: IO_MEDIUM) is
@@ -118,6 +148,9 @@ feature -- Basic operations
 			end
 			output.put_string (" is")
 			output.put_new_line
+			if preconditions /= Void then
+				write_preconditions (output)
+			end
 			if is_deferred then
 				output.put_string ("%T%Tdeferred")
 				output.put_new_line
@@ -126,6 +159,9 @@ feature -- Basic operations
 					write_locals (output)
 				end
 				write_body (output)
+			end
+			if postconditions /= Void then
+				write_postconditions (output)
 			end
 			output.put_string ("%T%Tend")
 			output.put_new_line
@@ -180,6 +216,38 @@ feature {NONE} -- Implementation
 				output.put_string ("%T%T%T" + body.item_for_iteration)
 				output.put_new_line
 				body.forth
+			end
+		end
+
+	write_preconditions (output: IO_MEDIUM) is
+		do
+			output.put_string ("%T%Trequire")
+			output.put_new_line
+			from
+				preconditions.start
+			until
+				preconditions.off
+			loop
+				output.put_string ("%T%T%T" + preconditions.item_for_iteration.first + ": "
+					+ preconditions.item_for_iteration.second)
+				output.put_new_line
+				preconditions.forth
+			end
+		end
+
+	write_postconditions (output: IO_MEDIUM) is
+		do
+			output.put_string ("%T%Tensure")
+			output.put_new_line
+			from
+				postconditions.start
+			until
+				postconditions.off
+			loop
+				output.put_string ("%T%T%T" + postconditions.item_for_iteration.first + ": "
+					+ postconditions.item_for_iteration.second)
+				output.put_new_line
+				postconditions.forth
 			end
 		end
 

@@ -186,7 +186,7 @@ feature {NONE} -- Implementation
 			-- Write a new line to the output depending on format.
 		do
 			if not is_compact_format then
-				output.put_new_line
+				output.put_string ("%R%N")
 			end
 		end
 	
