@@ -14,7 +14,12 @@ class
 inherit
 	FAST_CGI_RECORD_BODY
 
-create 
+	BIT_MANIPULATION
+		export
+			{NONE} all
+		end
+		
+creation
 	read, make
 	
 feature -- Initialisation
@@ -45,10 +50,10 @@ feature -- Basic operations
 		do
 			create enc_data.make (Fcgi_end_req_body_len)
 			enc_data.fill_blank
-			enc_data.put (character_from_code (app_status.bit_shift_right (24).bit_and (255)), 1)
-			enc_data.put (character_from_code (app_status.bit_shift_right (16).bit_and (255)), 2)
-			enc_data.put (character_from_code (app_status.bit_shift_right (8).bit_and (255)), 3)
-			enc_data.put (character_from_code (app_status.bit_and (255)), 4)
+			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 24), 255)), 1)
+			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 16), 255)), 2)
+			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 8), 255)), 3)
+			enc_data.put (character_from_code (bit_and (app_status, 255)), 4)
 			enc_data.put (character_from_code (protocol_status), 5)
 			socket.send_string (enc_data)
 			debug("fcgi_protocol")

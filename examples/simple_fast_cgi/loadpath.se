@@ -1,0 +1,8 @@
+${GOBO}/library/loadpath.se
+${GOANNA}/library/fast_cgi/
+${GOANNA}/library/fast_cgi/efcgi/
+${GOANNA}/library/utility/
+${GOANNA}/library/utility/spec/se/
+${YAESOCKETS}/
+${YAESOCKETS}/spec/se/
+${GOANNA}/examples/simple_fast_cgi/

@@ -22,7 +22,13 @@ inherit
 		export
 			{NONE} all
 		end
-create
+	
+	BIT_MANIPULATION
+		export
+			{NONE} all
+		end
+			
+creation
 	make
 
 feature -- Initialization
@@ -327,28 +333,28 @@ feature {NONE} -- Implementation
 				offset >= raw_param_content.count
 			loop
 				-- determine number of bytes in name length, 1 or 4
-				short_name := raw_param_content.item (offset).code.bit_shift_right (7) = 0 
+				short_name := bit_shift_right (raw_param_content.item (offset).code, 7) = 0 
 				-- build name length
 				if short_name then
-					name_length := raw_param_content.item (offset).code.bit_and (127)
+					name_length := bit_and (raw_param_content.item (offset).code, 127)
 					offset := offset + 1
 				else
-					name_length := raw_param_content.item (offset).code.bit_and (127).bit_shift_left (24)
-						+ raw_param_content.item (offset + 1).code.bit_shift_left (16)
-						+ raw_param_content.item (offset + 2).code.bit_shift_left (8)
+					name_length := bit_shift_left (bit_and (raw_param_content.item (offset).code, 127), 24)
+						+ bit_shift_left (raw_param_content.item (offset + 1).code, 16)
+						+ bit_shift_left (raw_param_content.item (offset + 2).code, 8)
 						+ raw_param_content.item (offset + 3).code
 					offset := offset + 4
 				end
 				-- determine number of bytes in value length, 1 or 4
-				short_value := raw_param_content.item (offset).code.bit_shift_right (7) = 0 
+				short_value := bit_shift_right (raw_param_content.item (offset).code, 7) = 0 
 				-- build value length
 				if short_value then
-					value_length := raw_param_content.item (offset).code.bit_and (127)
+					value_length := bit_and (raw_param_content.item (offset).code, 127)
 					offset := offset + 1
 				else
-					value_length := raw_param_content.item (offset).code.bit_and (127).bit_shift_left (24)
-						+ raw_param_content.item (offset + 1).code.bit_shift_left (16)
-						+ raw_param_content.item (offset + 2).code.bit_shift_left (8)
+					value_length := bit_shift_left (bit_and (raw_param_content.item (offset).code, 127), 24)
+						+ bit_shift_left (raw_param_content.item (offset + 1).code, 16)
+						+ bit_shift_left (raw_param_content.item (offset + 2).code, 8)
 						+ raw_param_content.item (offset + 3).code
 					offset := offset + 4
 				end

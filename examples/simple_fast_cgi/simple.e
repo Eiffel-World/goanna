@@ -27,11 +27,6 @@ inherit
 		export
 			{NONE} all
 		end
-		
-	MEMORY
-		export
-			{NONE} all
-		end
 			
 creation
 
@@ -52,9 +47,8 @@ feature -- Basic Operations
 
 	process_request is
 		local
-			content: STRING
-			i, length: INTEGER
-			param_keys: ARRAY [STRING]
+			length: INTEGER
+			param_keys: DS_HASH_TABLE_CURSOR [STRING, STRING]
 		do
 			warn ("Accepted -- YEAH! %N")
 
@@ -75,17 +69,17 @@ feature -- Basic Operations
 			count := count + 1
 
 			-- output parameters
-			param_keys := request.parameters.current_keys
+			param_keys := request.parameters.new_cursor
 			from
 				putstr ("Parameters:<br>%R%N")
-				i := param_keys.lower
+				param_keys.start
 			until
-				i >= param_keys.upper
+				param_keys.off
 			loop
-				putstr (param_keys.item (i) + " = " 
-					+ quoted_eiffel_string_out (request.parameters.item (param_keys.item (i))))
+				putstr (param_keys.key + " = " 
+					+ quoted_eiffel_string_out (param_keys.item))
 				putstr ("<br>%R%N")
-				i := i + 1
+				param_keys.forth
 			end
 			
 			-- read and display content

@@ -33,7 +33,12 @@ inherit
 			{NONE} all
 		end
 		
-create
+	BIT_MANIPULATION
+		export
+			{NONE} all
+		end
+		
+creation
 
 	make, read
 	
@@ -91,10 +96,10 @@ feature -- Basic operations
 			enc_data.fill_blank
 			enc_data.put (character_from_code (version), 1)
 			enc_data.put (character_from_code (type), 2)
-			enc_data.put (character_from_code (request_id.bit_shift_right (8).bit_and (255)), 3)
-			enc_data.put (character_from_code (request_id.bit_and (255)), 4)
-			enc_data.put (character_from_code (content_length.bit_shift_right (8).bit_and (255)), 5)
-			enc_data.put (character_from_code (content_length.bit_and (255)), 6)
+			enc_data.put (character_from_code (bit_and (bit_shift_right (request_id, 8), 255)), 3)
+			enc_data.put (character_from_code (bit_and (request_id, 255)), 4)
+			enc_data.put (character_from_code (bit_and (bit_shift_right (content_length, 8), 255)), 5)
+			enc_data.put (character_from_code (bit_and (content_length, 255)), 6)
 			enc_data.put (character_from_code (padding_length), 7)
 			enc_data.put ('%/0/', 8) -- reserved byte
 			socket.send_string (enc_data)
@@ -114,9 +119,9 @@ feature {NONE} -- Implementation
 			version := buffer.item (1).code
 			type := buffer.item (2).code
 			-- request id in two bytes
-			request_id := buffer.item (3).code.bit_shift_left (8) + buffer.item (4).code
+			request_id := bit_shift_left (buffer.item (3).code, 8) + buffer.item (4).code
 			-- content length in two bytes
-			content_length := buffer.item (5).code.bit_shift_left (8) + buffer.item (6).code
+			content_length := bit_shift_left (buffer.item (5).code, 8) + buffer.item (6).code
 			padding_length := buffer.item (7).code
 			-- reserved byte is also read but ignored
 		end
