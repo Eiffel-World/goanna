@@ -18,14 +18,14 @@ inherit
 -- catches up with the language definition, they need uncommenting.
 
 	FAST_CGI_DEFS
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+		end
 
 	UT_STRING_FORMATTER
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+		end
 	
 	BIT_MANIPULATION
 --		export

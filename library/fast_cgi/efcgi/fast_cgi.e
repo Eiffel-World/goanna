@@ -12,19 +12,15 @@ class FAST_CGI
 
 inherit
 
--- NOTE: the following export modification clauses are commented out because
--- the SmallEiffel compiler doesn't correctly compile them. Once SmallEiffel
--- catches up with the language definition, they need uncommenting.
-
 	FAST_CGI_DEFS
---		export
---			{NONE} all
---		end	
+		export
+			{NONE} all
+		end	
 
 	FAST_CGI_VARIABLES
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+		end
 		
 feature -- Initialisation
 
@@ -59,14 +55,14 @@ feature -- FGCI interface
     			-- accept the next request
     			Result := accept_request				
       		end
-    	rescue
-    		if request /= Void then
-    			request.set_socket (Void)
-    		end
-    		srv_socket := Void
-    		request := Void
-    		Result := -1 
-    		failed := True
+--    	rescue
+--    		if request /= Void then
+--    			request.set_socket (Void)
+--    		end
+--    		srv_socket := Void
+--    		request := Void
+--    		Result := -1 
+--    		failed := True
 		end
 
 	finish is 

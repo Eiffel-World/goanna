@@ -18,19 +18,19 @@ inherit
 -- catches up with the language definition, they need uncommenting.
 
 	FAST_CGI_DEFS
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+		end
 
 	SOCKET_ERRORS
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+		end
 
 	YAES_HELPER
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+		end
 		
 	UT_STRING_FORMATTER
 --		export

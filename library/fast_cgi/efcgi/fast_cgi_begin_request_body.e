@@ -12,16 +12,13 @@ class
 	FAST_CGI_BEGIN_REQUEST_BODY
 
 inherit
-	FAST_CGI_RECORD_BODY
 
--- NOTE: the following export modification clauses are commented out because
--- the SmallEiffel compiler doesn't correctly compile them. Once SmallEiffel
--- catches up with the language definition, they need uncommenting.
+	FAST_CGI_RECORD_BODY
 		
 	BIT_MANIPULATION
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+		end
 		
 feature -- Access
 
