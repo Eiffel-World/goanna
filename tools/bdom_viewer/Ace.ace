@@ -1,0 +1,49 @@
+system
+	retriever
+
+root
+	RETRIEVER: make
+
+default
+	address_expression(no)
+	array_optimization(no)
+	console_application(yes)
+	dead_code_removal(yes)
+	dynamic_runtime(no)
+	exception_trace(no)
+	inlining(no)
+	multithreaded(no)
+	check_vape(no)
+	arguments("order_xmle")
+	disabled_debug(yes)
+	disabled_debug("normalize")
+	debug(no)
+	line_generation(no)
+	profile(no)
+	trace(no)
+
+
+--precompiled ("$EIFFEL4\precomp\spec\$PLATFORM\base")
+-- Eiffel DOM
+-- Eiffel DOM parser
+--debug ("parser_events")
+-- EiffelBase
+-- GOBO
+-- eXML
+-- Unicode String
+
+cluster
+	retrieve:		"$GOANNA\xmle\src\samples\retrieve"
+
+	codegen:		"$GOANNA\xmle\src\codegen"
+
+	dom:		"$GOANNA\eiffeldom\src\dom"
+
+	dom_impl:		"$GOANNA\eiffeldom\src\impl"
+
+	dom_writer:		"$GOANNA\eiffeldom\src\writer"
+
+	xml_dom_parser:		"$GOANNA\xmlparser\src\parser"
+
+
+end
