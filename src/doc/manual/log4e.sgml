@@ -57,7 +57,7 @@
     <section>
       <title>Categories</title>
       <para>The category hierarchy is determine by the names given to 
-	each category---a dot in the name indicates a 
+	each category&mdash;a dot in the name indicates a 
 	parent-child relationship between categories. For example, 
 	if a category is created with the name 
 	<literal>a.b</literal> it identifies the category named 
@@ -90,8 +90,20 @@
 	of a named category in each category hierarchy and that it is
 	correctly positioned in the hierarchy. Once you have a 
 	reference to the category you can then configure the category's
-	priority and appenders and log messages to it.
+	priority and appenders and log messages to it. For example, given the
+	following variables declarations:
       </para>
+      <programlisting>
+	hierarchy: LOG_HIERARCHY
+	category: LOG_CATEGORY
+      </programlisting>
+      <para>
+	you can create a category named <literal>server.access</literal> and
+	assign it to the variable <varname>category</varname> using:
+      </para>
+      <programlisting>
+	category := hierarchy.category ("server.access")
+      </programlisting>
       <para>Messages can be sent to a category using the routines 
 	<function>debugging</function><footnote><para>The original 
 	    log4j library uses the routine name 
@@ -101,13 +113,21 @@
 	<function>warn</function>, <function>info</function>, 
 	<function>error</function>, <function>fatal</function> or
 	<function>log</function> to log at predefined priorities or 
-	a specified priority in the case of <function>log</function>.
-      </para> 
+	a specified priority in the case of <function>log</function>. 
+      </para>
     </section>
 
     <section>
       <title>Priorities</title>
-      <para>Describe priorities for categories.</para>
+      <para>Each log message has a priority which can determine
+	what should be done with the message, whether it should be written to a
+	log file or discarded. All log4e priorities are defined in the class
+      <classname>LOG_PRIORITY_CONSTANTS</classname> of type
+      <classname>LOG_PRIORITY</classname> and range from the lowest priority
+      <constant>Debug_p</constant> through <constant>Info_p</constant>,
+      <constant>Warning_p</constant> and <constant>Error_p</constant>, to the
+      highest priority <constant>Fatal_p</constant>.
+      </para>
     </section>
     <section>
       <title>Additive Categories</title>
@@ -115,7 +135,89 @@
     </section>
     <section>
       <title>Logging</title>
-      <para>Describe logging routines.</para>
+      <para>
+	To send a log message of each priority to the category we created earlier,
+	you can write:
+      </para> 
+      <programlisting>
+	category.debugging ("This is a debug message")
+	category.info ("This is an information message")
+	category.warn ("This is a warning message")
+	category.error ("This is an error message")
+	category.fatal ("This is a fatal message")
+	category.log (hierarchy.Info_p, "This is another information message")
+      </programlisting>
+      <para>
+	Each of the statements send a message to the
+	<literal>server.access</literal> category with different priorities. The
+	final statement explicitly logs a message with the priority
+	<constant>Info_p</constant> as defined in
+	<classname>LOG_PRIORITY_CONSTANTS</classname>. Many of the log4e classes
+	inherit (sometimes indirectly) from
+	<classname>LOG_PRIORITY_CONSTANTS</classname> and therefore provide
+	access to all of the predefined priority constants, as used in the
+	<function>log</function> example above. We could just as easily
+	inherited from the <classname>LOG_PRIORITY_CONSTANTS</classname> class
+	to access the priority directly.
+      </para>
+      <para>
+	All of the logging routines take an object of type
+	<classname>ANY</classname> as the <parameter>message</parameter>
+	parameter thus allowing objects of arbitrary types to be logged. The
+	category calls <function>out</function> on the object to convert it to a
+	string that can then be written to the appropriate log. Basic types,
+	such as <classname>INTEGER</classname>, <classname>DOUBLE</classname>
+	and <classname>CHARACTER</classname>, all define reasonable
+	implementations of <function>out</function>. If you need to log
+	objects other than basic types you will need to redefine
+	<function>out</function> to return the
+	<classname>STRING</classname> representation you require. For example,
+	given the following class <classname>USER</classname>: 
+      </para>
+      <programlisting>
+	class USER
+	inherit
+	    ANY
+	        redefine out end
+        creation 
+	    make
+        feature -- Initialisation
+
+            make (first, last: STRING) is
+                do
+                    first_name := first
+                    surname := last
+                end
+
+	feature -- Access
+
+	    first_name: STRING
+
+	    surname: STRING
+
+	feature -- Basic routines
+
+	    out: STRING is
+	        do
+	            create Result.make (100)
+	            Result.append ("USER first_name=" + first_name)
+	            Result.append (" surname=" + surname)
+	        end
+
+	end -- class USER
+      </programlisting>
+      <para>
+	We can create an instance and log details about that instance to a
+	category by passing the instance itself: 
+      </para>
+      <programlisting>
+	create user.make ("Jim", "Smith")
+	category.info (user)
+      </programlisting>
+      <para>
+	The string that will be sent to the log will be: <computeroutput>USER
+	first_name=Jim surname=Smith</computeroutput>
+      </para>
     </section>
   </section>
   
