@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<system name="currenttime">
+	<description>
+		description: "XAce file for Goanna XMLRPC client examples"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO ant files"
+	</description>
+
+	<root class="CURRENT_TIME" creation="start"/>
+	<cluster>
+		<option unless="${DEBUG}">
+			<require enable="False"/>
+			<ensure enable="False"/>
+			<invariant enable="False"/>
+			<loop enable="False"/>
+			<check enable="False"/>
+			<optimize enable="True"/>
+		</option>
+		<option if="${DEBUG}">
+			<require enable="True"/>
+			<ensure enable="True"/>
+			<invariant enable="True"/>
+			<loop enable="True"/>
+			<check enable="True"/>
+			<optimize enable="False"/>
+		</option>
+
+		<cluster name="calculator" location="${GOANNA}/examples/xmlrpc/client/currenttime"/>
+
+		<mount location="${GOBO}/library/cluster.xace"/>
+		<mount location="${GOBO}/library/kernel.xace"/>
+		<mount location="${GOANNA}/library/cluster.xace"/>
+		<mount location="${GOANNA}/library/yaesockets.xace"/>
+		<mount location="${GOANNA}/library/wel.xace"/>
+		<mount location="${GOANNA}/library/vision2.xace"/>
+	</cluster>
+</system>
