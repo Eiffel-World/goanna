@@ -37,7 +37,7 @@ feature -- Constants
 			create Result.make_from_string ("http://www.w3.org/2000/xmlns")			
 		end
 	
-	Qname_separator: UCCHAR is
+	Qname_separator: UC_CHARACTER is
 			-- Separator used between prefix and localname of qualified name.
 			-- Character ':'.
 		once

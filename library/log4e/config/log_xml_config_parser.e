@@ -75,7 +75,7 @@ feature {NONE} -- Implementation
 
 	parser: DOM_TREE_BUILDER
 
-	file_name: UCSTRING
+	file_name: UC_STRING
 			-- Name of file to parse.
 	
 	display_parser_error is

@@ -396,7 +396,7 @@ feature {NONE} -- Helper features
 			str_exists: str /= Void
 		local
 			i: INTEGER
-			char: UCCHAR
+			char: UC_CHARACTER
 			is_printable: BOOLEAN
 			code: INTEGER
 		do
@@ -477,13 +477,13 @@ feature {NONE} -- Helper features
 			Result.put ("lt",   60)
 		end
 
-	apostrophe_character: UCCHAR is
+	apostrophe_character: UC_CHARACTER is
 			-- Character representing '%''
 		once
 			Result.make_from_character ('%'')
 		end
 
-	quote_character: UCCHAR is
+	quote_character: UC_CHARACTER is
 			-- Character representing '"'
 		once
 			Result.make_from_character ('"')
@@ -501,7 +501,7 @@ feature {NONE} -- Helper features
 			create Result
 		end
 
-	as_hexadecimal_number (c: UCCHAR): STRING is
+	as_hexadecimal_number (c: UC_CHARACTER): STRING is
 			-- Hexadecimal representation of the given character
 		require
 			positive_code: c.code > 0

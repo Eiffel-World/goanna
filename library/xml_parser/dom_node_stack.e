@@ -32,7 +32,7 @@ feature -- Access
 		end
 
 	find_namespace_for_attribute (qname: DOM_STRING;
-		attributes: DS_BILINEAR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]): DOM_STRING is
+		attributes: DS_BILINEAR [DS_PAIR [DS_PAIR [UC_STRING, UC_STRING], UC_STRING]]): DOM_STRING is
 			-- Find a namespace URI bound to the prefix of 'qname' if one exists. Search
 			-- the raw attributes structure first then search the current element and all
 			-- ancestors.
@@ -41,10 +41,10 @@ feature -- Access
 			attributes_exists: attributes /= Void
 		local
 			i: INTEGER
-			c: UCCHAR
+			c: UC_CHARACTER
 			ns_prefix: DOM_STRING
-			cursor: DS_BILINEAR_CURSOR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]
-			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
+			cursor: DS_BILINEAR_CURSOR [DS_PAIR [DS_PAIR [UC_STRING, UC_STRING], UC_STRING]]
+			pair: DS_PAIR [DS_PAIR [UC_STRING, UC_STRING], UC_STRING]
 		do
 			create Result.make (0)
 			-- extract prefix

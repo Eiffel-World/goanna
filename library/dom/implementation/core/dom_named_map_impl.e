@@ -179,7 +179,7 @@ feature {NONE} -- Implementation
 		do
 			Result := clone (uri)
 			Result.append_string (":")
-			Result.append_ucstring (local_name)
+			Result.append_uc_string (local_name)
 		ensure
 			combined_name_exists: Result /= Void
 			combined_name_big_enough: Result.count = uri.count + local_name.count + 1

@@ -76,7 +76,7 @@ feature
 			-- Parameters
 			--    arg   The DOM_String to append.
 	  	do
-			data.append_ucstring (arg)
+			data.append_uc_string (arg)
 		end
 
 	insert_data (offset: INTEGER; arg: DOM_STRING) is

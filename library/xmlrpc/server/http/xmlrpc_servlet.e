@@ -160,9 +160,10 @@ feature {NONE} -- Implementation
 			-- the problem encountered.
 		local
 			parser: DOM_TREE_BUILDER
+			parser_factory: expanded DOM_TREE_BUILDER_FACTORY
 		do
 			valid_call := True
-			create parser.make
+			parser := parser_factory.create_parser
 			parser.parse_from_string (req.content)
 			if parser.is_correct then
 				parser.document.normalize

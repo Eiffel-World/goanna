@@ -400,7 +400,7 @@ feature {DOM_WRITER, DOM_NODE} -- Output Implementation
 		local
 			i: INTEGER
 			next_attribute: DOM_NODE
-			str: UCSTRING
+			str: UC_STRING
 		do
 			!! str.make (50)
 			-- node type
@@ -410,27 +410,27 @@ feature {DOM_WRITER, DOM_NODE} -- Output Implementation
 			-- node name
 			str.append_string (make_indent (level + 1))
 			str.append_string ("node_name = ")
-			str.append_ucstring (node_name)
+			str.append_uc_string (node_name)
 			str.append_string (line_separator)
 			-- node value
 			str.append_string (make_indent (level + 1))
 			str.append_string ("node_value = ")
-			str.append_ucstring (non_void_string (node_value))
+			str.append_uc_string (non_void_string (node_value))
 			str.append_string (line_separator)
 			-- namespace uri
 			str.append_string (make_indent (level + 1))
 			str.append_string ("namespace_uri = ")
-			str.append_ucstring (non_void_string (namespace_uri))
+			str.append_uc_string (non_void_string (namespace_uri))
 			str.append_string (line_separator)
 			-- ns_prefix
 			str.append_string (make_indent (level + 1))
 			str.append_string ("ns_prefix = ")
-			str.append_ucstring (non_void_string (ns_prefix))
+			str.append_uc_string (non_void_string (ns_prefix))
 			str.append_string (line_separator)
 			-- local_name
 			str.append_string (make_indent (level + 1))
 			str.append_string ("local_name = ")
-			str.append_ucstring (non_void_string (local_name))
+			str.append_uc_string (non_void_string (local_name))
 			str.append_string (line_separator)
 			-- attributes
 			str.append_string (make_indent (level + 1))
@@ -445,9 +445,9 @@ feature {DOM_WRITER, DOM_NODE} -- Output Implementation
 				loop
 					str.append_string (make_indent (level + 2))
 					next_attribute := attributes.item (i)
-					str.append_ucstring (next_attribute.node_name)
+					str.append_uc_string (next_attribute.node_name)
 					str.append_string (" = ")
-					str.append_ucstring (non_void_string (next_attribute.node_value))
+					str.append_uc_string (non_void_string (next_attribute.node_value))
 					str.append_string (line_separator)
 					i := i + 1
 				end

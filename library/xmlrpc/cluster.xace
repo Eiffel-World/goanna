@@ -4,17 +4,18 @@
 
 	<description>
 		description: "Cluster definition for Goanna XMLRPC classes"
-		project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
-		author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
 		copyright: "Copyright (c) 2001 Glenn Maughan and others"
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO cluster.xace files"
 	</description>
 
 	<cluster name="client"/>
-	<cluster name="server"/>
-	<cluster name="server/http"/>
+	<cluster name="server">
+		<cluster name="http"/>
+	</cluster>
 
 </cluster>

@@ -4,10 +4,10 @@
 
 	<description>
 		description: "Cluster definition for Goanna servlet API classes"
-		project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
-		author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
 		copyright: "Copyright (c) 2001 Glenn Maughan and others"
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO cluster.xace files"

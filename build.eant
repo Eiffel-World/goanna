@@ -4,10 +4,10 @@
 
 	<description>
 		description: "Ant file for Goanna"
-		project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
-		author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
 		copyright: "Copyright (c) 2001 Glenn Maughan and others"
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO ant files"
@@ -24,7 +24,6 @@
 			Install the Goanna package.
 		</description>
 
-		<geant file="tools/build.eant" target="install"/>
 		<geant file="examples/build.eant" target="install"/>
 	</target>
 
@@ -33,8 +32,6 @@
 			Remove intermediary generated files.
 		</description>
 
-		<geant file="library/build.eant" target="clean"/>
-		<geant file="tools/build.eant" target="clean"/>
 		<geant file="examples/build.eant" target="clean"/>
 	</target>
 

@@ -135,7 +135,7 @@ feature {NONE} -- Implementation
 			create Result.make_from_string ("xmlns")
 		end
 	
-	Namespace_name_separator: UCCHAR is
+	Namespace_name_separator: UC_CHARACTER is
 			-- Default namespace name separator
 		once
 			Result.make_from_character (':')

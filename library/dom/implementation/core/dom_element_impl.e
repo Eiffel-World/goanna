@@ -48,7 +48,7 @@ feature {DOM_DOCUMENT} -- Factory creation
 			qualified_name_exists: qualified_name /= Void
 		local
 			i: INTEGER
-			c: UCCHAR
+			c: UC_CHARACTER
 		do
 			make (doc, qualified_name)
 			namespace_uri := new_namespace_uri

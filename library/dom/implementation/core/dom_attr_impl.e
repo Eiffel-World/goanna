@@ -61,7 +61,7 @@ feature -- Factory creation
 			new_namespace_uri_exists: new_namespace_uri /= Void
 		local
 			i: INTEGER
-			c: UCCHAR
+			c: UC_CHARACTER
 		do
 			make (owner_doc, new_qualified_name)
 			namespace_uri := new_namespace_uri

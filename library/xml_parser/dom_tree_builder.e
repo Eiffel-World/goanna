@@ -14,6 +14,8 @@ class
 inherit
    
    XM_EVENT_PARSER
+   		export
+   			{NONE} make_from_implementation
 		redefine
 			on_attribute_declaration,
 			on_element_declaration,
@@ -37,15 +39,15 @@ inherit
 			{NONE} all
 		end
 	
-creation
+creation {DOM_TREE_BUILDER_FACTORY}
    
 	make
       
 feature {NONE} -- Initialisation
 
-	make is
+	make (impl: like implementation) is
 			do
-				make_from_imp (parser)
+				make_from_implementation (impl)
 				create {DOM_IMPLEMENTATION_IMPL} dom_impl
 				document := dom_impl.create_empty_document
 				create nodes.make_default
@@ -59,16 +61,16 @@ feature {ANY} -- Access
          
 feature {NONE} -- Parser call backs
 
-	on_start_tag (name, ns_prefix: UCSTRING; 
-		attributes: DS_BILINEAR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]) is
+	on_start_tag (name, ns_prefix: UC_STRING; 
+		attributes: DS_BILINEAR [DS_PAIR [DS_PAIR [UC_STRING, UC_STRING], UC_STRING]]) is
 			-- called whenever the parser findes a start element
 		local
 			discard: DOM_NODE
 			qname: DOM_STRING
 			dom_ns_prefix: DOM_STRING
 			new_element: DOM_ELEMENT
-			cursor: DS_BILINEAR_CURSOR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]
-			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
+			cursor: DS_BILINEAR_CURSOR [DS_PAIR [DS_PAIR [UC_STRING, UC_STRING], UC_STRING]]
+			pair: DS_PAIR [DS_PAIR [UC_STRING, UC_STRING], UC_STRING]
 			node_holder: DOM_TREE_NODE
 			new_attribute: DOM_ATTR_IMPL
 			new_attributes: DS_LINKED_LIST [DOM_ATTR]
@@ -132,7 +134,7 @@ feature {NONE} -- Parser call backs
 			nodes.force (node_holder)
 		end
 
-	on_content (chr_data: UCSTRING) is
+	on_content (chr_data: UC_STRING) is
 			-- called whenever the parser finds character data
 		local
 			discard: DOM_NODE
@@ -151,7 +153,7 @@ feature {NONE} -- Parser call backs
 			end
 		end
 
-	on_end_tag (name, ns_prefix: UCSTRING) is
+	on_end_tag (name, ns_prefix: UC_STRING) is
 			-- called whenever the parser findes an end element
 		do
 			debug ("parser_events")
@@ -163,7 +165,7 @@ feature {NONE} -- Parser call backs
 			nodes.remove
 		end
    
-	on_processing_instruction (target, data: UCSTRING) is
+	on_processing_instruction (target, data: UC_STRING) is
 			-- called whenever the parser findes a processing instruction.
 		local
 			new_element, discard: DOM_NODE
@@ -178,7 +180,7 @@ feature {NONE} -- Parser call backs
 			discard := document.append_child (new_element)
 		end
    
-	on_comment (com: UCSTRING) is
+	on_comment (com: UC_STRING) is
 			-- called whenever the parser finds a comment.
 		local
 			new_element, discard: DOM_NODE
@@ -191,7 +193,7 @@ feature {NONE} -- Parser call backs
 			discard := nodes.item_node_as_element.append_child (new_element)
 		end
 
-	on_element_declaration (name: UCSTRING) is
+	on_element_declaration (name: UC_STRING) is
 		do
 			debug ("parser_events")
 				print ("on_element_declaration:%R%N%Tname=" + quoted_eiffel_string_out (name.out))
@@ -200,7 +202,7 @@ feature {NONE} -- Parser call backs
 		end
 		
 	on_attribute_declaration (element_name, attribute_name, 
-			attribute_type, default_value: UCSTRING; is_required: BOOLEAN) is
+			attribute_type, default_value: UC_STRING; is_required: BOOLEAN) is
 		do
 			debug ("parser_events")
 				print ("on_attribute_declaration:%R%N%Telement_name=" + quoted_eiffel_string_out (element_name.out))
@@ -210,7 +212,7 @@ feature {NONE} -- Parser call backs
 			end
 		end
 
-	on_xml_declaration (xml_version, encoding: UCSTRING; is_standalone: BOOLEAN) is
+	on_xml_declaration (xml_version, encoding: UC_STRING; is_standalone: BOOLEAN) is
 		do
 			debug ("parser_events")
 				print ("on_xml_declaration:R%N%Txml_version=" + quoted_eiffel_string_out (xml_version.out))
@@ -223,8 +225,8 @@ feature {NONE} -- Parser call backs
 			end
 		end
 
-	on_entity_declaration (entity_name: UCSTRING; is_parameter_entity: BOOLEAN; 
-			value: UCSTRING; value_length: INTEGER; base, system_id, public_id, notation_name: UCSTRING) is
+	on_entity_declaration (entity_name: UC_STRING; is_parameter_entity: BOOLEAN; 
+			value: UC_STRING; value_length: INTEGER; base, system_id, public_id, notation_name: UC_STRING) is
 		do
 			debug ("parser_events")
 				print ("on_entity_declaration:%R%N%Tentity_name=" + quoted_eiffel_string_out (entity_name.out))
@@ -254,7 +256,7 @@ feature {NONE} -- Parser call backs
 			in_cdata_section := False
 		end
 
-	on_start_doctype (name, system_id, public_id: UCSTRING; has_internal_subset: BOOLEAN) is
+	on_start_doctype (name, system_id, public_id: UC_STRING; has_internal_subset: BOOLEAN) is
 			-- This is called for the start of the DOCTYPE declaration, before
 			-- any DTD or internal subset is parsed.
 		local
@@ -301,7 +303,7 @@ feature {NONE} -- Parser call backs
 			discard := document.append_child (document_type)
 		end
 
-	on_notation_declaration (notation_name, base, system_id, public_id: UCSTRING) is
+	on_notation_declaration (notation_name, base, system_id, public_id: UC_STRING) is
 		do
 			debug ("parser_events")
 				print ("on_notation_declaration:%R%N%Tnotation_name=" + quoted_eiffel_string_out (notation_name.out))
@@ -334,12 +336,7 @@ feature {NONE} -- Implementation
 	
 	dom_impl: DOM_IMPLEMENTATION
 
-	parser: DOM_EVENT_PARSER is
-		once
-			create Result
-		end
-      
-	normalize (str: UCSTRING) is
+	normalize (str: UC_STRING) is
 			-- Remove leading and trailing whitespace from 'str'
 			-- Modifies 'str' parameter
 		require
@@ -351,7 +348,7 @@ feature {NONE} -- Implementation
 			normalized_exists: str /= Void
 		end
 		
-	build_qualified_name (ns_prefix, name: UCSTRING): DOM_STRING is
+	build_qualified_name (ns_prefix, name: UC_STRING): DOM_STRING is
 			-- Build a fully qualified name from ns_prefix and name.
 			-- Include the prefix and colon separator if the prefix  
 			-- is not empty
@@ -363,7 +360,7 @@ feature {NONE} -- Implementation
 			if not Result.is_empty then
 				Result.append_string (":")
 			end
-			Result.append_ucstring (name)
+			Result.append_uc_string (name)
 		end
 		
 end -- class DOM_TREE_BUILDER

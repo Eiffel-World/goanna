@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<system name="ascii2ps">
+	<description>
+		description: "XAce file for Goanna XMLRPC client examples"
+		project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO ant files"
+	</description>
+
+	<root class="ADDRESS_BOOK" creation="make"/>
+	<cluster>
+		<option unless="${DEBUG}">
+			<require enable="False"/>
+			<ensure enable="False"/>
+			<invariant enable="False"/>
+			<loop enable="False"/>
+			<check enable="False"/>
+			<optimize enable="True"/>
+		</option>
+		<option if="${DEBUG}">
+			<require enable="True"/>
+			<ensure enable="True"/>
+			<invariant enable="True"/>
+			<loop enable="True"/>
+			<check enable="True"/>
+			<optimize enable="False"/>
+		</option>
+
+		<cluster name="addressbook" location="${GOANNA}/examples/xmlrpc/client/addressbook"/>
+
+		<mount location="${GOBO}/library/cluster.xace"/>
+	</cluster>
+</system>

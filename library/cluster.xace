@@ -1,6 +1,18 @@
 <?xml version="1.0"?>
 
 <cluster name="goanna" location="${GOANNA}/library" abstract="True">
+
+	<description>
+		description: "Cluster definition for Goanna CGI connector classes"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO cluster.xace files"
+	</description>
+
 	<mount location="${GOANNA}/library/cgi/cluster.xace"/>
 	<mount location="${GOANNA}/library/codegen/cluster.xace"/>
 	<mount location="${GOANNA}/library/dom/cluster.xace"/>
@@ -12,4 +24,5 @@
 	<mount location="${GOANNA}/library/utility/cluster.xace"/>
 	<mount location="${GOANNA}/library/xml_parser/cluster.xace"/>
 	<mount location="${GOANNA}/library/xmlrpc/cluster.xace"/>
+
 </cluster>

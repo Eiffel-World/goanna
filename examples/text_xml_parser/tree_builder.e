@@ -54,7 +54,7 @@ feature {NONE} -- Implementation
 	arguments_ok: BOOLEAN
 			-- Were the command line arguments parsed sucessfully?
 
-	file_name: UCSTRING
+	file_name: UC_STRING
 			-- Name of file to parse.
 
 	parse_arguments is

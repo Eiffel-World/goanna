@@ -89,7 +89,7 @@ feature {NONE}
 			end
 		end
 
-	non_void_string (str: UCSTRING): UCSTRING is
+	non_void_string (str: UC_STRING): UC_STRING is
 			-- If 'str' is Void, return the string "Void"
 			-- Otherwise return 'str'
 		do

@@ -12,7 +12,7 @@ class DOM_STRING
 
 inherit
 
-	UCSTRING
+	UC_STRING
 		rename
 			empty as is_empty
 		end
@@ -23,7 +23,7 @@ creation
 
 feature -- Initialisation
 
-	make_from_ucstring (other: UCSTRING) is
+	make_from_ucstring (other: UC_STRING) is
 			-- Create a dom string from 'other'
 		require
 			other_exists: other /= Void

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<cluster name="yaesockets" location="${YAESOCKETS">
+
+	<description>
+		description: "Cluster definition for Yaesockets classes"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO cluster.xace files"
+	</description>
+
+	<cluster name="spec_ise" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=ise"/>
+	<cluster name="spec_hact" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=hact"/>
+	<cluster name="spec_se" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=se"/>
+	<cluster name="ve" location="${YAESOCKETS}/spec/${GOBO_EIFFEL}" if="${GOBO_EIFFEL}=ve"/>
+
+	<external>
+		<link_library location="$(YAESOCKETS)/C/Debug/cl.lib"/>
+	</external>
+
+</cluster>
