@@ -99,7 +99,7 @@ feature {SERVLET} -- communication with GOANNA Application
 			valid_response : active_page.response /= Void
 		end
 
-feature {DYNAMIC_URL, PAGE}  -- Current request/response related attributes
+feature -- {DYNAMIC_URL, PAGE}  -- Current request/response related attributes
 
 	active_page : PAGE is
 		-- The currently active page

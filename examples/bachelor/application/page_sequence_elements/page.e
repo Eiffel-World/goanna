@@ -61,7 +61,7 @@ feature -- Implement Deferred Features
 			end
 		end
 
-feature {PAGE_SEQUENCER, WEB_SERVER_PROXY, DYNAMIC_URL, PAGE_FACTORY}
+feature -- {PAGE_SEQUENCER, WEB_SERVER_PROXY, DYNAMIC_URL, PAGE_FACTORY}
 
 	page_sequencer : PAGE_SEQUENCER
 		-- The page_sequencer associated with this page

@@ -13,14 +13,17 @@ class
 
 feature -- Drive & directory locations
 
-	data_directory : STRING is "c:\dev\goanna\examples\bachelor\data" -- "d:\dev\Eiffel\goanna\examples\bachelor\data"
-		-- The directory where data files are stored
+	data_directory : STRING is 
+			-- The directory where data files are stored
+		once
+			Result := environment.get ("GOANNA") + "/examples/bachelor/data" -- "d:\dev\Eiffel\goanna\examples\bachelor\data"
+		end
 
-	directory_separator : STRING is "\"
+	directory_separator : STRING is "/"
 
 feature -- URL's for this application
 
-	web_server_url : STRING is "http://localhost"
+	web_server_url : STRING is "http://localhost:3788"
 		-- The URL for the web_server hosting this application
 		
 feature -- Subdirectories for this application
@@ -33,7 +36,7 @@ feature -- Subdirectories for this application
 
 feature -- Application Configuration
 
-	port : INTEGER is 80 --00 -- for fcgi use 8000
+	port : INTEGER is 3788 --00 -- for fcgi use 8000
 		-- The port the application uses to communicate with the FastCGI
 
 	backlog_requests : INTEGER is 5
@@ -111,6 +114,8 @@ feature -- File names
 		do
 			result := data_directory + directory_separator + "valid_organizational_name_list_file" + file_extension
 		end
+		
+	environment: expanded EXECUTION_ENVIRONMENT
 
 feature -- string contants
 
