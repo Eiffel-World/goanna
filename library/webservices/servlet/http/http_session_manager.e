@@ -88,6 +88,29 @@ feature -- Status setting
 				create_new_session (resp)
 			end
 		end
+
+	terminate is
+			-- Application is shutting down.
+		require
+			True
+		local
+			session: like session_anchor
+			key: STRING
+		do
+			-- Force-expire all sessions
+			from
+				sessions.start
+			until
+				sessions.off
+			loop
+				session := sessions.item_for_iteration
+				key := sessions.key_for_iteration
+				notify_listeners (session, Expiring_code)
+				sessions.remove (key)
+				notify_listeners (session, Expired_code)
+				sessions.forth
+			end
+		end
 	
 feature {NONE} -- Implementation
 
@@ -191,7 +214,7 @@ feature {NONE} -- Implementation
 			loop
 				expired_session := sessions.item (expired_sessions.item_for_iteration)
 				sessions.remove (expired_sessions.item_for_iteration)
-				notify_listeners (expired_session, expired_code)
+				notify_listeners (expired_session, Expired_code)
 				expired_sessions.forth
 			end
 		end
