@@ -1,5 +1,5 @@
 indexing
-	description: "DOM tree builder"
+	description: "DOM tree printer"
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	library: "examples"
 	date: "$Date$"
@@ -9,7 +9,7 @@ indexing
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
-	TREE_BUILDER
+	PD
 
 inherit
 
@@ -32,11 +32,12 @@ feature -- Initialization
 		local
 			node_impl: DOM_NODE_IMPL
 			writer: DOM_WRITER
+			factory: expanded DOM_TREE_BUILDER_FACTORY
 		do
 			-- check arguments
 			parse_arguments
 			if arguments_ok then
-				create parser.make
+				parser := factory.create_parser
 				parser.parse_from_file_name (file_name)
 				-- print the tree
 				node_impl ?= parser.document
@@ -79,8 +80,8 @@ feature {NONE} -- Implementation
 		local
 			str: STRING
 		do
-			create str.make_from_string ("Usage: tree_builder <xmlfilename>")
+			create str.make_from_string ("Usage: pd <xmlfilename>")
 			print (str)
-		end -- class TREE_BUILDER
+		end 
 
-end -- class TREE_BUILDER
+end -- class PD

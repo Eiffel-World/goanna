@@ -27,7 +27,6 @@
 			Install Goanna.
 		</description>
 
-		<geant file="build.eant" target="${target}" dir="library"/>
 		<set name="target" value="install"/>
 		<geant target="do_all"/>
 	</target>
@@ -80,8 +79,8 @@
 			Call 'geant' with the same target ${target}
 			in all subdirectories.
 		</description>
+		<geant file="build.eant" target="${target}" dir="library"/>
 		<geant file="build.eant" target="${target}" dir="examples"/>
-		<geant file="build.eant" target="${target}" dir="tools"/>
 		<geant file="build.eant" target="${target}" dir="src"/>
 	</target>
 

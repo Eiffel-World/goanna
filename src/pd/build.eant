@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<project name="tree_builder" inherit="${GOBO}/misc/eiffel.eant" default="help">
+<project name="pd" inherit="${GOBO}/misc/eiffel.eant" default="help">
 
 	<description>
-		description: "CGI servlet Example"
+		description: "Print DOM utility"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -52,9 +52,9 @@
 
 
 	<target name="init_system">
-		<set name="system" value="dom_printer"/>
-		<set name="library" value="dom_printer"/>
-		<set name="system_dir" value="${GOANNA}/examples/${system}"/>
+		<set name="system" value="pd"/>
+		<set name="library" value="pd"/>
+		<set name="system_dir" value="${GOANNA}/src/${system}"/>
 	</target>
 
 </project>

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<system name="tree_builder">
+<system name="pd">
 	<description>
-		description: "XAce file for Goanna dom printer server example"
+		description: "XAce file for Goanna dom printer example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -12,7 +12,7 @@
 		thanks: "Modified version of GOBO ant files"
 	</description>
 
-	<root class="tree_builder" creation="make"/>
+	<root class="pd" creation="make"/>
 	<cluster>
 		<option unless="${DEBUG}">
 			<require enable="False"/>
@@ -31,7 +31,7 @@
 			<optimize enable="False"/>
 		</option>
 
-		<cluster name="root_cluster" location="${GOANNA}/examples/dom_printer">
+		<cluster name="root_cluster" location="${GOANNA}/src/pd">
 		</cluster>
 		
 		<mount location="${GOBO}/library/cluster.xace"/>
