@@ -77,8 +77,6 @@ feature {NONE} -- Implementation
 				+ parser.last_column_number.out)
 		end
 
-feature
-
 	generate_eiffel_code (document: DOM_DOCUMENT) is
 			-- Generate an XMLE Eiffel class to build the parsed DOM structure
 		require
@@ -89,5 +87,9 @@ feature
 			create code_generator.make (document.document_element.node_name.out)
 			code_generator.generate (document)
 		end
+
+feature {NONE} -- DOM object references
+
+	dom_storage_refs: XMLE_DOM_STORAGE_REFS
 
 end -- class XMLE

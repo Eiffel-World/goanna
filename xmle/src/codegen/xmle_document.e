@@ -4,7 +4,7 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 
 	XMLE_DOCUMENT
 
@@ -23,16 +23,22 @@ feature {NONE} -- Implementation
 		local
 			bdom_file: IO_MEDIUM
 		do
-			create {RAW_FILE} bdom_file.make (bdom_file_name)
-			document ?= bdom_file.retrieved
+			create {RAW_FILE} bdom_file.make_open_read (bdom_file_name)
+			wrapper ?= bdom_file.retrieved
 		ensure
-			document_retrieved: document /= Void
+			wrapper_retrieved: wrapper /= Void
 		end
 
 feature -- Access
 
-	document: DOM_DOCUMENT
+	wrapper: XMLE_DOCUMENT_WRAPPER
+			-- The storage wrapper holding the document.
+
+	document: DOM_DOCUMENT is
 			-- The actual document held by this wrapper.
+		do
+			Result := wrapper.document
+		end
 
 	bdom_file_name: STRING is
 			-- Name of binary file holding the document object structure

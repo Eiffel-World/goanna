@@ -25,6 +25,7 @@ feature -- Initialisation
 		require
 			name_exists: name /= Void
 		do
+			-- construct all required names
 			document_name := name
 			create class_name.make_from_string (document_name + Xmle_class_name_extension)
 			class_name.to_upper
@@ -42,6 +43,7 @@ feature -- Generation
 			doc_exists: doc /= Void
 		do
 			document := doc
+			build_xmle_document_wrapper
 			build_xmle_document_class
 			store_document
 		end
@@ -65,11 +67,20 @@ feature {NONE} -- Implementation
 	bdom_file_name: STRING
 			-- Name of file to store binary representation of document.
 
+	document_wrapper: XMLE_DOCUMENT_WRAPPER
+			-- The document storage wrapper
+
 	document: DOM_DOCUMENT
 			-- The document to produce
 
 	xmle_document_class: EIFFEL_CLASS
 			-- The Eiffel code representation.
+
+	build_xmle_document_wrapper is
+			-- Construct the wrapper object.
+		do
+			create document_wrapper.make (document)
+		end
 
 	build_xmle_document_class is
 			-- Generate the code for the XMLE document wrapper class.
@@ -119,7 +130,7 @@ feature {NONE} -- Implementation
 	store_document is
 			-- Store the document object structure in the file 'bdom_file_name'.
 		do
-			document.store_by_name (bdom_file_name)
+			document_wrapper.store_by_name (bdom_file_name)
 		end
 
 end -- class CODE_GENERATOR
