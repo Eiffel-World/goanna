@@ -93,7 +93,7 @@ feature {NONE} -- Implementation
 	print_usage is
 			-- Display usage information
 		do
-			print ("Usage: httpd <port-number> <document-root>%R%N")
+			print ("Usage: xmlrpc <port-number> <document-root>%R%N")
 		end
 	
 	register_servlets is
@@ -113,10 +113,10 @@ feature {NONE} -- Implementation
 	init_xmlrpc is
 			-- Initialise XML RPC calls
 		local
-			calculator_service: SERVICE_PROXY
 			addresses: ADDRESS_REGISTER
 			test: TEST
 			calculator: CALCULATOR
+			calculator_service: SERVICE_PROXY
 		do
 			-- TEST is a self registering service
 			create test.make
@@ -129,10 +129,10 @@ feature {NONE} -- Implementation
 			-- CALCULATOR needs to be registered manually
 			create calculator
 			create calculator_service.make
-			calculator_service.register (calculator~times (?, ?), "times")
-			calculator_service.register (calculator~divide (?, ?), "divide")
-			calculator_service.register (calculator~minus (?, ?), "minus")
-			calculator_service.register (calculator~plus(?, ?), "plus")
+			calculator_service.register (agent calculator.times, "times")
+			calculator_service.register (agent calculator.divide, "divide")
+			calculator_service.register (agent calculator.minus, "minus")
+			calculator_service.register (agent calculator.plus, "plus")
 			registry.register (calculator_service, "calc")
 		end
 

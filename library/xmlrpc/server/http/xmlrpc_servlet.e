@@ -15,7 +15,7 @@ inherit
 
 	HTTP_SERVLET
 		redefine
-			do_get, do_post, init
+			do_get, do_post
 		end
 	
 	SHARED_SERVICE_REGISTRY
@@ -36,14 +36,6 @@ inherit
 creation
 
 	init
-	
-feature -- Initialisation
-
-	init (config: SERVLET_CONFIG) is
-			-- Initialise encoding registry
-		do
-			Precursor (config)
-		end
 		
 feature -- Basic operations
 

@@ -103,7 +103,7 @@ feature -- Initialisation
 			double_ref: DOUBLE_REF
 			bool_ref: BOOLEAN_REF
 			text: DOM_TEXT
---			decoder: BASE64_DECODER
+			encoder: BASE64_ENCODER
 		do
 			unmarshall_ok := True
 			-- check for untyped scalar which we treat as a string
@@ -156,8 +156,8 @@ feature -- Initialisation
 					-- check for Base64
 					elseif type.is_equal (Base64_type) then
 						-- TODO process base64
---						create encoder
---						value := encoder.decode (string_value)
+						create encoder
+						value := encoder.decode (string_value)
 					-- check for date/time
 					elseif type.is_equal (Date_time_type) then
 						value := unmarshall_date_iso8601 (string_value)

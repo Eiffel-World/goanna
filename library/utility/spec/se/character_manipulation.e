@@ -14,13 +14,20 @@ class
 feature -- Basic operations
 
 	set_char_code (ch: CHARACTER_REF; code: INTEGER): CHARACTER is
-			-- Set code of 'ch' to 'code'
+			-- Convert code to character
+		obsolete "User int_to_char"
 		require
 			ch_exists: ch /= Void
 		do
 			Result := code.to_character
 		end
 		
+	int_to_char(code: INTEGER): CHARACTER is
+			-- Convert code to character
+		do
+			Result := code.to_character
+		end
+
 	char_to_lower (ch: CHARACTER): CHARACTER is
 			-- Convert 'ch' to lower case.
 		do

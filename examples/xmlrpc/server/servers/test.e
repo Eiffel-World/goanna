@@ -58,9 +58,12 @@ feature -- Access
 		end
 		
 	echo_decoded_base64 (arg: STRING): STRING is
-			-- Echo a base64 string. Return the string decoded.			
+			-- Echo a base64 string. Return the string decoded.
+		local
+			encoder: BASE64_ENCODER
 		do
-			Result := arg
+			create encoder
+			Result := encoder.decode (arg)
 		end
 		
 	echo_array (arg: ARRAY [ANY]): ARRAY [ANY] is

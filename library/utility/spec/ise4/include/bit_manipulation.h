@@ -11,4 +11,5 @@
 
 #define bit_shift_left(i, n)			((EIF_INTEGER) ((i) << (n)))
 #define bit_shift_right(i, n)			((EIF_INTEGER) ((i) >> (n)))
-#define bit_and(i, n)					((EIF_INTEGER) ((i) & (n)))
+#define bit_and(i, n)				((EIF_INTEGER) ((i) & (n)))
+#define bit_or(i, n)				((EIF_INTEGER) ((i) | (n)))

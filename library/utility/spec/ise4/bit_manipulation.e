@@ -31,4 +31,10 @@ feature -- Basic operations
 			"C [macro %"bit_manipulation.h%"] (EIF_INTEGER, EIF_INTEGER): EIF_INTEGER"
 		end
 	
+	bit_or (i, n: INTEGER): INTEGER is
+			-- Bitwise or of 'i' and 'n'
+		external
+			"C [macro %"bit_manipulation.h%"] (EIF_INTEGER, EIF_INTEGER): EIF_INTEGER"
+		end
+
 end -- class BIT_MANIPULATION

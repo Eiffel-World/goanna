@@ -17,6 +17,16 @@ inherit
 --		export
 --			{NONE} all
 --		end
+	
+	CHARACTER_MANIPULATION
+		export
+			{NONE} all
+		end
+	
+	ASCII
+		export	
+			{NONE} all
+		end
 		
 feature -- Basic operations
 
@@ -40,6 +50,16 @@ feature -- Basic operations
 			Result := perform_encoding (data, session_key_chars)	
 		ensure
 			encoded_exists: Result /= Void
+		end
+		
+	decode (data: STRING): STRING is
+			-- Base64 encode 'data'
+		require
+			data_exists: data /= Void
+		do
+			Result := perform_decoding (data, base_64_chars)
+		ensure
+			decoded_exists: Result /= Void
 		end
 	
 feature {NONE} -- Implementation
@@ -83,71 +103,135 @@ feature {NONE} -- Implementation
         	sixty_five_chars: Result.count = 65
         end
 
-	perform_encoding (bytes: STRING; chars: ARRAY [CHARACTER]): STRING is
+	codes: ARRAY [INTEGER] is
+			-- Decoding codes
+		local
+			i: INTEGER
+		once
+			create Result.make (0, 255)
+			from i := 0
+			until i > 255
+			loop
+				Result.put (-1, i)
+				i := i + 1
+			end
+			from i := Upper_a
+			until i > Upper_z
+			loop
+				Result.put (i - Upper_a, i)
+				i := i + 1
+			end
+			from i := Lower_a
+			until i > Lower_z
+			loop
+				Result.put (26 + i - Lower_a, i)
+				i := i + 1
+			end
+			from i := Zero
+			until i > Nine
+			loop
+				Result.put (52 + i - Zero, i)
+				i := i + 1
+			end
+			Result.put (62, Plus)
+			Result.put (63, Slash)
+		end
+		
+	perform_encoding (data: STRING; chars: ARRAY [CHARACTER]): STRING is
 			-- Encode 'data' using characters in 'char_set'.
 		require
-			data_exists: bytes /= Void
+			data_exists: data /= Void
 			char_set_exists: chars /= Void		
-		local
-			len, i, ival: INTEGER	
-		do
-			-- create result 30% bigger than original. This is the standard maximum size increase
-			-- for Base64 encoded data.
-			create Result.make (bytes.count + (bytes.count * 30 // 100))
-			-- encode all 4 character groups
-			from
-				len := bytes.count
-				i := 1
-			until
-				len < 3
-			loop
-				ival := bit_and (bytes.item (i).code + 256, 255)
-				ival := bit_shift_left (ival, 8)
-				i := i + 1
-				ival := ival + bit_and (bytes.item (i).code + 256, 255)
-				ival := bit_shift_left (ival, 8)
-				i := i + 1
-				ival := ival + bit_and (bytes.item (i).code + 256, 255)
-				i := i + 1
-				len := len - 3
-				debug ("base64_encode")
-					print (generator + ".perform_encoding 1st = " + bit_and (bit_shift_right (ival, 18), 63).out + "%R%N")
-					print (generator + ".perform_encoding 1st = " + bit_and (bit_shift_right (ival, 12), 63).out + "%R%N")
-					print (generator + ".perform_encoding 1st = " + bit_and (bit_shift_right (ival, 6), 63).out + "%R%N")
-					print (generator + ".perform_encoding 1st = " + bit_and (ival, 64).out + "%R%N")
-				end
-				Result.append_character (chars.item (bit_and (bit_shift_right (ival, 18), 63) + 1))
-				Result.append_character (chars.item (bit_and (bit_shift_right (ival, 12), 63) + 1))
-				Result.append_character (chars.item (bit_and (bit_shift_right (ival, 6), 63) + 1))
-				Result.append_character (chars.item (bit_and (ival, 63) + 1))
-			end
-			inspect
-				len
-			when 1 then
-				-- two more output bytes and two pads
-				ival := bit_and (bytes.item (i).code + 256, 255)
-				i := i + 1
-				ival := bit_shift_left (ival, 16)
-				Result.append_character (chars.item (bit_and (bit_shift_right (ival, 18), 63) + 1))
-				Result.append_character (chars.item (bit_and (bit_shift_right (ival, 12), 63) + 1))
-				Result.append_character (chars.item (chars.upper))
-				Result.append_character (chars.item (chars.upper))
-			when 2 then
-				-- three more output bytes and two pads
-				ival := bit_and (bytes.item (i).code + 256, 255)
-				ival := bit_shift_left (ival, 8)
-				i := i + 1
-				ival := ival + bit_and (bytes.item (i).code + 256, 255)
-				ival := bit_shift_left (ival, 8)
-				Result.append_character (chars.item (bit_and (bit_shift_right (ival, 18), 63) + 1))
-				Result.append_character (chars.item (bit_and (bit_shift_right (ival, 12), 63) + 1))
-				Result.append_character (chars.item (bit_and (bit_shift_right (ival, 6), 63) + 1))
-				Result.append_character (chars.item (chars.upper))	
-			else
-				-- must be zero. ignore.
-			end
-		ensure
-			encoded_string_exists: Result /= Void
-		end         
-	       
+ 		local
+ 			quad, trip: BOOLEAN
+ 			i, index, val: INTEGER
+ 		do
+ 			create Result.make (((data.count + 2) // 3) * 4)
+ 			Result.fill_blank
+ 			from 
+ 				i := 1
+ 				index := 1
+ 			until
+ 				i > data.count
+ 			loop
+ 				quad := False
+ 				trip := False				
+ 				val := bit_and (255, data.item (i).code)
+ 				val := bit_shift_left (val, 8)
+ 				if i + 1 <= data.count then
+ 					val := bit_or (val, bit_and (255, data.item (i + 1).code))
+ 					trip := True
+ 				end				
+ 				val := bit_shift_left (val, 8)
+ 				if i + 2 <= data.count then
+ 					val := bit_or (val, bit_and (255, data.item (i + 2).code))
+ 					quad := True
+ 				end 				
+ 				if quad then
+ 					Result.put (chars.item (bit_and (val, 63) + 1), index + 3)
+ 				else
+ 					Result.put (chars.item (65), index + 3)
+ 				end				
+ 				val := bit_shift_right (val, 6)
+ 				if trip then
+ 					Result.put (chars.item (bit_and (val, 63) + 1), index + 2)
+ 				else
+ 					Result.put (chars.item (65), index + 2)
+ 				end				
+ 				val := bit_shift_right (val, 6)
+ 				Result.put (chars.item (bit_and (val, 63) + 1), index + 1)				
+ 				val := bit_shift_right (val, 6)
+ 				Result.put (chars.item (bit_and (val, 63) + 1), index)
+ 				
+ 				i := i + 3
+ 				index := index + 4
+ 			end		
+ 		ensure
+			encoded_string_exists: Result /= Void 			
+ 		end
+ 		
+	perform_decoding (data: STRING; chars: ARRAY [CHARACTER]): STRING is
+			-- Decode 'data' using characters in 'char_set'.
+		require
+			data_exists: data /= Void
+			char_set_exists: chars /= Void		
+ 		local
+ 			len, shift, accum, index, ix, value: INTEGER
+ 			cref: CHARACTER_REF
+ 		do
+ 			len := ((data.count + 3) // 4) * 3
+ 			if data.count > 0 and data.item (data.count) = '=' then
+ 				len := len - 1
+ 			end
+ 			if data.count > 1 and data.item (data.count - 1) = '=' then
+ 				len := len - 1
+ 			end		
+ 			create Result.make (len)
+ 			Result.fill_blank		
+ 			from
+ 				ix := 1
+ 				index := 1
+ 			until
+ 				ix > data.count
+ 			loop
+ 				value := codes.item (bit_and (data.item (ix).code, 255))
+ 				if value >= 0 then
+ 					accum := bit_shift_left (accum, 6)
+ 					shift := shift + 6
+ 					accum := bit_or (accum, value)
+ 					if shift >= 8 then
+ 						shift := shift - 8
+ 						Result.put (int_to_char (bit_and (bit_shift_right (accum, shift), 255)), index)
+ 						index := index + 1
+ 					end
+ 				end
+ 				ix := ix + 1
+ 			end
+ 			check
+ 				data_length_correct: index - 1 = Result.count
+ 			end
+ 		ensure
+			decoded_string_exists: Result /= Void
+ 		end
+ 		
 end -- class BASE64_ENCODER

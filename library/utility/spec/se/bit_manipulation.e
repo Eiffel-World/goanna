@@ -39,4 +39,10 @@ feature -- Basic operations
 			Result := (i.to_bit and n.to_bit).to_integer
 		end
 	
+	bit_or (i, n: INTEGER): INTEGER is
+			-- Bitwise or of 'i' and 'n'
+		do
+			Result := (i.to_bit or n.to_bit).to_integer)
+		end
+
 end -- class BIT_MANIPULATION

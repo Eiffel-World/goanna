@@ -23,9 +23,9 @@ feature -- Test
 		do
 			!! encoder
 			assert_equal ("empty", "", encoder.encode(""))
-			assert_equal ("Hello there!", encoder.encode ("Hello there!"), "SGVsbG8gdGhlcmUh")
-			assert_equal ("Hello there!x", encoder.encode ("Hello there!x"), "SGVsbG8gdGhlcmUheA==")
-			assert_equal ("Hello there!xx", encoder.encode ("Hello there!xx"), "SGVsbG8gdGhlcmUheHg=")
+			assert_equal ("Hello there!","SGVsbG8gdGhlcmUh", encoder.encode ("Hello there!"))
+			assert_equal ("Hello there!x", "SGVsbG8gdGhlcmUheA==", encoder.encode ("Hello there!x"))
+			assert_equal ("Hello there!xx", "SGVsbG8gdGhlcmUheHg=", encoder.encode ("Hello there!xx"))
 		end
 
 	test_session_id_encoding is
@@ -34,9 +34,21 @@ feature -- Test
 			encoder: BASE64_ENCODER
 		do
 			!! encoder
-			assert_equal ("Hello there!", encoder.encode_for_session_key ("Hello there!"), "SGVsbG8gdGhlcmUh")
-			assert_equal ("Hello there!x", encoder.encode_for_session_key ("Hello there!x"), "SGVsbG8gdGhlcmUheA..")
-			assert_equal ("Hello there!xx", encoder.encode_for_session_key ("Hello there!xx"), "SGVsbG8gdGhlcmUheHg.")
+			assert_equal ("Hello there!", "SGVsbG8gdGhlcmUh", encoder.encode_for_session_key ("Hello there!"))
+			assert_equal ("Hello there!x", "SGVsbG8gdGhlcmUheA..", encoder.encode_for_session_key ("Hello there!x"))
+			assert_equal ("Hello there!xx", "SGVsbG8gdGhlcmUheHg.", encoder.encode_for_session_key ("Hello there!xx"))
+		end
+
+	test_decoding is
+			-- Test standard encoding features of BASE64_ENCODER
+		local
+			encoder: BASE64_ENCODER
+		do
+			!! encoder
+			assert_equal ("empty", "", encoder.encode(""))
+			assert_equal ("Hello there!", "Hello there!", encoder.decode ("SGVsbG8gdGhlcmUh"))
+			assert_equal ("Hello there!x", "Hello there!x", encoder.decode ("SGVsbG8gdGhlcmUheA=="))
+			assert_equal ("Hello there!xx", "Hello there!xx", encoder.decode ("SGVsbG8gdGhlcmUheHg="))
 		end
 
 end -- class TEST_BASE64_ENCODER
