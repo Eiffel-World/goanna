@@ -36,6 +36,7 @@ feature -- Initialisation
 			-- basic types in array to XRPC_VALUE objects.
 		require
 			array_exists: array /= Void
+			-- no_void_values: array.linear_representation.for_all ((e: ANY): BOOLEAN do Result := e /= Void end)
 		local
 			i: INTEGER
 		do

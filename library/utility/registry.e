@@ -23,17 +23,6 @@ feature -- Initialization
 		end
 		
 feature -- Access
-
-	register (element: G; name: STRING) is
-			-- Register 'element' with 'name'
-		require
-			name_exists: name /= Void
-			element_exists: element /= Void
-		do
-			elements.force (element, name)
-		ensure
-			element_registered: has (name)
-		end
 	
 	get (name: STRING): G is
 			-- Retrieve element registered under 'name'
@@ -52,10 +41,22 @@ feature -- Access
 			Result := elements.has (name)
 		end
 
-feature {NONE} -- Implementation
-
 	elements: DS_HASH_TABLE [G, STRING]
 			-- Collection of elements indexed by name.
+			
+feature -- Status setting
+
+	register (element: G; name: STRING) is
+			-- Register 'element' with 'name'
+		require
+			name_exists: name /= Void
+			element_exists: element /= Void
+		do
+			elements.force (element, name)
+		ensure
+			element_registered: has (name)
+		end
+
 invariant
 	
 	elements_exists: elements /= Void

@@ -38,7 +38,10 @@ feature -- Initialization
 			if argument_error then
 				print_usage
 			else
+				create client.make (host, port, "/servlet/xmlrpc")
+				create factory.make
 				perform_echo_tests
+				perform_introspection_tests
 			end
 		end
 
@@ -89,10 +92,7 @@ feature {NONE} -- Implementation
 			date_time: DT_DATE_TIME
 			array: ARRAY [STRING]
 			struct: DS_HASH_TABLE [ANY, STRING]
-		do			
-			create client.make (host, port, "/servlet/xmlrpc")
-			create factory.make
-	
+		do				
 			-- basic types
 			execute_test ("test.echoInt", 123, 123)
 			execute_test ("test.echoBool", True, True)
@@ -125,6 +125,45 @@ feature {NONE} -- Implementation
 			execute_test ("test.echoStruct", struct, struct)
 		end
 	
+	perform_introspection_tests is
+			-- Call introspection methods
+		local
+			call: XRPC_CALL
+			param: XRPC_PARAM
+			methods: ARRAY [ANY]
+		do
+			create call.make ("system.listMethods")
+			execute_call (call)
+			
+			create call.make ("system.methodSignature")
+			create param.make (factory.build ("system.methodHelp"))
+			call.add_param (param)
+			execute_call (call)
+			
+			create call.make ("system.methodHelp")
+			create param.make (factory.build ("system.listMethods"))
+			call.add_param (param)
+			execute_call (call)
+
+			create call.make ("system.hasMethod")
+			create param.make (factory.build ("system.listMethods"))
+			call.add_param (param)
+			execute_call (call)	
+		end
+		
+	execute_call (call: XRPC_CALL) is
+			-- Invoke call and check result
+		require
+			call_exists: call /= Void
+		do
+			client.invoke (call)
+			if client.invocation_ok then
+				display_success (call.method_name)
+			else
+				display_fail (call.method_name, "Fault received: (" + client.fault.code.out + ") " + client.fault.string)
+			end
+		end
+		
 	execute_test (name: STRING; arg: ANY; expected_result: ANY) is
 			-- Execute call for test named 'name' and report successful result or fault.
 			-- Pass 'arg' as the sole parameter.

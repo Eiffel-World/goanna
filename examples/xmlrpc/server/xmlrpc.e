@@ -118,6 +118,7 @@ feature {NONE} -- Implementation
 	init_xmlrpc is
 			-- Initialise XML RPC calls
 		local
+			system: XRPC_SYSTEM
 			addresses: ADDRESS_REGISTER
 			test: TEST
 			validator: VALIDATOR1
@@ -126,6 +127,10 @@ feature {NONE} -- Implementation
 		do
 			log_hierarchy.category (Xmlrpc_category).info ("Registering XML-RPC web services")
 
+			-- register introspection services
+			create system.make
+			registry.register (system, "system")
+			
 			-- TEST is a self registering service
 			create test.make
 			registry.register (test, "test")

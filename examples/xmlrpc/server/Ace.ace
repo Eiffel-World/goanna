@@ -15,7 +15,6 @@ default
 	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
 	arguments(" ")
 	disabled_debug(yes)
-	disabled_debug("base64_encode")
 	disabled_debug("cookie_parsing")
 	disabled_debug("dom_assertions")
 	disabled_debug("httpd_response_write")
