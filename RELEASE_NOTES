@@ -18,6 +18,11 @@ o Fixed decoding of request parameters in HTTP_UTILITY_FUNCTIONS.
 o Added rescue to service feature of HTTP_SERVLET to respond with "500 Internal Server Error" 
 when an error occurs.
 
+o Modified yaesockets.xace file to use $YAESOCKETS/C/cl.obj as the library file so that it will
+work for both Visual C++ and Borland C++ compilers.
+
+o Added update-web script for automatically updating web site.
+
 Release 0.4
 -----------
 12 January 2002
