@@ -5,6 +5,11 @@ root
 	RETRIEVER: make
 
 default
+	assertion(require)
+	assertion(ensure)
+	assertion(check)
+	assertion(loop)
+	assertion(invariant)
 	address_expression(no)
 	array_optimization(no)
 	console_application(yes)
@@ -31,20 +36,17 @@ cluster
 
 	dom_core (dom):		"$\core"
 
+	dom_traversal_range (dom):		"$\traversal-range"
+
 	dom_impl (dom):		"$\implementation"
 
-	impl_core (dom_impl):		"$\core"
+	dom_impl_core (dom_impl):		"$\core"
+
+	dom_impl_traversal_range (dom_impl):		"$\traversal-range"
 
 	dom_writer (dom):		"$\writer"
 
 	xmle_doc (dom_impl):		"$\xmle_doc"
-
-	dom:				"$GOANNA\library\dom";
-	dom_core (dom):		"$\core";
-	dom_impl (dom):		"$\implementation";
-	impl_core (dom_impl):	"$\core";
-	dom_writer (dom):		"$\writer";
-	xmle_doc (dom_impl): 	"$\xmle_doc";
 
 	all base:		"$EIFFEL4\library\base"
 		exclude
@@ -67,9 +69,11 @@ cluster
 			"CVS"; 
 		end
 
-	ucstring:				"$UCSTRING";
-	ucstring_lib (ucstring):	"$\lib";
-	ucstring_ise (ucstring):	"$\spec\ise";
+	ucstring:		"$UCSTRING"
+
+	ucstring_lib (ucstring):		"$\lib"
+
+	ucstring_ise (ucstring):		"$\spec\ise"
 
 external
 
