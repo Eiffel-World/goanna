@@ -323,7 +323,7 @@ feature {NONE} -- Implementation
 			-- If the request is a GET then the parameters are stored in the query
 			-- string. Otherwise, the parameters are in the stdin data.
 			if method.is_equal ("GET") then
---				parse_parameter_string (query_string)
+				parse_parameter_string (query_string)
 			elseif method.is_equal ("POST") then
 --				parse_parameter_string (internal_request.raw_stdin_content)
 			else

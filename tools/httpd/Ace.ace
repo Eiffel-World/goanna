@@ -32,114 +32,110 @@ default
 	disabled_debug("httpd_response_write")
 	disabled_debug("status_output")
 	disabled_debug("base64_encode")
-	disabled_debug("normalize")
 	disabled_debug("session_management")
-	disabled_debug("dom_test_servlet")
-	disabled_debug("dom_output")
-	debug("query_string_parsing")
-	disabled_debug("xmle_id_nodes")
-	disabled_debug("httpd_servlet_response")
-	disabled_debug("unhandled_node_types")
 	disabled_debug("cookie_parsing")
+	debug("soap")
+	debug("query_string_parsing")
+	disabled_debug("httpd_servlet_response")
 	line_generation(no)
 	profile(no)
 	trace(no)
-	--precompiled("$GOANNA/precomp/spec/$PLATFORM/goanna")
 
+
+--precompiled("$GOANNA/precomp/spec/$PLATFORM/goanna")
 --arguments(" ")
 
 cluster
 	httpd:		"$GOANNA/tools/httpd"
 
+
 	servlets:		"$GOANNA/tools/httpd/servlets"
 
 	templates:		"$GOANNA/tools/httpd/templates"
 
-	goanna:					"$GOANNA\library"
+	goanna:		"$GOANNA\library"
 
-	dom (goanna):				"$\dom"
+	dom (goanna):		"$\dom"
 
-	dom_core (dom):				"$\core"
+	dom_core (dom):		"$\core"
 
 	dom_traversal_range (dom):		"$\traversal-range"
 
-	dom_impl (dom):				"$\implementation"
+	dom_impl (dom):		"$\implementation"
 
 	dom_impl_core (dom_impl):		"$\core"
 
-	dom_impl_traversal_range (dom_impl):	"$\traversal-range"
+	dom_impl_traversal_range (dom_impl):		"$\traversal-range"
 
-	dom_writer (dom):				"$\writer"
+	dom_writer (dom):		"$\writer"
 
-	xmle_doc (dom_impl):			"$\xmle_doc"
+	xmle_doc (dom_impl):		"$\xmle_doc"
 
-	fast_cgi (goanna):			"$\fast_cgi"
+	fast_cgi (goanna):		"$\fast_cgi"
 
-	efcgi (fast_cgi):				"$\efcgi"
+	efcgi (fast_cgi):		"$\efcgi"
 
 	efcgi_servlet (fast_cgi):		"$\servlet"
 
-	servlet (goanna):				"$\servlet"
+	servlet (goanna):		"$\servlet"
 
-	servlet_http (servlet):			"$\http"
+	servlet_http (servlet):		"$\http"
 
-	utility (goanna):				"$\utility"
+	utility (goanna):		"$\utility"
 
-	utility_ise (utility):			"$\spec\ise"
+	utility_ise (utility):		"$\spec\ise"
 
-	datetime (goanna):			"$\datetime"
+	datetime (goanna):		"$\datetime"
 		exclude
-			"date.e";
-			"date_and_time.e"; 
-			"gregorian_functions.e";
-			"system_clock.e"
+			"date.e"; "date_and_time.e"; "gregorian_functions.e"; "system_clock.e"; 
 		end
 
-	xmle_codegen (goanna):			"$\codegen"
+	xmle_codegen (goanna):		"$\codegen"
 
-	xml_parser (goanna):			"$\xml_parser"
+	xml_parser (goanna):		"$\xml_parser"
 
-	logging (goanna):				"$\logging"
+	logging (goanna):		"$\logging"
 
-	yaesockets:					"$YAESOCKETS"
+	soap (goanna):		"$\soap"
+
+	yaesockets:		"$YAESOCKETS"
 		exclude
-			"udp_socket.e"
+			"udp_socket.e"; 
 		end
 
 	yaesockets_ise (yaesockets):		"$\spec\ise"
 
-
-	all base:					"$ISE_EIFFEL\library\base"
+	all base:		"$ISE_EIFFEL\library\base"
 		exclude
 			"desc"; "table_eiffel3"; "event"; "CVS"; 
 		end
 
-	gobo:						"$GOBO\library"
+	gobo:		"$GOBO\library"
 
-	gobo_kernel (gobo):			"$\kernel"
+	gobo_kernel (gobo):		"$\kernel"
 		exclude
 			"spec"; "include"; 
 		end
 
-	gobo_ise_kernel (gobo_kernel): 	"$\spec\ise"
+	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
 
 	all gobo_structures (gobo):		"$\structure"
 
-	all gobo_util (gobo):			"$\utility"
+	all gobo_util (gobo):		"$\utility"
 		exclude
 			"spec"; 
 		end
 
 	gobo_ise_util (gobo_util):		"$\spec\ise"
 
-	all gobo_time (gobo):			"$\time"
+	all gobo_time (gobo):		"$\time"
 		exclude
 			"spec"; "include"; 
 		end
 
 	gobo_ise_time (gobo_time):		"$\spec\ise"
 
-	ucstring:					"$UCSTRING\lib"
+	ucstring:		"$UCSTRING\lib"
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 

@@ -80,6 +80,7 @@ feature {NONE} -- Implementation
 		
 	parse_request_buffer (buffer: STRING) is
 			-- Parse request buffer to set parameters
+			-- NOTE: does not support POST requests yet.
 		require
 			buffer_exists: buffer /= Void
 		local

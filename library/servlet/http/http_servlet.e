@@ -84,7 +84,7 @@ feature -- Basic operations
 		end
 		
 feature {NONE} -- Implementation
-
+			
 	Method_get: STRING is "GET"
 	Method_post: STRING is "POST"
 	Method_head: STRING is "HEAD"

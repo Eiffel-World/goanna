@@ -31,7 +31,7 @@ feature -- Initialization
 	
 feature -- Access
 
-	get_session (id: STRING): HTTP_SESSION is
+	get_session (id: STRING): like session_anchor is
 			-- Return the session with 'id'
 		require
 			id_exists: id /= Void
@@ -91,7 +91,10 @@ feature -- Status setting
 	
 feature {NONE} -- Implementation
 
-	sessions: DS_HASH_TABLE [HTTP_SESSION, STRING]
+	session_anchor: HTTP_SESSION
+			-- Session type anchor
+			
+	sessions: DS_HASH_TABLE [like session_anchor, STRING]
 			-- Active sessions.
 
 	Session_cookie_name: STRING is "GSESSIONID"
@@ -100,7 +103,7 @@ feature {NONE} -- Implementation
 	create_new_session (resp: HTTP_SERVLET_RESPONSE) is
 			-- Create a new session and set the session cookie
 		local
-			session: HTTP_SESSION
+			session: like session_anchor
 			cookie: COOKIE
 		do
 			last_session_id := generate_session_id
@@ -150,8 +153,8 @@ feature {NONE} -- Implementation
 	expire_sessions is
 			-- Check all current sessions and expire if appropriate.
 		local
-			cursor: DS_HASH_TABLE_CURSOR [HTTP_SESSION, STRING]
-			session: HTTP_SESSION
+			cursor: DS_HASH_TABLE_CURSOR [like session_anchor, STRING]
+			session: like session_anchor
 			now, idle: DT_DATE_TIME
 			expired_sessions: DS_LINKED_LIST [STRING]
 		do

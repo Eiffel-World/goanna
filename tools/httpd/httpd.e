@@ -37,6 +37,11 @@ inherit
 --		export
 --			{NONE} all
 --		end
+	
+--	SHARED_SOAP_RPC_REGISTRY
+--		export
+--			{NONE} all
+--		end
 		
 creation
 	make
@@ -54,6 +59,7 @@ feature -- Initialization
 				print_usage
 			else
 				init_servlets
+--				init_soap
 				init_server
 				run
 			end
@@ -110,18 +116,30 @@ feature {NONE} -- Implementation
 		do
 			servlet_manager.set_servlet_mapping_prefix ("servlet")
 			servlet_manager.set_config (config)
+			create {FILE_SERVLET} servlet.init (config)
+			servlet_manager.register_default_servlet (servlet)
+			servlet_manager.register_servlet (servlet, "file")
 			create {TEST_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "basic")
-			-- XMLE is not compatible with SmallEiffel because
-			-- it uses object serialization.
+			-- XMLE and SOAP are not compatible with SmallEiffel because
+			-- they uses object serialization and agents
 --			create {XMLE_TEST_SERVLET} servlet.init (config)
 --			servlet_manager.register_servlet (servlet, "xmle")
 --			create {DOM_TEST_SERVLET} servlet.init (config)
 --			servlet_manager.register_servlet (servlet, "dom")
-			create {FILE_SERVLET} servlet.init (config)
-			servlet_manager.register_default_servlet (servlet)
-			servlet_manager.register_servlet (servlet, "file")
+--			create {SOAP_SERVLET} servlet.init (config)
+--			servlet_manager.register_servlet (servlet, "soap")
 		end
+		
+--	init_soap is
+--			-- Initialise SOAP RPC calls
+--		local
+--			account: SOAP_ACCOUNT
+--		do
+--			create account
+--			registry.register ("deposit", account, account~deposit(?))
+--			registry.register ("withdraw", account, account~withdraw(?))
+--		end
 		
 	server_socket: HTTPD_SERVER_SOCKET
 			-- Socket for accepting of new connections
@@ -177,5 +195,5 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-	
+
 end -- class HTTPD
