@@ -27,12 +27,24 @@ feature -- Basic operations
 
 	do_get (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
 			-- Process GET request
+		do
+			visit_count := visit_count + 1
+			--send_basic_html (req, resp)
+			send_xmle_document (req, resp)
+		end
+	
+	do_post (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
+			-- Process GET request
+		do
+			do_get (req, resp)
+		end
+		
+feature {NONE} -- Implementation
+
+	send_basic_html (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
 		local
 			header_names: LINEAR [STRING]
 		do
-			visit_count := visit_count + 1
-			--resp.send_error (Sc_not_implemented)
-			--resp.send_redirect ("http://slashdot.org")
 			resp.send ("<html><head><title>Test Servlet</title></head>%R%N")
 			resp.send ("<body><h1>This is a test.</h1>%R%N")
 			resp.send ("<p>Visits = " + visit_count.out + "</p>%R%N")
@@ -46,21 +58,18 @@ feature -- Basic operations
 				resp.send (header_names.item + " = " 
 					+ quoted_eiffel_string_out (req.get_header (header_names.item)) + "<br>%R%N")
 				header_names.forth
-			end
-			resp.send ("</body></html>%R%N")
-			
-			-- test XMLE generated document
-			create document.make
+			end			
+			resp.send ("</body></html>%R%N")	
 		end
 	
-	do_post (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
-			-- Process GET request
+	send_xmle_document (req: FAST_CGI_SERVLET_REQUEST; resp: FAST_CGI_SERVLET_RESPONSE) is
 		do
-			do_get (req, resp)
+			-- test XMLE generated document
+			resp.set_content_type ("text/xml")
+			create document.make
+			resp.send (document.to_document)
 		end
 		
-feature {NONE} -- Implementation
-
 	document: ORDER_XMLE
 	
 	visit_count: INTEGER

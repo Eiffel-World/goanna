@@ -51,7 +51,25 @@ feature -- Basic Operations
 			-- Generate string representation of this document suitable for sending.
 		require
 			document_loaded: document /= Void
-		deferred
+		local
+			serializer: DOM_SERIALIZER
+			stream: IO_STRING
+		do
+			serializer := serializer_factory.serializer_for_document (document)
+			create stream.make (4096)
+			serializer.set_output (stream)
+			serializer.serialize (document)
+			Result ?= serializer.output
+		ensure
+			result_exists: Result /= Void
 		end
 		
+feature {NONE} -- Implementation
+
+	serializer_factory: DOM_SERIALIZER_FACTORY is
+			-- Factory for creating serializer objects
+		once
+			create Result
+		end
+	
 end -- class XMLE_DOCUMENT

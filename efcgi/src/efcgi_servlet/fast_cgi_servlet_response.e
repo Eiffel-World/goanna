@@ -82,7 +82,7 @@ feature -- Status setting
 			else
 				create new_values.make
 				new_values.extend (value)
-				headers.put (new_values, name)
+				set_header (name, value)
 			end
 		end
 
@@ -98,7 +98,7 @@ feature -- Status setting
 			-- The content type may include the type of character encoding used, for
 			-- example, 'text/html; charset=ISO-885904'
 		do
-			set_header ("Content-Type", type)
+			set_header ("Content-Type", type + "; charset=ISO-8859-1")
 		end
 
 	set_header (name, value: STRING) is
@@ -110,7 +110,7 @@ feature -- Status setting
 		do
 			create new_values.make
 			new_values.extend (value)
-			headers.put (new_values, name)
+			headers.force (new_values, name)
 		end
 
 	set_status (sc: INTEGER) is
@@ -143,10 +143,10 @@ feature -- Basic operations
 		do
 			if content_buffer /= Void then
 				if not is_committed then
+					set_content_length (content_buffer.count)
 					write_headers	
 				end
 				if not content_buffer.is_empty then
-					set_content_length (content_buffer.count)
 					write (content_buffer)
 				end
 			end
@@ -159,7 +159,8 @@ feature -- Basic operations
 			content_buffer := Void
 			cookies.wipe_out
 			headers.clear_all
-			content_length := 0
+			set_content_length (0)
+			set_content_type ("text/html")
 			status := Sc_ok
 			status_message := status_code_message (status)
 			is_committed := False
@@ -290,7 +291,7 @@ feature {NONE} -- Implementation
 				header_keys := headers.current_keys
 				i := header_keys.lower
 			until
-				i >= header_keys.upper
+				i > header_keys.upper
 			loop
 				from
 					name := header_keys.item (i)
@@ -316,7 +317,7 @@ feature {NONE} -- Implementation
 				set_header ("Server", "Eiffel Servlet Server")
 			end
 			if not contains_header ("Date") then
-				set_header ("Date", "not implemented yet")	
+				set_header ("Date", "Sun, 06 Nov 1994 08:49:37 GMT") -- TODO: set real date	
 			end
 		end
 	

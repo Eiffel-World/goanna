@@ -17,7 +17,8 @@ default
 	check_vape(no)
 	arguments("8000 10")
 	disabled_debug(yes)
-	debug(no)
+	debug("fcgi_protocol")
+	disabled_debug("normalize")
 	line_generation(no)
 	profile(no)
 	trace(no)
@@ -26,7 +27,7 @@ default
 cluster
 	root_cluster:		"$GOANNA\efcgi\src\samples\servlet"
 
-	templates (root_cluster): "templates"
+	templates (root_cluster):		"templates"
 
 	fcgi:		"$GOANNA\efcgi\src\efcgi"
 
@@ -42,11 +43,13 @@ cluster
 
 	dom_writer:		"$GOANNA\eiffeldom\src\writer"
 
+	goanna_utility:		"$GOANNA\efcgi\src\utility"
+
 	ucstring:		"$UCSTRING\lib"
 
 	ucstring_ise:		"$UCSTRING\spec\ise"
 
-	xmle_codegen:	"$GOANNA\xmle\src\codegen"
+	xmle_codegen:		"$GOANNA\xmle\src\codegen"
 
 	yaesockets:		"$YAESOCKETS"
 

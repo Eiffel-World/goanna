@@ -15,6 +15,11 @@ inherit
 			{NONE} all
 		end
 		
+	HTTP_UTILITY_FUNCTIONS
+		export
+			{NONE} all
+		end
+		
 create
 
 	make
@@ -28,6 +33,7 @@ feature {NONE} -- Initialisation
 			request_exists: fcgi_request /= Void
 		do
 			internal_request := fcgi_request
+			parse_parameters
 		end
 	
 feature -- Access
@@ -206,5 +212,33 @@ feature {NONE} -- Implementation
 
 	internal_request: FAST_CGI_REQUEST
 		-- Internal request information and stream functionality.
+	
+	parameters: HASH_TABLE [LINKED_LIST [STRING], STRING]
+			-- Table of parameter values with support for multiple values per parameter name
+			
+	parse_parameters is
+			-- Parse the query string or stdin data for parameters and
+			-- store in params structure.			
+		do
+			-- If the request is a GET then the parameters are stored in the query
+			-- string. Otherwise, the parameters are in the stdin data.
+			if method.is_equal ("GET") then
+				parse_parameter_string (query_string)
+			elseif method.is_equal ("POST") then
+				parse_parameter_string (internal_request.raw_stdin_content)
+			else
+				-- not sure where the parameters will be for other request methods.
+				-- Need to experiment.
+			end
+		end
+	
+	parse_parameter_string (str: STRING) is
+			-- Parse the parameter string 'str' and build parameter structure
+		local
+			
+		do
+			-- parameters can appear more than once. Add a parameter value for each instance.
+			
+		end
 		
 end -- class FAST_CGI_SERVLET_REQUEST

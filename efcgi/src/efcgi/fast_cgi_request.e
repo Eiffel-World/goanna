@@ -33,9 +33,6 @@ feature -- Initialization
 			num_writers := 0
 			failed := False
 			create parameters.make (20)
---			create input_stream
---			create output_stream
---			create error_stream
 		end
 	
 feature -- Access
@@ -74,16 +71,7 @@ feature -- Access
 		
 	num_writers: INTEGER
 			-- Number of writers
-		
---	input_stream: FAST_CGI_STREAM
---			-- Input stream used to read input from the request socket
-		
---	output_stream: FAST_CGI_STREAM
---			-- Output stream used to write standard output to the request socket
-		
---	error_stream: FAST_CGI_STREAM
---			-- Error stream used to write standard error to the request socket.
-		
+				
 	parameters: HASH_TABLE [STRING, STRING]
 			-- Table of parameters passed to this request.
 	
@@ -98,9 +86,6 @@ feature -- Status setting
 			valid_socket: new_socket.is_valid
 		do
 			socket := new_socket
---			input_stream.set_socket (socket)
---			output_stream.set_socket (socket)
---			error_stream.set_socket (socket)
 		end
 
 feature -- Basic operations

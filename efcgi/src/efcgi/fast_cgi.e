@@ -46,8 +46,8 @@ feature -- FGCI interface
       			if not accept_called then
       				accept_called := True
     				create srv_socket.make (svr_port, server_backlog) 
-    									end
-    									-- finish the previous request
+    			end
+    			-- finish the previous request
     			finish
     			-- accept the next request
     			Result := accept_request				
@@ -169,6 +169,8 @@ feature {NONE} -- Implementation
 		local
 			is_new_connection, request_read: BOOLEAN
 		do
+			-- TODO: implement WEB_SERVER_ADDRESS security checking.
+			
 			-- setup the request and its connection. Use the current request if keep_connection is
 			-- specified. Otherwise create a new one.
 			if request /= Void then
