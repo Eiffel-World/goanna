@@ -1,6 +1,6 @@
 test
 
-    test_utility
+    Goanna
 
 default
 
@@ -9,10 +9,10 @@ default
     prefix ("X")
     testgen ("TESTGEN")
     compile ("bash build-ise.sh")
-    execute ("test_utility")
+    execute ("goanna")
 
 cluster
 
-    test_dir:     "$GOANNA/test/utility/tests"
+    test_dir:     "$GOANNA/test/utility"
 
 end

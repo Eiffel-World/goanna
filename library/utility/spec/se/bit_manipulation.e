@@ -16,13 +16,21 @@ feature -- Basic operations
 	bit_shift_right (i, n: INTEGER): INTEGER is
 			-- Shift the bits of 'i' right 'n' positions.
 		do
-			Result := (i.to_bit @>> n).to_integer
+			if n > 0 then
+				Result := (i.to_bit @>> n).to_integer
+			else
+				Result := i
+			end
 		end
 
 	bit_shift_left (i, n: INTEGER): INTEGER is
 			-- Shift the bits of 'i' left 'n' positions.
 		do
-			Result := (i.to_bit @<< n).to_integer
+			if n > 0 then
+				Result := (i.to_bit @<< n).to_integer
+			else
+				Result := i
+			end
 		end
 	
 	bit_and (i, n: INTEGER): INTEGER is

@@ -1,0 +1,57 @@
+system
+	GOANNA
+
+root
+	GOANNA: make
+
+default
+	console_application (yes);
+
+cluster
+	goanna_utility:					"$GOANNA\library\utility"
+
+	goanna_utility_ise (goanna_utility):	"$\spec\ise"
+	
+	all "base":						"$ISE_EIFFEL/library/base"
+		exclude
+			"desc"; "table_eiffel3"; "CVS"; "EIFGEN"; 
+		end
+
+	gobo:							"$GOBO\library"
+
+	gobo_kernel (gobo):				"$\kernel"
+		exclude
+			"spec"; "include"; 
+		end
+
+	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
+
+	all gobo_structures (gobo):			"$\structure"
+
+	all gobo_util (gobo):				"$\utility"
+		exclude
+			"spec"; 
+		end
+
+	gobo_ise_util (gobo_util):			"$\spec\ise"
+
+	all gobo_time (gobo):				"$\time"
+		exclude
+			"spec"; "include"; 
+		end
+
+	gobo_ise_time (gobo_time):			"$\spec\ise"
+
+	gobo_test (gobo):					"$\test\harness"
+
+	utility_tests:					"$GOANNA\test\utility"
+
+	testgen:		 				"$GOANNA\test\TESTGEN"
+
+external
+
+	include_path:
+		"$GOBO\library\kernel\include",
+		"$GOBO\library\time\include"
+
+end

@@ -1,5 +1,4 @@
 indexing
-
 	description: "Test features of class BIT_MANIPULATION"
 	library:    "Goanna Utility Test Harnesses"
 	author:     "Glenn Maughan <glennmaughan@optushome.com.au>"

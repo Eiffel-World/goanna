@@ -6,4 +6,4 @@ echo "Compiling Eiffel..."
 ec -batch -finalize -keep 
 echo "Compiling C..."
 ( cd EIFGEN/F_code; finish_freezing -stop )
-cp EIFGEN/F_code/test_utility.exe .
+cp EIFGEN/F_code/*.exe .
