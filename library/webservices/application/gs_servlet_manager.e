@@ -75,9 +75,13 @@ feature -- Basic operations
 		do
 			create request_holder.make (request, response)
 			request_queue.put (request_holder)
+			debugging (generator, "locking request mutex")
+			request_mutex.lock
 			debugging (generator, "signaling request condition variable")
-			request_condition.signal
-			
+--			request_condition.signal
+			request_condition.broadcast
+			debugging (generator, "unlocking request mutex")
+			request_mutex.unlock
 			
 --			info (generator, "dispatching request")
 --			-- dispatch to the registered servlet using the path info as the registration name.
@@ -119,7 +123,7 @@ feature {NONE} -- Implementation
 			until
 				c > Max_request_threads
 			loop
-				create thread
+				create thread.make ("web-" + c.out)
 				thread_pool.force_last (thread)
 				thread.launch
 				c := c + 1

@@ -153,7 +153,7 @@ feature -- Logging
 				log_mutex.unlock
 			end
 		end	
-		
+
 feature {NONE} -- Implementation
 
 	log_mutex: MUTEX is

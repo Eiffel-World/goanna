@@ -14,7 +14,7 @@ class
 
 inherit
 	
-	THREAD
+	NAMED_THREAD
 	
 	GS_SHARED_REQUEST_THREAD_DATA
 		export
@@ -26,6 +26,10 @@ inherit
 			{NONE} all
 		end
 		
+creation
+	
+	make
+	
 feature -- Basic operations
 
 	execute is
@@ -39,18 +43,21 @@ feature -- Basic operations
 			until
 				stop
 			loop
-				debugging (generator, "checking for requests")
+				debugging (generator, "checking for requests " + name)
 				if request_queue.is_empty then
-					-- wait for a signal
-					debugging (generator, "waiting for condition signal")
+					debugging (generator, "request mutex lock " + name)					
+					request_mutex.lock
+					-- wait for a signal	
+					debugging (generator, "waiting for condition signal " + name)
 					request_condition.wait (request_mutex)
 				else
 					-- process the requests in the queue
-					debugging (generator, "handling request in queue")
+					debugging (generator, "handling request in queue " + name)
 					request_holder := request_queue.next
 				end
-			end
-		
+				debugging (generator, "request mutex unlock " + name)					
+				request_mutex.unlock
+			end	
 		end
 
 	terminate is
