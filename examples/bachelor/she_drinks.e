@@ -8,10 +8,10 @@ class
 	SHE_DRINKS
 
 inherit
-	YES_NO_TOPIC
+	YES_NO
 
 create
-	make
+	make_with_user_and_parent
 
 feature
 

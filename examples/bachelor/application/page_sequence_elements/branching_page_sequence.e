@@ -22,8 +22,6 @@ feature -- Implement deferred features
 			result := current_element.page
 		end
 
-
-
 	start is
 		do
 			page_sequence.start

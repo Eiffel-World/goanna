@@ -20,7 +20,7 @@ inherit
 		rename
 			make as back_up_url_make
 		undefine
-			container_make, html_begin_element, html_end_element, html_element, is_equal, copy
+			container_make, html_begin_element, html_end_element, html_element
 		end
 
 creation

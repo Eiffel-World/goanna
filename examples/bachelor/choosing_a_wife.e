@@ -8,30 +8,32 @@ class
 	CHOOSING_A_WIFE
 
 inherit
-	BACHELOR_TOPIC_WITH_SUBTOPICS
+
+	TOPIC_SEQUENCE_DOMAIN_WITH_CHILDREN
+	USER_RELATED
 
 create
-	make_root
+	make_with_user
 
 feature -- Attributes
 
 	compatibility : COMPATIBILITY
+
+	he_drinks : HE_DRINKS
 
 	compatibility_sequence : PAGE_SEQUENCE is
 		do
 			result := compatibility
 		end
 
-	he_drinks : HE_DRINKS
-
 feature -- Implement deferred features
 
-	add_subtopics is
+	create_children is
 		do
-			create compatibility.make (current, user)
-			create he_drinks.make (current, user)
-			subtopic_list.force (compatibility)
-			subtopic_list.force (he_drinks)
+			create compatibility.make_with_user_and_parent (current, user)
+			create he_drinks.make_with_user_and_parent (current, user)
+			child_list.force_last (compatibility)
+			child_list.force_last (he_drinks)
 		end
 
 	title : STRING is
@@ -55,9 +57,15 @@ feature -- Implement deferred features
 			result := compatibility.she_is_pregnant.no
 		end
 
+	undo is
+		do
+		end
+
 invariant
 
 	valid_compatibility : compatibility /= Void
+	child_list_has_compatibility: child_list.has (compatibility)
+	child_list_has_he_drinks: child_list.has (he_drinks)
 	valid_he_drinks : he_drinks /= Void
 
 end -- class CHOOSING_A_WIFE

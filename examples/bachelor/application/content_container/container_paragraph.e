@@ -15,8 +15,6 @@ inherit
 	PARAGRAPH
 		rename
 			make as paragraph_make
-		undefine
-			is_equal, copy
 		end
 	MULTI_CONTAINER
 		rename

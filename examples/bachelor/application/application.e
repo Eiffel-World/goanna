@@ -13,17 +13,12 @@ class
 
 inherit
 	SYSTEM_CONSTANTS
-	
 --	FAST_CGI_SERVLET_APP
---		rename
---			make as parent_make
---		end
-
 	HTTPD_SERVLET_APP
 		rename
 			make as parent_make
 		end
-		
+
 creation
 
 	make
@@ -31,26 +26,27 @@ creation
 feature
 
 	make is
+		local
+
 		do
 			io.putstring ("Starting Application " + application_directory + "...%N")
-			parent_make (port, backlog_requests)	
+			parent_make (port, backlog_requests)
 			register_servlets
 			run
 		end
 
 	register_servlets is
-			-- Register servlets for this application
 		local
 			application_config: SERVLET_CONFIG
 			application_servlet: APPLICATION_SERVLET
 		do
 			create application_config
 			application_config.set_server_port (port)
-			application_config.set_document_root (application_directory)
+			application_config.set_document_root (document_root)
 			servlet_manager.set_config (application_config)
 			create application_servlet.init (application_config)
 			servlet_manager.register_servlet (application_servlet, application_directory)
-			servlet_manager.register_default_servlet (application_servlet)
+			servlet_manager.register_default_servlet (application_servlet)	
 		end
-		
+
 end -- class APPLICATION

@@ -69,8 +69,8 @@ feature -- Creation
 	make (new_page_sequencer : PAGE_SEQUENCER) is
 		do
 			precursor (new_page_sequencer)
-			create choosing_a_wife.make_root (current)
-			create personal_information.make_root (current)
+			create choosing_a_wife.make_with_user (current)
+			create personal_information.make_with_user (current)
 		end
 
 invariant

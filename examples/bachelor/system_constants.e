@@ -10,20 +10,11 @@ indexing
 
 class
 	SYSTEM_CONSTANTS
-	
-inherit
-	KL_SHARED_EXECUTION_ENVIRONMENT
-		export
-			{NONE} all
-		end
 
 feature -- Drive & directory locations
 
-	data_directory : STRING is 
-			-- The directory where data files are stored
-		once
-			Result := Execution_environment.interpreted_string ("$GOANNA\examples\bachelor\data")
-		end
+	data_directory : STRING is "d:\goanna\examples\bachelor\data"
+		-- The directory where data files are stored
 
 	directory_separator : STRING is "\"
 
@@ -34,7 +25,7 @@ feature -- URL's for this application
 		
 feature -- Subdirectories for this application
 
-	fast_cgi_directory : STRING is "servlet"
+	fast_cgi_directory : STRING is "FastCGI"
 		-- The Apache subdirectory mapped to FastCGI applications; does not include directory separators
 
 	application_directory : STRING is "bachelor"
@@ -42,7 +33,7 @@ feature -- Subdirectories for this application
 
 feature -- Application Configuration
 
-	port : INTEGER is 80
+	port : INTEGER is 80 --00 -- for fcgi use 8000
 		-- The port the application uses to communicate with the FastCGI
 
 	backlog_requests : INTEGER is 5
@@ -50,6 +41,8 @@ feature -- Application Configuration
 
 	session_timeout_interval : INTEGER is 900
 		-- The number of seconds of inactivity before a session expires
+
+	document_root: STRING is "d:\goanna"
 
 ------------ Modifications Below This Line Normally Not Required ----------------------
 

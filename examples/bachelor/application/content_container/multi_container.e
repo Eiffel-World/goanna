@@ -14,11 +14,10 @@ class
 inherit
 	CONTENT_CONTAINER
 		undefine
-			make, is_equal, copy
+			make
 		redefine
 			html_element
 		end
-		
 	LINKED_LIST [CONTENT_CONTAINER]
 		rename
 			force as linked_list_force

@@ -13,9 +13,6 @@ deferred class
 
 inherit
 	PROCESSOR_HOST
-		undefine
-			is_equal, copy
-		end
 	MULTI_CONTAINER
 		rename
 			make as multi_container_make
@@ -30,7 +27,7 @@ inherit
 		export {FORM, FORM_ELEMENT}
 			page
 		undefine
-			html_element, is_equal, copy
+			html_element
 		redefine
 			html_begin_element,
 			html_end_element

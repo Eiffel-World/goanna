@@ -37,10 +37,7 @@ feature {PAGE_SEQUENCE_ELEMENT, PAGE_FACTORY, CONTENT_CONTAINER, TO_DO}
 
 	text : TEXT_LIST is
 		-- Text used as content on the page
-		do
-			Result := user.preference.language
-		ensure
-			valid_result : result /= Void
+		deferred
 		end
 
 	title : STRING is
@@ -48,7 +45,7 @@ feature {PAGE_SEQUENCE_ELEMENT, PAGE_FACTORY, CONTENT_CONTAINER, TO_DO}
 		deferred
 		end
 
-	user : like user_anchor is
+	user: like user_anchor is
 		deferred
 		end
 

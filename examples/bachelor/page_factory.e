@@ -48,7 +48,7 @@ feature {PAGE_SEQUENCE_ELEMENT} -- Pages
 			result.add_content (form)
 		end
 
-	yes_no (new_topic : YES_NO_TOPIC) : PAGE is
+	yes_no (new_topic : YES_NO) : PAGE is
 		-- A page that can display a yes_no_topic
 		local
 			button : BUTTON_FORM

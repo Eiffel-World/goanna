@@ -24,6 +24,11 @@ creation
 
 feature -- Implement Deferred Features
 
+	text: TEXT_LIST is
+		do
+			result := user.preference.language
+		end
+
 	page : PAGE is
 		do
 			result := current

@@ -30,6 +30,8 @@ TO CREATE AN APPLICATION
 
 	bachelor : "d:\goanna\examples\bachelor" -- Replace with actual location
 	application (bachelor) 	: 	"$\application";
+	user (application)	:	"$\user";
+	domain (application)	:	"$\domain";
 	topic	(application)	: 	"$\topic";
 	unique_string_sequence (application) 	: 	"$\unique_string_sequence";
 	content_container (application) 	: 	"$\content_container";
@@ -63,6 +65,8 @@ LIBRARY ARCHITECTURE
 
 cluster APPLICATION
 
+cluster USER
+
 USER
 
 The root of the application specific data model (every SESSION must have a USER).  Includes state information (i.e. a history of pages served to the user, current PAGE_SEQUENCE, etc.  Includes user preferences for language, type of client (to serve browser specific html), and image_size (to serve larger images to users with larger monitors and/or faster connections).  Hooks to the various preferences are in place, but currently only one option for each preference is supported - and changing preferences is not supported.
@@ -91,7 +95,11 @@ A single page, displayed to the user.  Created by PAGE_FACTORY which adds CONTEN
 
 cluster TOPIC
 
-The data and data manipulation routines for a particular TOPIC in the data model.  Many topics are also a PAGE_SEQUENCE.  When this is so, TOPIC comes to include the data, data manipulation routines, and page sequencing logic for a particular domain in the application data model.  These data manipulation routines are loaded by PAGE_FACTORY or FORM as agents into the appropriate DYNAMIC_URL or FORM_ELEMENT to allow the user to interact with the data model.
+A topic addressed by the application.  Many topics are also a PAGE_SEQUENCE and a DOMAIN.  When this is so, TOPIC comes to include the data, data manipulation routines, and page sequencing logic for a particular domain in the application data model.  These data manipulation routines are loaded by PAGE_FACTORY or FORM as agents into the appropriate DYNAMIC_URL or FORM_ELEMENT to allow the user to interact with the data model.
+
+cluster DOMAIN
+
+The data and data manipulation routines for a domain in the application data model.
 
 cluster CONTENT
 

@@ -15,10 +15,11 @@ inherit
 
 	SHARED_APPLICATION_SESSION_MANAGER
 	PAGE_SEQUENCE
+		redefine
+			initialize, initialized
+		end
 	SYSTEM_CONSTANTS
 	TOPIC
-		rename
-			make as topic_make
 		redefine
 			page_sequencer
 		end
@@ -191,10 +192,10 @@ feature {LOGIN_FORM} -- Implementation
 	user_list : USER_LIST is
 		-- List of users
 		once
-			create result.make (1)
+			create result.make
 			result ?= result.retrieve_by_name (user_list_file_name)
 			if result = Void then
-				create result.make (100)
+				create result.make
 			end
 		end
 
@@ -324,16 +325,34 @@ feature {NONE} -- Initialization
 		require
 			valid_new_page_sequencer : new_page_sequencer /= Void
 		do
+			page_sequencer := new_page_sequencer
+			make_with_user (page_sequencer.user)			
+		end
+
+	initialize is
+		do
+			precursor
 			user_id := ""
 			password := ""
 			confirm_password := ""
 			new_user_name := ""
-			page_sequencer := new_page_sequencer
-			make_root (page_sequencer.user)
+			login_sequence_initialized := True
 		end
 
 	create_sequence is
 		do
+			sequence_initialized := true
+		end
+
+	undo is
+		do
+		end
+
+	login_sequence_initialized: BOOLEAN
+
+	initialized: BOOLEAN is
+		do
+			result := precursor and login_sequence_initialized
 		end
 
 invariant
@@ -346,5 +365,6 @@ invariant
 	valid_new_user_name : new_user_name /= Void
 	done_implies_valid_user : done implies valid_user
 --	valid_user_implies_done : valid_user implies done
+	initialized_implies_login_sequence_initialized: initialized implies login_sequence_initialized
 
 end -- class LOGIN_SEQUENCE
