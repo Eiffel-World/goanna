@@ -16,6 +16,8 @@ inherit
 	BODY_CELL
 		rename
 			make as body_cell_make
+		undefine
+			copy, is_equal
 		end
 	MULTI_CONTAINER
 		rename

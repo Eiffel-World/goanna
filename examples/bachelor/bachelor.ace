@@ -1,0 +1,176 @@
+system
+	bachelor
+
+root
+	APPLICATION: make
+
+default
+	assertion(require)
+	arguments(" ")
+	debug(yes)
+	debug("cookie_parsing")
+	debug("http_servlet_service")
+	debug("httpd_response_write")
+	debug("httpd_servlet_response")
+	debug("query_string_parsing")
+	debug("raw_snoop")
+	debug("session_management")
+	debug("socket")
+	debug("status_output")
+	line_generation(no)
+	profile(no)
+	trace(no)
+	il_verifiable(yes)
+	msil_generation_type("exe")
+	check_vape(yes)
+	console_application(no)
+	address_expression(no)
+	array_optimization(no)
+	dead_code_removal(yes)
+	dynamic_runtime(no)
+	exception_trace(no)
+	inlining(no)
+	multithreaded(no)
+
+
+-- EiffelBase
+--	library (goanna) 			: 	"goanna.library"
+--	fast_cgi (library) 			:	"library.fast_cgi"
+
+cluster
+	library base:		"$ISE_EIFFEL/library/base"
+		exclude
+			"table_eiffel3"; "desc"; 
+		end
+
+	goanna:		"c:\goanna"
+
+	bachelor (goanna):		"c:\goanna\examples\bachelor"
+
+	application (bachelor):		"$\application"
+
+	goanna_library (goanna):		"$\library"
+
+	fast_cgi (goanna_library):		"$\fast_cgi"
+
+	efcgi (fast_cgi):		"$\efcgi"
+
+	efcgi_servlet (fast_cgi):		"$\servlet"
+
+	servlet (goanna_library):		"$\servlet"
+
+	servlet_http (servlet):		"$\http"
+
+	goanna_utility (goanna_library):		"$\utility"
+
+	goanna_utility_ise (goanna_utility):		"$\spec\ise"
+
+	httpd (goanna_library):		"$\httpd"
+
+	logging (goanna_library):		"$\logging"
+
+	datetime (goanna_library):		"$\datetime"
+
+	yaesockets:		"c:\yaesockets"
+
+	yaesockets_helper (yaesockets):		"$\spec\ise"
+
+	gobo:		"c:\gobo"
+
+	kl_kernel (gobo):		"$\library\kernel"
+
+	kl_kernel_spec (gobo):		"$\library\kernel\spec\ise"
+
+	ds_container (gobo):		"$\library\structure\container"
+
+	ds_dispenser (gobo):		"$\library\structure\dispenser"
+
+	ds_list (gobo):		"$\library\structure\list"
+
+	ds_set (gobo):		"$\library\structure\set"
+
+	ds_sort (gobo):		"$\library\structure\sort"
+
+	ds_support (gobo):		"$\library\structure\support"
+
+	ds_table (gobo):		"$\library\structure\table"
+
+	dt_clock (gobo):		"$\library\time\clock"
+
+	dt_date (gobo):		"$\library\time\date"
+
+	dt_spec (gobo):		"$\library\time\spec\ise"
+
+	dt_time_zone (gobo):		"$\library\time\time_zone"
+
+	et_ast_assertion (gobo):		"$\library\tools\ast\assertion"
+
+	et_ast_class (gobo):		"$\library\tools\ast\class"
+
+	et_ast_constant (gobo):		"$\library\tools\ast\constant"
+
+	et_ast_expression (gobo):		"$\library\tools\ast\expression"
+
+	et_ast_feature (gobo):		"$\library\tools\ast\feature"
+
+	et_ast_instruction (gobo):		"$\library\tools\ast\instruction"
+
+	et_ast_name (gobo):		"$\library\tools\ast\name"
+
+	et_ast_type (gobo):		"$\library\tools\ast\type"
+
+	et_error (gobo):		"$\library\tools\error"
+
+	et_parser (gobo):		"$\library\tools\parser"
+
+	ut_command (gobo):		"$\library\utility\command"
+
+	ut_error (gobo):		"$\library\utility\error"
+
+	ut_formatter (gobo):		"$\library\utility\formatter"
+
+	ut_support (gobo):		"$\library\utility\support"
+
+	ut_spec (gobo):		"$\library\utility\spec\ise"
+
+	user (application):		"$\user"
+
+	topic (application):		"$\topic"
+
+	domain (application):		"$\domain"
+
+	unique_string_sequence (application):		"$\unique_string_sequence"
+
+	content_container (application):		"$\content_container"
+
+	form_elements (content_container):		"$\form_elements"
+
+	forms (content_container):		"$\forms"
+
+	page_sequence_elements (application):		"$\page_sequence_elements"
+
+	log4e (goanna_library):		"$\log4e"
+
+	log_layouts (log4e):		"$\layouts"
+
+	log_appenders (log4e):		"$\appenders"
+
+	log_helpers (log4e):		"$\helpers"
+
+	log_config (log4e):		"$\config"
+
+	log_filters (log4e):		"$\filters"
+
+	layouts_pattern (log_layouts):		"$\pattern"
+
+external
+
+	include_path:
+		"c:\goanna\library\datetime\clib\Debug\datetime.lib",
+		"c:\gobo\library\time\include"
+
+	object:
+		"c:\goanna\library\datetime\clib\Debug\datetime.lib",
+		"c:\yaesockets\C\Debug\cl.lib"
+
+end

@@ -13,7 +13,7 @@ class
 
 feature -- Drive & directory locations
 
-	data_directory : STRING is "d:\goanna\examples\bachelor\data"
+	data_directory : STRING is "c:\goanna\examples\bachelor\data"
 		-- The directory where data files are stored
 
 	directory_separator : STRING is "\"
@@ -42,7 +42,7 @@ feature -- Application Configuration
 	session_timeout_interval : INTEGER is 900
 		-- The number of seconds of inactivity before a session expires
 
-	document_root: STRING is "d:\goanna"
+	document_root: STRING is "bachelor"
 
 ------------ Modifications Below This Line Normally Not Required ----------------------
 

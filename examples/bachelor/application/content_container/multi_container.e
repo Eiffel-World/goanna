@@ -14,7 +14,7 @@ class
 inherit
 	CONTENT_CONTAINER
 		undefine
-			make
+			make, is_equal, copy
 		redefine
 			html_element
 		end

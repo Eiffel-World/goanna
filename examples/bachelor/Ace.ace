@@ -21,7 +21,7 @@ default
 
 cluster
 	
-	goanna 					:	"d:\goanna";
+	goanna 					:	"c:\goanna";
 	library (goanna) 			: 	"$\library";
 	fast_cgi (library) 			:	"$\fast_cgi"
 	efcgi (fast_cgi)				:	"$\efcgi"
@@ -91,10 +91,10 @@ cluster
 
 external
 	include_path:
-		"D:\goanna\library\utility\spec\ise4\include",
-		"D:\goanna\gobo\library\time\include"
+		"c:\goanna\library\utility\spec\ise4\include",
+		"c:\goanna\gobo\library\time\include"
 
 	object:	
-		"D:\goanna\library\datetime\clib\Debug\datetime.lib",
-		"D:\goanna\sockets\C\Debug\cl.lib"
+		"c:\goanna\library\datetime\clib\Debug\datetime.lib",
+		"c:\goanna\sockets\C\Debug\cl.lib"
 end

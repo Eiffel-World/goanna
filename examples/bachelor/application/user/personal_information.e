@@ -18,10 +18,6 @@ inherit
 		redefine
 			initialize, update, initialized
 		end
-	HISTORY_SAVING_DOMAIN
-		redefine
-			initialize, update, initialized
-		end
 	USER_RELATED
 
 create
@@ -113,7 +109,11 @@ feature  {TOPIC, PAGE, USER}-- Attributes & Setting
 			e_mail_address_updated : new_e_mail_address = e_mail_address
 		end	
 
-
+	undo is
+			-- 	Roll back to previuos state (not implemented)
+		do
+		end
+		
 
 feature -- Implement Deferred Features
 
@@ -133,18 +133,16 @@ feature {NONE} -- Implementation
 		do
 			reset_personal_information
 			{TIME_STAMPED_DOMAIN} precursor
-			{HISTORY_SAVING_DOMAIN} precursor
 		end
 
 	update is
 		do
 			{TIME_STAMPED_DOMAIN} precursor
-			{HISTORY_SAVING_DOMAIN} precursor
 		end
 
 	initialized: BOOLEAN is
 		do
-			result := {TIME_STAMPED_DOMAIN} precursor and {HISTORY_SAVING_DOMAIN} precursor
+			result := {TIME_STAMPED_DOMAIN} precursor
 		end
 
 	reset_personal_information is

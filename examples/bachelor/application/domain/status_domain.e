@@ -13,7 +13,14 @@ deferred class
 
 inherit
 	DOMAIN
-
+		redefine
+			update, initialize
+		end
+	TIME_STAMPED_DOMAIN
+		redefine
+			update, initialize, initialized
+		end
+		
 feature
 
 	evaluated : BOOLEAN is
@@ -28,6 +35,18 @@ feature
 			set_status_code (not_evaluated_code)
 		end
 
+	undo is
+			-- Roll back to previous state
+		do
+			status_code := status_history.first
+			time_last_modified := date_time_history.first
+			status_history.remove_first
+			date_time_history.remove_first
+		ensure
+			status_code_rolled_back: status_code = old status_history.first
+			date_time_rolled_back: time_last_modified = old date_time_history.first
+		end
+			
 feature {NONE} -- implementation
 
 	status_code : INTEGER
@@ -38,6 +57,8 @@ feature {NONE} -- implementation
 		require
 			new_status_code_exists : new_status_code /= Void
 		do
+			status_history.force_first (clone (status_code))
+			date_time_history.force_first (clone (time_last_modified))
 			status_code := new_status_code
 			update
 		ensure
@@ -46,10 +67,39 @@ feature {NONE} -- implementation
 
 	not_evaluated_code : INTEGER is 0
 			-- The code corresponding to a status of 'not_evaluated'
-
+			
+	status_history: DS_LINKED_LIST [INTEGER]
+	
+	date_time_history: DS_LINKED_LIST [DT_DATE_TIME]
+	
+	initialize is
+		do
+			create status_history.make
+			create date_time_history.make
+			status_initialized := true
+			{TIME_STAMPED_DOMAIN} precursor
+		end
+		
+	update is
+			-- Update the domain
+		do
+			{TIME_STAMPED_DOMAIN} precursor
+		end
+		
+	initialized: BOOLEAN is
+			-- Has the domain been initialized?
+		do
+			result := status_initialized and {TIME_STAMPED_DOMAIN} precursor
+		end
+		
+	status_initialized: BOOLEAN
+		
 invariant
 
 	not_evaluated_code_zero : equal (not_evaluated_code, 0)
 	evaluated_implies_status_code__not_not_evaluated_code : evaluated implies not equal (status_code, not_evaluated_code)
+	status_history_not_void: status_history /= Void
+	date_time_history_not_void: date_time_history /= Void
+	history_synchronized: equal (status_history.count, date_time_history.count)
 
 end -- class STATUS_DOMAIN

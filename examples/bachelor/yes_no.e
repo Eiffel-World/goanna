@@ -9,15 +9,7 @@ deferred class
 	YES_NO
 
 inherit
-	TIME_STAMPED_DOMAIN
-		redefine
-			update, initialize, initialized
-		end
 	STATUS_DOMAIN
-		redefine
-			update, initialize, initialized
-		end
-	HISTORY_SAVING_DOMAIN
 		redefine
 			update, initialize, initialized
 		end
@@ -69,20 +61,18 @@ feature {NONE} -- implementation
 
 	update is
 		do
-			{TIME_STAMPED_DOMAIN} precursor
+			{STATUS_DOMAIN} precursor
 			{DOMAIN_WITH_PARENT} precursor
-			{HISTORY_SAVING_DOMAIN} precursor
 		end
 
 	initialize is
 		do
-			{TIME_STAMPED_DOMAIN} precursor
-			{HISTORY_SAVING_DOMAIN} precursor
+			{STATUS_DOMAIN} precursor
 		end
 
 	initialized: BOOLEAN is
 		do
-			result := {TIME_STAMPED_DOMAIN} precursor and {HISTORY_SAVING_DOMAIN} precursor
+			result := {STATUS_DOMAIN} precursor
 		end
 
 feature {NONE} -- Creation

@@ -29,7 +29,7 @@ feature
 				create a_file.make (full_file_name)
 				a_file.wipe_out
 				a_file.open_write
-				a_file.independent_store (current)
+				a_file.basic_store (current)
 				if not a_file.is_closed then
 					a_file.close
 				end
