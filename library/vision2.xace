@@ -44,8 +44,6 @@
 				<cluster name="primitives"/>
 			</cluster>
 		</cluster>
-
-		<!-- insert GTK impl clusters -->
 	</cluster>
 
 	<cluster name="interface" abstract="True">
@@ -64,9 +62,10 @@
 
 	<external>
 		<include_dir location="${ISE_EIFFEL}/library/vision2/spec/include"/>
-		<link_library location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\vision2.lib"/>
-		<link_library location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\libpng.lib"/>
-		<link_library location="$(ISE_EIFFEL)\library\vision2\spec\$(ISE_C_COMPILER)\lib\zlib.lib"/>
+		<link_library location="${ISE_EIFFEL}/library/vision2/spec/$(ISE_C_COMPILER)/lib/vision2.lib"/>
+		<link_library location="${ISE_EIFFEL}/library/vision2/spec/$(ISE_C_COMPILER)/lib/libpng.lib"/>
+		<link_library location="${ISE_EIFFEL}/library/vision2/spec/$(ISE_C_COMPILER)/lib/zlib.lib"/>
 	</external>
 
 </cluster>
+

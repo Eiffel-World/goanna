@@ -31,8 +31,7 @@
 			<optimize enable="False"/>
 		</option>
 
-		<cluster name="root_cluster" location="${GOANNA}/examples/xmlrpc/client/addressbook">
-		</cluster>
+		<cluster name="root_cluster" location="${GOANNA}/examples/xmlrpc/client/addressbook"/>
 		
 		<mount location="${GOBO}/library/cluster.xace"/>
 		<mount location="${GOBO}/library/kernel.xace"/>
@@ -40,6 +39,6 @@
 		<mount location="${GOANNA}/library/yaesockets.xace"/>
 		<mount location="${GOANNA}/library/wel.xace"/>
 		<mount location="${GOANNA}/library/vision2.xace"/>
-
 	</cluster>
 </system>
+
