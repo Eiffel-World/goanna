@@ -1,0 +1,18 @@
+Project Goanna Library
+----------------------
+
+Date and Time
+-------------
+
+This library provides date time functionality including standard
+Gregorian date arithmetic and date formatting. 
+
+This library is a modified version of the University of Cardiff date_time
+cluster by C Hollinshead. The library has been modified for use in Goanna.
+
+Usage
+-----
+
+Before use the supporting C library must be compiled. 
+
+...

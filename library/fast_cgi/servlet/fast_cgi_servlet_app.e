@@ -30,7 +30,7 @@ inherit
 		export
 			{NONE} all
 		end
-create
+creation
 	make
 
 feature -- Initialisation

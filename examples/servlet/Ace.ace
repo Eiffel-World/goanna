@@ -64,7 +64,9 @@ cluster
 
 	goanna_utility:		"$GOANNA\library\utility"
 
-	goanna_utility_spec (goanna_utility):		"$\spec\ise"
+	goanna_utility_ise (goanna_utility):		"$\spec\ise"
+
+	datetime: 		"$GOANNA\library\datetime"
 
 	yaesockets:		"$YAESOCKETS"
 
@@ -97,28 +99,6 @@ cluster
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
-	eposix:		"$EPOSIX\src"
-
-	eposix_support (eposix):		"$\support"
-
-	eposix_capi (eposix):		"$\capi"
-
-	epoxis_stdc (eposix):		"$\standardc"
-		visible
-			stdc_signal_switch
-				export
-					"switcher"
-				end
-		end
-
-	eposix_abstract (eposix):		"$\abstract"
-
-	eposix_wapi (eposix):		"$\wapi"
-
-	eposix_windows (eposix):		"$\windows"
-
-	eposix_compatibiliy (eposix):		"$\spec\ise"
-
 external
 
 	include_path:
@@ -126,6 +106,6 @@ external
 
 	object:
 		"$YAESOCKETS\C\Debug\cl.lib",
-		"$EPOSIX\libeposix.lib"
+		"$GOANNA\library\datetime\clib\Debug\datetime.lib"
 
 end

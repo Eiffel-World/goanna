@@ -152,7 +152,7 @@ feature -- Conversion
 				if max_age = 0 then
 					Result.append ("%"0%"")
 				else
-					Result.append ("%"Sun, 20 Jan 2001 00:00:00 GMT%"")	-- TODO: convert max-age to real date
+					Result.append (max_age_to_date (max_age))
 				end
 			end
 			-- optional domain
@@ -193,11 +193,23 @@ feature -- Conversion
 	max_age_to_date (age: INTEGER): STRING is
 			-- Convert max_age to a date
 		local
-			date: STDC_TIME
+			date: DATE_AND_TIME
+			formatter: DATE_FORMATTER
 		do
-			create date.make_from_now
-			--TODO: date.add (age)
-			Result := date.default_format
+			create date.make_to_now
+			debug ("cookie_parsing")
+				print ("Cookie expiry date today: " + date.out + "%R%N")
+			end	
+			date.add_seconds (age)
+			debug ("cookie_parsing")
+				print ("Cookie expiry date max age: " + date.out + "%R%N")
+			end	
+			create formatter
+			Result := formatter.format_fixed_variant (date)
+			debug ("cookie_parsing")
+				print ("Cookie expiry date formatted: " + Result + "%R%N")
+			end	
+
 		end
 		
 invariant

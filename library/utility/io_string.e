@@ -25,15 +25,16 @@ inherit
 	STRING
 		redefine
 			make, 
-			make_from_string, 
-			make_from_c, 
-			from_c,
-			from_c_substring
+			make_from_string
+--			make_from_c, 
+--			from_c,
+--			from_c_substring
 		end
 
-create
+creation
 
-	make, make_from_string, make_from_c
+	make, make_from_string
+	--, make_from_c
 	
 feature {NONE} -- Initialization
 
@@ -55,29 +56,29 @@ feature -- Initialization
 			position := 1
 		end		
 
-	make_from_c (c_string: POINTER) is
-			-- Initialize from contents of `c_string',
-			-- a string created by some external C function
-		do
-			Precursor (c_string)
-			position := 1
-		end
-
-	from_c (c_string: POINTER) is
-			-- Reset contents of string from contents of `c_string',
-			-- a string created by some external C function.
-		do
-			Precursor (c_string)
-			position := 1
-		end		
-	
-	from_c_substring (c_string: POINTER; start_pos, end_pos: INTEGER) is
-			-- Reset contents of string from substring of `c_string',
-			-- a string created by some external C function.
-		do
-			Precursor (c_string, start_pos, end_pos)
-			position := 1
-		end	
+--	make_from_c (c_string: POINTER) is
+--			-- Initialize from contents of `c_string',
+--			-- a string created by some external C function
+--		do
+--			Precursor (c_string)
+--			position := 1
+--		end
+--
+--	from_c (c_string: POINTER) is
+--			-- Reset contents of string from contents of `c_string',
+--			-- a string created by some external C function.
+--		do
+--			Precursor (c_string)
+--			position := 1
+--		end		
+--	
+--	from_c_substring (c_string: POINTER; start_pos, end_pos: INTEGER) is
+--			-- Reset contents of string from substring of `c_string',
+--			-- a string created by some external C function.
+--		do
+--			Precursor (c_string, start_pos, end_pos)
+--			position := 1
+--		end	
 			
 feature -- Access
 

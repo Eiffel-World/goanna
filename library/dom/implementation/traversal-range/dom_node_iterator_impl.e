@@ -25,7 +25,7 @@ inherit
 			{NONE} all
 		end
 		
-create
+creation
 	make
 
 feature -- Initialization

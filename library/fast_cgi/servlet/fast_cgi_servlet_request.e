@@ -29,7 +29,12 @@ inherit
 			{NONE} all
 		end
 		
-create
+	STRING_MANIPULATION
+		export
+			{NONE} all
+		end
+		
+creation
 
 	make
 	
@@ -352,7 +357,7 @@ feature {NONE} -- Implementation
 				-- get the parameter pair token
 				pair := tokenizer.token
 				-- find equal character
-				e := pair.index_of ('=', 1)
+				e := index_of_char (pair, '=', 1)
 				if e > 0 then
 					name := pair.substring (1, e - 1)
 					value := pair.substring (e + 1, pair.count)
@@ -405,7 +410,7 @@ feature {NONE} -- Implementation
 					tokenizer.off
 				loop
 					pair := tokenizer.token
-					i := pair.index_of ('=', 1)
+					i := index_of_char (pair, '=', 1)
 					if i > 0 then
 						name := pair.substring (1, i - 1)
 						name.left_adjust

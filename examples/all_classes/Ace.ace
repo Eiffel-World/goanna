@@ -68,6 +68,8 @@ cluster
 
 	servlet:		"$GOANNA\library\servlet"
 
+	servlet_http (servlet):		"$\http"
+
 	goanna_utility:		"$GOANNA\library\utility"
 
 	goanna_utility_ise (goanna_utility):		"$\spec\ise"

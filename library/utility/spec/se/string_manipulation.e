@@ -25,4 +25,15 @@ feature -- Basic operations
 			blank_filled: Result.occurrences (' ') = size
 		end
 	
+	index_of_char (str: STRING; char: CHARACTER; start: INTEGER): INTEGER is
+			-- Position of first occurrence of `c' in `str' at or after `start';
+			-- 0 if none.
+		require
+			str_exists: str /= Void
+			start_large_enough: start >= 1
+			start_small_enough: start <= str.count
+		do
+			Result := str.substring_index (char.out, start)
+		end
+
 end -- class STRING_MANIPULATION

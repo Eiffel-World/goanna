@@ -11,7 +11,7 @@ indexing
 class
 	SERVLET_MANAGER [K -> SERVLET]
 
-create
+creation
 	make
 
 feature -- Initialization

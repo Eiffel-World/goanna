@@ -11,7 +11,7 @@ indexing
 class
 	HTTP_SESSION
 
-create
+creation
 	make
 
 feature {HTTP_SESSION_MANAGER}-- Initialization

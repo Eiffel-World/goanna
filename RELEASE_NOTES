@@ -14,6 +14,8 @@ A new class STRING_MANIPULATION was needed to encapsulate different string
 handling between ISE and SmallEiffel. ELKS2000 will hopefully fix this when
 it is supported in all compilers.
 
+o Changed all keywords 'create' to 'creation' for SmallEiffel compliance.
+
 
 Release 0.1 (Proof-of-Concept)
 ------------------------------

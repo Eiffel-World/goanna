@@ -14,8 +14,7 @@ class
 inherit
 	SERVLET
 
-create
-
+creation
 	init
 	
 feature -- Initialization

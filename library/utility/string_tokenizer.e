@@ -11,7 +11,14 @@ indexing
 class
 	STRING_TOKENIZER
 	
-create
+inherit
+
+	STRING_MANIPULATION
+		export
+			{NONE} all
+		end
+		
+creation
 	make
 
 feature -- Initialization
@@ -38,7 +45,7 @@ feature -- Access
 		do
 			-- build next token from the string between two separators or between the
 			-- last separator and the end of the string
-			next_separator := internal_string.index_of (token_separator, position + 1)
+			next_separator := index_of_char (internal_string, token_separator, position + 1)
 			if next_separator = 0 then
 				next_separator := internal_string.count + 1
 			end
@@ -99,7 +106,7 @@ feature -- Cursor movement
 			not_after: not after
 		do
 			-- move position to start of next token
-			position := internal_string.index_of (token_separator, position + 1)
+			position := index_of_char (internal_string, token_separator, position + 1)
 			if position = 0 then
 				position := internal_string.count
 			else

@@ -12,16 +12,21 @@ class
 	HTTP_UTILITY_FUNCTIONS
 
 inherit
-
-	ASCII
-		export
-			{NONE} all
-		end
 	
 	UT_STRING_FORMATTER
 		export
 			{NONE} all
 		end	
+		
+	BIT_MANIPULATION
+		export
+			{NONE} all
+		end
+		
+	CHARACTER_MANIPULATION
+		export
+			{NONE} all
+		end
 		
 feature -- Basic operations
 
@@ -53,7 +58,7 @@ feature -- Basic operations
 						if hi < 0 or lo < 0 then
 							Result.append_character (ch)
 						else
-							Result.append_character ('%U' + (hi.bit_shift_left (4) + lo))
+							Result.append_character (set_char_code ('%U', bit_shift_left (hi, 4) + lo))
 							i := i + 2
 						end
 					else
@@ -110,14 +115,11 @@ feature -- Basic operations
 			-- Return the integer representation of the hexadecimal character 'ch'
 		require
 			hex_character: ch.is_digit or (ch >= 'A' and ch <= 'F') or (ch >= 'a' and ch <= 'f')
-		local
-			char: CHARACTER
 		do
 			if ch.is_digit then
 				Result := ch.out.to_integer
 			else
-				char := ch.lower - Lower_a
-				Result := (ch.lower - Lower_a).code + 11
+				Result := char_to_lower (ch).code - 86 -- -97 + 11
 			end
 		end
 	
