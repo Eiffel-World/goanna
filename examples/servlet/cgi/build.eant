@@ -158,7 +158,7 @@
 		<se ace="se.ace"/>
 	</target>
 
-	<target name="clean" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="clean" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Remove intermediary generated files.
 		</description>
@@ -169,7 +169,7 @@
 		<ve clean="${system}"/>
 	</target>
 
-	<target name="clobber" depend="init" dir="${GOANNA}/examples/${library}/client/${example}">
+	<target name="clobber" depend="init" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Remove all generated files.
 		</description>
