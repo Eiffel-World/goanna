@@ -12,7 +12,8 @@ inherit
 		undefine
 			previous_sibling,
 			next_sibling,
-			parent_node
+			parent_node,
+			set_parent_node
 		end
 		
 	DOM_CHILD_NODE

@@ -300,6 +300,15 @@ feature {DOM_NODE} -- DOM Status Setting
 			owner_document_set: owner_document = doc
 		end
 
+	set_parent_node (new_parent: like parent_node) is
+			-- Set the parent node of this node
+		require
+			new_parent_exist: new_parent /= Void
+		deferred
+		ensure
+			parent_node_set: parent_node = new_parent
+		end
+
 feature -- Validation Utility
 
 	is_right_document (new_child: DOM_NODE): BOOLEAN is

@@ -12,24 +12,20 @@ inherit
 
 feature -- Transformation
 
-	output: UCSTRING is
+	output is
 			-- Convenience function for debugging.
 			-- String representation of node.
 		do
-			Result := output_indented (0)
-		ensure 
-			result_exists: Result /= Void
+			output_indented (0)
 		end
 
 feature {DOM_WRITER, DOM_NODE} -- Implementation
 
-	output_indented (level: INTEGER): UCSTRING is
+	output_indented (level: INTEGER) is
 			-- Indented string representation of node.
 		require
 			positive_level: level >= 0
 		deferred
-		ensure
-			result_exists: Result /= Void
 		end
 
 feature {NONE}
@@ -39,13 +35,12 @@ feature {NONE}
 		require
 			positive_level: level >= 0
 		do
-			create Result.make (level)
+			create Result.make (level * 2)
 			if level > 0 then
-				Result.fill_character ('%T')
+				Result.fill_character (' ')
 			end
 		ensure
 			result_exists: Result /= Void
-			result_level_size: Result.count = level
 		end
 
 	line_separator: STRING is

@@ -12,7 +12,8 @@ inherit
 		redefine
 			previous_sibling,
 			next_sibling,
-			parent_node
+			parent_node,
+			set_parent_node
 		end
 		
 feature
@@ -36,8 +37,10 @@ feature
          -- or if it has been removed from the tree, this is `Void'.
 		 --| Default is Void. Descendants override.
 
---invariant
-
-	--parent_node_exists: parent_node /= Void
+	set_parent_node (new_parent: like parent_node) is
+			-- Set the parent node of this node
+		do
+			parent_node := new_parent
+		end
 
 end -- class DOM_CHILD_NODE

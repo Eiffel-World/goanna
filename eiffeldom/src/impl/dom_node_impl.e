@@ -127,6 +127,7 @@ feature
          --    The node added.
 	  do
 		  child_nodes.extend (new_child)
+			new_child.set_parent_node (Current)
 		  Result := new_child
       end
 
@@ -224,6 +225,12 @@ feature {DOM_NODE} -- DOM Status Setting
 			owner_document := doc
 		end
 
+	set_parent_node (new_parent: like parent_node) is
+			-- Set the parent node of this node
+			-- Default: do nothing
+		do
+		end
+
 feature -- Validation Utility
 
 	is_right_document (new_child: DOM_NODE): BOOLEAN is
@@ -268,65 +275,67 @@ feature -- Validation Utility
 
 feature {DOM_WRITER, DOM_NODE} -- Output Implementation
 
-	output_indented (level: INTEGER): UCSTRING is
+	output_indented (level: INTEGER) is
 			-- Indented string representation of node.
 		local
 			i: INTEGER
 			next_attribute: DOM_NODE
+			str: UCSTRING
 		do
-			create Result.make (50)
+			create str.make (50)
 			-- node type
-			Result.append_string (make_indent (level))
-			Result.append_string (node_type_string (node_type))
-			Result.append_string (line_separator)
+			str.append_string (make_indent (level))
+			str.append_string (node_type_string (node_type))
+			str.append_string (line_separator)
 			-- node name
-			Result.append_string (make_indent (level + 1))
-			Result.append_string ("node_name = ")
-			Result.append_ucstring (node_name)
-			Result.append_string (line_separator)
+			str.append_string (make_indent (level + 1))
+			str.append_string ("node_name = ")
+			str.append_ucstring (node_name)
+			str.append_string (line_separator)
 			-- node value
-			Result.append_string (make_indent (level + 1))
-			Result.append_string ("node_value = ")
-			Result.append_ucstring (non_void_string (node_value))
-			Result.append_string (line_separator)
+			str.append_string (make_indent (level + 1))
+			str.append_string ("node_value = ")
+			str.append_ucstring (non_void_string (node_value))
+			str.append_string (line_separator)
 			-- namespace uri
-			Result.append_string (make_indent (level + 1))
-			Result.append_string ("namespace_uri = ")
-			Result.append_ucstring (non_void_string (namespace_uri))
-			Result.append_string (line_separator)
+			str.append_string (make_indent (level + 1))
+			str.append_string ("namespace_uri = ")
+			str.append_ucstring (non_void_string (namespace_uri))
+			str.append_string (line_separator)
 			-- ns_prefix
-			Result.append_string (make_indent (level + 1))
-			Result.append_string ("ns_prefix = ")
-			Result.append_ucstring (non_void_string (ns_prefix))
-			Result.append_string (line_separator)
+			str.append_string (make_indent (level + 1))
+			str.append_string ("ns_prefix = ")
+			str.append_ucstring (non_void_string (ns_prefix))
+			str.append_string (line_separator)
 			-- local_name
-			Result.append_string (make_indent (level + 1))
-			Result.append_string ("local_name = ")
-			Result.append_ucstring (non_void_string (local_name))
-			Result.append_string (line_separator)
+			str.append_string (make_indent (level + 1))
+			str.append_string ("local_name = ")
+			str.append_ucstring (non_void_string (local_name))
+			str.append_string (line_separator)
 			-- attributes
-			Result.append_string (make_indent (level + 1))
-			Result.append_string ("attributes = ")
+			str.append_string (make_indent (level + 1))
+			str.append_string ("attributes = ")
 			if attributes /= Void then
 				from
-					Result.append_string (line_separator)
+					str.append_string (line_separator)
 				variant
 					attributes.length - i
 				until
 					i >= attributes.length
 				loop
-					Result.append_string (make_indent (level + 2))
+					str.append_string (make_indent (level + 2))
 					next_attribute := attributes.item (i)
-					Result.append_ucstring (next_attribute.node_name)
-					Result.append_string (" = ")
-					Result.append_ucstring (non_void_string (next_attribute.node_value))
-					Result.append_string (line_separator)
+					str.append_ucstring (next_attribute.node_name)
+					str.append_string (" = ")
+					str.append_ucstring (non_void_string (next_attribute.node_value))
+					str.append_string (line_separator)
 					i := i + 1
 				end
 			else
-				Result.append_string ("Void")
-				Result.append_string (line_separator)
+				str.append_string ("Void")
+				str.append_string (line_separator)
 			end
+			print (str.out)
 		end
 		
 end -- class DOM_NODE_IMPL

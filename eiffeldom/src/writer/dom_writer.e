@@ -8,19 +8,17 @@ class
 	
 feature -- Transformation
 
-	to_string (node: DOM_NODE): UCSTRING is
+	output (node: DOM_NODE) is
 			-- Recursively stream 'node' as a string.
 		require
 			node_exists: node /= Void
 		do
-			Result := to_string_recurse (node, 0)
-		ensure
-			result_exists: Result /= Void
+			output_recurse (node, 0)
 		end
 
 feature {NONE} -- Implementation
 
-	to_string_recurse (node: DOM_NODE; level: INTEGER): UCSTRING is
+	output_recurse (node: DOM_NODE; level: INTEGER) is
 			-- Recursive routine to stream a dom as a string
 		require
 			node_exists: node /= Void
@@ -29,8 +27,8 @@ feature {NONE} -- Implementation
 			children: DOM_NODE_LIST
 			i: INTEGER
 		do
-			Result := node.output_indented (level)
-			Result.append_string ("%R%N")
+			node.output_indented (level)
+			print ("%R%N")
 			children := node.child_nodes
 			if children /= Void then
 				from
@@ -39,12 +37,10 @@ feature {NONE} -- Implementation
 				until
 					i >= children.length
 				loop
-					Result.append_ucstring (to_string_recurse (children.item (i), level + 1))
+					output_recurse (children.item (i), level + 1)
 					i := i + 1
 				end
 			end
-		ensure 
-			result_exists: Result /= Void
 		end
 					
 end -- class DOM_WRITER
