@@ -66,6 +66,7 @@ feature {NONE} -- Implementation
 		do
 			parameters.put ("Goanna HTTP Server V1.0", Server_software_var)
 			parameters.put ("CGI/1.1", Gateway_interface_var)
+			parameters.put (serving_socket.servlet_manager.config.server_port.out, Server_port_var)
 			parameters.put (serving_socket.peer_name, Remote_host_var)
 			parameters.put (serving_socket.peer_address, Remote_addr_var)
 			parameters.put (serving_socket.servlet_manager.config.document_root, Document_root_var)

@@ -15,7 +15,10 @@ feature -- Access
 
 	document_root: STRING
 			-- Root directory for documents
-			
+		
+	server_port: INTEGER
+			-- Port server is listening on
+				
 feature -- Status setting
 
 	set_document_root (dir: STRING) is
@@ -24,6 +27,14 @@ feature -- Status setting
 			dir_exists: dir /= Void
 		do
 			document_root := dir
+		end
+		
+	set_server_port (port: INTEGER) is
+			-- Set the server port to 'port'
+		require
+			valid_port: port > 0
+		do
+			server_port := port
 		end
 		
 end -- class SERVLET_CONFIG

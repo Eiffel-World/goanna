@@ -22,13 +22,18 @@ feature  -- Initialisation
 feature {NONE} -- Implementation
 
 	retrieve_document is
+			-- Attempt to read the bdom file. If it cannot be found 'wrapper'
+			-- will be Void.
 		require
 			bdom_file_name_exists: bdom_file_name /= Void
 		local
-			bdom_file: IO_MEDIUM
+			bdom_file: RAW_FILE
 		do
-			create {RAW_FILE} bdom_file.make_open_read (bdom_file_name)
-			wrapper ?= bdom_file.retrieved
+			create bdom_file.make (bdom_file_name)
+			if bdom_file.exists and then bdom_file.is_readable then
+				bdom_file.open_read
+				wrapper ?= bdom_file.retrieved
+			end	
 		ensure
 			wrapper_retrieved: wrapper /= Void
 		end
@@ -40,6 +45,8 @@ feature -- Access
 
 	document: DOM_DOCUMENT is
 			-- The actual document held by this wrapper.
+		require
+			wrapper_retrieved: wrapper /= Void
 		do
 			Result := wrapper.document
 		end

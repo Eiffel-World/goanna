@@ -76,6 +76,7 @@ feature {NONE} -- Implementation
 				end
 			end
 			serializer.serialize (document)
+			resp.set_content_length (stream.count)
 			resp.send (stream.to_string)
 		end
 

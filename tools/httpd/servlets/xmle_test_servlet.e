@@ -46,6 +46,7 @@ feature {NONE} -- Implementation
 		local
 			element: DOM_ELEMENT
 			str, str2: DOM_STRING
+			doc: STRING
 		do
 			-- test XMLE generated document
 			resp.set_content_type ("text/xml")
@@ -55,7 +56,9 @@ feature {NONE} -- Implementation
 			create str.make_from_string ("newAttribute")
 			create str2.make_from_string ("newValue")
 			element.set_attribute (str, str2)
-			resp.send (document.to_document)
+			doc := document.to_document
+			resp.set_content_length (doc.count)
+			resp.send (doc)
 		end
 		
 	document: ORDER_XMLE

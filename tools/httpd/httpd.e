@@ -129,6 +129,7 @@ feature {NONE} -- Implementation
 		do
 			-- prepare the socket
 			!!server_socket.make (port, 10)
+			config.set_server_port (port)
 			socket_multiplexer.register_managed_socket_read (server_socket)
 			log (Info, "Goanna HTTPD Server. Version 1.0")
 			log (Info, "Copyright (C) 2001 Glenn Maughan.")
