@@ -20,6 +20,7 @@ default
 	disabled_debug(yes)
 	debug("parser_events")
 	disabled_debug("normalize")
+	debug(no)
 	line_generation(no)
 	profile(no)
 	trace(no)
