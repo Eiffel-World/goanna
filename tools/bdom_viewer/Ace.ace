@@ -5,11 +5,6 @@ root
 	RETRIEVER: make
 
 default
-	assertion(require)
-	assertion(ensure)
-	assertion(check)
-	assertion(loop)
-	assertion(invariant)
 	address_expression(no)
 	array_optimization(no)
 	console_application(yes)
@@ -19,9 +14,10 @@ default
 	inlining(no)
 	multithreaded(no)
 	check_vape(no)
-	arguments("root_xmle")
 	arguments("order_xmle")
+	arguments("root_xmle")
 	disabled_debug(yes)
+	disabled_debug("xmle_id_nodes")
 	disabled_debug("normalize")
 	debug(no)
 	line_generation(no)
@@ -47,6 +43,8 @@ cluster
 	dom_writer (dom):		"$\writer"
 
 	xmle_doc (dom_impl):		"$\xmle_doc"
+
+	servlet:		"$GOANNA\library\servlet"
 
 	all base:		"$EIFFEL4\library\base"
 		exclude
