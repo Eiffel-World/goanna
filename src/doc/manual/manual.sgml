@@ -1,0 +1,218 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
+
+<book>
+  <title>Goanna Web Services Library for Eiffel</title>
+  <titleabbrev>Goanna</titleabbrev>
+  <bookinfo>
+    <author>
+      <honorific>Dr.</honorific>
+      <firstname>Glenn</firstname>
+      <surname>Maughan</surname>
+    </author>
+  </bookinfo>
+
+  <preface>
+    <title>Preface</title>
+    <para>This is the preface.</para>
+  </preface>
+
+  <chapter>
+    <title>Introduction</title>
+    <para>Goanna Manual</para>
+    <section>
+      <title>Why Goanna?</title>
+      <para>The Goanna library aims to provide a Web Services framework for Eiffel programmers.</para>
+    </section>
+    <section>
+      <title>Platforms</title>
+      <para>Goanna is a multi-platform library with support for all major Eiffel compilers.</para>
+    </section>
+    <section>
+      <title>Compilers</title>
+      <para>Goanna is a multi-platform library with support for all major Eiffel compilers.</para>
+    </section>
+    <section>
+      <title>Required Libraries</title>
+      <para>The following libraries are required to use the Goanna library.</para>
+    </section>
+    <section>
+      <title>Installation and Compilation</title>
+      <para>Describe installation and compilation.</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Structure</title>
+    <section>
+      <title>Design Rationale</title>
+      <para>This is the Design rationale</para>
+    </section>
+    <section>
+      <title>Libraries</title>
+      <para>Major components: servlet, xml-rpc, soap, log4e, etc</para>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Eiffel Servlets</title>
+    <para>Describe implementation of Servlet API.</para>
+    <section>
+      <title>Overview</title>
+      <para>Overview of Servlet API.</para>
+    </section>
+    <section>
+      <title>Servlet API</title>
+      <para>Describe basic servlet API.</para>
+    </section>
+    <section>
+      <title>Servlet Connectors</title>
+      <para>Describe design and structure of servlet connectors</para>
+      <section>
+	<title>Standalone Servlet Connector</title>
+	<para>Describe standalone servlet connector.</para>
+      </section>
+      <section>
+	<title>FastCGI Servlet Connector</title>
+	<para>Describe FastCGI servlet connector.</para>
+      </section>
+      <section>
+	<title>CGI Servlet Connector</title>
+	<para>Describe CGI servlet connector.</para>
+      </section>
+    </section>
+    <section>
+      <title>Examples</title>
+      <para>Describe examples included in distribution.</para>
+      <section>
+	<title>Standalone Server</title>
+	<para>Describe standalone server.</para>
+      </section>
+      <section>
+	<title>FastCGI Server</title>
+	<para>Describe FastCGI server.</para>
+      </section>
+      <section>
+	<title>CGI Server</title>
+	<para>Describe CGI server.</para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Logging (log4e)</title>
+    <para>Describe implementation of log4e API.</para>
+    <section>
+      <title>Overview</title>
+      <para>Describe log4e Library.</para>
+    </section>
+    <section>
+      <title>The Category Hierarchy</title>
+      <para>Describe the category hierarchy. Creating categories, logging to categories and customising categories.</para>
+      <section>
+	<title>Categories</title>
+	<para>Structure and creation of categories.</para>
+      </section>
+      <section>
+	<title>Priorities</title>
+	<para>Describe priorities for categories.</para>
+      </section>
+      <section>
+	<title>Additive Categories</title>
+	<para>Describe additive categories.</para>
+      </section>
+      <section>
+	<title>Logging</title>
+	<para>Describe logging routines.</para>
+      </section>
+    </section>
+    <section>
+      <title>Appenders</title>
+      <para>Describe the purpose of appenders and how to create one.</para>
+      <section>
+	<title>File Appenders</title>
+	<para>Describe general file appender classes.</para>
+	<section>
+	  <title>Standard Out and Standard Error</title>
+	  <para>Describe standard out and standard error file appenders.</para>
+	</section>
+	<section>
+	  <title>Rolling Files</title>
+	  <para>Describe rolling file appenders: rolling file, calendar rolling file and externally rolled.</para>
+	</section>
+	<section>
+	  <title>NT Event Log</title>
+	  <para>Describe logging to the NT Event log.</para>
+	</section>
+      </section>
+      <section>
+	<title>Appender Layouts</title>
+	<para>Describe creation and usage of layouts.</para>
+	<section>
+	  <title>Simple Layout</title>
+	  <para>Describe simple layouts.</para>
+	</section>
+	<section>
+	  <title>Date/Time Layout</title>
+	  <para>Describe time layout and date time layouts.</para>
+	</section>
+	<section>
+	  <title>Pattern Layout</title>
+	  <para>Describe pattern layouts.</para>
+	</section>
+      </section>
+      <section>
+	<title>Filters</title>
+	<para>Describe filtering of log events.</para>
+	<section>
+	  <title>Priority Match Filters</title>
+	  <para>Describe priority match filters.</para>
+	</section>
+	<section>
+	  <title>Priority Range Filters</title>
+	  <para>Describe priority range filters.</para>
+	</section>
+	<section>
+	  <title>String Match Filters</title>
+	  <para>Describe string match filters.</para>
+	</section>
+      </section>
+    </section>
+    <section>
+      <title>Configuration</title>
+      <para>Describe general configuration.</para>
+      <section>
+	<title>Programmatic Configuration</title>
+	<para>Describe general programmatic configuration and shared logging hierarchies.</para>
+      </section>
+      <section>
+	<title>XML Configuration</title>
+	<para>Describe configuration using XML.</para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Web Services</title>
+    <section>
+      <title>Service Registry</title>
+      <para>Describe implementation of service registry.</para>
+    </section>
+    <section>
+      <title>Protocols</title>
+      <section>
+	<title>XML-RPC</title>
+	<para>Describe implementation of XML-RPC API.</para>
+      </section>
+      <section>
+	<title>SOAP</title>
+	<para>Describe implementation of SOAP API.</para>
+      </section>
+    </section>
+  </chapter>
+  
+  <appendix>
+    <title>Optional Appendix</title>
+    <para>Appendices are optional.</para>
+  </appendix>
+
+</book>
