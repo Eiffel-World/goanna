@@ -4,6 +4,8 @@ indexing
 class
 	SHARED_STANDARD_LOGGER
 
+obsolete "Use log4e instead"
+
 inherit
 	
 	LOG_LEVELS

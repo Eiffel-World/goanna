@@ -11,6 +11,8 @@ indexing
 class
 	LOG_LEVELS
 
+obsolete "Use log4e instead"
+
 feature -- Log levels
 
 	Emergency: INTEGER is 0

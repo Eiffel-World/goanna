@@ -105,6 +105,11 @@ cluster
 
 	logging (goanna):		"$\logging"
 
+	all log4e (goanna):		"$\log4e"
+		exclude
+			"CVS"; "net"; "nt"
+		end
+
 	yaesockets:		"$YAESOCKETS"
 		exclude
 			"udp_socket.e"; 

@@ -12,6 +12,8 @@ indexing
 class
 	STANDARD_LOGGER
 
+obsolete "Use log4e instead"
+
 inherit
 
 	LOGGER

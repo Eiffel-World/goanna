@@ -410,5 +410,23 @@ feature -- Test
 			cat.info ("This is information")
 			cat.debugging ("This is a test")
 		end
+		
+	test_syslog_appender is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+			appender: LOG_APPENDER
+			facilities: expanded LOG_SYSLOG_APPENDER_CONSTANTS
+		do
+			create h.make (Debug_p)
+			cat := h.category ("test")			
+			create {LOG_SYSLOG_APPENDER} appender.make ("stdout", "localhost", facilities.Log_local0)
+			cat.add_appender (appender)	
+			cat.fatal ("This is fatal")
+			cat.error ("This is an error")
+			cat.warn ("This is a warning")
+			cat.info ("This is information")
+			cat.debugging ("This is a test")
+		end
 
 end -- class TEST_LOG_HIERARCHY

@@ -12,6 +12,7 @@ default
 	assertion(invariant)
 	arguments(" ")
 	disabled_debug(yes)
+	disabled_debug("base64_encode")
 	debug(no)
 	line_generation(no)
 	profile(no)
@@ -103,6 +104,6 @@ external
 		"$GOANNA\library\log4e\appenders\nt\lib"
 
 	object:
-		"$YAESOCKETS\C\Multithread\cl.lib"
+		"$YAESOCKETS\C\Release\cl.lib"
 
 end

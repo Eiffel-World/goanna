@@ -11,6 +11,8 @@ indexing
 class
 	LOG_CHANNEL
 
+obsolete "Use log4e instead"
+
 inherit
 
 	LOG_LEVELS

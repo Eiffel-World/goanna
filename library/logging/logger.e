@@ -10,6 +10,8 @@ indexing
 
 class
 	LOGGER
+
+obsolete "Use log4e instead"
 	
 creation
 	make
