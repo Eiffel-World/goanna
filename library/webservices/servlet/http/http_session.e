@@ -60,12 +60,20 @@ feature -- Access
 			Result := attributes.item (name)
 		end
 		
-	get_attribute_names: DS_LINEAR [STRING] is
+	get_attribute_names: DS_ARRAYED_LIST [STRING] is
 			-- Return a list of all attribute names bound in this session 
 		require
 			valid_session: validated
 		do
-			-- TODO: implement this one.
+			create Result.make (attributes.count)
+			from
+				attributes.start
+			until
+				attributes.after
+			loop
+				Result.put_last (attributes.key_for_iteration)
+				attributes.forth
+			end
 		end
 	
 feature -- Status report
