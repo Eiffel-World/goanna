@@ -8,8 +8,8 @@ default
 	feature ("test_[a-z0-9_]*")
 	prefix ("X")
 	testgen ("TESTGEN")
-	compile ("compile -no_split -no_style_warning -case_insensitive -clean -no_gc GOANNA")
-	execute ("goanna")
+	compile ("compile se.ace")
+	execute ("./goanna")
 
 cluster
 

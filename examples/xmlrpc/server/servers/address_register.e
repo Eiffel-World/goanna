@@ -17,7 +17,12 @@ inherit
 		redefine
 			make
 		end
-		
+	
+	REF_TYPE_ROUTINES
+		export
+			{NONE} all
+		end
+	
 creation
 	
 	make
@@ -60,8 +65,7 @@ feature -- Access
 		require
 			name_exists: name /= Void
 		do
-			create Result
-			Result.set_item (addresses.has (name))
+			Result := make_boolean_ref (addresses.has (name))
 		end
 		
 	remove_entry (name: STRING) is

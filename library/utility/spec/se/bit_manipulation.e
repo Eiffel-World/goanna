@@ -42,7 +42,7 @@ feature -- Basic operations
 	bit_or (i, n: INTEGER): INTEGER is
 			-- Bitwise or of 'i' and 'n'
 		do
-			Result := (i.to_bit or n.to_bit).to_integer)
+			Result := (i.to_bit or n.to_bit).to_integer
 		end
 
 end -- class BIT_MANIPULATION

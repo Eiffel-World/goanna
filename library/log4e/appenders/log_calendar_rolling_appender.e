@@ -46,7 +46,7 @@ feature -- Initialisation
 			file_appender_make (new_name, appending)
 			max_number_of_backups := number_of_backups
 			rollover_period := Daily
-			last_rollover := System_clock.date_time_now
+			last_rollover := system_clock.date_time_now
 		ensure
 			log_file_open: stream.is_open_write
 		end
@@ -64,7 +64,7 @@ feature -- Initialisation
 			file_appender_make (new_name, appending)
 			max_number_of_backups := number_of_backups
 			rollover_period := Minutely
-			last_rollover := System_clock.date_time_now
+			last_rollover := system_clock.date_time_now
 		ensure
 			log_file_open: stream.is_open_write
 		end
@@ -82,7 +82,7 @@ feature -- Initialisation
 			file_appender_make (new_name, appending)
 			max_number_of_backups := number_of_backups
 			rollover_period := Hourly
-			last_rollover := System_clock.date_time_now
+			last_rollover := system_clock.date_time_now
 		ensure
 			log_file_open: stream.is_open_write
 		end

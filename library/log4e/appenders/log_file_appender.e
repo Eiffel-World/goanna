@@ -63,7 +63,7 @@ feature -- Basic Operations
 	
 feature -- Stream
 	
-	stream: PLAIN_TEXT_FILE
+	stream: KL_TEXT_OUTPUT_FILE
 			-- Stream to write log events to
 
 feature {NONE} -- Implementation
@@ -72,9 +72,11 @@ feature {NONE} -- Implementation
 			-- Open the log file taking into account 'append_mode'
 		do
 			if append_mode then
-				create stream.make_open_append (name)
+				create stream.make (name)
+				stream.open_append
 			else
-				create stream.make_open_write (name)		
+				create stream.make (name)		
+				stream.open_write
 			end	
 			if not stream.is_open_write then
 				internal_log.error ("Failed to open file stream: " + name)

@@ -38,7 +38,7 @@ feature -- Initialisation
 			priority := event_priority
 			message := event_message
 			rendered_message := render (message)
-			time_stamp := System_clock.date_time_now
+			time_stamp := system_clock.date_time_now
 		end
 	
 feature -- Status Report

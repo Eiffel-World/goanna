@@ -36,7 +36,10 @@
 			<cluster name="utility_tests" location="utility"/>
 			<cluster name="log4e_tests" location="log4e"/>
 		</cluster>
-		
+
+		<cluster name="se_number" location="${SmallEiffelDirectory}/lib_number" if="${GOBO_EIFFEL}=se"/>
+		<cluster name="se_iterator" location="${SmallEiffelDirectory}/lib_iterator" if="${GOBO_EIFFEL}=se"/>
+			
 		<mount location="${GOBO}/library/kernel.xace"/>
 		<mount location="${GOBO}/library/cluster.xace"/>
 		<mount location="${GOANNA}/library/cluster.xace"/>

@@ -27,17 +27,17 @@ inherit
 			{NONE} all
 		end
 	
-	INTERNAL
-		export
-			{NONE} all
-		end
+--	INTERNAL
+--		export
+--			{NONE} all
+--		end
 	
 	HTTPD_LOGGER
 		export
 			{NONE} all
 		end
 	
-create
+creation
 
 	make
 	

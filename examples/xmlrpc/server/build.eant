@@ -107,13 +107,12 @@
 		<ve esd="ve.esd"/>
 	</target>
 
-	<target name="compile_se" depend="init" dir="${GOANNA}/examples/${library}/${example}">
+	<target name="compile_se" depend="init, install" dir="${GOANNA}/examples/${library}/${example}">
 		<description>
 			Compile '${system}' with SmallEiffel.
 		</description>
 
-		<gexace command="build" command_options="se"/>
-		<se ace="se.ace"/>
+		<se ace="se.ace" case_insensitive="true"/>
 	</target>
 
 	<target name="compile_debug" depend="init, install">

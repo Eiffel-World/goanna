@@ -23,10 +23,10 @@ inherit
 			{NONE} all
 		end
 	
-	ASCII
-		export	
-			{NONE} all
-		end
+--	ASCII
+--		export	
+--			{NONE} all
+--		end
 		
 feature -- Basic operations
 
@@ -115,26 +115,26 @@ feature {NONE} -- Implementation
 				Result.put (-1, i)
 				i := i + 1
 			end
-			from i := Upper_a
-			until i > Upper_z
+			from i := ('A').code
+			until i > ('Z').code
 			loop
-				Result.put (i - Upper_a, i)
+				Result.put (i - ('A').code, i)
 				i := i + 1
 			end
-			from i := Lower_a
-			until i > Lower_z
+			from i := ('a').code
+			until i > ('z').code
 			loop
-				Result.put (26 + i - Lower_a, i)
+				Result.put (26 + i - ('a').code, i)
 				i := i + 1
 			end
-			from i := Zero
-			until i > Nine
+			from i := ('0').code
+			until i > ('9').code
 			loop
-				Result.put (52 + i - Zero, i)
+				Result.put (52 + i - ('0').code, i)
 				i := i + 1
 			end
-			Result.put (62, Plus)
-			Result.put (63, Slash)
+			Result.put (62, ('+').code)
+			Result.put (63, ('/').code)
 		end
 		
 	perform_encoding (data: STRING; chars: ARRAY [CHARACTER]): STRING is

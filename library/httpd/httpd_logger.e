@@ -44,13 +44,14 @@ feature {NONE} -- Implementation
 			-- for 'd:\dev\httpd.exe' will be 'httpd.log' not 'd:\dev\httpd.exe.log'
 		local
 			app_name: STRING
-			p: INTEGER
+--			p: INTEGER
 		once
-			app_name := clone (arguments.argument (0))
-			p := app_name.last_index_of ('.', app_name.count)
-			if p > 0 then
-				app_name := app_name.substring (1, p - 1)
-			end
+			app_name := clone (Arguments.argument (0))
+-- Commented out for SmallEiffel support			
+--			p := app_name.last_index_of ('.', app_name.count)
+--			if p > 0 then
+--				app_name := app_name.substring (1, p - 1)
+--			end
 			create Result.make (app_name.count + 4)
 			Result.append (app_name)
 			Result.append (".log")

@@ -84,7 +84,7 @@ feature {NONE} -- Implementation
 			-- new file with the same name.
 		local
 			i: INTEGER
-			file: PLAIN_TEXT_FILE
+			file: KL_TEXT_OUTPUT_FILE
 		do
   			-- do we need to make a backup
   			if max_number_of_backups > 0 then		
