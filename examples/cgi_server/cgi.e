@@ -52,4 +52,4 @@ feature {NONE} -- Implementation
 			servlet_manager.register_servlet (servlet, "snoop")
 		end
 
-end -- class HTTPD
+end -- class CGI

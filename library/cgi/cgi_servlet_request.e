@@ -34,7 +34,7 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 	KL_SHARED_EXECUTION_ENVIRONMENT
 		export
 			{NONE} all
@@ -45,6 +45,12 @@ inherit
 			{NONE} all
 		end
 		
+	KL_INPUT_STREAM_ROUTINES
+		rename
+			name as stream_name
+		export
+			{NONE} all
+		end
 creation
 
 	make
@@ -384,10 +390,8 @@ feature -- Status report
 			if has_header (Content_length_var) then
 				if internal_content = Void then
 					if content_length > 0 then
-						-- read content_length bytes from stdin and return
-						std.input.read_stream (content_length)
 						-- TODO: check for errors
-						internal_content := clone (std.input.last_string)
+						internal_content := read_string (std.input, content_length)
 					else
 						internal_content := ""
 					end

@@ -13,7 +13,7 @@ deferred class
 	SERVLET_REQUEST
 		
 feature -- Access
-
+	
 	get_parameter (name: STRING): STRING is
 			-- Returns the value of a request parameter
 		require
@@ -129,13 +129,13 @@ feature -- Output
 			Result.append_string (remote_host)
 			Result.append_string ("%R%N")
 			Result.append_string ("is_secure: ")
-			Result.append_boolean (is_secure)
+			Result.append_string (is_secure.out)
 			Result.append_string ("%R%N")
 			Result.append_string ("content_type: ")
 			Result.append_string (content_type)
 			Result.append_string ("%R%N")
 			Result.append_string ("content_length: ")
-			Result.append_integer (content_length)
+			Result.append_string (content_length.out)
 			Result.append_string ("%R%N")
 			Result.append_string ("content: ")
 			Result.append_string (content)
