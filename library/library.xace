@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<cluster name="soap" location="${GOANNA}/library/webservices/protocols/soap">
+<library name="goanna" location="${GOANNA}/library" prefix="g_">
 
 	<description>
-		description: "Cluster definition for Goanna SOAP classes"
+		description: "Cluster definition for Goanna library classes"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -13,10 +13,9 @@
 		thanks: "Modified version of GOBO cluster.xace files"
 	</description>
 
-	<cluster name="encoding"/>
-	<cluster name="server">
-		<cluster name="servlet"/>
-	</cluster>
-	<cluster name="utility"/>
+	<option name="abstract" value="true"/>
 
-</cluster>
+	<mount location="${GOANNA}/library/webservices/library.xace"/>
+	<mount location="${GOANNA}/library/utility/library.xace"/>
+
+</library>

@@ -13,33 +13,21 @@
 	</description>
 
 	<root class="SERVLET_SERVER" creation="make"/>
-	<cluster>
-		<option unless="${DEBUG}">
-			<require enable="False"/>
-			<ensure enable="False"/>
-			<invariant enable="False"/>
-			<loop enable="False"/>
-			<check enable="False"/>
-			<optimize enable="True"/>
-		</option>
-		<option if="${DEBUG}">
-			<require enable="True"/>
-			<ensure enable="True"/>
-			<invariant enable="True"/>
-			<loop enable="True"/>
-			<check enable="True"/>
-			<optimize enable="False"/>
-		</option>
 
-		<cluster name="root_cluster" location="${GOANNA}/examples/servlet/standalone">
-			<cluster name="templates"/>
-		</cluster>
-		
-		<cluster name="logging" location="${GOANNA}/library/obsolete/logging"/>
+	<option unless="${DEBUG}">
+		<option name="assertion" value="none"/>
+	</option>
+	<option if="${DEBUG}">
+		<option name="assertion" value="all"/>
+	</option>
 
-		<mount location="${GOBO}/library/cluster.xace"/>
-		<mount location="${GOBO}/library/kernel.xace"/>
-		<mount location="${GOANNA}/library/cluster.xace"/>
-		<mount location="${GOANNA}/library/yaesockets.xace"/>
+	<cluster name="root_cluster" location="${GOANNA}/examples/servlet/standalone">
+		<cluster name="templates"/>
 	</cluster>
+	
+	<mount location="${GOBO}/library/library.xace"/>
+	<mount location="${GOBO}/library/kernel.xace"/>
+	<mount location="${GOANNA}/library/library.xace"/>
+	<mount location="${GOANNA}/library/yaesockets.xace"/>
+
 </system>

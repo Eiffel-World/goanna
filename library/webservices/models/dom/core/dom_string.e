@@ -13,9 +13,9 @@ class DOM_STRING
 inherit
 
 	UC_STRING
-		rename
-			empty as is_empty
-		end
+--		rename
+--			empty as is_empty
+--		end
 
 creation
 

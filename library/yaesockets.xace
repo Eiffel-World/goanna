@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<cluster name="yaesockets" location="${YAESOCKETS}">
+<library name="yaesockets" prefix="ys_">
 
 	<description>
 		description: "Cluster definition for Yaesockets classes"
@@ -13,14 +13,14 @@
 		thanks: "Modified version of GOBO cluster.xace files"
 	</description>
 
-	<cluster name="spec">
-		<cluster name="${GOBO_EIFFEL}"/>
+	<cluster name="yaesockets" location="${YAESOCKETS}">
+		<cluster name="spec">
+			<cluster name="${GOBO_EIFFEL}"/>
+		</cluster>
 	</cluster>
 
-	<external>
-		<link_library location="$(YAESOCKETS)/C/cl.obj" if="${GOBO_OS}=windows"/>
-		<link_library location="WSOCK32.lib" if="${GOBO_OS}=windows"/>
-		<link_library location="$(YAESOCKETS)/C/cl.o" if="${GOBO_OS}=unix"/>
-	</external>
+	<option name="link" value="$(YAESOCKETS)/C/cl.obj" if="${GOBO_OS}=windows"/>
+	<option name="link" value="WSOCK32.lib" if="${GOBO_OS}=windows"/>
+	<option name="link" value="$(YAESOCKETS)/C/cl.o" if="${GOBO_OS}=unix"/>
 
-</cluster>
+</library>

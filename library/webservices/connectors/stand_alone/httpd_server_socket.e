@@ -53,7 +53,7 @@ feature
 			if socket /= Void then
 				socket_multiplexer.register_managed_socket_read (socket)
 			else
-				log_hierarchy.category (Internal_category).error ("Server socket error: " + socket_multiplexer.last_socket_error_code.out + ","
+				log_hierarchy.logger (Internal_category).error ("Server socket error: " + socket_multiplexer.last_socket_error_code.out + ","
 					+ socket_multiplexer.last_extended_socket_error_code.out + " read_bytes=" 
 					+ socket_multiplexer.managed_read_count.out)
 			end

@@ -14,11 +14,11 @@ inherit
 	
 	LOG_PRIORITY_CONSTANTS
 	
-	STRING_MANIPULATION
-		export
-			{NONE} all
-		end
-		
+--	STRING_MANIPULATION
+--		export
+--			{NONE} all
+--		end
+--		
 creation
 	
 	make
@@ -173,7 +173,7 @@ feature {NONE} -- Implementation
 				-- not "w.x.y.z". If a parent does 
 				-- not exist with the sub category 
 				-- then create it
-				sub_name := cat_name.substring (1, last_index_of (cat_name, '.', cat_name.count) - 1)
+				sub_name := cat_name.substring (1, last_index_of (cat_name, '.') - 1)
 				if not categories.has (sub_name) then
 					surrogate := category (sub_name)
 					new_cat.set_parent (surrogate)
@@ -183,4 +183,29 @@ feature {NONE} -- Implementation
 			end
 		end
 	
+feature {NONE} -- Implementation
+
+	last_index_of (str: STRING; c: CHARACTER): INTEGER is
+			-- Position of last occurrence of 'c'. 
+			-- 0 if none.
+			--| Portable implementation. Remove when unnecessary.
+		require
+			str_not_void: str /= Void
+		local
+			i: INTEGER
+		do
+			from
+				i := str.count
+			until
+				i < 1 or else str.item (i) = c
+			loop
+				i := i - 1
+			end
+			if i >= 0 then
+				Result := i
+			end
+		ensure
+			correct_place: Result > 0 implies str.item (Result) = c
+		end
+		
 end -- class LOG_HIERARCHY

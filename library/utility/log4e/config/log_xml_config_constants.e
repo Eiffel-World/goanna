@@ -13,157 +13,157 @@ class
 
 feature -- Constants
 
-	Log4e_namespace_uri: DOM_STRING is
+	Log4e_namespace_uri: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("http://goanna.info/spec/log4e")
 		end
 
-	Empty_namespace_uri: DOM_STRING is
+	Empty_namespace_uri: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("")
 		end
 		
-	Appender_element_name: DOM_STRING is
+	Appender_element_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("appender")
 		end
 	
-	Param_element_name: DOM_STRING is
+	Param_element_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("param")
 		end
 		
-	Category_element_name: DOM_STRING is
+	Category_element_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("category")
 		end
 	
-	Root_element_name: DOM_STRING is
+	Root_element_name: UC_UTF8_STRING is
 		once 
 			create Result.make_from_string ("root")
 		end
 		
-	Appenderref_element_name: DOM_STRING is
+	Appenderref_element_name: UC_UTF8_STRING is
 		once 
 			create Result.make_from_string ("appender-ref")
 		end
 		
-	Filter_element_name: DOM_STRING is
+	Filter_element_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("filter")
 		end
 		
-	Name_attribute: DOM_STRING is
+	Name_attribute: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("name")
 		end
 	
-	Value_attribute: DOM_STRING is
+	Value_attribute: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("value")
 		end
 		
-	Type_attribute: DOM_STRING is
+	Type_attribute: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("type")
 		end
 	
-	Priority_attribute: DOM_STRING is
+	Priority_attribute: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("priority")
 		end
 	
-	Additive_attribute: DOM_STRING is
+	Additive_attribute: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("additive")
 		end	
 		
-	Ref_attribute: DOM_STRING is
+	Ref_attribute: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("ref")
 		end
 		
-	Stdout_appender_type: DOM_STRING is
+	Stdout_appender_type: UC_UTF8_STRING is
 		once 
 			create Result.make_from_string ("stdout")
 		end
 		
-	Stderr_appender_type: DOM_STRING is
+	Stderr_appender_type: UC_UTF8_STRING is
 		once 
 			create Result.make_from_string ("stderr")
 		end
 
-	File_appender_type: DOM_STRING is
+	File_appender_type: UC_UTF8_STRING is
 		once 
 			create Result.make_from_string ("file")
 		end
 	
-	Rollingfile_appender_type: DOM_STRING is
+	Rollingfile_appender_type: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("rollingfile")
 		end
 
-	Calendarrolling_appender_type: DOM_STRING is
+	Calendarrolling_appender_type: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("calendarrolling")
 		end
 	
-	Prioritymatch_filter_type: DOM_STRING is
+	Prioritymatch_filter_type: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("prioritymatch")
 		end
 		
-	Priorityrange_filter_type: DOM_STRING is
+	Priorityrange_filter_type: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("priorityrange")
 		end
 		
-	Stringmatch_filter_type: DOM_STRING is
+	Stringmatch_filter_type: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("stringmatch")
 		end
 		
-	Filename_param_name: DOM_STRING is
+	Filename_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("filename")
 		end
 
-	Append_param_name: DOM_STRING is
+	Append_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("append")
 		end
 	
-	Maxsize_param_name: DOM_STRING is
+	Maxsize_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("maxsize")
 		end
 	
-	Numbackups_param_name: DOM_STRING is
+	Numbackups_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("numbackups")
 		end
 	
-	Priority_param_name: DOM_STRING is
+	Priority_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("priority")
 		end
 	
-	Prioritystart_param_name: DOM_STRING is
+	Prioritystart_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("prioritystart")
 		end
 		
-	Priorityend_param_name: DOM_STRING is
+	Priorityend_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("priorityend")
 		end
 		
-	Match_param_name: DOM_STRING is
+	Match_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("match")
 		end
 	
-	String_param_name: DOM_STRING is
+	String_param_name: UC_UTF8_STRING is
 		once
 			create Result.make_from_string ("string")
 		end

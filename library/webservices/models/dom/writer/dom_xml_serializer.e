@@ -352,17 +352,18 @@ feature {NONE} -- Helper features
 		local
 			attribute_quote: CHARACTER
 		do
-			attribute_quote := '"'
-			if value.index_of (quote_character, 1) > 0 then
-				if value.index_of (apostrophe_character, 1) > 0 then
-					character_entity_reference := quoted_character_entity_reference
-				else
-					attribute_quote := '%''
-				end
-			end
-			output.put_character (attribute_quote)
-			serialize_escaped (value)
-			output.put_character (attribute_quote)
+-- GM: Commented out for new GOBO port
+--			attribute_quote := '"'
+--			if value.index_of (quote_character, 1) > 0 then
+--				if value.index_of (apostrophe_character, 1) > 0 then
+--					character_entity_reference := quoted_character_entity_reference
+--				else
+--					attribute_quote := '%''
+--				end
+--			end
+--			output.put_character (attribute_quote)
+--			serialize_escaped (value)
+--			output.put_character (attribute_quote)
 		end
 		
 	serialize_indent (level: INTEGER) is
@@ -405,7 +406,8 @@ feature {NONE} -- Helper features
 			until
 				i > str.count
 			loop
-				char := str.item (i)
+-- GM: commented out for new GOBO port
+--				char := str.item (i)
 				if character_entity_reference /= Void and then
 					character_entity_reference.has (char.code)
 				then
@@ -480,13 +482,15 @@ feature {NONE} -- Helper features
 	apostrophe_character: UC_CHARACTER is
 			-- Character representing '%''
 		once
-			Result.make_from_character ('%'')
+-- GM: commented out for new GOBO port
+--			Result.make_from_character ('%'')
 		end
 
 	quote_character: UC_CHARACTER is
 			-- Character representing '"'
 		once
-			Result.make_from_character ('"')
+-- GM: commented out for new GOBO port
+--			Result.make_from_character ('"')
 		end
 
 	integer_routines: KL_INTEGER_ROUTINES is

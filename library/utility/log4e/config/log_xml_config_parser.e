@@ -85,11 +85,6 @@ feature {NONE} -- Implementation
 				+ " (" + parser.last_error_extended_description + ")")
 			internal_log.error ("At position: " + parser.position.out)
 		end
-	
-	serializer_factory: DOM_SERIALIZER_FACTORY is
-		once
-			create Result
-		end
 
 	appenders: DS_HASH_TABLE [LOG_APPENDER, STRING]
 			-- Collection of named appenders

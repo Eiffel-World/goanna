@@ -6,7 +6,7 @@ class
 
 inherit
 	
-	LOG_PRIORITY_CONSTANTS
+	L4E_PRIORITY_CONSTANTS
 		export
 			{NONE} all
 		end
@@ -18,16 +18,16 @@ inherit
 	
 feature -- Access
 
-	log_hierarchy: LOG_HIERARCHY is
+	log_hierarchy: L4E_HIERARCHY is
 			-- Shared log hierarchy with predefined
 			-- categories for HTTPD server logging
 		local
-			appender: LOG_APPENDER
-			layout: LOG_LAYOUT
+			appender: L4E_APPENDER
+			layout: L4E_LAYOUT
 		once
 			create Result.make (Debug_p)
-			create {LOG_FILE_APPENDER} appender.make (Application_log, True)
-			create {LOG_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
+			create {L4E_FILE_APPENDER} appender.make (Application_log, True)
+			create {L4E_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
 			appender.set_layout (layout)
 			Result.root.add_appender (appender)
 		end

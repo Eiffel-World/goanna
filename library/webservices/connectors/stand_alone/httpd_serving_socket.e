@@ -75,7 +75,7 @@ feature
 					end
 				end			
 				if path /= Void then
-					log_hierarchy.category (Access_category).info ("Servicing request: /" + path)
+					log_hierarchy.logger (Access_category).info ("Servicing request: /" + path)
 					-- attempt to handle the request and send 'not found' if not handled.
 					if servlet_manager.has_registered_servlet (path) then
 						servlet_manager.servlet (path).service (req, resp)
@@ -83,11 +83,11 @@ feature
 						servlet_manager.default_servlet.service (req, resp)
 					else
 						resp.send_error (Sc_not_found)
-						log_hierarchy.category (Access_category).error ("Servlet not found for URI " + path)
+						log_hierarchy.logger (Access_category).error ("Servlet not found for URI " + path)
 					end
 				else
 					handle_missing_servlet (resp)
-					log_hierarchy.category (Access_category).error ("Request URI not specified")
+					log_hierarchy.logger (Access_category).error ("Request URI not specified")
 				end			
 			end
 			-- close socket after sending reply
@@ -200,8 +200,8 @@ feature {NONE}
 					io.putstring ("Socket error: " + last_error_code.out + "%N")
 					io.putstring ("Extended error: " + last_extended_socket_error_code.out + "%N")
 				end
-				log_hierarchy.category (Internal_category).error ("Socket error: " + last_error_code.out + "%N")
-				log_hierarchy.category (Internal_category).error ("Extended error: " + last_extended_socket_error_code.out + "%N")
+				log_hierarchy.logger (Internal_category).error ("Socket error: " + last_error_code.out + "%N")
+				log_hierarchy.logger (Internal_category).error ("Extended error: " + last_extended_socket_error_code.out + "%N")
 			else
 				socket_ok := True
 			end
