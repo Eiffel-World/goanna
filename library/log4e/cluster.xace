@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<cluster name="log4e" location="${GOANNA}/library/dom">
+
+	<description>
+		description: "Cluster definition for Goanna log4e"
+		project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO cluster.xace files"
+	</description>
+
+	<cluster name="appenders"/>
+	<cluster name="appenders-net"/>
+	<cluster name="appenders-nt"/>
+	<cluster name="config"/>
+	<cluster name="filters"/>
+	<cluster name="helpers"/>
+	<cluster name="layouts"/>
+	<cluster name="layouts/pattern"/>
+
+</cluster>

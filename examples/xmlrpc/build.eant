@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<project name="xmlrpc" default="help">
+
+	<description>
+		description: "Ant file for Goanna XMLRPC examples"
+		project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO ant files"
+	</description>
+
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message="   geant install"/>
+		<echo message="   geant clean"/>
+		<echo message="   geant clobber"/>
+	</target>
+
+	<target name="install" depend="init" dir="${GOANNA}/examples/xmlrpc">
+		<description>
+			Install the Goanna XMLRPC examples.
+		</description>
+
+		<geant file="server/build.eant" target="install"/>
+		<geant file="client/build.eant" target="install"/>
+	</target>
+
+	<target name="clean" depend="init" dir="${GOANNA}/examples/xmlrpc">
+		<description>
+			Remove intermediary generated files.
+		</description>
+
+		<geant file="server/build.eant" target="clean"/>
+		<geant file="client/build.eant" target="clean"/>
+	</target>
+
+	<target name="clobber" depend="init" dir="${GOANNA}/examples/xmlrpc">
+		<description>
+			Remove all generated files.
+		</description>
+
+		<geant file="server/build.eant" target="clobber"/>
+		<geant file="client/build.eant" target="clobber"/>
+	</target>
+
+
+<!-- Implementation -->
+
+	<target name="init">
+		<!-- do nothing -->
+	</target>
+
+</project>
