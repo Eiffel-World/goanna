@@ -98,17 +98,19 @@ feature -- Status setting
 			key: STRING
 		do
 			-- Force-expire all sessions
-			from
-				sessions.start
-			until
-				sessions.off
-			loop
-				session := sessions.item_for_iteration
-				key := sessions.key_for_iteration
-				notify_listeners (session, Expiring_code)
-				sessions.remove (key)
-				notify_listeners (session, Expired_code)
-				sessions.forth
+			if sessions.count > 0 then
+				from
+					sessions.start
+				until
+					sessions.after
+				loop
+					session := sessions.item_for_iteration
+					key := sessions.key_for_iteration
+					notify_listeners (session, Expiring_code)
+					sessions.remove (key)
+					notify_listeners (session, Expired_code)
+					sessions.forth
+				end
 			end
 		end
 	
