@@ -1,0 +1,191 @@
+<chapter>
+  <title>Logging (log4e)</title>
+  <para>The <literal>log4e</literal> library provides a complete framework 
+    for logging messages in an application. Logged messages can be processed 
+    based on priority and content and sent to multiple destinations. A destination, 
+    in Goanna log4e, is known as an appender. The types of appenders include 
+    files and the NT event log.
+  </para>
+  <para>The classes in <literal>log4e</literal> are a direct port of Jakarta log4j 
+    which can be found at http://jakarta.apache.org. For the most part, the source 
+    has been ported as is. A number of Eiffel-like improvements have been made 
+    such as appropriate contracts, and the use of generic types. The general struture and
+    usage of the library remains very similar to the original Java version.
+  </para>
+  
+  <section>
+    <title>Overview</title>
+    <para>The central object of the log4e library is the
+      <emphasis>hierarchy</emphasis>. The hierarchy holds each of the
+      logging <emphasis>catregories</emphasis> on which messages 
+      can be logged. As its name suggests, the hierarchy maintains the
+      collection of categories in a hierarchy with a predefined root 
+      category at the top and user defined sub-categories beneath.
+    </para>
+    <para>Each category has a name, a logging priority and zero or 
+      more <emphasis>appenders</emphasis>. Different types
+      of appenders can log messages to different destinations, be it 
+      a file, NT event log or socket. They can also format those
+      messages any way required and filter messages based on priority 
+      and/or message content.
+    </para>
+  </section>
+
+  <section>
+    <title>The Category Hierarchy</title>
+    <para>The category hierarchy, represented by the class 
+      <classname>LOG_HIERARCHY</classname>, holds a collection of 
+      categories that you define. Multiple independant hierarchies can exist within 
+      an application. However, it is more common
+      to use one hierarchy with multiple categories to represent different 
+      logging areas.
+    </para>
+    <para><classname>LOG_HIERARCHY</classname> provides methods for accessing 
+      categories and setting hierarchy level
+      logging priorities. The hierarchy is the only object that can create 
+      instances of categories 
+      (<classname>LOG_CATEGORY</classname> and maintains the parents 
+      of each category internally. In addition, each hierarchy
+      instance initialises a <emphasis>root</emphasis> category that resides at 
+      the top of the category hierarchy. If required,
+      the root category can be used as the sole logging category in an
+      application.
+    </para>
+    
+    <section>
+      <title>Categories</title>
+      <para>The category hierarchy is determine by the names given to 
+	each category---a dot in the name indicates a 
+	parent-child relationship between categories. For example, 
+	if a category is created with the name 
+	<literal>a.b</literal> it identifies the category named 
+	<literal>b</literal> with the parent category named 
+	<liberal>a</literal>. When this category is created the category 
+	  hierarchy will also instantiate any intermediate
+	  parent categories if needed. For the category named 
+	  <literal>a.b</literal> the hierarchy will create a category
+	  named <literal>a</literal> if it doesn't already exist and set 
+	  it as the parent of <literal>b</literal>. A category
+	  name can contain an arbitrary number of parts separated by 
+	  dots ('.'). The hierarchy will manage the parents
+	  automatically for you.
+      </para>
+      <para>The naming of categories follows your requirements for 
+	logging. Category hierarchies can be defined that
+	provide logging categories for an application as a whole, 
+	subsystems and/or source modules. You can create very simple
+	logging hierarchies, such as using only the root category, 
+	through to very complex hierarchies, such as providing a 
+	category for every source file or module in your application.
+      </para>
+      <para>A category can only be created by the category hierarchy by 
+	calling the <function>category</function>
+	function of <classname>LOG_CATEGORY</classname>. The sole 
+	parameter to this function specifies the name of the category
+	you would like to access. The hierarchy will create the 
+	category (and its parents) if required and return the category
+	to you. This ensures that there will only be one instance 
+	of a named category in each category hierarchy and that it is
+	correctly positioned in the hierarchy. Once you have a 
+	reference to the category you can then configure the category's
+	priority and appenders and log messages to it.
+      </para>
+      <para>Messages can be sent to a category using the routines 
+	<function>debugging</function><footnote>The original 
+	  log4j library uses the routine name 
+	  <function>debug</function> however this is a reserved word 
+	  in Eiffel and has therefore been renamed 
+	  <function>debugging</function></footnote>,
+	<function>warn</function>, <function>info</function>, 
+	<function>error</function>, <function>fatal</function or
+	<function>log</function> to log at predefined priorities or 
+	a specified priority in the case of <function>log</function>.
+      </para> 
+    </section>
+    <section>
+      <title>Priorities</title>
+      <para>Describe priorities for categories.</para>
+    </section>
+    <section>
+      <title>Additive Categories</title>
+      <para>Describe additive categories.</para>
+    </section>
+    <section>
+      <title>Logging</title>
+      <para>Describe logging routines.</para>
+    </section>
+  </section>
+  
+  <section>
+    <title>Appenders</title>
+    <para>Describe the purpose of appenders and how to create one.</para>
+    <section>
+      <title>File Appenders</title>
+      <para>Describe general file appender classes.</para>
+      <section>
+	<title>Standard Out and Standard Error</title>
+	<para>Describe standard out and standard error file appenders.</para>
+      </section>
+      <section>
+	<title>Rolling Files</title>
+	<para>Describe rolling file appenders: rolling file, calendar
+	  rolling file and externally rolled.</para>
+      </section>
+      <section>
+	<title>NT Event Log</title>
+	<para>Describe logging to the NT Event log.</para>
+      </section>
+    </section>
+    <section>
+      <title>Appender Layouts</title>
+      <para>Describe creation and usage of layouts.</para>
+      <section>
+	<title>Simple Layout</title>
+	<para>Describe simple layouts.</para>
+      </section>
+      <section>
+	<title>Date/Time Layout</title>
+	<para>Describe time layout and date time layouts.</para>
+      </section>
+      <section>
+	<title>Pattern Layout</title>
+	<para>Describe pattern layouts.</para>
+      </section>
+    </section>
+    <section>
+      <title>Filters</title>
+      <para>Describe filtering of log events.</para>
+      <section>
+	<title>Priority Match Filters</title>
+	<para>Describe priority match filters.</para>
+      </section>
+      <section>
+	<title>Priority Range Filters</title>
+	<para>Describe priority range filters.</para>
+      </section>
+      <section>
+	<title>String Match Filters</title>
+	<para>Describe string match filters.</para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>Configuration</title>
+    <para>Describe general configuration.</para>
+    <section>
+      <title>Programmatic Configuration</title>
+      <para>Describe general programmatic configuration and shared logging hierarchies.</para>
+    </section>
+    <section>
+      <title>XML Configuration</title>
+      <para>Describe configuration using XML.</para>
+    </section>
+  </section>
+</chapter>
+
+<!--
+    Local Variables:
+        sgml-parent-document: ("manual.sgml" "book" "chapter")
+    End:
+-->
+

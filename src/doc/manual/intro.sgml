@@ -1,0 +1,30 @@
+<chapter>
+  <title>Introduction</title>
+  <para>Goanna Manual</para>
+  <section>
+    <title>Why Goanna?</title>
+    <para>The Goanna library aims to provide a Web Services framework for Eiffel programmers.</para>
+  </section>
+  <section>
+    <title>Platforms</title>
+    <para>Goanna is a multi-platform library with support for all major Eiffel compilers.</para>
+  </section>
+  <section>
+    <title>Compilers</title>
+    <para>Goanna is a multi-platform library with support for all major Eiffel compilers.</para>
+  </section>
+  <section>
+    <title>Required Libraries</title>
+    <para>The following libraries are required to use the Goanna library.</para>
+  </section>
+  <section>
+    <title>Installation and Compilation</title>
+    <para>Describe installation and compilation.</para>
+  </section>
+</chapter>
+
+<!--
+    Local Variables:
+        sgml-parent-document: ("manual.sgml" "book" "chapter")
+    End:
+-->
