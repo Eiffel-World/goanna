@@ -76,10 +76,6 @@ feature {NONE} -- Implementation
 			-- output this element, its attributes, and recursively, all of its children
 			serialize_indent (indent_level)
 			output.put_string ("<")
-			if element.namespace_uri /= Void then
-				output.put_string (element.namespace_uri.out)
-				output.put_string (":")
-			end
 			output.put_string (element.tag_name.out)
 			-- attributes
 			if element.has_attributes then

@@ -228,6 +228,22 @@ feature
 			-- TODO: prefix and localname set.
 		end
 
+	create_attribute_ns (new_namespace_uri, qualified_name: DOM_STRING): DOM_ATTR is
+			-- Creates an attribute of the given qualified name and namespace URI.
+			-- DOM Level 2.
+		require
+			namespace_uri_exists: new_namespace_uri /= Void
+			qualified_name_exists: qualified_name /= Void
+			not_invalid_character_err: valid_qualified_name_chars (qualified_name)
+			not_namespace_err: valid_qualified_name (namespace_uri, qualified_name)
+		deferred
+		ensure
+			result_exists: Result /= Void
+			node_name_set: Result.node_name.is_equal (qualified_name)
+			namespace_uri_set: Result.namespace_uri.is_equal (new_namespace_uri)
+			-- TODO: prefix and localname set.
+		end
+
 feature -- Validation Utility
 
 	valid_name_chars (new_name: DOM_STRING): BOOLEAN is

@@ -67,20 +67,38 @@ feature {NONE} -- Parser call backs
 		attributes: DS_BILINEAR [DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]]) is
 			-- called whenever the parser findes a start element
 		local
+			qualified_name, attr_prefix: DOM_STRING
 			new_node: DOM_ELEMENT
 			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
 		do
 			debug ("parser_events")
 				print ("on_start_tag:%R%N%Tname=" + quoted_eiffel_string_out (name.out) 
-					+ " ns_prefix=" + quoted_eiffel_string_out (ns_prefix.out)) 
+					+ " ns_prefix=" + quoted_eiffel_string_out (ns_prefix.out))
 				print ("%R%N")
+				if not attributes.is_empty then
+					print ("%Tattributes:%R%N")
+					from
+						attributes.start
+					until
+						attributes.off
+					loop
+						pair := attributes.item_for_iteration
+						print ("%T%Tname=" + quoted_eiffel_string_out (pair.first.first.out))
+						print (" prefix=" + quoted_eiffel_string_out (pair.first.second.out))
+						print (" value=" + quoted_eiffel_string_out (pair.second.out))
+						print ("%R%N")
+						attributes.forth
+					end
+				end
 			end
-			if not ns_prefix.empty then
-				new_node := document.create_element_ns (create {DOM_STRING}.make_from_ucstring (ns_prefix),
-					create {DOM_STRING}.make_from_ucstring (name))
-			else
+--			if ns_prefix.empty then
 				new_node := document.create_element (create {DOM_STRING}.make_from_ucstring (name))
-			end
+--			else
+--				create qualified_name.make_from_ucstring (ns_prefix)
+--				qualified_name.append_string (":")
+--				qualified_name.append_ucstring (name)
+--				new_node := document.create_element_ns (current_namespace_uri, qualified_name)
+--			end
 			-- set new node as root document element if not already set.
 			if document_element = Void then
 				document_element := new_node
@@ -96,9 +114,17 @@ feature {NONE} -- Parser call backs
 				attributes.off
 			loop
 				pair := attributes.item_for_iteration
-				new_node.set_attribute (create {DOM_STRING}.make_from_ucstring (pair.first.first), 
-					create {DOM_STRING}.make_from_ucstring (pair.second))
-
+				create attr_prefix.make_from_ucstring (pair.first.second)
+--				if attr_prefix.empty then
+					new_node.set_attribute (create {DOM_STRING}.make_from_ucstring (pair.first.first), 
+						create {DOM_STRING}.make_from_ucstring (pair.second))
+--				else
+--					create qualified_name.make_from_ucstring (attr_prefix)
+--					qualified_name.append_string (":")
+--					qualified_name.append_ucstring (pair.first.first)
+--					new_node.set_attribute_ns (current_namespace_uri, qualified_name, 
+--						create {DOM_STRING}.make_from_ucstring (pair.second))
+--				end
 				attributes.forth
 			end
 		end
@@ -200,8 +226,6 @@ feature {NONE} -- Parser call backs
 				print (" standalone=" + standalone.out)
 				print ("%R%N")
 			end
-			-- enable all events
-			parser.register_all_callbacks
 		end
 
 	on_entity_declaration (entity_name: UCSTRING; is_parameter_entity: BOOLEAN; 
@@ -309,18 +333,34 @@ feature {NONE} -- Parser call backs
 	on_start_namespace_declaration (namespace_prefix, uri: UCSTRING) is
 		do
 			debug ("parser_events")
-				print ("on_start_namespace_declaration:%R%N%Tnamespace_prefix=" + quoted_eiffel_string_out (namespace_prefix.out))
-				print (" uri=" + quoted_eiffel_string_out (uri.out))
+				print ("on_start_namespace_declaration:%R%N%T")
+				if (namespace_prefix /= Void) then
+					print ("namespace_prefix=" + quoted_eiffel_string_out (namespace_prefix.out) + " ")
+				else
+					print ("(default) ");
+				end
+				print ("uri=" + quoted_eiffel_string_out (uri.out))
 				print ("%R%N")
 			end
+			if namespace_prefix /= Void then
+				create current_namespace_prefix.make_from_ucstring (namespace_prefix)				
+			end
+			create current_namespace_uri.make_from_ucstring (uri)
 		end
 
 	on_end_namespace_declaration (namespace_prefix: UCSTRING) is
 		do
 			debug ("parser_events")
-				print ("on_end_namespace_declaration:%R%N%Tnamespace_prefix=" + quoted_eiffel_string_out (namespace_prefix.out))
+				print ("on_end_namespace_declaration:%R%N%T")
+				if namespace_prefix /= Void then
+					print ("namespace_prefix=" + quoted_eiffel_string_out (namespace_prefix.out))
+				else
+					print ("(default)")
+				end
 				print ("%R%N")
 			end
+			current_namespace_prefix := Void
+			current_namespace_uri := Void
 		end
 
 	on_not_standalone: BOOLEAN is
@@ -339,11 +379,15 @@ feature {NONE} -- Implementation
 	
 	in_cdata_section: BOOLEAN
 	
+	current_namespace_prefix: DOM_STRING
+	
+	current_namespace_uri: DOM_STRING
+	
 	document_element: DOM_ELEMENT
 	
 	dom_impl: DOM_IMPLEMENTATION
 
-	parser: EXPAT_EVENT_PARSER is
+	parser: DOM_EVENT_PARSER is
 		once
 			create Result
 		end

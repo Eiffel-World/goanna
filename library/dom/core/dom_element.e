@@ -43,6 +43,22 @@ feature
 		  result_exists: Result /= Void
       end
 
+	get_attribute_ns (new_namespace_uri, name: DOM_STRING): DOM_STRING is
+			-- Retrieves an attribute value by `name' and namespace URI.
+			-- Parameters
+			--    name   The name of the attribute to retrieve.
+			-- Return Value
+			--    The Attr value as a string, or the empty string if that
+			--    attribute does not have a specified or default value.
+			-- DOM Level 2.
+		require
+			namespace_uri_exists: new_namespace_uri /= Void
+			name_exists: name /= Void
+		deferred
+		ensure
+			result_exists: Result /= Void
+		end
+      
    set_attribute (name: DOM_STRING; value: DOM_STRING) is
          -- Adds a new attribute. If an attribute with that `name' is
          -- already present in the element, its `value' is changed to be
@@ -68,6 +84,33 @@ feature
 		  attribute_set: get_attribute (name).is_equal (value)
       end
 
+   set_attribute_ns (new_namespace_uri, name: DOM_STRING; value: DOM_STRING) is
+         -- Adds a new attribute. If an attribute with that `name' and namespace URI is
+         -- already present in the element, its `value' is changed to be
+         -- that of the `value' parameter. This `value' is a simple string,
+         -- it is not parsed as it is being set. So any markup (such as
+         -- syntax to be recognized as an entity reference) is treated
+         -- as literal text, and needs to be appropriately escaped by the
+         -- implementation when it is written out. In order to assign
+         -- an attribute `value' that contains entity references, the user
+         -- must create an Attr node plus any Text and EntityReference nodes,
+         -- build the appropriate subtree, and use setAttributeNode to assign
+         -- it as the `value' of an attribute.
+         -- Parameters
+         --    name    The name of the attribute to create or alter.
+         --    value   Value to set in string form.
+         -- DOM Level 2.
+	  require
+	  	  namespace_uri_exists: new_namespace_uri /= Void
+		  name_exists: name /= Void
+		  value_exists: value /= Void
+		  not_invalid_character_err: valid_name_chars (name)
+		  not_no_modification_allowed_err: not readonly
+      deferred
+	  ensure
+		  attribute_set: get_attribute (name).is_equal (value)
+      end
+      
    remove_attribute (name: DOM_STRING) is
          -- Removes an attribute by `name'. If the removed attribute
          -- has a default value it is immediately replaced.

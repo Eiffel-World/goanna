@@ -18,12 +18,12 @@ inherit
 		rename
 			make as parent_make
 		redefine
-			set_node_value, node_value
+			set_node_value, node_value, namespace_uri
 		end
 			
 creation
 
-	make
+	make, make_without_owner, make_with_namespace
 
 feature -- Factory creation
 
@@ -48,6 +48,17 @@ feature -- Factory creation
 			!DOM_STRING! value.make_from_string ("")
 		end
 
+	make_with_namespace (owner_doc: DOM_DOCUMENT; new_namespace_uri, new_qualified_name : DOM_STRING) is
+			-- Create a new attribute node with a namespace
+		require
+			owner_doc_exists: owner_doc /= Void
+			new_name_exists: new_qualified_name /= Void
+			new_namespace_uri_exists: new_namespace_uri /= Void
+		do
+			make (owner_doc, new_qualified_name)
+			namespace_uri := new_namespace_uri
+		end
+		
 feature
 
    name: DOM_STRING
@@ -75,6 +86,17 @@ feature
          --    not appear in the structure model of the document.
 		 -- DOM Level 2.
 
+	namespace_uri: DOM_STRING
+		-- The namespace URI of this node, or Void if it is unspecified.
+		-- This is not a computed value that is the result of a namespace
+		-- lookup based on an examination of the namespace declarations
+		-- in scope. It is merely the namespace URI given at creation time.
+		-- For nodes of any type other than Element_node and Attribute_node
+		-- and nodes created with a DOM Level 1 method, such as 
+		-- create_element from the DOM_DOCUMENT interface, this is always
+		-- Void.
+		-- DOM Level 2.
+		
    value: DOM_STRING
          -- The value of the attribute is returned as a string. Character
          -- and general entity references are replaced with their values.

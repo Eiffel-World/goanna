@@ -174,6 +174,14 @@ feature -- Access
 				new_namespace_uri, qualified_name)
 		end
 
+	create_attribute_ns (new_namespace_uri, qualified_name: DOM_STRING): DOM_ATTR is
+			-- Creates an attribute of the given qualified name and namespace URI.
+			-- DOM Level 2.
+		do
+			create {DOM_ATTR_IMPL} Result.make_with_namespace (Current,
+				new_namespace_uri, qualified_name)
+		end
+
 feature -- Document Traversal
 
 	create_node_iterator (root: DOM_NODE; what_to_show: INTEGER;
