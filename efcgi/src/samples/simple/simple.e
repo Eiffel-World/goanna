@@ -52,20 +52,20 @@ feature -- Basic Operations
 			putstr ("<br>%N")
 			count := count + 1
 
---			putstr ("Server name: ")
---			putstr (getparam (Server_name))
---			putstr ("<br>%N")
+			putstr ("Server name: ")
+			putstr (getparam (Server_name))
+			putstr ("<br>%N")
 
---			putstr ("User agent: ")
---			putstr (getparam (Http_user_agent))
---			putstr ("<br>%N")
+			putstr ("User agent: ")
+			putstr (getparam (Http_user_agent))
+			putstr ("<br>%N")
 
---			if length > 0 then
---				read_str := getstr (length)
---				putstr ("Content: ")
---				putstr (read_str)
---				putstr ("%N")
---			end
+			if length > 0 then
+				read_str := getstr (length)
+				putstr ("Content: ")
+				putstr (read_str)
+				putstr ("%N")
+			end
 		end
 
 end -- class SIMPLE

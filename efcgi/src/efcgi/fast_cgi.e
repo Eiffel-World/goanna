@@ -64,6 +64,16 @@ feature -- FGCI interface
 			-- current request was started by the most recent call to 
 			-- 'accept'.
 		do
+			if request /= Void then
+				-- complete the current request
+				request.end_request
+				if request.keep_connection then
+					request.socket.close
+					request.make -- reset the request
+				else
+					request := Void
+				end
+			end
 		end
 
 	flush is 
@@ -72,31 +82,44 @@ feature -- FGCI interface
 		end
 
 	putstr (str: STRING) is 
-      		-- Print 'str' to standard output stream.
+      						-- Print 'str' to standard output stream.
+      				require
+      		request_exists: request /= Void
 		do 
 			request.write_stdout (str)
 		end
 
 	warn (str: STRING) is 
 			-- Print 'str' to standard error stream.
+		require
+			request_exists: request /= Void
 		do
 			request.write_stderr (str)
 		end
 
 	getstr (amount: INTEGER): STRING is 
 			-- Read 'amount' characters from standard input stream.
+		require
+			request_exists: request /= Void
 		do
+			create Result.make (amount)
+			Result.fill_blank
+			request.socket.receive_string (Result)
 		end
 
 	getline (amount: INTEGER): STRING is
 			-- Read up to n - 1 consecutive bytes from the input stream
 			-- into the Result. Stops before n - 1 bytes have been read
 			-- if '%N' or EOF is read.
+		require
+			request_exists: request /= Void
 		do
 		end
 
 	getparam (name: STRING): STRING is
 			-- Get the value of the named environment variable.
+		require
+			request_exists: request /= Void
 		do
 			if request.parameters.has (name) then
 				Result := request.parameters.item (name)
@@ -106,6 +129,8 @@ feature -- FGCI interface
 	getparam_integer(name: STRING): INTEGER is
 			-- Fetch and convert environment variable
 	 		-- Returns 0 on failure.
+		require
+			request_exists: request /= Void
 		local
 			str: STRING
 		do
@@ -116,26 +141,17 @@ feature -- FGCI interface
 				end
 			end
 		end
-
-feature -- FastCGI Application routines
-
-	is_cgi: BOOLEAN is
-			-- Is the process a CGI process rather than a FastCGI process?
-		do
-			-- False
-		end
-	
-feature {NONE} -- Implementation
+		
+feature -- Access
 
 	request: FAST_CGI_REQUEST
 		-- Current request being processed. Void if none.
 	
+feature {NONE} -- Implementation
+	
 	accept_called: BOOLEAN
 		-- Has accept been called?
-		
-	is_fcgi: BOOLEAN is True
-		-- Is this application running is FCGI mode? Always True.
-		
+				
 	srv_socket: TCP_SERVER_SOCKET
 		-- The server socket that this applications listens for requests on.
 	

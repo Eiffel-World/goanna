@@ -17,6 +17,7 @@ default
 	check_vape(no)
 	disabled_debug(yes)
 	debug("fcgi_protocol")
+	debug(no)
 	line_generation(no)
 	profile(no)
 	trace(no)
