@@ -31,17 +31,17 @@ feature -- Access
 			-- Table of content type codes. Codes map into content_types table
 		once
 			create Result.make (30) 
-			Result.put (Content_type_text_html, "html")
-			Result.put (Content_type_text_html, "htm")
-			Result.put (Content_type_text_xml, "xml")
-			Result.put (Content_type_text_css, "css")
-			Result.put (Content_type_text_xsl, "xsl")
-			Result.put (Content_type_text_rtf, "rtf")
-			Result.put (Content_type_image_gif, "gif")
-			Result.put (Content_type_image_jpeg, "jpeg")
-			Result.put (Content_type_image_jpeg, "jpg")
-			Result.put (Content_type_image_png, "png")
-			Result.put (Content_type_image_tiff, "tiff")
+			Result.force (Content_type_text_html, "html")
+			Result.force (Content_type_text_html, "htm")
+			Result.force (Content_type_text_xml, "xml")
+			Result.force (Content_type_text_css, "css")
+			Result.force (Content_type_text_xsl, "xsl")
+			Result.force (Content_type_text_rtf, "rtf")
+			Result.force (Content_type_image_gif, "gif")
+			Result.force (Content_type_image_jpeg, "jpeg")
+			Result.force (Content_type_image_jpeg, "jpg")
+			Result.force (Content_type_image_png, "png")
+			Result.force (Content_type_image_tiff, "tiff")
 		end
 
 	content_types: ARRAY [STRING] is
@@ -74,5 +74,5 @@ feature -- Access
 			end
 			Result := uri.substring (i + 1, uri.count)
 		end
-	
-end -- class CONTENT_TYPES
+
+end	-- class CONTENT_TYPES
