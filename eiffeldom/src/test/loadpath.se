@@ -1,7 +1,3 @@
-$GOBO/library/utility/loadpath.se
-$GOBO/library/kernel/loadpath.se
-$GOBO/library/structure/loadpath.se
-$GOBO/library/structure/base/
-$GOANNA/eiffeldom/src/loadpath.se
-$UCSTRING/lib/
-$UCSTRING/spec/se/
+${EXML}/lib/implementation/expat/compiler_specific/se/loadpath.se
+${GOBO}/library/structure/base/
+${GOANNA}/eiffeldom/src/loadpath.se

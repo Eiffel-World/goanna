@@ -4,25 +4,10 @@ indexing
    revision: "$Revision$";
    key: "DOM", "Document Object Model", "DOM Core";
 
-deferred class DOM_CDATA_SECTION
+deferred class DOM_CHARACTER_DATA
 
 inherit
 
-	DOM_TEXT
-		redefine
-			node_name, node_type
-		end
+	DOM_NODE
 
-feature
-
-	node_type: INTEGER is
-		once
-			Result := Cdata_section_node
-		end
-
-	node_name: DOM_STRING is
-		once
-			create Result.make_from_string ("#cdata-section")
-		end
-
-end -- class DOM_CDATA_SECTION
+end -- class DOM_CHARACTER_DATA
