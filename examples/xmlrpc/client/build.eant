@@ -83,6 +83,7 @@
 		<geant file="build.eant" target="${target}" dir="addressbook"/>
 		<geant file="build.eant" target="${target}" dir="calculator"/>
 		<geant file="build.eant" target="${target}" dir="currenttime"/>
+		<geant file="build.eant" target="${target}" dir="currenttime-web"/>
 		<geant file="build.eant" target="${target}" dir="spellchecker"/>
 		<geant file="build.eant" target="${target}" dir="test"/>
 
