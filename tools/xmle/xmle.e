@@ -29,10 +29,14 @@ feature -- Initialization
 			parse_arguments
 			if arguments_ok then
 				create parser.make
+				print ("Parsing file: " + file_name.out + "...%R%N")
 				parser.parse_from_file_name (file_name)
-				parser.document.normalize
 				if parser.last_error = parser.Xml_err_none then
+					print ("Normalizing document...%R%N")
+					parser.document.normalize
+					print ("Generating Eiffel code...%R%N")
 					generate_eiffel_code (parser.document)
+					print ("XMLE compilation complete.%R%N")
 				else
 					display_parser_error
 				end
@@ -79,10 +83,9 @@ feature {NONE} -- Implementation
 	display_parser_error is
 			-- Output parsing error
 		do
-			print ("XML parser error: " + parser.last_error.out
-				+ " (" + parser.last_error_description + ")")
-			print ("At line: " + parser.last_line_number.out + " column: "
-				+ parser.last_column_number.out)
+			print ("XML parser error: " + parser.last_error_description
+				+ " (" + parser.last_error_extended_description + ")")
+			print ("At position: " + parser.position.out)
 		end
 
 	generate_eiffel_code (document: DOM_DOCUMENT) is

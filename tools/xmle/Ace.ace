@@ -23,10 +23,15 @@ default
 	arguments("rich_iii.xml")
 	arguments("small.xml")
 	disabled_debug(yes)
+	disabled_debug("xmle_id_nodes")
+	debug("parser_events")
+	disabled_debug("normalize")
 	line_generation(no)
 	profile(no)
 	trace(no)
 
+
+-- eXML
 
 cluster
 	"xmle":		"$GOANNA\tools\xmle"
@@ -82,17 +87,17 @@ cluster
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
-	exml:		"$EXML\lib"
+	exml:		"$EXML/lib"
 
-	exml_interface (exml):		"$\interface"
+	exml_interface (exml):		"$/interface"
 
-	exml_general_interface (exml_interface):		"$\general"
+	exml_general_interface (exml_interface):		"$/general"
 
-	exml_event_interface (exml_interface):		"$\event"
+	exml_event_interface (exml_interface):		"$/event"
 
-	exml_tree_interface (exml_interface):		"$\tree"
+	exml_tree_interface (exml_interface):		"$/tree"
 
-	exml_factory_interface (exml_interface):		"$\factory"
+	exml_factory_interface (exml_interface):		"$/factory"
 
 	exml_formater_interface (exml_interface):		"$\formater"
 
@@ -104,7 +109,7 @@ cluster
 
 	exml_implementation_interface (exml_implementation):		"$\implementation_interface"
 
-	exml_general_implementatin_interface (exml_implementation_interface):		"$\general"
+	exml_general_implementation_interface (exml_implementation_interface):		"$\general"
 
 	exml_event_implementation_interface (exml_implementation_interface):		"$\event"
 
@@ -112,11 +117,16 @@ cluster
 
 	exml_expat_implementation (exml_implementation):		"$\expat"
 
+	exml_expat_api_implementation (exml_expat_implementation):		"$\api"
+
 	exml_expat_general_implementation (exml_expat_implementation):		"$\general"
 
 	exml_expat_event_implementation (exml_expat_implementation):		"$\event"
+		use
+			".lace"
+		end
 
-	exml_expat_ise_implementation (exml_expat_implementation):		"$\compiler_specific\ise"
+	exml_expat_ise_implementation (exml_expat_implementation):		"$\spec\ise"
 
 	exml_expat_factory_implementation (exml_expat_implementation):		"$\factory"
 
@@ -138,7 +148,7 @@ external
 		"$GOBO\library\kernel\include"
 
 	object:
-		"$EXML\lib\implementation\expat\compiler_specific\ise\clib\msc\exml.lib",
+		"$EXML\lib\implementation\expat\spec\c\libexml.lib",
 		"$EXPAT\lib\Debug\expat.lib"
 
 end

@@ -13,16 +13,14 @@ class
 
 inherit
    
-	EXPAT_EVENT_PARSER
+   XML_EVENT_PARSER
 		redefine
-			make,
 			on_start_tag,
 			on_content,
 			on_end_tag,
 			on_processing_instruction,
 			on_comment
 		end
-   
 creation
    
 	make
@@ -31,7 +29,7 @@ feature {NONE} -- Initialisation
 
 	make is
 			do
-				Precursor
+				make_from_imp (parser)
 				create {DOM_IMPLEMENTATION_IMPL} dom_impl
 				document := dom_impl.create_empty_document (Void)
 				current_open_composite := document
@@ -51,7 +49,7 @@ feature {NONE} -- Parser call backs
 			pair: DS_PAIR [DS_PAIR [UCSTRING, UCSTRING], UCSTRING]
 		do
 			debug ("parser_events")
-				print ("on_start_tag: '" + name.out + "'") 
+				print ("on_start_tag: name='" + name.out + "' ns_prefix='" + ns_prefix.out + "'") 
 				print ("%R%N")
 			end
 			new_node := document.create_element (create {DOM_STRING}.make_from_ucstring (name)) -- TODO: change to create_element_ns
@@ -92,7 +90,7 @@ feature {NONE} -- Parser call backs
 			-- called whenever the parser findes an end element
 		do
 			debug ("parser_events")
-				print ("on_end_tag: '" + name.out + "'")
+				print ("on_end_tag: name='" + name.out + "' ns_prefix='" + ns_prefix.out + "'")
 				print ("%R%N")
 			end
 			-- if the current node is Void then the parent node has ended
@@ -106,7 +104,7 @@ feature {NONE} -- Parser call backs
 			new_element: DOM_NODE
 		do
 			debug ("parser_events")
-				print ("on_processing_instruction: " + target.out)
+				print ("on_processing_instruction: target='" + target.out + "' data='" + data.out + "'")
 				print ("%R%N")
 			end
 			new_element := document.create_processing_instruction (create {DOM_STRING}.make_from_ucstring (target), 
@@ -143,4 +141,9 @@ feature {NONE} -- Implementation
 	
 	dom_impl: DOM_IMPLEMENTATION
 
+	parser: EXPAT_EVENT_PARSER is
+		once
+			create Result
+		end
+      
 end -- class DOM_TREE_BUILDER
