@@ -108,7 +108,7 @@ feature -- Status setting
 			-- The content type may include the type of character encoding used, for
 			-- example, 'text/html; charset=ISO-885904'
 		do
-			set_header ("Content-Type", type + "; charset=ISO-8859-1")
+			set_header ("Content-Type", type)
 		end
 
 	set_header (name, value: STRING) is
@@ -205,13 +205,22 @@ feature -- Basic operations
 		local
 			page: STRING
 		do
+			debug ("response_headers")
+				print ("Sending a temorary redirect response%N")
+			end
 			page := build_redirect_page (location)
 			set_status (Sc_moved_temporarily)
 			set_content_type ("text/html")
 			set_header ("Location", location)
 			set_content_length (page.count)
 			write_headers
+			debug ("response_headers")
+				print ("Sending a temorary redirect response - headers written%N")
+			end			
 			write (page)
+			debug ("response_headers")
+				print ("Sending a temorary redirect response - page written%N")
+			end						
 		end
 	
 	send (data: STRING) is
@@ -313,6 +322,9 @@ feature {NONE} -- Implementation
 					header_values.forth
 				end
 				header_keys.forth
+			end
+			debug ("response_headers")
+				print (Result)
 			end
 		end
 	
