@@ -17,6 +17,7 @@ inherit
 		
 	DOM_CHILD_NODE
 		undefine
+			make,
 			first_child,
 			last_child, 
 			has_child_nodes,

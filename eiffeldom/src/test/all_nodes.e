@@ -22,6 +22,8 @@ feature
 			print (writer.to_string(node_impl))
 		end
 
+	impl: DOM_IMPLEMENTATION_IMPL
+	doc: DOM_DOCUMENT
 	node_impl: DOM_NODE_IMPL
 	writer: DOM_WRITER
 
@@ -30,11 +32,9 @@ feature
 	attr: DOM_ATTR_IMPL
 	character_date: DOM_CHARACTER_DATA_IMPL
 	comment: DOM_COMMENT_IMPL
-	doc: DOM_DOCUMENT
 	document_fragment: DOM_DOCUMENT_FRAGMENT_IMPL
 	element: DOM_ELEMENT_IMPL
 	exception: DOM_EXCEPTION_IMPL
-	impl: DOM_IMPLEMENTATION_IMPL
 	named_node_map: DOM_NAMED_NODE_MAP_IMPL
 	node: DOM_NODE_IMPL
 	node_list: DOM_NODE_LIST_IMPL

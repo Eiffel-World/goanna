@@ -45,10 +45,5 @@ feature -- from DOM_NODE
 		once
 			create Result.make_from_string ("#text")
 		end
-
-	attributes: DOM_NAMED_NODE_MAP is
-		do
-			Result := Void
-		end
 	
 end -- class DOM_TEXT

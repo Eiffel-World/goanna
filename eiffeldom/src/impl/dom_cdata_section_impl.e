@@ -16,6 +16,8 @@ inherit
 	DOM_CHARACTER_DATA
 
 	DOM_CHILD_NODE
+		rename
+			make as node_make
 		redefine
 			set_node_value, node_value
 		end
@@ -28,6 +30,7 @@ feature {DOM_DOCUMENT} -- Factory creation
 			owner_exists: new_owner /= Void
 			new_data_exists: new_data /= Void
 		do
+			node_make
 			set_owner_document (new_owner)
 			set_data (new_data)
 		end
@@ -77,7 +80,7 @@ feature
          -- Parameters
          --    arg   The DOM_String to append.
 	  do
-		  data.append (arg)
+		  data.append_ucstring (arg)
       end
 
    insert_data (offset: INTEGER; arg: DOM_STRING) is
@@ -99,8 +102,8 @@ feature
          --             all characters from offset to the end of the data
          --             are deleted.
 	  do
-		  data.replace_substring (create {DOM_STRING}.make_from_string (""), offset, 
-			  offset + count)
+--		  data.replace_substring (create {DOM_STRING}.make_from_string (""), offset, 
+--			  offset + count)
       end
 
    replace_data (offset: INTEGER; count: INTEGER; arg: DOM_STRING) is
@@ -116,7 +119,7 @@ feature
          --             invocation).
          --    arg      The DOMString with which the range must be replaced.
 	  do
-		  data.replace_substring (arg, offset, offset + count)
+--		  data.replace_substring (arg, offset, offset + count)
       end
 
 feature -- from DOM_NODE

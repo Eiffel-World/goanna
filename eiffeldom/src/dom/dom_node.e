@@ -9,7 +9,9 @@ deferred class DOM_NODE
 
 inherit
 
-   DOM_NODE_TYPE
+	DOM_NODE_TYPE
+
+	DOM_DISPLAYABLE
 
 feature
 
@@ -336,16 +338,10 @@ feature -- Validation Utility
 		deferred
 		end
 
-feature -- non-DOM implementation
-
-	output: STRING is
-			-- String representation of this node
-		deferred
-		ensure
-			result_exists: Result /= Void
-		end
 invariant
 
-   has_owner: node_type /= Document_node implies owner_document /= Void
+	name_exists: node_name /= Void
+	has_owner: node_type /= Document_node implies owner_document /= Void
+	has_attributes: node_type = Element_node implies attributes /= Void
 
 end -- class DOM_NODE

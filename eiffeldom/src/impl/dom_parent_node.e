@@ -10,6 +10,7 @@ inherit
 	
 	DOM_NODE_IMPL
 		redefine
+			make,
 			first_child,
 			last_child, 
 			has_child_nodes,
@@ -21,6 +22,7 @@ feature {DOM_NODE}
 	make is
 			-- Initialise this parent node
 		do
+			Precursor
 			create {DOM_NODE_LIST_IMPL} child_nodes.make
 		end
 

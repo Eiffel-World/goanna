@@ -21,22 +21,29 @@ default
 
 cluster
 	
-	root_cluster:		"d:\goanna\eiffeldom\src\test"
-	dom:				"d:\goanna\eiffeldom\src\dom";
-	dom_impl:			"d:\goanna\eiffeldom\src\impl";
-	dom_writer: 		"d:\goanna\eiffeldom\src\writer";
+	root_cluster:		"$GOANNA\eiffeldom\src\test"
 
-		-- EiffelBase
+	-- Eiffel DOM
+	dom:				"$GOANNA\eiffeldom\src\dom";
+	dom_impl:			"$GOANNA\eiffeldom\src\impl";
+	dom_writer: 		"$GOANNA\eiffeldom\src\writer";
+
+	-- EiffelBase
 	base_kernel:		"$EIFFEL4\library\base\kernel";
 	base_support:		"$EIFFEL4\library\base\support";
+
+	-- EiffelThread
+	thread:				"$EIFFEL4\library\thread"
 	
-		-- GOBO
+	-- GOBO
 	gobo_kernel:		"$GOBO\library\kernel";
 	gobo_ise_kernel:	"$GOBO\library\kernel\spec\ise";
 	all gobo_structures:"$GOBO\library\structure";
 	all gobo_util: 		"$GOBO\library\utility";
 		
-	thread:			"$EIFFEL4\library\thread"
+	-- Unicode String
+	ucstring:			"$UCSTRING\lib";
+	ucstring_ise:		"$UCSTRING\spec\ise";
 
 external
 

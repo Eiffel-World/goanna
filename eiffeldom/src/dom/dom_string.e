@@ -11,11 +11,11 @@ class DOM_STRING
 
 inherit
 
-	STRING
+	UCSTRING
 
 creation
 
-	make, make_from_string
+	make, make_from_string, make_from_utf8
 
 feature -- Status report
 

@@ -16,9 +16,6 @@ inherit
 	DOM_COMMENT
 
 	DOM_CHARACTER_DATA_IMPL
-		undefine
-			attributes
-		end
 
 creation
 

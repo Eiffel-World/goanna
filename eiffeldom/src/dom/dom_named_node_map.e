@@ -85,7 +85,7 @@ feature
 		deferred
 		end
 
-   item (index: INTEGER) is
+   item (index: INTEGER): DOM_NODE is
          -- Returns the `index'th item in the map. If index is greater
          -- than or equal to the number of nodes in the map,
          -- this returns null.

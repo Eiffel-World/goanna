@@ -11,6 +11,16 @@ inherit
 
 	DOM_NODE
 		
+feature -- Initialisation
+
+	make is
+			-- Initialise this node
+		do
+			if node_type = Element_node then
+				create {DOM_NAMED_NODE_MAP_IMPL} attributes
+			end
+		end
+
 feature
 
    node_value: DOM_STRING is
@@ -67,11 +77,9 @@ feature
 	  do
 	  end
 
-   attributes: DOM_NAMED_NODE_MAP  is
+   attributes: DOM_NAMED_NODE_MAP
          -- A NamedNodeMap containing the attributes of this node
          -- (if it is an Element) or `Void' otherwise.
-	  do
-	  end
 	
    owner_document: DOM_DOCUMENT 
          -- The Document object associated with this node. This is also
@@ -214,8 +222,8 @@ feature
 			-- Returns whether this node (if it is an element) has any
 			-- attributes.
 			-- DOM Level 2.
-			--| Default is False.
 		do
+			Result := attributes /= Void and then attributes.length > 0
 		end
 
 feature {DOM_NODE} -- DOM Status Setting
@@ -268,17 +276,67 @@ feature -- Validation Utility
 			Result := True
 		end
 
-feature -- Output
+feature {DOM_WRITER, DOM_NODE} -- Output Implementation
 
-	output: STRING is
-			-- Convenience function for debugging.
-			-- String representation of node.
+	output_indented (level: INTEGER): UCSTRING is
+			-- Indented string representation of node.
+		local
+			i: INTEGER
+			next_attribute: DOM_NODE
 		do
-			Result := "[" + node_name + ":" 
-			if node_value /= Void then
-				Result := Result + node_value
+			create Result.make (50)
+			-- node type
+			Result.append_string (make_indent (level))
+			Result.append_string (node_type_string (node_type))
+			Result.append_string (line_separator)
+			-- node name
+			Result.append_string (make_indent (level + 1))
+			Result.append_string ("node_name = ")
+			Result.append_ucstring (node_name)
+			Result.append_string (line_separator)
+			-- node value
+			Result.append_string (make_indent (level + 1))
+			Result.append_string ("node_value = ")
+			Result.append_ucstring (non_void_string (node_value))
+			Result.append_string (line_separator)
+			-- namespace uri
+			Result.append_string (make_indent (level + 1))
+			Result.append_string ("namespace_uri = ")
+			Result.append_ucstring (non_void_string (namespace_uri))
+			Result.append_string (line_separator)
+			-- ns_prefix
+			Result.append_string (make_indent (level + 1))
+			Result.append_string ("ns_prefix = ")
+			Result.append_ucstring (non_void_string (ns_prefix))
+			Result.append_string (line_separator)
+			-- local_name
+			Result.append_string (make_indent (level + 1))
+			Result.append_string ("local_name = ")
+			Result.append_ucstring (non_void_string (local_name))
+			Result.append_string (line_separator)
+			-- attributes
+			Result.append_string (make_indent (level + 1))
+			Result.append_string ("attributes = ")
+			if attributes /= Void then
+				from
+					Result.append_string (line_separator)
+				variant
+					attributes.length - i
+				until
+					i >= attributes.length
+				loop
+					Result.append_string (make_indent (level + 2))
+					next_attribute := attributes.item (i)
+					Result.append_ucstring (next_attribute.node_name)
+					Result.append_string (" = ")
+					Result.append_ucstring (non_void_string (next_attribute.node_value))
+					Result.append_string (line_separator)
+					i := i + 1
+				end
+			else
+				Result.append_string ("Void")
+				Result.append_string (line_separator)
 			end
-			Result := Result + "]"
 		end
 		
 end -- class DOM_NODE_IMPL
