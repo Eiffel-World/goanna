@@ -48,8 +48,8 @@ feature -- Initialisation
 			positive_port: port >= 0
 			positive_backlog: backlog >= 0
 		do
-			initialise_logger
 			svr_port := port
+			initialise_logger
 			server_backlog := backlog
 			set_valid_peer_addresses
 		end
@@ -317,7 +317,7 @@ feature {NONE} -- Implementation
 			appender: L4E_APPENDER
 			layout: L4E_LAYOUT
 		do
-			create {L4E_FILE_APPENDER} appender.make ("log.txt", True)
+			create {L4E_FILE_APPENDER} appender.make ("log" + svr_port.out + ".txt", True)
 			create {L4E_PATTERN_LAYOUT} layout.make ("@d [@-6p] @c - @m%N")
 			appender.set_layout (layout)
 			log_hierarchy.logger (Servlet_app_log_category).add_appender (appender)
