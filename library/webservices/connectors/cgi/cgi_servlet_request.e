@@ -62,9 +62,21 @@ feature {NONE} -- Initialisation
 		require
 			response_exists: resp /= Void
 		do
+			debug ("CGI servlet request")
+				print ("Make entered%N")
+			end			
 			internal_response := resp
+			debug ("CGI servlet request")
+				print ("Internal response assigned%N")
+			end						
 			create parameters.make (5)
+			debug ("CGI servlet request")
+				print ("Parameters created%N")
+			end						
 			parse_parameters
+			debug ("CGI servlet request")
+				print ("Parameters parsed%N")
+			end									
 		end
 	
 feature -- Access
@@ -386,16 +398,34 @@ feature -- Status report
 	content: STRING is
 			-- Content data
 		do
+			debug ("CGI servlet request")
+				print ("Content entered%N")
+			end				
 			if has_header (Content_length_var) then
+				debug ("CGI servlet request")
+					print ("Found content length header%N")
+				end	
 				if internal_content = Void then
 					if content_length > 0 then
+						debug ("CGI servlet request")
+							print ("Content length > 0%N")
+						end	
 						-- TODO: check for errors
 						internal_content := read_string (std.input, content_length)
+						debug ("CGI servlet request")
+							print ("Internal content is: " + internal_content + "%N")
+						end							
 					else
+						debug ("CGI servlet request")
+							print ("No internal content 1%N")
+						end							
 						internal_content := ""
 					end
 				end
 			else
+				debug ("CGI servlet request")
+					print ("No internal content 2%N")
+				end					
 				internal_content := ""
 			end
 			Result := internal_content
@@ -427,6 +457,9 @@ feature {NONE} -- Implementation
 			if method.is_equal ("GET") then
 				parse_parameter_string (query_string)
 			elseif method.is_equal ("POST") then
+				debug ("CGI servlet request")
+					print ("POST - parse content%N")
+				end	
 				parse_parameter_string (content)
 			else
 				-- not sure where the parameters will be for other request methods.

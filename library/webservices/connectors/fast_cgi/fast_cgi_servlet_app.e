@@ -53,17 +53,36 @@ feature -- Basic operations
 			servlet_found: BOOLEAN
 			slash_index: INTEGER
 		do
+			debug ("Fast CGI servlet app")
+						info (Servlet_app_log_category, "Process request")
+			end
 			create resp.make (request)
+			debug ("Fast CGI servlet app")
+						info (Servlet_app_log_category, "Response created")
+			end			
 			create req.make (request, resp)	
-			-- dispatch to the registered servlet using the path info as the registration name.
+			-- dispatch to the registered servlet using the path info as the registration 
+			-- name.
+			debug ("Fast CGI servlet app")
+						info (Servlet_app_log_category, "About to check for path info...")
+			end			
 			if req.has_header (Path_info_var) then
+				debug ("Fast CGI servlet app")
+						info (Servlet_app_log_category, "About to check for path info...Got it!")
+				end			
 				path := req.get_header (Path_info_var)
 				if path /= Void then
 					-- remove leading slash from path
 					path.tail (path.count - 1)
 				end
+			end
+			debug ("Fast CGI servlet app")
+				info (Servlet_app_log_category, "About to check for non-void path...")
 			end			
 			if path /= Void then
+				debug ("Fast CGI servlet app")
+					info (Servlet_app_log_category, "About to check for non-void path...Got it!")
+				end			
 				-- Search upwards through a hierarchy of servlet names.
 				from
 					servlet_name := path

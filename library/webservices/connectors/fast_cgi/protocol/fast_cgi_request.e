@@ -129,6 +129,9 @@ feature -- Basic operations
 			end
 			-- extract parameters
 			process_parameter_raw_data
+			debug ("fcgi_protocol")
+				print (generator + ".read - finished.%R%N")
+			end
 		end
 	
 	write_stderr (str: STRING) is
@@ -140,7 +143,10 @@ feature -- Basic operations
 			record_header: FAST_CGI_RECORD_HEADER
 			record_body: FAST_CGI_RAW_BODY
 			offset, bytes_to_send: INTEGER
-		do 
+		do
+			debug ("fcgi_protocol")
+				print (generator + ".write_stderr%R%N")
+			end
 			-- split into chunks 65535 bytes or less.
 			from
 				offset := 1
@@ -158,6 +164,9 @@ feature -- Basic operations
 			-- end stderr stream record
 			create record_header.make (version, request_id, Fcgi_stderr, 0, 0)
 			record_header.write (socket)
+			debug ("fcgi_protocol")
+				print (generator + ".write_stderr - finished%R%N")
+			end			
 		end
 	
 	write_stdout (str: STRING) is
@@ -169,7 +178,10 @@ feature -- Basic operations
 			record_header: FAST_CGI_RECORD_HEADER
 			record_body: FAST_CGI_RAW_BODY
 			offset, bytes_to_send: INTEGER
-		do 
+		do
+			debug ("fcgi_protocol")
+				print (generator + ".write_stdout%R%N")
+			end
 			-- split into chunks 65535 bytes or less.
 			from
 				offset := 1
@@ -187,6 +199,9 @@ feature -- Basic operations
 			-- end stdout stream record
 			create record_header.make (version, request_id, Fcgi_stdout, 0, 0)
 			record_header.write (socket)
+			debug ("fcgi_protocol")
+				print (generator + ".write_stdout - finished%R%N")
+			end			
 		end
 		
 	end_request is
@@ -197,13 +212,19 @@ feature -- Basic operations
 		local
 			record_header: FAST_CGI_RECORD_HEADER
 			record_body: FAST_CGI_END_REQUEST_BODY
-		do 
+		do
+			debug ("fcgi_protocol")
+				print (generator + ".end_request%R%N")
+			end
 			-- send end request record
 			create record_header.make (version, request_id, Fcgi_end_request, 
 				Fcgi_end_req_body_len, 0)
 			create record_body.make (Fcgi_request_complete, 0)
 			record_header.write (socket)
 			record_body.write (socket)
+			debug ("fcgi_protocol")
+				print (generator + ".end_request - finished%R%N")
+			end			
 		end
 	
 feature {NONE} -- Implementation
@@ -222,6 +243,9 @@ feature {NONE} -- Implementation
 			end	
 			create Result.read (socket)
 			read_ok := Result.read_ok
+			debug ("fcgi_protocol")
+				print (generator + ".read_header - finished%R%N")
+			end				
 		end
 	
 	read_body (record_header: FAST_CGI_RECORD_HEADER) is
@@ -245,7 +269,13 @@ feature {NONE} -- Implementation
 --				create {FAST_CGI_ABORT_REQUEST_BODY} record_body
 			else
 				-- TODO: handle unknown record type
+				debug ("fcgi_protocol")
+					print (generator + ".read_body - unknown record type%R%N")
+				end	
 			end
+			debug ("fcgi_protocol")
+				print (generator + ".read_body - finished%R%N")
+			end				
 		end
 	
 	read_begin_request_body (record_header: FAST_CGI_RECORD_HEADER) is
@@ -271,6 +301,9 @@ feature {NONE} -- Implementation
 				role := record_body.role
 				flags := record_body.flags
 			end
+			debug ("fcgi_protocol")
+				print (generator + ".read_begin_request_body - finished%R%N")
+			end				
 		end		
 	
 	read_param_request_body (record_header: FAST_CGI_RECORD_HEADER) is
@@ -299,6 +332,9 @@ feature {NONE} -- Implementation
 						print (quoted_eiffel_string_out (record_body.raw_content_data) + "%R%N")
 					end	
 				end		
+			end
+			debug ("fcgi_protocol")
+				print (generator + ".read_param_request_body - finished%R%N")
 			end
 		end
 	
@@ -329,6 +365,9 @@ feature {NONE} -- Implementation
 					end	
 				end				
 			end
+			debug ("fcgi_protocol")
+				print (generator + ".read_stdin_request_body - finished%R%N")
+			end			
 		end
 	
 	process_parameter_raw_data is
@@ -384,6 +423,9 @@ feature {NONE} -- Implementation
 						+ quoted_eiffel_string_out (name))
 					print (" value = " + quoted_eiffel_string_out (value) + "%R%N")
 				end
+			end
+			debug ("fcgi_protocol")
+				print (generator + ".process_parameter_raw_data: Finished") 
 			end
 		end
 	

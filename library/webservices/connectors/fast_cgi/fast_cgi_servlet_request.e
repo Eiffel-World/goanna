@@ -17,7 +17,7 @@ inherit
 		rename
 			make as cgi_servlet_make
 		redefine
-			has_header, get_header, get_header_names, internal_response
+			has_header, get_header, get_header_names, internal_response, content
 		end
 		
 creation
@@ -33,11 +33,24 @@ feature {NONE} -- Initialisation
 			request_exists: fcgi_request /= Void
 			response_exists: resp /= Void
 		do
+			debug ("Fast CGI servlet request")
+				print ("Make entered%N")
+			end			
 			internal_request := fcgi_request
+			debug ("Fast CGI servlet request")
+				print ("Internal request created%N")
+			end						
 			internal_response := resp
+			debug ("Fast CGI servlet request")
+				print ("Internal response created%N")
+			end									
 			cgi_servlet_make (internal_response)
-			create parameters.make (5)
-			parse_parameters
+			debug ("Fast CGI servlet request")
+				print ("CGI servlet created%N")
+			end
+			-- These next two are already carried out by cgi_servlet_make
+--			create parameters.make (5)
+--			parse_parameters
 		end
 	
 feature -- Access
@@ -67,6 +80,42 @@ feature -- Access
 			Result := array_list
 		end
 
+	content: STRING is
+			-- Content data
+		do
+			debug ("Fast CGI servlet request")
+				print ("Content entered%N")
+			end				
+			if has_header (Content_length_var) then
+				debug ("Fast CGI servlet request")
+					print ("Found content length header%N")
+				end	
+				if internal_content = Void then
+					if content_length > 0 then
+						debug ("Fast CGI servlet request")
+							print ("Content length > 0%N")
+						end	
+						-- TODO: check for errors
+						internal_content := internal_request.raw_stdin_content
+						debug ("Fast CGI servlet request")
+							print ("Internal content is: " + internal_content + "%N")
+						end							
+					else
+						debug ("Fast CGI servlet request")
+							print ("No internal content 1%N")
+						end							
+						internal_content := ""
+					end
+				end
+			else
+				debug ("Fast CGI servlet request")
+					print ("No internal content 2%N")
+				end					
+				internal_content := ""
+			end
+			Result := internal_content
+		end
+	
 feature -- Status report
 
 	has_header (name: STRING): BOOLEAN is

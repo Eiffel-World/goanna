@@ -63,6 +63,9 @@ feature -- FGCI interface
 		local
 			failed: BOOLEAN
 		do
+			debug ("fcgi_interface")
+				print (generator + ".accept%R%N")
+			end
 			if not failed then
 				-- if first call mark it and create server socket
 				if not accept_called then
@@ -74,11 +77,17 @@ feature -- FGCI interface
 				-- accept the next request
 				Result := accept_request				
 			end
+			debug ("fcgi_interface")
+				print (generator + ".accept - finished%R%N")
+			end			
 		rescue
 			srv_socket := Void
 			request := Void
 			Result := -1 
 			failed := True
+			debug ("fcgi_interface")
+				print (generator + ".accept - exception%R%N")
+			end
 		end
 
 	finish is 
@@ -86,6 +95,9 @@ feature -- FGCI interface
 			-- current request was started by the most recent call to 
 			-- 'accept'.
 		do
+			debug ("fcgi_interface")
+				print (generator + ".finish%R%N")
+			end			
 			if request /= Void then
 				-- complete the current request
 				request.end_request
@@ -95,6 +107,9 @@ feature -- FGCI interface
 				else
 					request := Void
 				end
+			end
+			debug ("fcgi_interface")
+				print (generator + ".finish - finished%R%N")
 			end
 		end
 
@@ -253,7 +268,7 @@ feature {NONE} -- Implementation
 				-- check peer address for allowed server addresses
 				peer := request.socket.peer_address
 				debug ("yaesockets")
-					print("Yeasockets Error :")
+					print("Yaesockets Error :")
 					print(last_socket_error_code)
 					print(',')
 					print(last_extended_socket_error_code)
@@ -274,6 +289,9 @@ feature {NONE} -- Implementation
 						end
 					else
 						request_read := True
+					end
+					debug ("yaesockets")
+						print ("Yaesockets - request readOK? " + request_read.out + "%N")
 					end
 				else
 					-- reset and attempt a new connection
