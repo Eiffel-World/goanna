@@ -22,7 +22,6 @@
 	<mount location="${GOANNA}/library/servlet/cluster.xace"/>
 	<mount location="${GOANNA}/library/soap/cluster.xace"/>
 	<mount location="${GOANNA}/library/utility/cluster.xace"/>
-	<mount location="${GOANNA}/library/xml_parser/cluster.xace"/>
 	<mount location="${GOANNA}/library/xmlrpc/cluster.xace"/>
 
 </cluster>

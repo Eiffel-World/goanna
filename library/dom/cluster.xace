@@ -16,6 +16,7 @@
 	<cluster name="core"/>
 	<cluster name="traversal_range" location="$GOANNA/library/dom/traversal-range"/>
 	<cluster name="writer"/>
+	<cluster name="parser"/>
 	<cluster name="implementation">
 		<cluster name="core"/>
 		<cluster name="traversal_range" location="$GOANNA/library/dom/implementation/traversal-range"/>
