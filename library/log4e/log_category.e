@@ -187,8 +187,8 @@ feature -- Logging
 		require
 			message_exists: message /= Void
 		do
-			if is_enabled_for (Debug) then
-				forced_log (Debug, message)
+			if is_enabled_for (Debugging) then
+				forced_log (Debugging, message)
 			end
 		end
 	

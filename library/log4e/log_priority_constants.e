@@ -38,7 +38,7 @@ class LOG_PRIORITY_CONSTANTS
 			create Result.make (Info_int, "INFO")
 		end
 	
-	Debug: LOG_PRIORITY is
+	Debugging: LOG_PRIORITY is
 			-- Debug priority designates fine-grained 
 			-- informational events that are most useful 
 			-- to debug an application.
