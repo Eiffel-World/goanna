@@ -16,170 +16,219 @@ inherit
 		
 feature
 
-   node_value: DOM_STRING is
-         -- The value of this node, depending on its type.
-		 --| Default is Void, subclasses override to return appropriate values.
-      do 
-	  end
+	node_value: DOM_STRING is
+			-- The value of this node, depending on its type.
+			--| Default is Void, subclasses override to return appropriate values.
+		do 
+		end
 
-   set_node_value (v: DOM_STRING) is
-         -- see `nodeValue'
-		 --| Default do nothing. Descendants override.
-   	  do
-      end
+	set_node_value (v: DOM_STRING) is
+			-- see `nodeValue'
+			--| Default do nothing. Descendants override.
+		do
+		end
 
-   parent_node: DOM_NODE is
-         -- The parent of this node. All nodes, except Document,
-         -- DocumentFragment, and Attr may have a parent. However,
-         -- if a node has just been created and not yet added to the tree,
-         -- or if it has been removed from the tree, this is `Void'.
-		 --| Default is Void. Descendants override.
-	  do
-	  end
+	parent_node: DOM_NODE is
+			-- The parent of this node. All nodes, except Document,
+			-- DocumentFragment, and Attr may have a parent. However,
+			-- if a node has just been created and not yet added to the tree,
+			-- or if it has been removed from the tree, this is `Void'.
+			--| Default is Void. Descendants override.
+		do
+		end
 
-   child_nodes: DOM_NODE_LIST 
-         -- A NodeList that contains all children of this node.
-         -- If there are no children, this is a NodeList containing no nodes.
-         -- The content of the returned NodeList is "live" in the sense
-         -- that, for instance, changes to the children of the node object
-         -- that it was created from are immediately reflected in the nodes
-         -- returned by the NodeList accessors; it is not a static snapshot
-         -- of the content of the node.
+	child_nodes: DOM_NODE_LIST 
+			-- A NodeList that contains all children of this node.
+			-- If there are no children, this is a NodeList containing no nodes.
+			-- The content of the returned NodeList is "live" in the sense
+			-- that, for instance, changes to the children of the node object
+			-- that it was created from are immediately reflected in the nodes
+			-- returned by the NodeList accessors; it is not a static snapshot
+			-- of the content of the node.
 
-   first_child: DOM_NODE is
-         -- The first child of this node.
-         -- If there is no such node, this returns `Void'.
-	  do
-	  end
+	first_child: DOM_NODE is
+			-- The first child of this node.
+			-- If there is no such node, this returns `Void'.
+		do
+		end
 
-   last_child: DOM_NODE is
-         -- The last child of this node.
-         -- If there is no such node, this returns `Void'.
-	  do
-	  end
+	last_child: DOM_NODE is
+			-- The last child of this node.
+			-- If there is no such node, this returns `Void'.
+		do
+		end
 
-   attributes: DOM_NAMED_MAP [DOM_ATTR]
-         -- A NamedNodeMap containing the attributes of this node
-         -- (if it is an Element) or `Void' otherwise.
+	attributes: DOM_NAMED_MAP [DOM_ATTR]
+			-- A NamedNodeMap containing the attributes of this node
+			-- (if it is an Element) or `Void' otherwise.
 	
-   owner_document: DOM_DOCUMENT 
-         -- The Document object associated with this node. This is also
-         -- the Document object used to create new nodes. When this node
-         -- is a Document this is `Void'.
+	owner_document: DOM_DOCUMENT 
+			-- The Document object associated with this node. This is also
+			-- the Document object used to create new nodes. When this node
+			-- is a Document this is `Void'.
 
-   insert_before (new_child: DOM_NODE; ref_child: DOM_NODE): DOM_NODE is
-         -- Inserts the node newChild before the existing child node
-         -- `refChild'. If `refChild' is `Void', insert `newChild' at the end
-         -- of the list of children. If `newChild' is a DocumentFragment
-         -- object, all of its children are inserted, in the same order,
-         -- before `refChild'. If the `newChild' is already in the tree,
-         -- it is first removed.
-         -- Parameters
-         --    newChild   The node to insert.
-         --    refChild   The reference node, i.e., the node before
-         --               which the new node must be inserted.
-         -- Return Value
-         --    The node being inserted.
-	  do
-	  	  ensure_child_list_exists
-      end
+	insert_before (new_child: DOM_NODE; ref_child: DOM_NODE): DOM_NODE is
+			-- Inserts the node newChild before the existing child node
+			-- `refChild'. If `refChild' is `Void', insert `newChild' at the end
+			-- of the list of children. If `newChild' is a DocumentFragment
+			-- object, all of its children are inserted, in the same order,
+			-- before `refChild'. If the `newChild' is already in the tree,
+			-- it is first removed.
+			-- Parameters
+			--    newChild   The node to insert.
+			--    refChild   The reference node, i.e., the node before
+			--               which the new node must be inserted.
+			-- Return Value
+			--    The node being inserted.
+		do
+			ensure_child_list_exists
+		end
 
-   replace_child (new_child: DOM_NODE; old_child: DOM_NODE): DOM_NODE is
-         -- Replaces the child node `oldChild' with `newChild' in the list
-         -- of children, and returns the `oldChild' node. If the `newChild'
-         -- is already in the tree, it is first removed.
-         -- Parameters
-         --    newChild   The new node to put in the child list.
-         --    oldChild   The node being replaced in the list.
-         -- Return Value
-         --    The node replaced.
-	  do
-	  	  ensure_child_list_exists
-      end
+	replace_child (new_child: DOM_NODE; old_child: DOM_NODE): DOM_NODE is
+			-- Replaces the child node `oldChild' with `newChild' in the list
+			-- of children, and returns the `oldChild' node. If the `newChild'
+			-- is already in the tree, it is first removed.
+			-- Parameters
+			--    newChild   The new node to put in the child list.
+			--    oldChild   The node being replaced in the list.
+			-- Return Value
+			--    The node replaced.
+		local
+			discard: DOM_NODE
+			previous, next: DOM_NODE
+			node_list_impl: DOM_NODE_LIST_IMPL
+		do
+			-- TODO: raise WRONG_DOCUMENT_ERR if new_child was
+			--       created from a different document than
+			--       the one that created this node
 
-   remove_child (old_child: DOM_NODE): DOM_NODE is
-         -- Removes the child node indicated by oldChild from the list
-         -- of children, and returns it.
-         -- Parameters
-         --    oldChild   The node being removed.
-         -- Return Value
-         --    The node removed.
-      local
-      	  previous, next: DOM_NODE
-      do
-	       ensure_child_list_exists
-           previous := old_child.previous_sibling
-           next := old_child.next_sibling
-           child_nodes.delete (old_child)
-           -- previous and next may be Void if 'old_child' is an only child
-           if previous /= Void then
-           	    previous.set_next_sibling (next)
-           end
-           if next /= Void then
-           		next.set_previous_sibling (previous)
-           end
-            -- clean up 'old_child' before sending it back
-           old_child.set_previous_sibling (Void)
-           old_child.set_next_sibling (Void)
-	       old_child.set_parent_node (Void)
-	       Result := old_child 
-      end
+			ensure_child_list_exists
 
-   append_child (new_child: DOM_NODE): DOM_NODE is
-         -- Adds the node `newChild' to the end of the list of children
-         -- of this node. If the `newChild' is already in the tree,
-         -- it is first removed.
-         -- Parameters
-         --    newChild   The node to add. If it is a DocumentFragment
-         --               object, the entire contents of the document
-         --               fragment are moved into the child list
-         --               of this node
-         -- Return Value
-         --    The node added.
-      local
-          last: DOM_NODE
-	  do
-	      ensure_child_list_exists
-	      last := last_child
-		  child_nodes.force_last (new_child)
-		          new_child.set_parent_node (Current)
-		  -- last may be Void if this node has no children
-		  if last /= Void then
-		  	  new_child.set_previous_sibling (last)
-		      -- next sibling of new child is Void
-		  	  last.set_next_sibling (new_child)
-		  end
-		  Result := new_child
-      end
+			-- Remove new_child from its parent node
+			if new_child.parent_node /= Void then
+				discard := new_child.parent_node.remove_child (new_child)
+			end
 
-   has_child_nodes: BOOLEAN is
-         -- This is a convenience method to allow easy determination
-         -- of whether a node has any children.
-         -- Return Value
-         --    True    if the node has any children,
-         --    False   if the node has no children.
-		 --| Default is False.
-	  do
-      end
+			node_list_impl ?= child_nodes
 
-   clone_node (deep: BOOLEAN): DOM_NODE is
-         -- Returns a duplicate of this node, i.e., serves as a generic copy
-         -- constructor for nodes. The duplicate node has no parent
-         -- (parentNode returns `Void'). Cloning an Element copies all
-         -- attributes and their values, including those generated by the XML
-         -- processor to represent defaulted attributes, but this method
-         -- does not copy any text it contains unless it is a deep clone,
-         -- since the text is contained in a child Text node. Cloning any
-         -- other type of node simply returns a copy of this node.
-         -- Parameters
-         --    deep   If `True', recursively clone the subtree
-         --           under the specified node; if `False', clone only
-         --           the node itself (and its attributes, if it is
-         --           an Element).
-         -- Return Value
-         --    The duplicate node.
-	  do
-      end
+			if node_list_impl = Void then
+				-- TODO: declare child_nodes as DOM_NODE_LIST_IMPL
+			else
+				node_list_impl.start
+				node_list_impl.search_forth (old_child)
+				if node_list_impl.after then
+					-- TODO: raise NOT_FOUND_ERR
+				else
+					previous := old_child.previous_sibling
+					next := old_child.next_sibling
+					node_list_impl.replace_at (new_child)
+
+					-- previous and next may be Void if 'old_child' is an only child
+					if previous /= Void then
+						previous.set_next_sibling (new_child)
+					end
+					if next /= Void then
+						next.set_previous_sibling (new_child)
+					end
+
+					-- update new_child
+					new_child.set_previous_sibling (previous)
+					new_child.set_next_sibling (next)
+					new_child.set_parent_node (old_child.parent_node)
+
+					-- clean up 'old_child' before sending it back
+					old_child.set_previous_sibling (Void)
+					old_child.set_next_sibling (Void)
+					old_child.set_parent_node (Void)
+					Result := old_child 
+				end
+			end
+
+		end
+
+	remove_child (old_child: DOM_NODE): DOM_NODE is
+			-- Removes the child node indicated by oldChild from the list
+			-- of children, and returns it.
+			-- Parameters
+			--    oldChild   The node being removed.
+			-- Return Value
+			--    The node removed.
+		local
+			previous, next: DOM_NODE
+		do
+			ensure_child_list_exists
+			previous := old_child.previous_sibling
+			next := old_child.next_sibling
+			child_nodes.delete (old_child)
+			-- previous and next may be Void if 'old_child' is an only child
+			if previous /= Void then
+				previous.set_next_sibling (next)
+			end
+			if next /= Void then
+				next.set_previous_sibling (previous)
+			end
+			-- clean up 'old_child' before sending it back
+			old_child.set_previous_sibling (Void)
+			old_child.set_next_sibling (Void)
+			old_child.set_parent_node (Void)
+			Result := old_child 
+		end
+
+	append_child (new_child: DOM_NODE): DOM_NODE is
+			-- Adds the node `newChild' to the end of the list of children
+			-- of this node. If the `newChild' is already in the tree,
+			-- it is first removed.
+			-- Parameters
+			--    newChild   The node to add. If it is a DocumentFragment
+			--               object, the entire contents of the document
+			--               fragment are moved into the child list
+			--               of this node
+			-- Return Value
+			--    The node added.
+		local
+			last: DOM_NODE
+		do
+			ensure_child_list_exists
+			last := last_child
+			child_nodes.force_last (new_child)
+			new_child.set_parent_node (Current)
+			-- last may be Void if this node has no children
+			if last /= Void then
+				new_child.set_previous_sibling (last)
+				-- next sibling of new child is Void
+				last.set_next_sibling (new_child)
+			end
+			Result := new_child
+		end
+
+	has_child_nodes: BOOLEAN is
+			-- This is a convenience method to allow easy determination
+			-- of whether a node has any children.
+			-- Return Value
+			--    True    if the node has any children,
+			--    False   if the node has no children.
+			--| Default is False.
+		do
+		end
+
+	clone_node (deep: BOOLEAN): DOM_NODE is
+			-- Returns a duplicate of this node, i.e., serves as a generic copy
+			-- constructor for nodes. The duplicate node has no parent
+			-- (parentNode returns `Void'). Cloning an Element copies all
+			-- attributes and their values, including those generated by the XML
+			-- processor to represent defaulted attributes, but this method
+			-- does not copy any text it contains unless it is a deep clone,
+			-- since the text is contained in a child Text node. Cloning any
+			-- other type of node simply returns a copy of this node.
+			-- Parameters
+			--    deep   If `True', recursively clone the subtree
+			--           under the specified node; if `False', clone only
+			--           the node itself (and its attributes, if it is
+			--           an Element).
+			-- Return Value
+			--    The duplicate node.
+		do
+		end
 
 	normalize is
 			-- Puts all Text modes in the full depth of the sub-tree underneath
