@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<system name="xlog4e">
+	<description>
+		system: "Goanna log4e Library Tester"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	</description>
+
+	<root class="XLOG4E" creation="make"/>
+	<cluster>
+		<option unless="${DEBUG}">
+			<require enable="False"/>
+			<ensure enable="False"/>
+			<invariant enable="False"/>
+			<loop enable="False"/>
+			<check enable="False"/>
+			<optimize enable="True"/>
+		</option>
+		<option if="${DEBUG}">
+			<require enable="True"/>
+			<ensure enable="True"/>
+			<invariant enable="True"/>
+			<loop enable="True"/>
+			<check enable="True"/>
+			<optimize enable="False"/>
+		</option>
+
+		<cluster name="log4e_tester" location="${GOANNA}/test/log4e">
+			<cluster name="testgen" location="TESTGEN"/>
+		</cluster>
+		<mount location="${GOANNA}/library/cluster.xace"/>
+		<mount location="${GOBO}/library/cluster.xace"/>
+		<mount location="${GOBO}/library/kernel.xace"/>
+	</cluster>
+</system>
