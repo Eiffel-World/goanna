@@ -115,8 +115,6 @@ feature -- Marshalling
 			
 		end
 	
-	ref: SOAP_FAULT
-	
 invariant
 	
 	attributes_exists: attributes /= Void

@@ -54,27 +54,28 @@ feature -- Basic operations
 				print ("SOAP_SERVLET.do_post%R%N")
 			end
 			-- get SOAP action header
-				parse_envelope (req)
-				if envelope /= Void then	
-					-- extract call information from envelope
-					first := envelope.body.entries.first
-					service_name := extract_service_name (first)
-					action := extract_action_name (first)
-					parameters := extract_parameters (first)
-					
-					-- retrieve service and execute call
-					agent_service := registry.get (service_name)
-					agent_service.agent_registry.call (action, parameters)
-					
-					-- process result
-					if agent_service.agent_registry.process_ok then
-						response := build_response_envelope (agent_service.agent_registry.last_result)
-						resp.set_content_length (response.count)
-						resp.send (response)
-					end
-				else
-					resp.send_error (Sc_not_implemented)
+			parse_envelope (req)
+			if envelope /= Void then	
+				-- extract call information from envelope
+				first := envelope.body.entries.first
+				service_name := extract_service_name (first)
+				action := extract_action_name (first)
+				parameters := extract_parameters (first)
+				
+				-- retrieve service and execute call
+				agent_service := registry.get (service_name)
+				agent_service.call (action, parameters)
+				
+				-- process result
+				if agent_service.process_ok then
+					response := build_response (service_name, action, agent_service.last_result)
+					resp.set_content_type (Headerval_content_type)
+					resp.set_content_length (response.count)
+					resp.send (response)
 				end
+			else
+				resp.send_error (Sc_not_implemented)
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -93,31 +94,77 @@ feature {NONE} -- Implementation
 			create parser.make
 			parser.parse_from_string (req.content)
 			if parser.is_correct then
-				display_dom_tree (parser.document)
+				debug ("soap")
+					print (serialize_dom_tree (parser.document))
+				end
 				create envelope.unmarshall (parser.document.document_element)
 			else
 				envelope := Void
 			end			
 		end
 		
-	build_response_envelope (last_result: ANY): STRING is
-			-- Build response envelope from 'last_result'.
+	build_response (service_name, action: STRING; last_result: ANY): STRING is
+			-- Build response for 'action' called on 'service_name' with
+			-- the result 'last_result'.
+		require
+			request_envelope_exists: envelope /= Void
 		local
-			response_envelope: SOAP_ENVELOPE
+			impl: DOM_IMPLEMENTATION
+			doc: DOM_DOCUMENT
+			env, body, response, return: DOM_ELEMENT
+			value_text: DOM_TEXT
+			discard: DOM_NODE
 		do
-			Result := last_result.out
+			create {DOM_IMPLEMENTATION_IMPL} impl
+			-- create XML document and envelope element with appropriate namespace attributes
+			doc := impl.create_document (create {DOM_STRING}.make_from_string (Ns_uri_soap_env), 
+				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Elem_envelope), Void)
+			env := doc.document_element
+			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_soap_env),
+				create {DOM_STRING}.make_from_string (Ns_uri_soap_env))
+			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsi),
+				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsi))
+			env.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":" + Ns_pre_schema_xsd),
+				create {DOM_STRING}.make_from_string (Ns_uri_schema_xsd))
+			-- create body element	
+			body := doc.create_element_ns (create {DOM_STRING}.make_from_string (Ns_uri_soap_env), 
+				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Elem_body))
+			discard := env.append_child (body)
+			-- create response element
+			response := doc.create_element_ns (create {DOM_STRING}.make_from_string (service_name), 
+				create {DOM_STRING}.make_from_string ("ns1:" + action + "Response"))
+			response.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_xmlns + ":ns1"),
+				create {DOM_STRING}.make_from_string (service_name))
+			response.set_attribute_ns (create {DOM_STRING}.make_from_string (""),
+				create {DOM_STRING}.make_from_string (Ns_pre_soap_env + ":" + Attr_encoding_style),
+				create {DOM_STRING}.make_from_string (Ns_uri_soap_enc))		
+			discard := body.append_child (response)
+			-- create result element
+			return := marshall_return_element (doc, last_result)
+			discard := response.append_child (return)
+			debug ("soap")
+				print (serialize_dom_tree (doc))
+			end
+			Result := serialize_dom_tree (doc)
 		end
 		
-	display_dom_tree (document: DOM_DOCUMENT) is
+	serialize_dom_tree (document: DOM_DOCUMENT): STRING is
 			-- Display dom tree to standard out.
 		require
 			document_exists: document /= Void	
 		local
 			writer: DOM_SERIALIZER
+			string_stream: IO_STRING
 		do
+			create string_stream.make (1024)
 			writer := serializer_factory.serializer_for_document (document)
-			writer.set_output (io.output)
+			writer.set_output (string_stream)
 			writer.serialize (document)		
+			Result := string_stream.to_string
 		end
 	
 	serializer_factory: DOM_SERIALIZER_FACTORY is
@@ -189,6 +236,37 @@ feature {NONE} -- Implementation
 				double.set_item (value.to_double)
 				Result := double
 			end
+		end
+		
+	marshall_return_element (doc: DOM_DOCUMENT; last_result: ANY): DOM_ELEMENT is
+			-- Determine type of 'last_result' and create return element
+			-- with appropriate xsi:type and marshalled value.
+		require
+			doc_exists: doc /= Void
+		local
+			double_type: DOUBLE_REF
+			string_type, value: STRING
+			value_node: DOM_TEXT
+			discard: DOM_NODE
+			type: DOM_ATTR
+		do
+			-- create return element
+			Result := doc.create_element (create {DOM_STRING}.make_from_string ("return"))
+			type := doc.create_attribute (create {DOM_STRING}.make_from_string (Ns_pre_schema_xsi + ":" + Attr_type))
+			discard := Result.set_attribute_node (type)
+			
+			-- determine type of last_result and set type and value
+			double_type ?= last_result
+			if double_type /= Void then
+				type.set_node_value (create {DOM_STRING}.make_from_string (Ns_pre_schema_xsd + ":double"))
+				value := double_type.out
+			else
+				-- string type
+				type.set_node_value (create {DOM_STRING}.make_from_string (Ns_pre_schema_xsd + ":string"))
+				value := last_result.out
+			end
+			value_node := doc.create_text_node (create {DOM_STRING}.make_from_string (value))
+			discard := Result.append_child (value_node)
 		end
 		
 end -- class SOAP_SERVLET

@@ -11,6 +11,8 @@ indexing
 class
 	AGENT_REGISTRY
 
+obsolete "No longer used by SERVICE class"
+
 creation 
 
 	make
@@ -23,12 +25,24 @@ feature -- Initialisation
 			create agents.make_default
 		end
 
-feature -- Access
+feature {SERVICE} -- Access
 
-	register (name: STRING; target: ANY; function: like function_anchor) is
+	register (name: STRING; function: like function_anchor) is
 			-- Register 'routine' call on 'target' under 'name'.
+		require
+			name_exists: name /= Void
+			function_exists: function /= Void
+			function_not_registered: not has (name)
 		do
 			agents.force (function, name)
+		end
+		
+	has (name: STRING): BOOLEAN is
+			-- Is an agent registered under 'name'?
+		require
+			name_exists: name /= Void
+		do
+			Result := agents.has (name)
 		end
 		
 	call (name: STRING; args: TUPLE [ANY]) is

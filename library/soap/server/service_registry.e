@@ -25,7 +25,7 @@ feature -- Initialisation
 
 feature -- Access
 
-	register (name: STRING; service: SERVICE) is
+	register (service: SERVICE; name: STRING) is
 			-- Register 'service' with 'name'
 		require
 			name_exists: name /= Void
@@ -52,13 +52,11 @@ feature -- Access
 		do
 			Result := services.has (name)
 		end
-		
-		
+
 feature {NONE} -- Implementation
 
 	services: DS_HASH_TABLE [SERVICE, STRING]
 			-- Collection of agent services indexed by name.
-	
 invariant
 	
 	services_exists: services /= Void

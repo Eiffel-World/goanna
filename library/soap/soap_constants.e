@@ -100,6 +100,11 @@ feature -- Constants
 			create Result.make (Ns_uri_soap_env, Attr_must_understand)
 		end
 
+	Q_attr_encoding_style: Q_NAME is
+		once
+			create Result.make (Ns_uri_soap_env, Attr_encoding_style)
+		end
+		
 	Attrval_true: STRING is "true"
 
 	Fault_code_version_mismatch: STRING is 

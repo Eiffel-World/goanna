@@ -129,19 +129,21 @@ feature {NONE} -- Implementation
 			calculator: CALCULATOR
 		do
 			create account
-			create account_service.make (account)
-			account_service.agent_registry.register ("deposit", account, account~deposit (?))
-			account_service.agent_registry.register ("withdraw", account, account~withdraw (?))
-			registry.register ("urn:Account", account_service)
+			create account_service.make
+			account_service.register (account~deposit (?), "deposit")
+			account_service.register (account~withdraw (?), "withdraw")
+			registry.register (account_service, "urn:Account")
 			create addresses.make
-			create address_service.make (addresses)
-			address_service.agent_registry.register ("getAddressFromName", addresses, addresses~get_address_from_name (?))
-			registry.register ("urn:AddressFetcher", address_service)
+			create address_service.make
+			address_service.register (addresses~get_address_from_name (?), "getAddressFromName")
+			registry.register (address_service, "urn:AddressFetcher")
 			create calculator
-			create calculator_service.make (calculator)
-			calculator_service.agent_registry.register ("times", calculator, calculator~times (?, ?))
-			calculator_service.agent_registry.register ("divide", calculator, calculator~divide (?, ?))
-			registry.register ("urn:xml-soap-demo-calculator", calculator_service)
+			create calculator_service.make
+			calculator_service.register (calculator~times (?, ?), "times")
+			calculator_service.register (calculator~divide (?, ?), "divide")
+			calculator_service.register (calculator~minus (?, ?), "minus")
+			calculator_service.register (calculator~plus(?, ?), "plus")
+			registry.register (calculator_service, "urn:xml-soap-demo-calculator")
 		end
 		
 

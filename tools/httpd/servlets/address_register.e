@@ -27,5 +27,14 @@ feature -- Access
 		do
 			Result := addresses.item (name)
 		end
+	
+	add_entry (name: STRING; address: STRING) is
+			-- Add 'address' for 'name'.
+		require
+			name_exists: name /= Void
+			address_exists: address /= Void
+		do
+			
+		end
 		
 end -- class ADDRESS_REGISTER
