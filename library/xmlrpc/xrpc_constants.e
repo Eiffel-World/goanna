@@ -13,32 +13,59 @@ class
 
 feature -- Types
 
-	Int_type: STRING is "int"
+	Int_type: UC_STRING is
 			-- Four byte signed integer
-	
-	Alt_int_type: STRING is "i4"
+		once
+			create Result.make_from_string ("int")
+		end
+		
+	Alt_int_type: UC_STRING is
 			-- Alternate integer type. Same as "int"
+		once
+			create Result.make_from_string ("i4")
+		end
 			
-	Bool_type: STRING is "boolean"
+	Bool_type: UC_STRING is
 			-- 0 (false) or 1 (true)
+		once
+			create Result.make_from_string ("boolean")
+		end
 			
-	String_type: STRING is "string"
+	String_type: UC_STRING is
 			-- ASCII string
+		once
+			create Result.make_from_string ("string")
+		end
 			
-	Double_type: STRING is "double"
+	Double_type: UC_STRING is
 			-- double-precision signed floaging point number
+		once
+			create Result.make_from_string ("double")
+		end
 			
-	Date_time_type: STRING is "dateTime.iso8601"
+	Date_time_type: UC_STRING is
 			-- date/time in ISO8601 format (YYYYMMDDTHH:MM:SS)
+		once
+			create Result.make_from_string ("dateTime.iso8601")
+		end
 			
-	Base64_type: STRING is "base64"
+	Base64_type: UC_STRING is
 			-- Base64-encoded binary
+		once
+			create Result.make_from_string ("base64")
+		end
 			
-	Array_type: STRING is "array"
+	Array_type: UC_STRING is
 			-- Array
+		once
+			create Result.make_from_string ("array")
+		end
 			
-	Struct_type: STRING is "struct"
+	Struct_type: UC_STRING is
 			-- Structure
+		once
+			create Result.make_from_string ("struct")
+		end
 
 	valid_scalar_type (new_value: ANY): BOOLEAN is
 			-- Is 'new_value' one of the supported XML-RPC scalar types?
@@ -91,9 +118,11 @@ feature -- Types
 			new_value_exists: new_value /= Void
 		local
 			ht: DS_HASH_TABLE [ANY, STRING]
+			uc_ht: DS_HASH_TABLE [ANY, UC_STRING]
 		do
 			ht ?= new_value
-			Result := ht /= Void
+			uc_ht ?= new_value
+			Result := ht /= Void or uc_ht /= Void
 		end
 		
 feature -- Error codes
@@ -258,6 +287,18 @@ feature -- Error codes
 
 feature -- DOM elements
 
+	UC_dot: UC_CHARACTER is
+			-- Full stop
+		once
+			Result.make_from_character ('.')
+		end
+	
+	UC_empty: UC_STRING is
+			-- Empty unicode string
+		once
+			Result.make (0)
+		end	
+		
 	Method_name_element: UC_STRING is
 			-- Tag <methodName>
 		once
@@ -319,10 +360,14 @@ feature -- DOM elements
 		end
 		
 	Fault_code_member: STRING is "faultCode"
-			-- Member "faultCode"	
 
 	Fault_string_member: STRING is "faultString"
-			-- Member "faultString"
+	
+	System_multicall_member: UC_STRING is
+			-- Method name "system.multiCall"
+		once
+			create Result.make_from_string ("system.multiCall")
+		end
 		
 feature -- Factories
 

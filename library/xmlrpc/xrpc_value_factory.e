@@ -79,6 +79,7 @@ feature -- Factory
 			value_exists: value /= Void
 		local
 			array: ARRAY [ANY]
+			uc_struct: DS_HASH_TABLE [ANY, UC_STRING]
 			struct: DS_HASH_TABLE [ANY, STRING]
 		do
 			-- check type and create appropriate concrete value type
@@ -92,7 +93,13 @@ feature -- Factory
 					create {XRPC_ARRAY_VALUE} Result.make_from_array (array)
 				elseif valid_struct_type (value) then	
 					struct ?= value
-					create {XRPC_STRUCT_VALUE} Result.make_from_struct (struct)
+					if struct /= Void then
+						create {XRPC_STRUCT_VALUE} Result.make_from_struct (struct)	
+					else
+						uc_struct ?= value
+						create {XRPC_STRUCT_VALUE} Result.make_from_uc_struct (uc_struct)	
+					end
+					
 				end
 			end
 		ensure

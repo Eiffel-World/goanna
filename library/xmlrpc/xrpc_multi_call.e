@@ -69,7 +69,7 @@ feature -- Marshalling
 		do
 			create Result.make (300)
 			Result.append ("<?xml version=%"1.0%"?><methodCall><methodName>")
-			Result.append (method_name)
+			Result.append (method_name.out)
 			Result.append ("</methodName>")
 			if not sub_calls.is_empty then
 				Result.append ("<params><param><value><array><data>")
@@ -83,7 +83,7 @@ feature -- Marshalling
 					Result.append ("<value><struct><member><name>")
 					Result.append (Method_name_id)
 					Result.append ("</name><value>")
-					Result.append (c.item.method_name)
+					Result.append (c.item.method_name.out)
 					Result.append ("</value></member>")
 					-- method params
 					Result.append ("<member><name>")
@@ -106,7 +106,10 @@ feature -- Marshalling
 			Result.append ("</methodCall>")
 		end
 	
-	Multicall_method_name: STRING is "system.multiCall"
+	Multicall_method_name: UC_STRING is 
+		once
+			create Result.make_from_string ("system.multiCall")
+		end
 	
 	Method_params_id: STRING is "params"
 	

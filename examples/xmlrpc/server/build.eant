@@ -48,6 +48,28 @@
 		</gexace>
 	</target>
 
+	<target name="install_debug" depend="init" dir="${GOANNA}/examples/${library}/${example}">
+		<description>
+			Install ${system} directory.
+		</description>
+		<gexace command="build" command_options="ise">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
+			<define name="DEBUG" value="true"/>
+		</gexace>
+		<gexace command="build" command_options="hact">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
+			<define name="DEBUG" value="true"/>
+		</gexace>
+		<gexace command="build" command_options="se">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
+			<define name="DEBUG" value="true"/>
+		</gexace>
+		<gexace command="build" command_options="ve">
+			<define name="GOBO_OS" value="${GOBO_OS}"/>
+			<define name="DEBUG" value="true"/>
+		</gexace>
+	</target>
+
 	<target name="compile" depend="init, install">
 		<description>
 			Compile '${system}'.
@@ -94,7 +116,7 @@
 		<se ace="se.ace"/>
 	</target>
 
-	<target name="compile_debug" depend="init">
+	<target name="compile_debug" depend="init, install">
 		<description>
 			Compile '${system}' in debug mode.
 			Use Eiffel compiler set in ${GOBO_EIFFEL}
@@ -109,9 +131,6 @@
 			Compile '${system}' with ISE Eiffel in debug mode.
 		</description>
 
-		<gexace command="build" command_options="ise">
-			<define name="DEBUG" value="true"/>
-		</gexace>
 		<ise ace="ise.ace" system="${system}" finalize="false" finish_freezing="true"/>
 	</target>
 
@@ -120,9 +139,6 @@
 			Compile '${system}' with Halstenbach Eiffel in debug mode.
 		</description>
 
-		<gexace command="build" command_options="hact">
-			<define name="DEBUG" value="true"/>
-		</gexace>
 		<hact ace="hact.ace" system="${system}" finalize="false" fish="true"/>
 	</target>
 
@@ -131,9 +147,6 @@
 			Compile '${system}' with Visual Eiffel in debug mode.
 		</description>
 
-		<gexace command="build" command_options="ve">
-			<define name="DEBUG" value="true"/>
-		</gexace>
 		<ve esd="ve.esd"/>
 	</target>
 
@@ -142,9 +155,6 @@
 			Compile '${system}' with SmallEiffel in debug mode.
 		</description>
 
-		<gexace command="build" command_options="se">
-			<define name="DEBUG" value="true"/>
-		</gexace>
 		<se ace="se.ace"/>
 	</target>
 

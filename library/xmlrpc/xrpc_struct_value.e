@@ -17,7 +17,7 @@ inherit
 
 creation
 
-	make, make_from_struct, unmarshall
+	make, make_from_struct, make_from_uc_struct, unmarshall
 
 feature -- Initialisation
 
@@ -47,6 +47,27 @@ feature -- Initialisation
 				c.off
 			loop
 				value.put (Value_factory.build (c.item), c.key)
+				c.forth
+			end
+			unmarshall_ok := True
+		end
+		
+	make_from_uc_struct (struct: DS_HASH_TABLE [ANY, UC_STRING]) is
+			-- Create struct type from 'new_value'. 
+		require
+			struct_exists: struct /= Void
+		local
+			c: DS_HASH_TABLE_CURSOR [ANY, UC_STRING]
+		do
+			type := Struct_type
+			create value.make (struct.count)
+			from
+				c := struct.new_cursor
+				c.start
+			until
+				c.off
+			loop
+				value.put (Value_factory.build (c.item), c.key.out)
 				c.forth
 			end
 			unmarshall_ok := True

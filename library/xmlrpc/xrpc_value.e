@@ -18,7 +18,7 @@ inherit
 	
 feature -- Access
 
-	type: STRING
+	type: UC_STRING
 			-- Type of parameter (used as the tag value)
 
 feature -- Conversion

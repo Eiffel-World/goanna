@@ -87,7 +87,7 @@ feature -- Initialisation
 		do
 			type := Base64_type
 			value := buffer
-			string_value := encoder.encode (buffer)
+			create string_value.make_from_string (encoder.encode (buffer))
 		end
 
 	unmarshall (node: XM_ELEMENT) is
@@ -96,7 +96,7 @@ feature -- Initialisation
 			int_ref: INTEGER_REF
 			double_ref: DOUBLE_REF
 			bool_ref: BOOLEAN_REF
-			text: STRING
+			text: UC_STRING
 			decoder: BASE64_ENCODER 
 		do
 			unmarshall_ok := True
@@ -105,17 +105,17 @@ feature -- Initialisation
 			if node.name.is_equal (Value_element) then
 				type := String_type
 				if not node.is_empty then
-					value := clone (node.text.out)
+					value := node.text.out
 				else
 					value := ""
 				end	
 				string_value := value.out
 			else
 				-- check for text child node
-				type := node.name.out
-				text := node.text.out
+				type := node.name
+				text := node.text
 				if text /= Void then
-					string_value := text
+					string_value := text.out
 					-- check for string
 					if type.is_equal (String_type) then
 						value := clone (string_value)	
@@ -190,13 +190,13 @@ feature -- Mashalling
 			-- don't bother wrapping string types in a type element
 			if type /= String_type then
 				Result.append ("<")
-				Result.append (type)
+				Result.append (type.out)
 				Result.append (">")	
 			end
 			Result.append (string_value)
 			if type /= String_type then
 				Result.append ("</")
-				Result.append (type)	
+				Result.append (type.out)	
 				Result.append (">")	
 			end
 			Result.append ("</value>")

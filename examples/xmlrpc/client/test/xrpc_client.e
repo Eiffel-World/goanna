@@ -22,6 +22,11 @@ inherit
 		export
 			{NONE} all
 		end
+	
+	XRPC_CONSTANTS
+		export
+			{NONE} all
+		end
 		
 creation
 
@@ -41,8 +46,8 @@ feature -- Initialization
 				create client.make (host, port, "/servlet/xmlrpc")
 				create factory.make
 				perform_echo_tests
---				perform_introspection_tests
---				perform_multicall_tests
+				perform_introspection_tests
+				perform_multicall_tests
 			end
 		end
 
@@ -133,20 +138,20 @@ feature {NONE} -- Implementation
 			param: XRPC_PARAM
 			methods: ARRAY [ANY]
 		do
-			create call.make ("system.listMethods")
+			create call.make_from_string ("system.listMethods")
 			execute_call (call)
 			
-			create call.make ("system.methodSignature")
+			create call.make_from_string ("system.methodSignature")
 			create param.make (factory.build ("system.methodHelp"))
 			call.add_param (param)
 			execute_call (call)
 			
-			create call.make ("system.methodHelp")
+			create call.make_from_string ("system.methodHelp")
 			create param.make (factory.build ("system.listMethods"))
 			call.add_param (param)
 			execute_call (call)
 
-			create call.make ("system.hasMethod")
+			create call.make_from_string ("system.hasMethod")
 			create param.make (factory.build ("system.listMethods"))
 			call.add_param (param)
 			execute_call (call)	
@@ -162,12 +167,12 @@ feature {NONE} -- Implementation
 		do		
 			create multi_call.make
 			
-			create call.make ("system.methodHelp")
+			create call.make_from_string ("system.methodHelp")
 			create param.make (factory.build ("system.listMethods"))
 			call.add_param (param)
 			multi_call.add_call (call)
 
-			create call.make ("system.hasMethod")
+			create call.make_from_string ("system.hasMethod")
 			create param.make (factory.build ("system.listMethods"))
 			call.add_param (param)
 			multi_call.add_call (call)
@@ -182,9 +187,9 @@ feature {NONE} -- Implementation
 		do
 			client.invoke (call)
 			if client.invocation_ok then
-				display_success (call.method_name)
+				display_success (call.method_name.out)
 			else
-				display_fail (call.method_name, "Fault received: (" + client.fault.code.out + ") " + client.fault.string)
+				display_fail (call.method_name.out, "Fault received: (" + client.fault.code.out + ") " + client.fault.string.out)
 			end
 		end
 		
@@ -195,9 +200,9 @@ feature {NONE} -- Implementation
 		do
 			client.invoke (multi_call)
 			if client.invocation_ok then
-				display_success (multi_call.method_name)
+				display_success (multi_call.method_name.out)
 			else
-				display_fail (multi_call.method_name, "Fault received: (" + client.fault.code.out + ") " + client.fault.string)
+				display_fail (multi_call.method_name.out, "Fault received: (" + client.fault.code.out + ") " + client.fault.string.out)
 			end
 		end
 		
@@ -216,7 +221,7 @@ feature {NONE} -- Implementation
 			array: ARRAY [ANY]
 			struct: DS_HASH_TABLE [ANY, STRING]
 		do
-			create call.make (name)
+			create call.make_from_string (name)
 			create param.make (factory.build (arg))
 			call.add_param (param)
 			client.invoke (call)

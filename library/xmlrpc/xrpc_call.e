@@ -17,7 +17,7 @@ inherit
 	
 creation
 	
-	make, unmarshall
+	make, make_from_string, unmarshall
 	
 creation {XRPC_SYSTEM}
 
@@ -25,7 +25,7 @@ creation {XRPC_SYSTEM}
 	
 feature -- Initialisation
 
-	make (new_method: STRING) is
+	make (new_method: UC_STRING) is
 			-- Initialise 
 		require
 			new_method_exists: new_method /= Void
@@ -34,6 +34,16 @@ feature -- Initialisation
 			create params.make_default
 			unmarshall_ok := True
 		end
+	
+	make_from_string (new_method: STRING) is
+			-- Initialise
+		require
+			new_method_exists: new_method /= Void
+		do
+			create method_name.make_from_string (new_method)
+			create params.make_default
+			unmarshall_ok := True
+		end	
 		
 	unmarshall (node: XM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
@@ -47,7 +57,7 @@ feature -- Initialisation
 			method_name_elem := get_named_element (node, Method_name_element)
 			if method_name_elem /= Void then
 				-- set method name
-				method_name := method_name_elem.text.out
+				method_name := method_name_elem.text
 				-- check for parameters
 				params_elem := get_named_element (node, Params_element)
 				if params_elem /= Void then
@@ -89,7 +99,7 @@ feature {XRPC_SYSTEM} -- Initialisation
 		require
 			struct_exists: struct /= Void
 		local
-			table: DS_HASH_TABLE [ANY, STRING]
+			table: DS_HASH_TABLE [ANY, UC_STRING]
 			param_array: ARRAY [ANY]
 			param_value: XRPC_VALUE 
 			i: INTEGER
@@ -97,9 +107,9 @@ feature {XRPC_SYSTEM} -- Initialisation
 			unmarshall_ok := True
 			table ?= struct
 			if table /= Void then
-				method_name ?= table.item ("methodName")
+				method_name ?= table.item (Method_name_element)
 				if method_name /= Void then
-					param_array ?= table.item ("params")
+					param_array ?= table.item (Params_element)
 					if param_array /= Void then
 						from
 							i := param_array.lower
@@ -127,13 +137,13 @@ feature {XRPC_SYSTEM} -- Initialisation
 		
 feature -- Access
 
-	method_name: STRING
+	method_name: UC_STRING
 			-- Name of method to call
 			
 	params: DS_LINKED_LIST [XRPC_PARAM]
 			-- Call parameters
 
-	extract_service_name: STRING is
+	extract_service_name: UC_STRING is
 			-- Extract the service name from the call's 'method_name'. The 'method_name'
 			-- should be in the form 'service.action', where 'service' is the service name.
 			-- If a '.' does not exist in the 'method_name' then the service name is returned
@@ -143,17 +153,17 @@ feature -- Access
 		local
 			i: INTEGER
 		do
-			i := method_name.index_of ('.', 1)
+			i := method_name.index_of (Uc_dot, 1)
 			if i = 0 or (i - 1) <= 0 then
-				Result := ""
+				create Result.make (0)
 			else
 				Result := method_name.substring (1, i - 1)
 			end
 		ensure
-			empty_service_name_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")
+			empty_service_name_if_no_dot: method_name.index_of (UC_dot, 1) = 0 implies Result.is_equal (UC_empty)
 		end
 	
-	extract_action: STRING is
+	extract_action: UC_STRING is
 			-- Extract the service name from the call's 'method_name'. The 'method_name'
 			-- should be in the form 'service.action', where 'action' is the action to be invoked.
 			-- If a '.' does not exist in the 'method_name' then the action is returned
@@ -163,14 +173,14 @@ feature -- Access
 		local
 			i: INTEGER
 		do
-			i := method_name.index_of ('.', 1)
+			i := method_name.index_of (UC_dot, 1)
 			if i = 0 or (i + 1) >= method_name.count then
-				Result := ""
+				create Result.make (0)
 			else
 				Result := method_name.substring (i + 1, method_name.count)
 			end		
 		ensure
-			empty_action_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")	
+			empty_action_if_no_dot: method_name.index_of (UC_dot, 1) = 0 implies Result.is_equal (UC_empty)	
 		end	
 		
 	extract_parameters: TUPLE is
@@ -203,7 +213,7 @@ feature -- Access
 		
 feature -- Status setting
 
-	set_method_name (new_name: STRING) is
+	set_method_name (new_name: UC_STRING) is
 			-- Set method to call to 'new_name'
 		require
 			new_name_exists: new_name /= Void
@@ -229,7 +239,7 @@ feature -- Marshalling
 		do
 			create Result.make (300)
 			Result.append ("<?xml version=%"1.0%"?><methodCall><methodName>")
-			Result.append (method_name)
+			Result.append (method_name.out)
 			Result.append ("</methodName>")
 			if not params.is_empty then
 				Result.append ("<params>")

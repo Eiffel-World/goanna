@@ -171,14 +171,14 @@ feature -- Access
 				create sub_call.unmarshall_for_multi_call (calls.item (i))
 				if sub_call.unmarshall_ok then
 					-- check for recursion attempt
-					if sub_call.method_name.is_equal ("system.multiCall") then
+					if sub_call.method_name.is_equal (System_multicall_member) then
 						create fault.make (Multi_call_recursion)
 					else
 						-- call as normal and process result
-						service_name := sub_call.extract_service_name
-						action := sub_call.extract_action
+						service_name := sub_call.extract_service_name.out
+						action := sub_call.extract_action.out
 						parameters := sub_call.extract_parameters
-						log_hierarchy.category (Xmlrpc_category).info ("Multicall calling: " + sub_call.method_name)
+						log_hierarchy.category (Xmlrpc_category).info ("Multicall calling: " + sub_call.method_name.out)
 						-- retrieve service and execute call
 						if registry.has (service_name) then
 							agent_service := registry.get (service_name)
@@ -196,15 +196,15 @@ feature -- Access
 										end
 									else
 										-- construct fault response for failed call
-										create fault.make_with_detail (Unable_to_execute_service_action, " " + sub_call.method_name)
+										create fault.make_with_detail (Unable_to_execute_service_action, " " + sub_call.method_name.out)
 									end	
 								else
 									-- construct fault response for invalid action operands
-									create fault.make_with_detail (Invalid_operands_for_service_action, " " + sub_call.method_name)
+									create fault.make_with_detail (Invalid_operands_for_service_action, " " + sub_call.method_name.out)
 								end
 							else
 								-- construct fault response for invalid service action
-								create fault.make_with_detail (Action_not_found_for_service, " " + sub_call.method_name)
+								create fault.make_with_detail (Action_not_found_for_service, " " + sub_call.method_name.out)
 							end
 						else
 							-- construct fault response for invalid service

@@ -76,10 +76,10 @@ feature -- Basic operations
 				parse_call (req)
 				if valid_call then
 					-- extract service details
-					service_name := call.extract_service_name
-					action := call.extract_action
+					service_name := call.extract_service_name.out
+					action := call.extract_action.out
 					parameters := call.extract_parameters
-					log_hierarchy.category (Xmlrpc_category).info ("Calling: " + call.method_name)
+					log_hierarchy.category (Xmlrpc_category).info ("Calling: " + call.method_name.out)
 					-- retrieve service and execute call
 					if registry.has (service_name) then
 						agent_service := registry.get (service_name)
@@ -104,17 +104,17 @@ feature -- Basic operations
 									end
 								else
 									-- construct fault response for failed call
-									create fault.make_with_detail (Unable_to_execute_service_action, " " + call.method_name)
+									create fault.make_with_detail (Unable_to_execute_service_action, " " + call.method_name.out)
 									response_text := fault.marshall
 								end	
 							else
 								-- construct fault response for invalid action operands
-								create fault.make_with_detail (Invalid_operands_for_service_action, " " + call.method_name)
+								create fault.make_with_detail (Invalid_operands_for_service_action, " " + call.method_name.out)
 								response_text := fault.marshall
 							end
 						else
 							-- construct fault response for invalid service action
-							create fault.make_with_detail (Action_not_found_for_service, " " + call.method_name)
+							create fault.make_with_detail (Action_not_found_for_service, " " + call.method_name.out)
 							response_text := fault.marshall
 						end
 					else

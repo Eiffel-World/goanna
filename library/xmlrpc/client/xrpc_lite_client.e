@@ -326,7 +326,7 @@ feature {NONE} -- Implementation
 			parser.parse_from_string (content)
 			if parser.is_correct then
 				-- peek at response elements to determine if it is a fault or not
-				child ?= parser.document.first
+				child ?= parser.document.root_element.first
 				if child /= Void and then child.name.is_equal (Fault_element) then
 					create fault.unmarshall (parser.document.root_element)
 					if not fault.unmarshall_ok then		
