@@ -49,8 +49,6 @@ feature -- Basic operations
 			-- Force any content in the buffer to be written to the client. A call
 			-- to this method automatically commits the response, meaning the status
 			-- code and headers will be written.
-		require
-			not_committed: not is_committed
 		deferred
 		ensure
 			committed: is_committed

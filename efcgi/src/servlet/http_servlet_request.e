@@ -4,7 +4,7 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	HTTP_SERVLET_REQUEST
 
 inherit
@@ -44,7 +44,7 @@ feature -- Access
 
 feature -- Status report
 
-	has_header (name: STRING) is
+	has_header (name: STRING): BOOLEAN is
 			-- Does this request contain a header named 'name'?
 		require
 			name_exists: name /= Void

@@ -7,6 +7,13 @@ indexing
 deferred class
 	SERVLET
 
+inherit
+
+	HTTP_STATUS_CODES
+		export
+			{NONE} all
+		end
+		
 feature -- Initialization
 
 	init (config: SERVLET_CONFIG) is
@@ -30,7 +37,7 @@ feature -- Access
 	
 feature -- Basic operations
 
-	service (req: SERVLET_REQEUST; resp: SERVLET_RESPONSE) is
+	service (req: SERVLET_REQUEST; resp: SERVLET_RESPONSE) is
 			-- Called by teh servlet manager to allow the servlet to
 			-- respond to a request.
 		require

@@ -49,7 +49,7 @@ feature -- Status setting
 			servlet_exists: servlet /= Void
 			name_exists: name /= Void
 		do
-			servlets.add (servlet, name)
+			servlets.put (servlet, name)
 		end
 
 feature {NONE} -- Implementation

@@ -10,6 +10,10 @@ class
 inherit
 	SERVLET
 
+create
+
+	init
+	
 feature -- Initialization
 
 	init (config: SERVLET_CONFIG) is
@@ -39,7 +43,6 @@ feature -- Basic operations
 			request_exists: req /= Void
 			response_exists: resp /= Void
 		do
-			-- TODO: create an empty response body and call do_get on it.
 		end
 		
 	do_post (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
@@ -53,22 +56,34 @@ feature -- Basic operations
 		
 	service (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- Handle a request by dispatching it to the correct method handler.
-		require
-			request_exists: req /= Void
-			response_exists: resp /= Void
 		local
 			method: STRING
 		do
 			method := req.method
-			if method.equals (Method_get) then
+			if method.is_equal (Method_get) then
 				do_get (req, resp)
-			else if method.equals (Method_post) then
+			elseif method.is_equal (Method_post) then
 				do_post (req, resp)
-			else if method.equals (Method_head) then
+			elseif method.is_equal (Method_head) then
 				do_head (req, resp)
 			else
-				resp.sendError (Sc_not_implemented)
+				resp.send_error (Sc_not_implemented)
 			end
+			-- make sure the response has been flushed.
+			resp.flush_buffer
 		end
 
+	destroy is
+			-- Called by the servlet manager to indicate that the servlet
+			-- is being taken out of service. The servlet can then clean
+			-- up any resources that are being held.
+		do
+		end
+		
+feature {NONE} -- Implementation
+
+	Method_get: STRING is "GET"
+	Method_post: STRING is "POST"
+	Method_head: STRING is "HEAD"
+	
 end -- class HTTP_SERVLET

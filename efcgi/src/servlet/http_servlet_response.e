@@ -4,12 +4,17 @@ indexing
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	HTTP_SERVLET_RESPONSE
 
 inherit
 	SERVLET_RESPONSE
 
+	HTTP_STATUS_CODES
+		export
+			{NONE} all
+		end
+		
 feature -- Access
 
 	contains_header (name: STRING): BOOLEAN is
@@ -19,10 +24,6 @@ feature -- Access
 		deferred			
 		end
 	
-feature -- Measurement
-
-feature -- Status report
-
 feature -- Status setting
 
 	add_cookie (cookie: COOKIE) is
@@ -64,21 +65,13 @@ feature -- Status setting
 		deferred
 		end
 	
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
+	set_status_message (sc: INTEGER; message: STRING) is
+			-- Set the status code to 'sc' with 'message' as the text message to
+			-- send to the client.	
+		require
+			message_exists: message /= Void		
+		deferred
+		end
 
 feature -- Basic operations
 
@@ -116,13 +109,12 @@ feature -- Basic operations
 			committed: is_committed
 		end
 	
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
-
-invariant
-	invariant_clause: -- Your invariant here
-
+	send (data: STRING) is
+			-- Send 'data' to the client. The data is buffered for writing. It will not be 
+			-- physically sent to the client until 'flush_buffer' is called. 
+		require
+			data_exists: data /= Void
+		deferred
+		end
+	
 end -- class HTTP_SERVLET_RESPONSE

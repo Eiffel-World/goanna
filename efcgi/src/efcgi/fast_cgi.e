@@ -26,6 +26,7 @@ feature -- Initialisation
 			-- outstanding requests.
 		require
 			positive_port: port >= 0
+			positive_backlog: backlog >= 0
 		do
 			svr_port := port
 			server_backlog := backlog
@@ -45,7 +46,9 @@ feature -- FGCI interface
       			if not accept_called then
       				accept_called := True
     				create srv_socket.make (svr_port, server_backlog) 
-    			end
+    									end
+    									-- finish the previous request
+    			finish
     			-- accept the next request
     			Result := accept_request				
       		end
@@ -82,8 +85,8 @@ feature -- FGCI interface
 		end
 
 	putstr (str: STRING) is 
-      						-- Print 'str' to standard output stream.
-      				require
+      		-- Print 'str' to standard output stream.
+      	require
       		request_exists: request /= Void
 		do 
 			request.write_stdout (str)
