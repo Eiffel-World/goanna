@@ -100,9 +100,15 @@ feature {NONE} -- Implementation
 			create cookie.make ("servlet_server", "testing")
 			if found then
 				-- remove the cookie by setting its age to zero
+				debug ("cookie_parsing")
+					print (generator + ".set_cookie removing cookie%R%N")
+				end
 				cookie.set_max_age (0)	
 			else
-				cookie.set_max_age (500) -- 5 minutes	
+				debug ("cookie_parsing")
+					print (generator + ".set_cookie setting cookie%R%N")
+				end
+				cookie.set_max_age (5000) -- 5 minutes	
 			end
 			resp.add_cookie (cookie)	
 		end

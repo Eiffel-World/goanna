@@ -317,7 +317,7 @@ feature {NONE} -- Implementation
 			-- Set default headers for all responses including the Server and Date headers.	
 		do
 			if not contains_header ("Server") then
-				set_header ("Server", "Eiffel Servlet Server")
+				set_header ("Server", "Goanna Servlet Server")
 			end
 			if not contains_header ("Date") then
 				set_header ("Date", "Sun, 06 Nov 1994 08:49:37 GMT") -- TODO: set real date	
@@ -329,19 +329,24 @@ feature {NONE} -- Implementation
 		local
 			value: STRING		
 		do
-			create value.make (20)
-			from
-				cookies.start
-			until
-				cookies.off
-			loop
-				value.append (cookies.item_for_iteration.header_string)
-				if not cookies.is_last then
-					value.append_character (',')
+			if not cookies.is_empty then
+				create value.make (20)
+				from
+					cookies.start
+				until
+					cookies.off
+				loop
+					value.append (cookies.item_for_iteration.header_string)
+					if not cookies.is_last then
+						value.append_character (',')
+					end
+					cookies.forth
 				end
-				cookies.forth
+				add_header ("Set-Cookie", value)
+				-- add cache control headers for cookie management
+				add_header ("Cache-control", "no-cache=%"set-cookie%"")
+				set_header ("Expires", "Sun, 04 Jan 1998 00:00:00 GMT") -- TODO: set real date
 			end
-			add_header ("Set-Cookie", value)
 		end
 	
 	write_headers is

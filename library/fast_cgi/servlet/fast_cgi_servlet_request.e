@@ -380,7 +380,7 @@ feature {NONE} -- Implementation
 					pair := tokenizer.token
 					i := pair.index_of ('=', 1)
 					if i > 0 then
-						name := pair.substring (1, i)
+						name := pair.substring (1, i - 1)
 						value := pair.substring (i + 1, pair.count)
 						create new_cookie.make (name, value)
 						debug ("cookie_parsing")

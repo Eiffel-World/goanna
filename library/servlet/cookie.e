@@ -125,7 +125,8 @@ feature -- Conversion
 
 	header_string: STRING is
 			-- Return string representation of this cookie suitable for
-			-- a request header value.
+			-- a request header value. This routine formats the cookie using
+			-- version 0 of the cookie spec (RFC 2109).
 		do
 			create Result.make (50)
 			Result.append (name)
@@ -143,12 +144,16 @@ feature -- Conversion
 				Result.append (Name_value_separator)
 				Result.append ("%"" + comment + "%"")
 			end
-			-- optional expires
+			-- optional expires (depends on version)
 			if max_age >= 0 then
 				Result.append (Term_separator)
-				Result.append (Max_age_label)
+				Result.append (Expires_label)
 				Result.append (Name_value_separator)
-				Result.append ("%"" + max_age.out + "%"")	
+				if max_age = 0 then
+					Result.append ("%"0%"")
+				else
+					Result.append ("%"Sun, 20 Jan 2001 00:00:00 GMT%"")	-- TODO: convert max-age to real date
+				end
 			end
 			-- optional domain
 			if domain /= Void and not domain.is_empty then
@@ -183,7 +188,7 @@ feature -- Conversion
 	Name_value_separator: STRING is "="
 	Term_separator: STRING is "; "
 	
-	Default_version: INTEGER is 1
+	Default_version: INTEGER is 0
 		
 invariant
 

@@ -5,11 +5,6 @@ root
 	SERVLET_SERVER: make
 
 default
-	assertion(require)
-	assertion(ensure)
-	assertion(check)
-	assertion(loop)
-	assertion(invariant)
 	address_expression(no)
 	array_optimization(yes)
 	console_application(yes)
