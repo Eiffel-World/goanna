@@ -28,7 +28,7 @@ inherit
 			{NONE} all
 		end
 		
-	SHARED_STANDARD_LOGGER
+	LOG_SHARED_HIERARCHY
 		export
 			{NONE} all
 		end
@@ -72,22 +72,24 @@ feature -- Basic operations
 				end
 			end			
 			if path /= Void then
-				log (Info, "Servicing request: " + path)
+				info (Servlet_app_log_category, "Servicing request: " + path)
 				if servlet_manager.has_registered_servlet (path) then
 					servlet_manager.servlet (path).service (req, resp)
 				elseif servlet_manager.has_default_servlet then
 					servlet_manager.default_servlet.service (req, resp)
 				else
 					handle_missing_servlet (resp)
-					log (Error, "Servlet not found for URI " + path)
+					error (Servlet_app_log_category, "Servlet not found for URI " + path)
 				end
 			else
 				handle_missing_servlet (resp)
-				log (Error, "Request URI not specified")
+				error (Servlet_app_log_category, "Request URI not specified")
 			end	
 		end
 		
 feature {NONE} -- Implementation
+	
+	Servlet_app_log_category: STRING is "servlet.app"
 	
 	handle_missing_servlet (resp: CGI_SERVLET_RESPONSE) is
 			-- Send error page indicating missing servlet
