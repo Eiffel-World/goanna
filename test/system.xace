@@ -37,9 +37,9 @@
 			<cluster name="log4e_tests" location="log4e"/>
 		</cluster>
 		
-		<mount location="${GOBO}/library/cluster.xace"/>
-		<mount location="${GOBO}/library/time/cluster.xace"/>
-		<mount location="${GOANNA}/library/cluster.xace"/>
 		<mount location="${GOBO}/library/kernel.xace"/>
+		<mount location="${GOBO}/library/cluster.xace"/>
+		<mount location="${GOANNA}/library/cluster.xace"/>
+
 	</cluster>
 </system>

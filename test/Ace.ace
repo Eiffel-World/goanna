@@ -97,45 +97,6 @@ cluster
 
 	xml_parser:		"$GOANNA\library\xml_parser"
 
-	ucstring:		"$UCSTRING\lib"
-
-	ucstring_ise (ucstring):		"$\spec\ise"
-
-	exml:		"$EXML/library"
-
-	all exml_factory (exml):		"$/factory"
-
-	all exml_general (exml):		"$/general"
-
-	all exml_formater (exml):		"$/formater"
-
-	all exml_event (exml):		"$/event"
-
-	all exml_tree (exml):		"$/tree"
-
-	all exml_source (exml):		"$/source"
-
-	all exml_position (exml):		"$/position"
-
-	exml_implementation (exml):		"$/impl"
-
-	all exml_implementation_interface (exml_implementation):		"$/interface"
-
-	exml_expat_implementation (exml_implementation):		"$/expat"
-
-	exml_expat_expat_implementation (exml_expat_implementation):		"$/expat"
-
-	exml_expat_api_implementation (exml_expat_implementation):		"$/api"
-
-	exml_expat_general_implementation (exml_expat_implementation):		"$/general"
-
-	exml_expat_event_implementation (exml_expat_implementation):		"$/event"
-		use
-			".lace"
-		end
-
-	exml_expat_ise_implementation (exml_expat_implementation):		"$/spec/ise"
-
 external
 
 	include_path:

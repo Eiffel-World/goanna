@@ -53,15 +53,15 @@ feature -- Parsing
 			-- Log4E topology. Make resulting heirarchy available in 
 			-- 'hierarchy'.
 		do
-			create parser.make
+			parser := parser_factory.new_toe_eiffel_tree_parser
 			debug ("log4e_config")
 				Internal_log.warn ("Parsing file: " + file_name.out + "...%R%N")
 			end
 			parser.parse_from_file_name (file_name)
 			if parser.last_error = parser.Xml_err_none then
-				debug ("log4e_config")
-					display_dom_tree (parser.document)
-				end
+--				debug ("log4e_config")
+--					display_dom_tree (parser.document)
+--				end
 				process_config_tree (parser.document)
 			else
 				display_parser_error
@@ -73,7 +73,9 @@ feature -- Parsing
 			
 feature {NONE} -- Implementation
 
-	parser: DOM_TREE_BUILDER
+	parser_factory: expanded XM_PARSER_FACTORY
+	
+	parser: XM_TREE_PARSER
 
 	file_name: UC_STRING
 			-- Name of file to parse.
@@ -86,17 +88,17 @@ feature {NONE} -- Implementation
 			internal_log.error ("At position: " + parser.position.out)
 		end
 
-	display_dom_tree (document: DOM_DOCUMENT) is
-			-- Display dom tree to standard out.
-		require
-			document_exists: document /= Void	
-		local
-			writer: DOM_SERIALIZER
-		do
-			writer := serializer_factory.serializer_for_document (document)
-			writer.set_output (io.output)
-			writer.serialize (document)		
-		end
+--	display_dom_tree (document: DOM_DOCUMENT) is
+--			-- Display dom tree to standard out.
+--		require
+--			document_exists: document /= Void	
+--		local
+--			writer: DOM_SERIALIZER
+--		do
+--			writer := serializer_factory.serializer_for_document (document)
+--			writer.set_output (io.output)
+--			writer.serialize (document)		
+--		end
 	
 	serializer_factory: DOM_SERIALIZER_FACTORY is
 		once
@@ -106,44 +108,40 @@ feature {NONE} -- Implementation
 	appenders: DS_HASH_TABLE [LOG_APPENDER, STRING]
 			-- Collection of named appenders
 		
-	category_elements: DS_HASH_TABLE [DOM_ELEMENT, STRING]
+	category_elements: DS_HASH_TABLE [XM_ELEMENT, STRING]
 			-- Collection of category elements for post processing (after all
 			-- appenders have been created so that appender references can 
 			-- be resolved.
 		
-	root_element: DOM_ELEMENT
+	root_element: XM_ELEMENT
 			-- Root element held for post processing all appender refs.
 			
-	process_config_tree (document: DOM_DOCUMENT) is
+	process_config_tree (document: XM_DOCUMENT) is
 			-- Process configuration DOM tree.
 		require
 			document_exists: document /= Void
 		local
-			number_children, index: INTEGER
-			child_nodes: DOM_NODE_LIST
-			element: DOM_ELEMENT
+			child_node_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			element: XM_ELEMENT
 		do
 			-- process the root element
-			process_root (document.document_element)
+			process_root (document.root_element)
 			if hierarchy /= Void then		
 				-- iterate through top level elements and process according to type,
 				-- ignoring root as it is already done
-				if document.document_element.has_child_nodes then
+				if not document.root_element.is_empty then
 					from
-						child_nodes := document.document_element.child_nodes
-						number_children := child_nodes.length
-						index := 0
-					variant
-						number_children - index + 1
+						child_node_cursor := document.root_element.new_cursor
+						child_node_cursor.start
 					until		
-						index >= number_children
+						child_node_cursor.off
 					loop
-						element ?= child_nodes.item (index)
+						element ?= child_node_cursor.item
 						check
 							node_is_element: element /= Void
 						end
 						process_element (element)
-						index := index + 1
+						child_node_cursor.forth
 					end
 				else
 					internal_log.error ("No configuration elements found.")
@@ -153,14 +151,14 @@ feature {NONE} -- Implementation
 			post_process_root	
 		end
 		
-	process_element (element: DOM_ELEMENT) is
+	process_element (element: XM_ELEMENT) is
 			-- Determine type of element and process
 		require
 			element_exists: element /= Void
 		local
-			name: DOM_STRING
+			name: UC_STRING
 		do
-			name := element.node_name
+			name := element.name
 			if name.is_equal (Appender_element_name) then
 				process_appender (element)
 			elseif name.is_equal (Category_element_name) then
@@ -172,17 +170,17 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	process_appender (element: DOM_ELEMENT) is
+	process_appender (element: XM_ELEMENT) is
 			-- Process an appender configuration element
 		require
 			element_exists: element /= Void
 		local
-			name, type: DOM_STRING
+			name, type: UC_STRING
 		do
-			if element.has_attribute_ns (Empty_namespace_uri, Name_attribute) then
-				name := element.get_attribute_ns (Empty_namespace_uri, Name_attribute)
-				if element.has_attribute_ns (Empty_namespace_uri, Type_attribute) then
-					type := element.get_attribute_ns (Empty_namespace_uri, Type_attribute)
+			if element.has_attribute_by_name (Name_attribute) then
+				name := element.attribute_by_name (Name_attribute).value
+				if element.has_attribute_by_name (Type_attribute) then
+					type := element.attribute_by_name (Type_attribute).value
 					create_appender (name, type, element)
 				else
 					internal_log.error ("Appender type attribute not found.")
@@ -192,7 +190,7 @@ feature {NONE} -- Implementation
 			end
 		end
 	
-	create_appender (name, type: DOM_STRING; element: DOM_ELEMENT) is
+	create_appender (name, type: UC_STRING; element: XM_ELEMENT) is
 			-- Create an appender of the specified 'type' and store
 			-- in 'appenders' indexed by 'name'
 		require
@@ -221,7 +219,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	create_file_appender (name: DOM_STRING; element: DOM_ELEMENT): LOG_APPENDER is
+	create_file_appender (name: UC_STRING; element: XM_ELEMENT): LOG_APPENDER is
 			-- Create a file appender using parameters in 'element'
 		require
 			name_exists: name /= Void
@@ -244,7 +242,7 @@ feature {NONE} -- Implementation
 			end
 		end
 	
-	create_rolling_file_appender (name: DOM_STRING; element: DOM_ELEMENT): LOG_APPENDER is
+	create_rolling_file_appender (name: UC_STRING; element: XM_ELEMENT): LOG_APPENDER is
 			-- Create a rolling file appender using parameters in 'element'
 		require
 			name_exists: name /= Void
@@ -280,7 +278,7 @@ feature {NONE} -- Implementation
 			end
 		end	
 		
-	create_calendar_rolling_appender (name: DOM_STRING; element: DOM_ELEMENT): LOG_APPENDER is
+	create_calendar_rolling_appender (name: UC_STRING; element: XM_ELEMENT): LOG_APPENDER is
 			-- Create a calendar rolling appender using parameters in 'element'
 		require
 			name_exists: name /= Void
@@ -310,40 +308,35 @@ feature {NONE} -- Implementation
 			end
 		end	
 		
-	retrieve_param_value (name: DOM_STRING; parent: DOM_ELEMENT): STRING is
+	retrieve_param_value (name: UC_STRING; parent: XM_ELEMENT): STRING is
 			-- Locate child param element with specified name. Return value
 			-- if found, Void otherwise.
 		require
 			element_exists: parent /= Void
 		local
-			number_children, index: INTEGER
-			child_nodes: DOM_NODE_LIST
-			element: DOM_ELEMENT
-			param_name: DOM_STRING
+			child_node_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			element: XM_ELEMENT
+			param_name: UC_STRING
 		do
 			-- iterate through child elements and search for named parameter element
-			if parent.has_child_nodes then
+			if not parent.is_empty then
 				from
-					child_nodes := parent.child_nodes
-					number_children := child_nodes.length
-					index := 0
-				variant
-					number_children - index + 1
+					child_node_cursor := parent.new_cursor
 				until		
-					index >= number_children or Result /= Void
+					child_node_cursor.off or Result /= Void
 				loop
-					element ?= child_nodes.item (index)
+					element ?= child_node_cursor.item
 					check
 						node_is_element: element /= Void
 					end
-					if element.node_name.is_equal (Param_element_name) then
+					if element.name.is_equal (Param_element_name) then
 						-- check for a name attribute
-						if element.has_attribute_ns (Empty_namespace_uri, Name_attribute) then
-							param_name := element.get_attribute_ns (Empty_namespace_uri, Name_attribute)
+						if element.has_attribute_by_name (Name_attribute) then
+							param_name := element.attribute_by_name (Name_attribute).value
 							if param_name.is_equal (name) then
 								-- retrieve the value attribute
-								if element.has_attribute_ns (Empty_namespace_uri, Value_attribute) then
-									Result := element.get_attribute_ns (Empty_namespace_uri, Value_attribute).out
+								if element.has_attribute_by_name (Value_attribute) then
+									Result := element.attribute_by_name (Value_attribute).value.out
 								else
 									internal_log.error ("Parameter element value attribute not found.")
 								end 
@@ -352,42 +345,38 @@ feature {NONE} -- Implementation
 							internal_log.error ("Parameter element name attribute not found.")
 						end
 					end
-					index := index + 1
+					child_node_cursor.forth
 				end							
 			end
 		end
 	
-	process_appender_filters (appender: LOG_APPENDER; parent: DOM_ELEMENT) is
+	process_appender_filters (appender: LOG_APPENDER; parent: XM_ELEMENT) is
 			-- Search 'parent' for any nested filter elements and add them to the 'appender'
 		require
 			appender_exists: appender /= Void
 			parent_exists: parent /= Void
 		local
-			number_children, index: INTEGER
-			child_nodes: DOM_NODE_LIST
-			element: DOM_ELEMENT
-			type: DOM_STRING
+			child_node_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			element: XM_ELEMENT
+			type: UC_STRING
 			filter: LOG_FILTER
 		do
 			-- iterate through child elements and search for filter elements
-			if parent.has_child_nodes then
+			if not parent.is_empty then
 				from
-					child_nodes := parent.child_nodes
-					number_children := child_nodes.length
-					index := 0
-				variant
-					number_children - index + 1
+					child_node_cursor := parent.new_cursor
+					child_node_cursor.start
 				until		
-					index >= number_children
+					child_node_cursor.off
 				loop
-					element ?= child_nodes.item (index)
+					element ?= child_node_cursor.item
 					check
 						node_is_element: element /= Void
 					end
-					if element.node_name.is_equal (Filter_element_name) then
+					if element.name.is_equal (Filter_element_name) then
 						-- check for a type attribute
-						if element.has_attribute_ns (Empty_namespace_uri, Type_attribute) then
-							type := element.get_attribute_ns (Empty_namespace_uri, Type_attribute)
+						if element.has_attribute_by_name (Type_attribute) then
+							type := element.attribute_by_name (Type_attribute).value
 							if type.is_equal (Prioritymatch_filter_type) then
 								filter := create_priority_match_filter (element)
 							elseif type.is_equal (Priorityrange_filter_type) then
@@ -404,12 +393,12 @@ feature {NONE} -- Implementation
 							internal_log.error ("Filter element type attribute not found.")
 						end
 					end
-					index := index + 1
+					child_node_cursor.forth
 				end					
 			end
 		end
 		
-	create_priority_match_filter (element: DOM_ELEMENT): LOG_FILTER is
+	create_priority_match_filter (element: XM_ELEMENT): LOG_FILTER is
 			-- Create a priority match filter.
 		require
 			element_exists: element /= Void
@@ -436,7 +425,7 @@ feature {NONE} -- Implementation
 			end
 		end
 	
-	create_priority_range_filter (element: DOM_ELEMENT): LOG_FILTER is
+	create_priority_range_filter (element: XM_ELEMENT): LOG_FILTER is
 			-- Create a priority range filter.
 		require
 			element_exists: element /= Void
@@ -470,7 +459,7 @@ feature {NONE} -- Implementation
 			end
 		end	
 	
-	create_string_match_filter (element: DOM_ELEMENT): LOG_FILTER is
+	create_string_match_filter (element: XM_ELEMENT): LOG_FILTER is
 			-- Create a string match filter.
 		require
 			element_exists: element /= Void
@@ -497,7 +486,7 @@ feature {NONE} -- Implementation
 			end
 		end	
 		
-	retrieve_integer_param_value (name: DOM_STRING; parent: DOM_ELEMENT): INTEGER_REF is
+	retrieve_integer_param_value (name: UC_STRING; parent: XM_ELEMENT): INTEGER_REF is
 			-- Locate an integer child param element with specified name. Return value
 			-- if found, Void otherwise.
 		require
@@ -516,15 +505,15 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	process_category (element: DOM_ELEMENT) is
+	process_category (element: XM_ELEMENT) is
 			-- Process a category element
 		require
 			element_exists: element /= Void
 		local
-			name, type: DOM_STRING
+			name, type: UC_STRING
 		do
-			if element.has_attribute_ns (Empty_namespace_uri, Name_attribute) then
-				name := element.get_attribute_ns (Empty_namespace_uri, Name_attribute)
+			if element.has_attribute_by_name (Name_attribute) then
+				name := element.attribute_by_name (Name_attribute).value
 				category_elements.force (element, name.out)
 			else
 				internal_log.error ("Category name attribute not found.")
@@ -534,7 +523,7 @@ feature {NONE} -- Implementation
 	post_process_categories is
 			-- Process all category elements to resolve appender references
 		local
-			cursor: DS_HASH_TABLE_CURSOR [DOM_ELEMENT, STRING]
+			cursor: DS_HASH_TABLE_CURSOR [XM_ELEMENT, STRING]
 		do
 			from
 				cursor := category_elements.new_cursor
@@ -547,55 +536,51 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	post_process_category (name: STRING; element: DOM_ELEMENT) is
+	post_process_category (name: STRING; element: XM_ELEMENT) is
 			-- Process a category element and create appropriate category object
 		local
 			category: LOG_CATEGORY
 			priority: LOG_PRIORITY
-			number_children, index: INTEGER
-			child_nodes: DOM_NODE_LIST
-			child: DOM_ELEMENT
+			child_node_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			child: XM_ELEMENT
 			additive: STRING
 		do
 			category := hierarchy.category (name)
 			-- search for optional priority attribute
-			if element.has_attribute_ns (Empty_namespace_uri, Priority_attribute) then
-				priority := create_priority (element.get_attribute_ns (Empty_namespace_uri, Priority_attribute).out)
+			if element.has_attribute_by_name (Priority_attribute) then
+				priority := create_priority (element.attribute_by_name (Priority_attribute).value.out)
 				if priority /= Void then
 					category.set_priority (priority)
 				end
 			end
 			-- search for optional additivity attribute
-			if element.has_attribute_ns (Empty_namespace_uri, Additive_attribute) then
-				additive := element.get_attribute_ns (Empty_namespace_uri, Additive_attribute).out
+			if element.has_attribute_by_name (Additive_attribute) then
+				additive := element.attribute_by_name (Additive_attribute).value.out
 				category.set_additive (additive.is_boolean and then additive.to_boolean)
 			end
 			-- search for optional appender refs
-			if element.has_child_nodes then
+			if not element.is_empty then
 				from
-					child_nodes := element.child_nodes
-					number_children := child_nodes.length
-					index := 0
-				variant
-					number_children - index + 1
+					child_node_cursor := element.new_cursor
+					child_node_cursor.start
 				until		
-					index >= number_children
+					child_node_cursor.off
 				loop
-					child ?= child_nodes.item (index)
+					child ?= child_node_cursor.item
 					check
 						node_is_element: child /= Void
 					end
-					if child.node_name.is_equal (Appenderref_element_name) then
+					if child.name.is_equal (Appenderref_element_name) then
 						-- search for mandatory ref attribute
-						if child.has_attribute_ns (Empty_namespace_uri, Ref_attribute) then
-							category.add_appender (appenders.item (child.get_attribute_ns (Empty_namespace_uri, Ref_attribute).out))
+						if child.has_attribute_by_name (Ref_attribute) then
+							category.add_appender (appenders.item (child.attribute_by_name (Ref_attribute).value.out))
 						else
 							internal_log.error ("Appender reference 'ref' attribute not found.")
 						end
 					else
 						internal_log.error ("Invalid child node within category: " + name)
 					end
-					index := index + 1
+					child_node_cursor.forth
 				end
 			end
 		end
@@ -624,35 +609,31 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	process_root (parent: DOM_ELEMENT) is
+	process_root (parent: XM_ELEMENT) is
 			-- Process a root element
 		require
 			element_exists: parent /= Void
 		local
-			number_children, index: INTEGER
-			child_nodes: DOM_NODE_LIST
-			element: DOM_ELEMENT
+			child_node_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			element: XM_ELEMENT
 			done: BOOLEAN
 			priority: LOG_PRIORITY
 		do
-			if parent.has_child_nodes then
+			if not parent.is_empty then
 				from
-					child_nodes := parent.child_nodes
-					number_children := child_nodes.length
-					index := 0
-				variant
-					number_children - index + 1
+					child_node_cursor := parent.new_cursor
+					child_node_cursor.start
 				until		
-					index >= number_children or done
+					child_node_cursor.off or done
 				loop
-					element ?= child_nodes.item (index)
+					element ?= child_node_cursor.item
 					check
 						node_is_element: element /= Void
 					end
-					if element.node_name.is_equal (Root_element_name) then
+					if element.name.is_equal (Root_element_name) then
 						-- this is the root, get the priority
-						if element.has_attribute_ns (Empty_namespace_uri, Priority_attribute) then
-							priority := create_priority (element.get_attribute_ns (Empty_namespace_uri, Priority_attribute).out)
+						if element.has_attribute_by_name (Priority_attribute) then
+							priority := create_priority (element.attribute_by_name (Priority_attribute).value.out)
 							if priority /= Void then
 								create hierarchy.make (priority)
 								-- store the root element for post processing
@@ -665,7 +646,7 @@ feature {NONE} -- Implementation
 						end
 						done := True
 					end
-					index := index + 1
+					child_node_cursor.forth
 				end
 			else
 				internal_log.error ("Root element not found.")
@@ -677,36 +658,32 @@ feature {NONE} -- Implementation
 		require
 			root_element_exists: root_element /= Void
 		local
-			number_children, index: INTEGER
-			child_nodes: DOM_NODE_LIST
-			child: DOM_ELEMENT
+			child_node_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			child: XM_ELEMENT
 		do
 			-- search for optional appender refs
-			if root_element.has_child_nodes then
+			if not root_element.is_empty then
 				from
-					child_nodes := root_element.child_nodes
-					number_children := child_nodes.length
-					index := 0
-				variant
-					number_children - index + 1
+					child_node_cursor := root_element.new_cursor
+					child_node_cursor.start
 				until		
-					index >= number_children
+					child_node_cursor.off
 				loop
-					child ?= child_nodes.item (index)
+					child ?= child_node_cursor.item
 					check
 						node_is_element: child /= Void
 					end
-					if child.node_name.is_equal (Appenderref_element_name) then
+					if child.name.is_equal (Appenderref_element_name) then
 						-- search for mandatory ref attribute
-						if child.has_attribute_ns (Empty_namespace_uri, Ref_attribute) then
-							hierarchy.root.add_appender (appenders.item (child.get_attribute_ns (Empty_namespace_uri, Ref_attribute).out))
+						if child.has_attribute_by_name (Ref_attribute) then
+							hierarchy.root.add_appender (appenders.item (child.attribute_by_name (Ref_attribute).value.out))
 						else
 							internal_log.error ("Appender reference 'ref' attribute not found for root.")
 						end
 					else
 						internal_log.error ("Invalid child node within root.")
 					end
-					index := index + 1
+					child_node_cursor.forth
 				end
 			end
 		end
