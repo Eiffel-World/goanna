@@ -16,11 +16,13 @@ feature
 	make_boolean_ref (bool: BOOLEAN): BOOLEAN_REF is
 			-- Create a new boolean reference type from 'bool'.
 		do
-#ifndef ISE || HACT		
+#ifndef ISE		
                         create Result.make (bool)
 #else
+#ifdef SE
                         create Result
                         Result.set_item (bool)
+#endif
 #endif
 
 		end

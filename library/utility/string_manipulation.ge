@@ -18,8 +18,14 @@ feature -- Basic operations
 		require
 			positive_size: size >= 0
 		do
+#ifdef ISE
 			create Result.make (size)
 			Result.fill_blank
+#else
+#ifdef SE
+			!! Result.blank (size)
+#endif
+#endif
 		ensure
 			blank_buffer_exists: Result /= Void
 			correct_size: Result.count = size
@@ -34,7 +40,13 @@ feature -- Basic operations
 			start_large_enough: start >= 1
 			start_small_enough: start <= str.count
 		do
+#ifdef ISE
 			Result := str.index_of (char, start)
+#else
+#ifdef SE
+			Result := str.substring_index (char.out, start)
+#endif
+#endif
 		end
 		
 	clear_buffer (buffer: STRING) is
@@ -42,7 +54,13 @@ feature -- Basic operations
 		require
 			buffer_exists: buffer /= Void
 		do
+#ifdef ISE
 			buffer.clear_all
+#else
+#ifdef SE
+			buffer.wipe_out
+#endif
+#endif
 		ensure
 			same_capacity: old buffer.capacity = buffer.capacity
 			empty: buffer.is_empty
@@ -53,7 +71,13 @@ feature -- Basic operations
 		require
 			buffer_exists: buffer /= Void
 		do
+#ifdef ISE
 			Result := buffer.full
+#else
+#ifdef SE
+			Result := buffer.count = buffer.capacity
+#endif
+#endif
 		ensure
 			full_result: Result = buffer.full
 		end	
@@ -65,8 +89,26 @@ feature -- Basic operations
 			str_exists: str /= Void
 			start_index_small_enough: start_index_from_end <= str.count
 			start_index_large_enough: start_index_from_end >= 1
+#ifdef ISE
 		do
 			Result := str.last_index_of (c, start_index_from_end)
+#else
+#ifdef SE
+		local
+			i: INTEGER
+		do
+			from
+				i := start_index_from_end
+			until
+				i < 1 or else str.item (i) = c
+			loop
+				i := i - 1
+			end
+			if i > 0 then
+				Result := i
+			end
+#endif
+#endif
 		ensure
 			correct_place: Result > 0 implies str.item (Result) = c
 		end

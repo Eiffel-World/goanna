@@ -19,19 +19,37 @@ feature -- Basic operations
 		require
 			ch_exists: ch /= Void
 		do
+#ifdef ISE
 			Result := '%U' + code
+#else
+#ifdef SE
+			Result := code.to_character
+#endif
+#endif
 		end
 		
 	int_to_char (code: INTEGER): CHARACTER is
 			-- Convert int to character
 		do
+#ifdef ISE
 			Result := '%U' + code
+#else
+#ifdef SE
+			Result := code.to_character
+#endif
+#endif
 		end
 
 	char_to_lower (ch: CHARACTER): CHARACTER is
 			-- Convert 'ch' to lower case.
 		do
+#ifdef ISE
 			Result := ch.lower
+#else
+#ifdef SE
+			Result := ch.to_lower
+#endif
+#endif
 		end
 	
 end -- class CHARACTER_MANIPULATION

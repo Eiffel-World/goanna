@@ -15,26 +15,58 @@ feature -- Basic operations
 
 	bit_shift_right (i, n: INTEGER): INTEGER is
 			-- Shift the bits of 'i' right 'n' positions.
-		external
-			"C [macro %"bit_manipulation.h%"] (EIF_INTEGER, EIF_INTEGER): EIF_INTEGER"
+		do
+#ifdef ISE
+			Result := i.bit_shift_right (n)
+#else
+#ifdef SE
+			if n > 0 then
+				Result := (i.to_bit @>> n).to_integer
+			else
+				Result := i
+			end
+#endif
+#endif
 		end
 
 	bit_shift_left (i, n: INTEGER): INTEGER is
 			-- Shift the bits of 'i' left 'n' positions.
-		external
-			"C [macro %"bit_manipulation.h%"] (EIF_INTEGER, EIF_INTEGER): EIF_INTEGER"
+		do
+#ifdef ISE
+			Result := i.bit_shift_left (n)
+#else
+#ifdef SE
+			if n > 0 then
+				Result := (i.to_bit @<< n).to_integer
+			else
+				Result := i
+			end
+#endif
+#endif
 		end
 	
 	bit_and (i, n: INTEGER): INTEGER is
 			-- Bitwise and of 'i' and 'n'
-		external
-			"C [macro %"bit_manipulation.h%"] (EIF_INTEGER, EIF_INTEGER): EIF_INTEGER"
+		do
+#ifdef ISE
+			Result := i.bit_and (n)
+#else
+#ifdef SE
+			Result := (i.to_bit and n.to_bit).to_integer
+#endif
+#endif
 		end
 	
 	bit_or (i, n: INTEGER): INTEGER is
 			-- Bitwise or of 'i' and 'n'
-		external
-			"C [macro %"bit_manipulation.h%"] (EIF_INTEGER, EIF_INTEGER): EIF_INTEGER"
+		do
+#ifdef ISE
+			Result := i.bit_or (n)
+#else
+#ifdef SE
+			Result := (i.to_bit or n.to_bit).to_integer
+#endif
+#endif
 		end
-
+		
 end -- class BIT_MANIPULATION
