@@ -11,6 +11,9 @@ parameter types supported. Requires Eiffel Agent support.
 o HTTPD server implemented. Provides working HTTP server and servlet engine for testing and
 development.
 
+o Includes application framework extension and sample application called 'Bachelor' 
+from Neal Lester.
+
 o Ported HTTPD server and servlet library to SmallEiffel.
 
 o Now using GOBO 2.0. Stopped using the Goanna date time cluster in favour of
