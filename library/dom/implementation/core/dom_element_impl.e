@@ -265,6 +265,10 @@ feature -- Validation Utility
 			-- Does 'new_name' consist of valid name characters?
 		do
 			Result := True
+			debug ("dom_assertions")
+				print (generator + ".valid_name_chars: " + "not implemented" + "%R%N")
+			end
+
 		end
 
 end -- class DOM_ELEMENT_IMPL

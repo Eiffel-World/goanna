@@ -335,6 +335,10 @@ feature -- Validation Utility
 
 	valid_name_chars (new_name: DOM_STRING): BOOLEAN is
 			-- Does 'new_name' consist of valid characters for a document name?
+			-- Follows the syntax: 
+			-- 		NCNameChar ::= Letter | Digit | '.' | '-' | '_' | ':' | CombiningChar
+			--			| Extender
+			--		NCName ::= (Letter | '_') (NCNameChar)*
 		do
 			Result := True
 			debug ("dom_assertions")
@@ -344,6 +348,8 @@ feature -- Validation Utility
 
 	valid_qualified_name_chars (new_name: DOM_STRING): BOOLEAN is
 			-- Does 'new_name' consist of valid characters for a qualified name?
+			-- Follows the syntax:
+			--		QName ::= NCName (':' NCName)
 		do
 			Result := True
 			debug ("dom_assertions")
