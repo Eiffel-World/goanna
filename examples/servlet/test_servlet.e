@@ -111,6 +111,9 @@ feature {NONE} -- Implementation
 				cookie.set_max_age (5000) -- 5 minutes	
 			end
 			resp.add_cookie (cookie)	
+			-- add a second cookie
+			create cookie.make ("GoannaSessionId", "FSDFDSFAFAFEF0011231");
+			resp.add_cookie (cookie)
 		end
 	
 end -- class TEST_SERVLET

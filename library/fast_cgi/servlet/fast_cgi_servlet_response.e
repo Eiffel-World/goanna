@@ -15,6 +15,11 @@ inherit
 	
 	HTTP_SERVLET_RESPONSE
 
+	HTTP_UTILITY_FUNCTIONS
+		export
+			{NONE} all
+		end	
+
 create
 	make
 
@@ -343,6 +348,10 @@ feature {NONE} -- Implementation
 					cookies.forth
 				end
 				add_header ("Set-Cookie", value)
+				debug ("cookie_parsing")
+					print (generator + ".set_cookie_header value = "
+						 + quoted_eiffel_string_out (value) + "%R%N")
+				end
 				-- add cache control headers for cookie management
 				add_header ("Cache-control", "no-cache=%"set-cookie%"")
 				set_header ("Expires", "Sun, 04 Jan 1998 00:00:00 GMT") -- TODO: set real date
