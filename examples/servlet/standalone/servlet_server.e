@@ -104,12 +104,6 @@ feature {NONE} -- Implementation
 			servlet_manager.register_default_servlet (servlet)
 			create {SNOOP_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "snoop")
-
-			-- Harald's test servlets
-			create {TEST_SERVLET_OK} servlet.init (config)
-			servlet_manager.register_servlet (servlet, "ok")
-			create {TEST_SERVLET_ERR} servlet.init (config)
-			servlet_manager.register_servlet (servlet, "err")
 		end
 
 end -- class SERVLET_SERVER
