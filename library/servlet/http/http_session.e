@@ -4,7 +4,7 @@ indexing
 	library: "HTTP Servlet API"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>", "Neal Lester <neal@3dsafety.com>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
@@ -17,7 +17,12 @@ inherit
 --		export
 --			{NONE} all
 --		end
-		
+
+	SHARED_HTTP_SESSION_MANAGER
+		export
+			{NONE} all
+		end
+
 creation
 	make
 
@@ -126,6 +131,7 @@ feature -- Element change
 				print ("Binding session attribute: " + name + " to session " + id + "%R%N")
 			end
 			attributes.put (value, name)
+			session_manager.attribute_bound_notification (current, name, value)
 		end
 	
 feature -- Removal
@@ -134,12 +140,16 @@ feature -- Removal
 			-- Unbind the value bound to 'name'
 		require
 			valid_session: validated
-			name_is_bound: has_attribute (name)	
+			name_is_bound: has_attribute (name)
+		local
+			removed_attribute : ANY
 		do
 			debug ("session_management")
 				print ("Unbinding session attribute: " + name + " from session " + id + "%R%N")
 			end
+			removed_attribute := attributes.item (name)
 			attributes.remove (name)
+			session_manager.attribute_unbound_notification (current, name, removed_attribute)
 		end
 	
 feature {HTTP_SESSION_MANAGER}

@@ -4,7 +4,7 @@ indexing
 	library: "HTTP Servlet API"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>", "Neal Lester <neal@3dsafety.com>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
@@ -37,7 +37,7 @@ feature -- Access
 			id_exists: id /= Void
 			has_session: has_session (id)
 		do
-			Result := sessions.item (id)
+			Result  := sessions.item (id)
 			Result.touch
 		end
 				
@@ -49,7 +49,7 @@ feature -- Status report
 			id_exists: id /= Void			
 		do
 			expire_sessions
-			Result := sessions.has (id)
+			Result  := sessions.has (id)
 		end
 	
 	last_session_id: STRING
@@ -63,7 +63,7 @@ feature -- Status setting
 			-- as old (ie, the client has accepted the session).
 		local
 			cookie: COOKIE
-			session: HTTP_SESSION
+			session: like session_anchor
 		do
 			expire_sessions
 			-- look for the session id cookie, if it exists the session will already exist so
@@ -111,6 +111,7 @@ feature {NONE} -- Implementation
 			sessions.force (session, last_session_id)
 			create cookie.make (Session_cookie_name, last_session_id)
 			resp.add_cookie (cookie)
+			notify_listeners (session, Created_code)
 		end
 	
 	generate_session_id: STRING is
@@ -155,6 +156,7 @@ feature {NONE} -- Implementation
 		local
 			cursor: DS_HASH_TABLE_CURSOR [like session_anchor, STRING]
 			session: like session_anchor
+			expired_session: like session_anchor
 			now, idle: DT_DATE_TIME
 			expired_sessions: DS_LINKED_LIST [STRING]
 		do
@@ -176,6 +178,7 @@ feature {NONE} -- Implementation
 					debug ("session_management")
 						print ("Expiring session: " + cursor.key + "%R%N")
 					end
+					notify_listeners (cursor.item, Expiring_code)
 					expired_sessions.force_last (cursor.key)
 				end
 				cursor.forth
@@ -186,9 +189,127 @@ feature {NONE} -- Implementation
 			until
 				expired_sessions.off
 			loop
+				expired_session := sessions.item (expired_sessions.item_for_iteration)
 				sessions.remove (expired_sessions.item_for_iteration)
+				notify_listeners (expired_session, expired_code)
 				expired_sessions.forth
 			end
 		end
+
+feature  -- Listeners
+
+	register_event_listener (listener: HTTP_SESSION_EVENT_LISTENER) is
+				-- Register 'listener' to receive notification of
+				-- session events.
+		require
+			listener_exists: listener /= Void
+			listener_not_registered: not event_listener_registered (listener)
+		do
+			if listener_list = void then
+				create listener_list.make
+			end
+			listener_list.force_last (listener)
+		ensure
+			listener_registered: event_listener_registered (listener)
+		end
+
+	unregister_event_listener (listener: HTTP_SESSION_EVENT_LISTENER) is
+				-- Unregister 'listener' so that it does not receive session
+				-- event notifications.
+		require
+			listener_exists: listener /= Void
+			event_listener_registered: event_listener_registered (listener)
+		do
+			listener_list.delete (listener)
+		ensure
+			listener_unregistered: not event_listener_registered (listener)
+		end
+
+	event_listener_registered (listener: HTTP_SESSION_EVENT_LISTENER): BOOLEAN is
+			-- listener is registered and will receive event notifications
+		require
+			listener_exists: listener /= Void
+		do
+			Result := listener_list /= Void and then listener_list.has (listener)
+		end
+
+feature {HTTP_SESSION} -- Attribute Binding Event Notification
+
+	attribute_bound_notification (session: like session_anchor; name: STRING; attribute: ANY) is
+			-- receive notification from session that an attribute was bound
+		require
+			session_exists: session /= Void
+			name_exists: name /= Void
+			attribute_exists: attribute /= Void
+		do
+			event_attribute_name := name
+			event_attribute := attribute
+			notify_listeners (session, Attribute_bound_code)
+		end
+
+	attribute_unbound_notification (session: like session_anchor; name: STRING; attribute: ANY) is
+			-- Receive notification from session that an attribute was unbound
+		require
+			session_exists: session /= Void
+			name_exists: name /= Void
+			attribute_exists: attribute /= Void	
+		do
+			event_attribute_name := name
+			event_attribute := attribute
+			notify_listeners (session, Attribute_unbound_code)
+		end			
+	
+feature {NONE} -- Listener implementation
+
+	listener_list: DS_LINKED_LIST [HTTP_SESSION_EVENT_LISTENER]
+			-- List of registered event listeners
+
+	Expiring_code, Expired_code, Created_code, Attribute_bound_code, Attribute_unbound_code: INTEGER is unique
+			-- Event codes
+
+	notify_listeners (session: like session_anchor; event_code: INTEGER) is
+			-- notify listeners that an event (signified by event_code) has occurerd for session
+		require
+			session_exists: session /= Void
+			event_code_exists: event_code /= Void
+			event_attribute_name_set: (equal (event_code, Attribute_bound_code) or equal (event_code, Attribute_unbound_code)) implies event_attribute_name /= Void
+			event_attribute_set: (equal (event_code, Attribute_bound_code) or equal (event_code, Attribute_unbound_code)) implies event_attribute /= Void
+		local
+			listener_cursor: DS_LINKED_LIST_CURSOR [HTTP_SESSION_EVENT_LISTENER]
+		do
+			if listener_list /= void and then not listener_list.is_empty then
+				create listener_cursor.make (listener_list)
+				from
+					listener_cursor.start
+				until
+					listener_cursor.after
+				loop
+					inspect event_code
+					when attribute_bound_code then
+						listener_cursor.item.attribute_bound (session, event_attribute_name, event_attribute)
+					when attribute_unbound_code then
+						listener_cursor.item.attribute_unbound (session, event_attribute_name, event_attribute)
+					when expiring_code then
+						listener_cursor.item.expiring (session)
+					when expired_code then
+						listener_cursor.item.expired (session)
+					when created_code then
+						listener_cursor.item.created (session)
+					end
+					listener_cursor.forth
+				end
+			end
+			event_attribute_name := void
+			event_attribute := void
+		ensure
+			event_attribute_name_void: event_attribute_name = void
+			event_attribute_void: event_attribute = void
+		end
+
+	event_attribute_name: STRING
+			-- Set if notifying of an attribute_bound/unbound event; otherwise void
+
+	event_attribute: ANY
+			-- Set if notifying of an attribute_bound/unbound event; otherwise void
 			
 end -- class HTTP_SESSION_MANAGER
