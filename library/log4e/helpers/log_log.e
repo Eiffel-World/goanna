@@ -12,7 +12,7 @@ class LOG_LOG
 	
 feature -- Status Report
 	
-	quite_mode: BOOLEAN
+	quiet_mode: BOOLEAN
 			-- Quiet mode? Quiet mode will suppress all logging.
 	
 	stderr_mode: BOOLEAN 
@@ -24,7 +24,7 @@ feature -- Status Setting
 	enable_quite_mode is
 			-- Enable quiet mode.
 		do
-			quite_mode := True
+			quiet_mode := True
 		end
 	
 	disable_quiet_mode is

@@ -198,7 +198,7 @@ feature -- Test
 			create h.make (Debug_p)
 			cat := h.category ("test")
 			
-			create {LOG_FILE_APPENDER} appender.make ("log.txt")
+			create {LOG_FILE_APPENDER} appender.make ("log.txt", True)
 			cat.add_appender (appender)
 			
 			cat.debugging ("This is a test")
@@ -216,15 +216,15 @@ feature -- Test
 			i: INTEGER
 		do
 			create h.make (Debug_p)
-			cat := h.category ("test")
-			
-			create {LOG_ROLLING_FILE_APPENDER} appender.make ("log_rolling.txt", 500, 3)
-			cat.add_appender (appender)
-			
+			cat := h.category ("test")			
+			create {LOG_ROLLING_FILE_APPENDER} appender.make ("log_rolling.txt", 200, 4, True)
+			cat.add_appender (appender)	
+			create {LOG_ROLLING_FILE_APPENDER} appender.make ("log_rolling_2nd.txt", 100, 10, True)
+			cat.add_appender (appender)			
 			from
 				i := 1
 			until
-				i >= 300
+				i >= 100
 			loop
 				cat.debugging ("This is a test")
 				cat.error ("This is an error")
@@ -232,7 +232,32 @@ feature -- Test
 				cat.fatal ("This is fatal")
 				cat.info ("This is information")
 				i := i + 1
-			end
+			end		
+		end
+
+	test_calendar_rolling_file_appender is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+			appender: LOG_APPENDER
+			i: INTEGER
+		do
+			create h.make (Debug_p)
+			cat := h.category ("test")			
+			create {LOG_CALENDAR_ROLLING_APPENDER} appender.make_minutely ("log_calendar_rolling.txt", 4, True)
+			cat.add_appender (appender)	
+			from
+				i := 1
+			until
+				i >= 40000
+			loop
+				cat.debugging ("This is a test")
+				cat.error ("This is an error")
+				cat.warn ("This is a warning")
+				cat.fatal ("This is fatal")
+				cat.info ("This is information")
+				i := i + 1
+			end		
 		end
 
 end -- class TEST_LOG_HIERARCHY

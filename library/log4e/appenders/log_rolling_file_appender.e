@@ -1,5 +1,5 @@
 indexing
-	description: "Logging appender that writes to standard output."
+	description: "Logging appender that writes to standard a file that is rolled when it reaches a certain size."
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	library: "log4e"
 	date: "$Date$"
@@ -20,39 +20,32 @@ inherit
 		redefine
 			do_append
 		end
-	
-	FILE_MANIPULATION
-		export
-			{NONE} all
-		end
-	
+		
 creation
 	
 	make
 	
 feature -- Initialisation
 	
-	make (new_name: STRING; max_size, number_of_backups: INTEGER) is
+	make (new_name: STRING; max_size, number_of_backups: INTEGER; appending: BOOLEAN) is
 			-- Create a new file appender on the file 
-			-- with 'name'.
+			-- with 'new_name'. Roll the log over to a backup file when it reaches 'max_size'
+			-- bytes in size. Keep a maximum of 'number_of_backups' backup files.
+			-- Append to an existing log file if 'appending'.
 		require
 			name_exists: new_name /= Void
 			name_not_empty: not new_name.is_empty
-			positive_max_size: max_size >= 0
+			sensible_max_size: max_size >= 1
 			positive_number_of_backups: number_of_backups >= 0
 		do
-			file_appender_make (new_name)
-			stream := make_file_open_write (new_name)
-			if not is_open_write (stream) then
-				internal_log.error ("Failed to open log file: " + new_name)
-			end
 			maximum_file_size := max_size
 			max_number_of_backups := number_of_backups
+			file_appender_make (new_name, appending)
 		ensure
-			log_file_open: is_open_write (stream)
+			log_file_open: stream.is_open_write
 		end
-
-feature -- Status Setting
+		
+feature -- Basic Operations
 		
 	do_append (event: LOG_EVENT) is
 			-- Log event on this appender.
@@ -61,9 +54,9 @@ feature -- Status Setting
 				rollover
 			end
 			stream.put_string (layout.format (event))
-			flush (stream)
+			stream.flush
 		end
-	
+
 feature {NONE} -- Implementation
 	
 	maximum_file_size: INTEGER
@@ -77,6 +70,7 @@ feature {NONE} -- Implementation
 	rollover_required: BOOLEAN is
 			-- Has the current log file reached the maximum_file_size?
 		do
+		
 			Result := stream.count >= maximum_file_size 
 		end
 	
@@ -86,41 +80,39 @@ feature {NONE} -- Implementation
 			-- new file with the same name.
 		local
 			i: INTEGER
-			file: FILE
+			file: PLAIN_TEXT_FILE
 		do
-  			close_stream (stream)
   			-- do we need to make a backup
-  			if max_number_of_backups > 0 then
-  				-- remove the oldest backup
-  				create file.name (name + "." + number_of_backups)
-  				if file.exists then
-  					file.remove
-  				end
-				
+  			if max_number_of_backups > 0 then		
   				-- roll all existing backup files to 
   				-- next number
   				from
-  					i := max_number_of_backups - 1
+  					i := max_number_of_backups
   				until
   					i < 1
   				loop
-  					create file.make (name + "." + i)
+  					create file.make (name + "." + i.out)
   					if file.exists then
-  						file.rename_to (name + "." + (i + 1))
+  						file.change_name (name + "." + (i + 1).out)
   					end
   					i := i - 1
   				end
 				
-  				-- rename current log file
-  				file ?= stream
-  				file.rename_to (name + "." + i)
-				
-  				-- open new log
-  				stream := make_file_open_write (new_name)
-				if not is_open_write (stream) then
-					internal_log.error ("Failed to open log file: " + new_name)
+				-- remove the oldest backup if not keeping infinite number of backups
+				if max_number_of_backups > 0 then
+					create file.make (name + "." + (max_number_of_backups + 1).out)
+	  				if file.exists then
+	  					file.delete
+	  				end		
 				end
+  				
+  				-- rename current log file
+  				stream.close
+  				stream.change_name (name + ".1" )
+				
+  				-- re-open log
+  				open_log
 			end
 		end
-	
+
 end -- class LOG_ROLLING_FILE_APPENDER

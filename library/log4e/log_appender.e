@@ -13,9 +13,9 @@ deferred class LOG_APPENDER
 inherit
 	
 	LOG_FILTER_CONSTANTS
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+		end
 	
 	LOG_SHARED_LOG_LOG
 	

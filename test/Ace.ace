@@ -17,7 +17,7 @@ default
 	line_generation(no)
 	profile(no)
 	trace(no)
-	il_verifiable(no)
+	il_verifiable(yes)
 	msil_generation_type("exe")
 	check_vape(yes)
 	console_application(yes)
@@ -38,9 +38,11 @@ cluster
 
 	goanna_log4e:		"$GOANNA\library\log4e"
 
-	log4e_appenders (goanna_log4e): "$\appenders"
+	log4e_appenders (goanna_log4e):		"$\appenders"
 
-	log4e_filters (goanna_log4e): "$\filters"
+	log4e_filters (goanna_log4e):		"$\filters"
+
+	log4e_helpers (goanna_log4e):		"$\helpers"
 
 	all "base":		"$ISE_EIFFEL/library/base"
 		exclude

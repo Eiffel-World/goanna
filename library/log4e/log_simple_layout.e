@@ -25,7 +25,7 @@ feature -- Rendering
 			Result := clone (event.priority.level_str)
 			Result.append (" - ")
 			Result.append (event.rendered_message)
-			Result.append ("%R%N")
+			Result.append ("%N")
 		end
 				
 end -- class LOG_SIMPLE_LAYOUT

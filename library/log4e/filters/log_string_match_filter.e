@@ -47,7 +47,7 @@ feature -- Status report
 		local
 			match_occurred: BOOLEAN
 		do
-			if event.rendered_message.substring_index (string_match, 1) = -1 then
+			if event.rendered_message.substring_index (string_match, 1) = 0 then
 				Result := Filter_neutral
 			else
 				if match then

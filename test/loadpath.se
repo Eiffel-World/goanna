@@ -4,6 +4,7 @@ ${GOANNA}/library/utility/spec/se/
 ${GOANNA}/library/log4e/
 ${GOANNA}/library/log4e/appenders/
 ${GOANNA}/library/log4e/filters/
+${GOANNA}/library/log4e/helpers/
 ${GOANNA}/test/utility/
 ${GOANNA}/test/log4e/
 ${GOANNA}/test/TESTGEN/

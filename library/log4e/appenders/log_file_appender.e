@@ -1,5 +1,5 @@
 indexing
-	description: "Logging appender that writes to standard output."
+	description: "Logging appender that writes to a file."
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	library: "log4e"
 	date: "$Date$"
@@ -13,16 +13,12 @@ class LOG_FILE_APPENDER
 inherit
 	
 	LOG_APPENDER
-		redefine
-			make, layout
-		end
-	
-	KL_OUTPUT_STREAM_ROUTINES
 		rename
-			close as stream_close
+			make as appender_make
 		export
-			{NONE} all;
-			{ANY} is_open_write
+			{NONE} appender_make
+		redefine
+			layout
 		end
 	
 creation
@@ -31,37 +27,35 @@ creation
 	
 feature -- Initialisation
 	
-	make (new_name: STRING) is
+	make (new_name: STRING; appending: BOOLEAN) is
 			-- Create a new file appender on the file 
 			-- with 'name'.
-		require
-			name_exists: new_name /= Void
-			name_not_empty: not new_name.is_empty
 		do
-			Precursor (new_name)
-			stream := make_file_open_write (new_name)			
-			if not is_open_write (stream) then
-				internal_log.error ("Failed to open file stream: " + new_name)
-			end
+			appender_make (new_name)
+			append_mode := appending
+			open_log
 		ensure
-			log_file_open: is_open_write (stream)
+			log_stream_open: stream.is_open_write
 		end
 	
 feature -- Status Report
 
+	append_mode: BOOLEAN
+			-- Append to file or create new file?
+			
 	layout: LOG_LAYOUT is
 			-- Use a simple layout for console output
 		once
 			create {LOG_SIMPLE_LAYOUT} Result
 		end
 
-feature -- Status Setting
-	
+feature -- Basic Operations
+		
 	close is
 			-- Release any resources for this appender.
 		do
-			if not is_closed (stream) then
-				stream_close (stream)
+			if not stream.is_closed then
+				stream.close
 			end
 		end
 	
@@ -69,12 +63,27 @@ feature -- Status Setting
 			-- Log event on this appender.
 		do
 			stream.put_string (layout.format (event))
-			flush (stream)
+			stream.flush
 		end
 	
 feature -- Stream
 	
-	stream: like OUTPUT_STREAM_TYPE
+	stream: PLAIN_TEXT_FILE
 			-- Stream to write log events to
-	
+
+feature {NONE} -- Implementation
+
+	open_log is
+			-- Open the log file taking into account 'append_mode'
+		do
+			if append_mode then
+				create stream.make_open_append (name)
+			else
+				create stream.make_open_write (name)		
+			end	
+			if not stream.is_open_write then
+				internal_log.error ("Failed to open file stream: " + name)
+			end
+		end
+		
 end -- class LOG_FILE_APPENDER

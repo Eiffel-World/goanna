@@ -30,7 +30,7 @@ feature -- Status Report
 			create {LOG_SIMPLE_LAYOUT} Result
 		end
 	
-feature -- Status Setting
+feature -- Basic Operations
 
 	close is
 			-- Release any resources for this appender.
