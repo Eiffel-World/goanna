@@ -357,7 +357,7 @@ feature -- Test
 		do
 			create h.make (Debug_p)
 			cat := h.category ("test")			
-			create {LOG_STDOUT_APPENDER} appender.make ("stderr")
+			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
 			appender.set_layout (create {LOG_TIME_LAYOUT}.make)
 			cat.add_appender (appender)	
 			cat.fatal ("This is fatal")
@@ -375,7 +375,7 @@ feature -- Test
 		do
 			create h.make (Debug_p)
 			cat := h.category ("test")			
-			create {LOG_STDOUT_APPENDER} appender.make ("stderr")
+			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
 			appender.set_layout (create {LOG_DATE_TIME_LAYOUT})
 			cat.add_appender (appender)	
 			cat.fatal ("This is fatal")
@@ -384,4 +384,31 @@ feature -- Test
 			cat.info ("This is information")
 			cat.debugging ("This is a test")
 		end	
+		
+	test_log_pattern_parser is
+		local
+			converter: LOG_PATTERN_PARSER
+		do
+			create converter.make ("a &m test")
+			--assert ("parsing_ok", converter.ok)
+		end
+		
+	test_log_pattern_layout is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+			appender: LOG_APPENDER
+		do
+			create h.make (Debug_p)
+			cat := h.category ("test")			
+			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
+			appender.set_layout (create {LOG_PATTERN_LAYOUT}.make ("&d [&p] &c - &m%N"))
+			cat.add_appender (appender)	
+			cat.fatal ("This is fatal")
+			cat.error ("This is an error")
+			cat.warn ("This is a warning")
+			cat.info ("This is information")
+			cat.debugging ("This is a test")
+		end
+		
 end -- class TEST_LOG_HIERARCHY

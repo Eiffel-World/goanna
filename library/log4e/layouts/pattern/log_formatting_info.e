@@ -52,5 +52,13 @@ feature -- Status setting
 			left_align := False
 		end
 	
+	reset is
+			-- Reset to default values
+		do
+			max := 0
+			min := 0
+			left_align := False
+		end
+		
 end -- class LOG_FORMATTING_INFO
 

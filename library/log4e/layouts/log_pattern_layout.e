@@ -45,6 +45,27 @@ feature -- Initialisation
 			parse_pattern (pattern)
 		end
 	
+feature -- Rendering
+
+	format (event: LOG_EVENT): STRING is
+			-- Format contents of 'event' according to this layout's
+			-- formatting rules.
+			-- Apply all converters to event in order.
+		local
+			cursor: DS_LINKED_LIST_CURSOR [LOG_PATTERN_CONVERTER]
+		do
+			create Result.make (128)
+			cursor := converters.new_cursor
+			from
+				cursor.start
+			until
+				cursor.off
+			loop
+				cursor.item.format (Result, event)
+				cursor.forth
+			end
+		end
+
 feature {NONE} -- Implementation
 	
 	parse_pattern (pattern: STRING) is
@@ -56,9 +77,7 @@ feature {NONE} -- Implementation
 			parser: LOG_PATTERN_PARSER
 		do
 			create parser.make (pattern)
-			if parser.ok then
-				converters := parser.converters
-			end
+			converters := parser.converters
 		end
 	
 	converters: DS_LINKED_LIST [LOG_PATTERN_CONVERTER]

@@ -48,6 +48,8 @@ cluster
 
 	log4e_layouts (goanna_log4e):		"$\layouts"
 
+	log4e_pattern (log4e_layouts): 	"$\pattern"
+
 	all "base":		"$ISE_EIFFEL/library/base"
 		exclude
 			"desc"; "table_eiffel3"; "CVS"; "EIFGEN"; 

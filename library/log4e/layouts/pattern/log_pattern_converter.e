@@ -19,7 +19,7 @@ feature -- Initialisation
 		do
 			min := formatting_info.min
 			max := formatting_info.max
-			align_left := formatting_info.align_left
+			left_align := formatting_info.left_align
 		end
 	
 feature -- Status report
@@ -39,7 +39,7 @@ feature -- Status report
 	
 feature -- Basic operations
 	
-	format (sbuf: STRING; event: LOG_LOGGING_EVENT) is
+	format (sbuf: STRING; event: LOG_EVENT) is
 			-- Template routine for formatting in a converter
 			-- specific way.
 		require
@@ -49,7 +49,7 @@ feature -- Basic operations
 			s: STRING
 			len: INTEGER
 		do
-			converted := convert (event)
+			s := convert (event)
 			if s = Void then
 				if 0 < min then
 					space_pad (sbuf, min)
@@ -57,7 +57,7 @@ feature -- Basic operations
 			else
 				len := s.count
 				if len > max then
-					sbuf.append (s.substring (len - max))
+					sbuf.append (s.substring (1, len - max))
 				elseif len < min then
 					if left_align then
 						sbuf.append (s)
@@ -74,7 +74,7 @@ feature -- Basic operations
 	
 feature {NONE} -- Implementation
 	
-	convert (event: LOG_LOGGING_EVENT): STRING is
+	convert (event: LOG_EVENT): STRING is
 			-- Convert conversion specifiers appropriately.
 		require
 			event_exists: event /= Void
@@ -83,6 +83,17 @@ feature {NONE} -- Implementation
 			converted_string_exists: Result /= Void
 		end
 	
+	space_pad (str: STRING; size: INTEGER) is
+			-- Pad 'str' with space characters so that is
+			-- is at least 'size' characters in length.
+		require
+			str_exists: str /= Void
+			positive_size: size >= 0
+		do
+		ensure
+			correct_size: str.count >= size
+		end
+		
 end -- LOG_PATTERN_CONVERTER
 
 	
