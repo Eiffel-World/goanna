@@ -17,6 +17,11 @@ inherit
 		export
 			{NONE} all
 		end
+
+	KL_INPUT_STREAM_ROUTINES
+		export
+			{NONE} all
+		end
       
 creation
 	make
@@ -56,12 +61,13 @@ feature {NONE} -- Implementation
 			-- Parse and validate the command line arguments
 		local
 			str: STRING
-			file: FILE
+			file: like INPUT_STREAM_TYPE
 		do
 			if arguments.argument_count = 1 then
 				str := arguments.argument (1)
-				create {PLAIN_TEXT_FILE} file.make (str)
-				if file.exists and file.is_readable then
+				file := make_file_open_read (str)
+				if is_open_read (file) then
+					close (file)
 					arguments_ok := True
 					create file_name.make_from_string (str)
 				end
