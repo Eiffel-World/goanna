@@ -59,9 +59,6 @@ feature -- Parsing
 			end
 			parser.parse_from_file_name (file_name)
 			if parser.last_error = parser.Xml_err_none then
---				debug ("log4e_config")
---					display_dom_tree (parser.document)
---				end
 				process_config_tree (parser.document)
 			else
 				display_parser_error
@@ -87,18 +84,6 @@ feature {NONE} -- Implementation
 				+ " (" + parser.last_error_extended_description + ")")
 			internal_log.error ("At position: " + parser.position.out)
 		end
-
---	display_dom_tree (document: DOM_DOCUMENT) is
---			-- Display dom tree to standard out.
---		require
---			document_exists: document /= Void	
---		local
---			writer: DOM_SERIALIZER
---		do
---			writer := serializer_factory.serializer_for_document (document)
---			writer.set_output (io.output)
---			writer.serialize (document)		
---		end
 	
 	serializer_factory: DOM_SERIALIZER_FACTORY is
 		once
@@ -137,10 +122,10 @@ feature {NONE} -- Implementation
 						child_node_cursor.off
 					loop
 						element ?= child_node_cursor.item
-						check
-							node_is_element: element /= Void
+						-- skip non-elements
+						if element /= Void then
+							process_element (element)
 						end
-						process_element (element)
 						child_node_cursor.forth
 					end
 				else
@@ -322,27 +307,28 @@ feature {NONE} -- Implementation
 			if not parent.is_empty then
 				from
 					child_node_cursor := parent.new_cursor
+					child_node_cursor.start
 				until		
 					child_node_cursor.off or Result /= Void
 				loop
 					element ?= child_node_cursor.item
-					check
-						node_is_element: element /= Void
-					end
-					if element.name.is_equal (Param_element_name) then
-						-- check for a name attribute
-						if element.has_attribute_by_name (Name_attribute) then
-							param_name := element.attribute_by_name (Name_attribute).value
-							if param_name.is_equal (name) then
-								-- retrieve the value attribute
-								if element.has_attribute_by_name (Value_attribute) then
-									Result := element.attribute_by_name (Value_attribute).value.out
-								else
-									internal_log.error ("Parameter element value attribute not found.")
-								end 
+					-- skip non-elements
+					if element /= Void then
+						if element.name.is_equal (Param_element_name) then
+							-- check for a name attribute
+							if element.has_attribute_by_name (Name_attribute) then
+								param_name := element.attribute_by_name (Name_attribute).value
+								if param_name.is_equal (name) then
+									-- retrieve the value attribute
+									if element.has_attribute_by_name (Value_attribute) then
+										Result := element.attribute_by_name (Value_attribute).value.out
+									else
+										internal_log.error ("Parameter element value attribute not found.")
+									end 
+								end
+							else
+								internal_log.error ("Parameter element name attribute not found.")
 							end
-						else
-							internal_log.error ("Parameter element name attribute not found.")
 						end
 					end
 					child_node_cursor.forth
@@ -370,27 +356,27 @@ feature {NONE} -- Implementation
 					child_node_cursor.off
 				loop
 					element ?= child_node_cursor.item
-					check
-						node_is_element: element /= Void
-					end
-					if element.name.is_equal (Filter_element_name) then
-						-- check for a type attribute
-						if element.has_attribute_by_name (Type_attribute) then
-							type := element.attribute_by_name (Type_attribute).value
-							if type.is_equal (Prioritymatch_filter_type) then
-								filter := create_priority_match_filter (element)
-							elseif type.is_equal (Priorityrange_filter_type) then
-								filter := create_priority_range_filter (element)
-							elseif type.is_equal (Stringmatch_filter_type) then
-								filter := create_string_match_filter (element)
+					-- skip non-elements
+					if element /= Void then
+						if element.name.is_equal (Filter_element_name) then
+							-- check for a type attribute
+							if element.has_attribute_by_name (Type_attribute) then
+								type := element.attribute_by_name (Type_attribute).value
+								if type.is_equal (Prioritymatch_filter_type) then
+									filter := create_priority_match_filter (element)
+								elseif type.is_equal (Priorityrange_filter_type) then
+									filter := create_priority_range_filter (element)
+								elseif type.is_equal (Stringmatch_filter_type) then
+									filter := create_string_match_filter (element)
+								else
+									internal_log.error ("Unknown filter type " + type.out)
+								end
+								if filter /= Void then
+									appender.add_filter (filter)
+								end
 							else
-								internal_log.error ("Unknown filter type " + type.out)
+								internal_log.error ("Filter element type attribute not found.")
 							end
-							if filter /= Void then
-								appender.add_filter (filter)
-							end
-						else
-							internal_log.error ("Filter element type attribute not found.")
 						end
 					end
 					child_node_cursor.forth
@@ -567,18 +553,18 @@ feature {NONE} -- Implementation
 					child_node_cursor.off
 				loop
 					child ?= child_node_cursor.item
-					check
-						node_is_element: child /= Void
-					end
-					if child.name.is_equal (Appenderref_element_name) then
-						-- search for mandatory ref attribute
-						if child.has_attribute_by_name (Ref_attribute) then
-							category.add_appender (appenders.item (child.attribute_by_name (Ref_attribute).value.out))
+					-- skip non-elements
+					if child /= Void then
+						if child.name.is_equal (Appenderref_element_name) then
+							-- search for mandatory ref attribute
+							if child.has_attribute_by_name (Ref_attribute) then
+								category.add_appender (appenders.item (child.attribute_by_name (Ref_attribute).value.out))
+							else
+								internal_log.error ("Appender reference 'ref' attribute not found.")
+							end
 						else
-							internal_log.error ("Appender reference 'ref' attribute not found.")
+							internal_log.error ("Invalid child node within category: " + name)
 						end
-					else
-						internal_log.error ("Invalid child node within category: " + name)
 					end
 					child_node_cursor.forth
 				end
@@ -627,24 +613,24 @@ feature {NONE} -- Implementation
 					child_node_cursor.off or done
 				loop
 					element ?= child_node_cursor.item
-					check
-						node_is_element: element /= Void
-					end
-					if element.name.is_equal (Root_element_name) then
-						-- this is the root, get the priority
-						if element.has_attribute_by_name (Priority_attribute) then
-							priority := create_priority (element.attribute_by_name (Priority_attribute).value.out)
-							if priority /= Void then
-								create hierarchy.make (priority)
-								-- store the root element for post processing
-								root_element := element
+					-- skip non-elements
+					if element /= Void then
+						if element.name.is_equal (Root_element_name) then
+							-- this is the root, get the priority
+							if element.has_attribute_by_name (Priority_attribute) then
+								priority := create_priority (element.attribute_by_name (Priority_attribute).value.out)
+								if priority /= Void then
+									create hierarchy.make (priority)
+									-- store the root element for post processing
+									root_element := element
+								else
+									internal_log.error ("Invalid root category priority.")
+								end
 							else
-								internal_log.error ("Invalid root category priority.")
+								internal_log.error ("Root category priority attribute not found.")
 							end
-						else
-							internal_log.error ("Root category priority attribute not found.")
+							done := True
 						end
-						done := True
 					end
 					child_node_cursor.forth
 				end
@@ -670,18 +656,18 @@ feature {NONE} -- Implementation
 					child_node_cursor.off
 				loop
 					child ?= child_node_cursor.item
-					check
-						node_is_element: child /= Void
-					end
-					if child.name.is_equal (Appenderref_element_name) then
-						-- search for mandatory ref attribute
-						if child.has_attribute_by_name (Ref_attribute) then
-							hierarchy.root.add_appender (appenders.item (child.attribute_by_name (Ref_attribute).value.out))
+					-- skip non-elements
+					if child /= Void then
+						if child.name.is_equal (Appenderref_element_name) then
+							-- search for mandatory ref attribute
+							if child.has_attribute_by_name (Ref_attribute) then
+								hierarchy.root.add_appender (appenders.item (child.attribute_by_name (Ref_attribute).value.out))
+							else
+								internal_log.error ("Appender reference 'ref' attribute not found for root.")
+							end
 						else
-							internal_log.error ("Appender reference 'ref' attribute not found for root.")
+							internal_log.error ("Invalid child node within root.")
 						end
-					else
-						internal_log.error ("Invalid child node within root.")
 					end
 					child_node_cursor.forth
 				end
