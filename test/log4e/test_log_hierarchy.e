@@ -1,5 +1,4 @@
 indexing
-
 	description: "Test features of class LOG_HIERARCHY"
 	library:    "Goanna log4e Test Harnesses"
 	author:     "Glenn Maughan <glennmaughan@optushome.com.au>"
@@ -354,11 +353,13 @@ feature -- Test
 			h: LOG_HIERARCHY
 			cat: LOG_CATEGORY
 			appender: LOG_APPENDER
+			layout: LOG_LAYOUT
 		do
 			create h.make (Debug_p)
 			cat := h.category ("test")			
 			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
-			appender.set_layout (create {LOG_TIME_LAYOUT}.make)
+			create {LOG_TIME_LAYOUT} layout.make
+			appender.set_layout (layout)
 			cat.add_appender (appender)	
 			cat.fatal ("This is fatal")
 			cat.error ("This is an error")
@@ -372,11 +373,13 @@ feature -- Test
 			h: LOG_HIERARCHY
 			cat: LOG_CATEGORY
 			appender: LOG_APPENDER
+			layout: LOG_LAYOUT
 		do
 			create h.make (Debug_p)
 			cat := h.category ("test")			
 			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
-			appender.set_layout (create {LOG_DATE_TIME_LAYOUT})
+			create {LOG_TIME_LAYOUT} layout.make
+			appender.set_layout (layout)
 			cat.add_appender (appender)	
 			cat.fatal ("This is fatal")
 			cat.error ("This is an error")
@@ -398,11 +401,13 @@ feature -- Test
 			h: LOG_HIERARCHY
 			cat: LOG_CATEGORY
 			appender: LOG_APPENDER
+			layout: LOG_LAYOUT
 		do
 			create h.make (Debug_p)
 			cat := h.category ("test")			
 			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
-			appender.set_layout (create {LOG_PATTERN_LAYOUT}.make ("&d [&-6p] &c - &.10m%N"))
+			create {LOG_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &.10m%N")
+			appender.set_layout (layout)
 			cat.add_appender (appender)	
 			cat.fatal ("This is fatal")
 			cat.error ("This is an error")
@@ -411,22 +416,44 @@ feature -- Test
 			cat.debugging ("This is a test")
 		end
 		
-	test_syslog_appender is
-		local
-			h: LOG_HIERARCHY
-			cat: LOG_CATEGORY
-			appender: LOG_APPENDER
-			facilities: expanded LOG_SYSLOG_APPENDER_CONSTANTS
-		do
-			create h.make (Debug_p)
-			cat := h.category ("test")			
-			create {LOG_SYSLOG_APPENDER} appender.make ("stdout", "192.168.0.46", facilities.Log_local0)
-			cat.add_appender (appender)	
-			cat.fatal ("This is fatal")
-			cat.error ("This is an error")
-			cat.warn ("This is a warning")
-			cat.info ("This is information")
-			cat.debugging ("This is a test")
-		end
+--	test_syslog_appender is
+--		local
+--			h: LOG_HIERARCHY
+--			cat: LOG_CATEGORY
+--			appender: LOG_APPENDER
+--			facilities: expanded LOG_SYSLOG_APPENDER_CONSTANTS
+--		do
+--			create h.make (Debug_p)
+--			cat := h.category ("test")			
+--			create {LOG_SYSLOG_APPENDER} appender.make ("stdout", "192.168.0.46", facilities.Log_local0)
+--			cat.add_appender (appender)	
+--			cat.fatal ("This is fatal")
+--			cat.error ("This is an error")
+--			cat.warn ("This is a warning")
+--			cat.info ("This is information")
+--			cat.debugging ("This is a test")
+--		end
 
+	test_shared_log_hierarchy is
+		local
+			shared_hierarchy: expanded LOG_SHARED_HIERARCHY
+			appender: LOG_APPENDER
+		do
+			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
+			shared_hierarchy.log_hierarchy.category ("test.cat").add_appender (appender)
+			shared_hierarchy.fatal ("test.cat", "This is fatal for shared")
+			shared_hierarchy.error ("test.cat", "This is an error for shared")
+			shared_hierarchy.warn ("test.cat", "This is a warning for shared")
+			shared_hierarchy.info ("test.cat", "This is information for shared")
+			shared_hierarchy.debugging ("test.cat", "This is a test for shared")
+		end
+	
+	test_log_xml_config is
+		local
+			shared_hierarchy: expanded LOG_SHARED_HIERARCHY
+			config: LOG_XML_CONFIG_PARSER
+		do
+			create config.make ("../../log_config.xml")
+		end	
+		
 end -- class TEST_LOG_HIERARCHY

@@ -116,22 +116,22 @@ feature -- Status Setting
 		require
 			name_exists: appender_name /= Void
 		local
+			c: DS_LINKED_LIST_CURSOR [LOG_APPENDER]
 			found: BOOLEAN
 		do
---			from
---				appenders.start
---			until
---				appenders.off or found
---			loop
---				if appenders.item_for_iteration.name.is_equal (appender_name) then
---					found := True
---				else
---					appenders.forth
---				end
---			end
---			if not appenders.off then
---				appenders.remove
---			end
+			from
+				c := appenders.new_cursor
+				c.start
+			until
+				c.off or found
+			loop
+				if c.item.name.is_equal (appender_name) then
+					found := True
+					c.remove
+				else
+					c.forth
+				end
+			end
 		end
 	
 	
@@ -177,6 +177,12 @@ feature -- Status Setting
 			end		
 		end
 	
+	set_additive (flag: BOOLEAN) is
+			-- Set additive status to 'flag'.
+		do
+			is_additive := flag
+		end
+		
 feature -- Logging
 	
 	debugging (message: ANY) is

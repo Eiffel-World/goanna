@@ -48,6 +48,11 @@ feature -- Constants
 			create Result.make_from_string ("appender-ref")
 		end
 		
+	Filter_element_name: DOM_STRING is
+		once
+			create Result.make_from_string ("filter")
+		end
+		
 	Name_attribute: DOM_STRING is
 		once
 			create Result.make_from_string ("name")
@@ -67,6 +72,11 @@ feature -- Constants
 		once
 			create Result.make_from_string ("priority")
 		end
+	
+	Additive_attribute: DOM_STRING is
+		once
+			create Result.make_from_string ("additive")
+		end	
 		
 	Ref_attribute: DOM_STRING is
 		once
@@ -92,6 +102,26 @@ feature -- Constants
 		once
 			create Result.make_from_string ("rollingfile")
 		end
+
+	Calendarrolling_appender_type: DOM_STRING is
+		once
+			create Result.make_from_string ("calendarrolling")
+		end
+	
+	Prioritymatch_filter_type: DOM_STRING is
+		once
+			create Result.make_from_string ("prioritymatch")
+		end
+		
+	Priorityrange_filter_type: DOM_STRING is
+		once
+			create Result.make_from_string ("priorityrange")
+		end
+		
+	Stringmatch_filter_type: DOM_STRING is
+		once
+			create Result.make_from_string ("stringmatch")
+		end
 		
 	Filename_param_name: DOM_STRING is
 		once
@@ -113,4 +143,29 @@ feature -- Constants
 			create Result.make_from_string ("numbackups")
 		end
 	
+	Priority_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("priority")
+		end
+	
+	Prioritystart_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("prioritystart")
+		end
+		
+	Priorityend_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("priorityend")
+		end
+		
+	Match_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("match")
+		end
+	
+	String_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("string")
+		end
+
 end -- class LOG_XML_CONFIG_CONSTANTS

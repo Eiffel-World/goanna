@@ -128,21 +128,25 @@ feature {NONE} -- Implementation
 			if hierarchy /= Void then		
 				-- iterate through top level elements and process according to type,
 				-- ignoring root as it is already done
-				from
-					child_nodes := document.document_element.child_nodes
-					number_children := child_nodes.length
-					index := 0
-				variant
-					number_children - index + 1
-				until		
-					index >= number_children
-				loop
-					element ?= child_nodes.item (index)
-					check
-						node_is_element: element /= Void
+				if document.document_element.has_child_nodes then
+					from
+						child_nodes := document.document_element.child_nodes
+						number_children := child_nodes.length
+						index := 0
+					variant
+						number_children - index + 1
+					until		
+						index >= number_children
+					loop
+						element ?= child_nodes.item (index)
+						check
+							node_is_element: element /= Void
+						end
+						process_element (element)
+						index := index + 1
 					end
-					process_element (element)
-					index := index + 1
+				else
+					internal_log.error ("No configuration elements found.")
 				end
 			end
 			post_process_categories
@@ -206,7 +210,12 @@ feature {NONE} -- Implementation
 				appender := create_file_appender (name, element)
 			elseif type.is_equal (Rollingfile_appender_type) then
 				appender := create_rolling_file_appender (name, element)
+			elseif type.is_equal (Calendarrolling_appender_type) then
+				appender := create_calendar_rolling_appender (name, element)
 			end	
+			-- process filter sub-elements
+			process_appender_filters (appender, element)
+			-- store appender
 			if appender /= Void then
 				appenders.force (appender, name.out)	
 			end
@@ -271,6 +280,36 @@ feature {NONE} -- Implementation
 			end
 		end	
 		
+	create_calendar_rolling_appender (name: DOM_STRING; element: DOM_ELEMENT): LOG_APPENDER is
+			-- Create a calendar rolling appender using parameters in 'element'
+		require
+			name_exists: name /= Void
+			element_exists: element /= Void
+		local
+			file, append: STRING
+			max_size, number_of_backups: INTEGER_REF
+		do
+			-- retrieve mandatory file name param
+			file := retrieve_param_value (Filename_param_name, element)
+			if file /= Void then
+				-- retrieve mandatory number_of_backups param
+				number_of_backups := retrieve_integer_param_value (Numbackups_param_name, element)
+				if number_of_backups /= Void then
+					-- retrieve optional append param 
+					append := retrieve_param_value (Append_param_name, element)
+					if append /= Void and then append.is_equal ("true") then
+						create {LOG_CALENDAR_ROLLING_APPENDER} Result.make (file, number_of_backups.item, True)
+					else
+						create {LOG_CALENDAR_ROLLING_APPENDER} Result.make (file, number_of_backups.item, False)
+					end	
+				else
+					internal_log.error ("Calendar rolling appender 'numbackups' attribute not found.")
+				end
+			else
+				internal_log.error ("Calendar rolling appender 'filename' attribute not found.")
+			end
+		end	
+		
 	retrieve_param_value (name: DOM_STRING; parent: DOM_ELEMENT): STRING is
 			-- Locate child param element with specified name. Return value
 			-- if found, Void otherwise.
@@ -283,38 +322,180 @@ feature {NONE} -- Implementation
 			param_name: DOM_STRING
 		do
 			-- iterate through child elements and search for named parameter element
-			from
-				child_nodes := parent.child_nodes
-				number_children := child_nodes.length
-				index := 0
-			variant
-				number_children - index + 1
-			until		
-				index >= number_children or Result /= Void
-			loop
-				element ?= child_nodes.item (index)
-				check
-					node_is_element: element /= Void
-				end
-				if element.node_name.is_equal (Param_element_name) then
-					-- check for a name attribute
-					if element.has_attribute_ns (Empty_namespace_uri, Name_attribute) then
-						param_name := element.get_attribute_ns (Empty_namespace_uri, Name_attribute)
-						if param_name.is_equal (name) then
-							-- retrieve the value attribute
-							if element.has_attribute_ns (Empty_namespace_uri, Value_attribute) then
-								Result := element.get_attribute_ns (Empty_namespace_uri, Value_attribute).out
+			if parent.has_child_nodes then
+				from
+					child_nodes := parent.child_nodes
+					number_children := child_nodes.length
+					index := 0
+				variant
+					number_children - index + 1
+				until		
+					index >= number_children or Result /= Void
+				loop
+					element ?= child_nodes.item (index)
+					check
+						node_is_element: element /= Void
+					end
+					if element.node_name.is_equal (Param_element_name) then
+						-- check for a name attribute
+						if element.has_attribute_ns (Empty_namespace_uri, Name_attribute) then
+							param_name := element.get_attribute_ns (Empty_namespace_uri, Name_attribute)
+							if param_name.is_equal (name) then
+								-- retrieve the value attribute
+								if element.has_attribute_ns (Empty_namespace_uri, Value_attribute) then
+									Result := element.get_attribute_ns (Empty_namespace_uri, Value_attribute).out
+								else
+									internal_log.error ("Parameter element value attribute not found.")
+								end 
+							end
+						else
+							internal_log.error ("Parameter element name attribute not found.")
+						end
+					end
+					index := index + 1
+				end							
+			end
+		end
+	
+	process_appender_filters (appender: LOG_APPENDER; parent: DOM_ELEMENT) is
+			-- Search 'parent' for any nested filter elements and add them to the 'appender'
+		require
+			appender_exists: appender /= Void
+			parent_exists: parent /= Void
+		local
+			number_children, index: INTEGER
+			child_nodes: DOM_NODE_LIST
+			element: DOM_ELEMENT
+			type: DOM_STRING
+			filter: LOG_FILTER
+		do
+			-- iterate through child elements and search for filter elements
+			if parent.has_child_nodes then
+				from
+					child_nodes := parent.child_nodes
+					number_children := child_nodes.length
+					index := 0
+				variant
+					number_children - index + 1
+				until		
+					index >= number_children
+				loop
+					element ?= child_nodes.item (index)
+					check
+						node_is_element: element /= Void
+					end
+					if element.node_name.is_equal (Filter_element_name) then
+						-- check for a type attribute
+						if element.has_attribute_ns (Empty_namespace_uri, Type_attribute) then
+							type := element.get_attribute_ns (Empty_namespace_uri, Type_attribute)
+							if type.is_equal (Prioritymatch_filter_type) then
+								filter := create_priority_match_filter (element)
+							elseif type.is_equal (Priorityrange_filter_type) then
+								filter := create_priority_range_filter (element)
+							elseif type.is_equal (Stringmatch_filter_type) then
+								filter := create_string_match_filter (element)
 							else
-								internal_log.error ("Parameter element value attribute not found.")
-							end 
+								internal_log.error ("Unknown filter type " + type.out)
+							end
+							if filter /= Void then
+								appender.add_filter (filter)
+							end
+						else
+							internal_log.error ("Filter element type attribute not found.")
+						end
+					end
+					index := index + 1
+				end					
+			end
+		end
+		
+	create_priority_match_filter (element: DOM_ELEMENT): LOG_FILTER is
+			-- Create a priority match filter.
+		require
+			element_exists: element /= Void
+		local
+			priority: STRING
+			match: STRING
+		do
+			-- find mandatory priority parameter
+			priority := retrieve_param_value (Priority_param_name, element)
+			if priority /= Void then
+				-- find mandatory match on filter parameter
+				match := retrieve_param_value (Match_param_name, element)
+				if match /= Void then
+					if match.is_boolean then
+						create {LOG_PRIORITY_MATCH_FILTER} Result.make (create_priority (priority), match.to_boolean)
+					else
+						internal_log.error ("Priority match filter element 'match' attribute is not boolean.")
+					end
+				else
+					internal_log.error ("Priority match filter element 'match' attribute not found.")
+				end
+			else
+				internal_log.error ("Priority match filter element 'priority' attribute not found.")
+			end
+		end
+	
+	create_priority_range_filter (element: DOM_ELEMENT): LOG_FILTER is
+			-- Create a priority range filter.
+		require
+			element_exists: element /= Void
+		local
+			priority_start, priority_end: STRING
+			match: STRING
+		do
+			-- find mandatory priority startparameter
+			priority_start := retrieve_param_value (Prioritystart_param_name, element)
+			if priority_start /= Void then
+				-- find mandatory priority end parameter
+				priority_end := retrieve_param_value (Priorityend_param_name, element)
+				if priority_end /= Void then	
+					-- find mandatory match on filter parameter
+					match := retrieve_param_value (Match_param_name, element)
+					if match /= Void then
+						if match.is_boolean then
+							create {LOG_PRIORITY_RANGE_FILTER} Result.make (create_priority (priority_start), 
+								create_priority (priority_end), match.to_boolean)
+						else
+							internal_log.error ("Priority range filter element 'match' attribute is not boolean.")
 						end
 					else
-						internal_log.error ("Parameter element name attribute not found.")
+						internal_log.error ("Priority range filter element 'match' attribute not found.")
 					end
+				else
+					internal_log.error ("Priority range filter element 'priorityend' not found.")
 				end
-				index := index + 1
-			end			
-		end
+			else
+				internal_log.error ("Priority range filter element 'prioritystart' attribute not found.")
+			end
+		end	
+	
+	create_string_match_filter (element: DOM_ELEMENT): LOG_FILTER is
+			-- Create a string match filter.
+		require
+			element_exists: element /= Void
+		local
+			string: STRING
+			match: STRING
+		do
+			-- find mandatory string parameter
+			string := retrieve_param_value (String_param_name, element)
+			if string /= Void then
+				-- find mandatory match on filter parameter
+				match := retrieve_param_value (Match_param_name, element)
+				if match /= Void then
+					if match.is_boolean then
+						create {LOG_STRING_MATCH_FILTER} Result.make (string, match.to_boolean)
+					else
+						internal_log.error ("String match filter element 'match' attribute is not boolean.")
+					end
+				else
+					internal_log.error ("String match filter element 'match' attribute not found.")
+				end
+			else
+				internal_log.error ("String match filter element 'string' attribute not found.")
+			end
+		end	
 		
 	retrieve_integer_param_value (name: DOM_STRING; parent: DOM_ELEMENT): INTEGER_REF is
 			-- Locate an integer child param element with specified name. Return value
@@ -374,44 +555,52 @@ feature {NONE} -- Implementation
 			number_children, index: INTEGER
 			child_nodes: DOM_NODE_LIST
 			child: DOM_ELEMENT
+			additive: STRING
 		do
 			category := hierarchy.category (name)
 			-- search for optional priority attribute
 			if element.has_attribute_ns (Empty_namespace_uri, Priority_attribute) then
-				priority := create_priority (element.get_attribute_ns (Empty_namespace_uri, Priority_attribute))
+				priority := create_priority (element.get_attribute_ns (Empty_namespace_uri, Priority_attribute).out)
 				if priority /= Void then
 					category.set_priority (priority)
 				end
 			end
+			-- search for optional additivity attribute
+			if element.has_attribute_ns (Empty_namespace_uri, Additive_attribute) then
+				additive := element.get_attribute_ns (Empty_namespace_uri, Additive_attribute).out
+				category.set_additive (additive.is_boolean and then additive.to_boolean)
+			end
 			-- search for optional appender refs
-			from
-				child_nodes := element.child_nodes
-				number_children := child_nodes.length
-				index := 0
-			variant
-				number_children - index + 1
-			until		
-				index >= number_children
-			loop
-				child ?= child_nodes.item (index)
-				check
-					node_is_element: child /= Void
-				end
-				if child.node_name.is_equal (Appenderref_element_name) then
-					-- search for mandatory ref attribute
-					if child.has_attribute_ns (Empty_namespace_uri, Ref_attribute) then
-						category.add_appender (appenders.item (child.get_attribute_ns (Empty_namespace_uri, Ref_attribute).out))
-					else
-						internal_log.error ("Appender reference 'ref' attribute not found.")
+			if element.has_child_nodes then
+				from
+					child_nodes := element.child_nodes
+					number_children := child_nodes.length
+					index := 0
+				variant
+					number_children - index + 1
+				until		
+					index >= number_children
+				loop
+					child ?= child_nodes.item (index)
+					check
+						node_is_element: child /= Void
 					end
-				else
-					internal_log.error ("Invalid child node within category: " + name)
+					if child.node_name.is_equal (Appenderref_element_name) then
+						-- search for mandatory ref attribute
+						if child.has_attribute_ns (Empty_namespace_uri, Ref_attribute) then
+							category.add_appender (appenders.item (child.get_attribute_ns (Empty_namespace_uri, Ref_attribute).out))
+						else
+							internal_log.error ("Appender reference 'ref' attribute not found.")
+						end
+					else
+						internal_log.error ("Invalid child node within category: " + name)
+					end
+					index := index + 1
 				end
-				index := index + 1
 			end
 		end
 		
-	create_priority (priority_name: DOM_STRING): LOG_PRIORITY is
+	create_priority (priority_name: STRING): LOG_PRIORITY is
 			-- Create a priority object representing the named priority. 
 			-- Return Void if not a valid priority
 		require
@@ -419,7 +608,7 @@ feature {NONE} -- Implementation
 		local
 			upper_name: STRING
 		do
-			upper_name := priority_name.out
+			upper_name := clone (priority_name)
 			upper_name.to_upper
 			--| TODO: implement this as a factory
 			if upper_name.is_equal ("DEBUG") then
@@ -446,36 +635,40 @@ feature {NONE} -- Implementation
 			done: BOOLEAN
 			priority: LOG_PRIORITY
 		do
-			from
-				child_nodes := parent.child_nodes
-				number_children := child_nodes.length
-				index := 0
-			variant
-				number_children - index + 1
-			until		
-				index >= number_children or done
-			loop
-				element ?= child_nodes.item (index)
-				check
-					node_is_element: element /= Void
-				end
-				if element.node_name.is_equal (Root_element_name) then
-					-- this is the root, get the priority
-					if element.has_attribute_ns (Empty_namespace_uri, Priority_attribute) then
-						priority := create_priority (element.get_attribute_ns (Empty_namespace_uri, Priority_attribute))
-						if priority /= Void then
-							create hierarchy.make (priority)
-							-- store the root element for post processing
-							root_element := element
-						else
-							internal_log.error ("Invalid root category priority.")
-						end
-					else
-						internal_log.error ("Root category priority attribute not found.")
+			if parent.has_child_nodes then
+				from
+					child_nodes := parent.child_nodes
+					number_children := child_nodes.length
+					index := 0
+				variant
+					number_children - index + 1
+				until		
+					index >= number_children or done
+				loop
+					element ?= child_nodes.item (index)
+					check
+						node_is_element: element /= Void
 					end
-					done := True
+					if element.node_name.is_equal (Root_element_name) then
+						-- this is the root, get the priority
+						if element.has_attribute_ns (Empty_namespace_uri, Priority_attribute) then
+							priority := create_priority (element.get_attribute_ns (Empty_namespace_uri, Priority_attribute).out)
+							if priority /= Void then
+								create hierarchy.make (priority)
+								-- store the root element for post processing
+								root_element := element
+							else
+								internal_log.error ("Invalid root category priority.")
+							end
+						else
+							internal_log.error ("Root category priority attribute not found.")
+						end
+						done := True
+					end
+					index := index + 1
 				end
-				index := index + 1
+			else
+				internal_log.error ("Root element not found.")
 			end
 		end
 		
@@ -489,30 +682,32 @@ feature {NONE} -- Implementation
 			child: DOM_ELEMENT
 		do
 			-- search for optional appender refs
-			from
-				child_nodes := root_element.child_nodes
-				number_children := child_nodes.length
-				index := 0
-			variant
-				number_children - index + 1
-			until		
-				index >= number_children
-			loop
-				child ?= child_nodes.item (index)
-				check
-					node_is_element: child /= Void
-				end
-				if child.node_name.is_equal (Appenderref_element_name) then
-					-- search for mandatory ref attribute
-					if child.has_attribute_ns (Empty_namespace_uri, Ref_attribute) then
-						hierarchy.root.add_appender (appenders.item (child.get_attribute_ns (Empty_namespace_uri, Ref_attribute).out))
-					else
-						internal_log.error ("Appender reference 'ref' attribute not found for root.")
+			if root_element.has_child_nodes then
+				from
+					child_nodes := root_element.child_nodes
+					number_children := child_nodes.length
+					index := 0
+				variant
+					number_children - index + 1
+				until		
+					index >= number_children
+				loop
+					child ?= child_nodes.item (index)
+					check
+						node_is_element: child /= Void
 					end
-				else
-					internal_log.error ("Invalid child node within root.")
+					if child.node_name.is_equal (Appenderref_element_name) then
+						-- search for mandatory ref attribute
+						if child.has_attribute_ns (Empty_namespace_uri, Ref_attribute) then
+							hierarchy.root.add_appender (appenders.item (child.get_attribute_ns (Empty_namespace_uri, Ref_attribute).out))
+						else
+							internal_log.error ("Appender reference 'ref' attribute not found for root.")
+						end
+					else
+						internal_log.error ("Invalid child node within root.")
+					end
+					index := index + 1
 				end
-				index := index + 1
 			end
 		end
 		

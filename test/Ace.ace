@@ -13,7 +13,12 @@ default
 	arguments(" ")
 	disabled_debug(yes)
 	disabled_debug("base64_encode")
-	debug(no)
+	disabled_debug("dom_assertions")
+	debug("log4e_config")
+	disabled_debug("namespace")
+	disabled_debug("normalize")
+	disabled_debug("parser_events")
+	disabled_debug("unhandled_node_types")
 	line_generation(no)
 	profile(no)
 	trace(no)
@@ -29,6 +34,8 @@ default
 	inlining(no)
 	multithreaded(no)
 
+
+-- Gobo Eiffel Kernel Library
 
 cluster
 	goanna_utility:		"$GOANNA\library\utility"
@@ -52,6 +59,8 @@ cluster
 
 	log4e_pattern (log4e_layouts):		"$\pattern"
 
+	log4e_config (goanna_log4e):		"$\config"
+
 	all base:		"$ISE_EIFFEL/library/base"
 		exclude
 			"desc"; "table_eiffel3"; "CVS"; "EIFGEN"; 
@@ -67,45 +76,77 @@ cluster
 
 	yaesockets_ise (yaesockets):		"$\spec\ise"
 
-		-- Gobo Eiffel Kernel Library
-	gobo:				"$GOBO/library";
-	kl_kernel (gobo):			"$/kernel";
-	kl_io (gobo):			"$/kernel/io";
-	kl_misc (gobo):			"$/kernel/misc";
-	kl_unicode (gobo):		"$/kernel/unicode";
-	kl_kernel_spec (gobo):		"$/kernel/spec/ise";
---	kl_kernel_os (gobo):		"$/kernel/spec/$GOBO_OS";
-		-- Gobo Eiffel Structure Library
-	ds_container (gobo):		"$/structure/container";
-	ds_dispenser (gobo):		"$/structure/dispenser";
-	ds_list (gobo):			"$/structure/list";
-	ds_set (gobo):			"$/structure/set";
-	ds_sort (gobo):			"$/structure/sort";
-	ds_support (gobo):		"$/structure/support";
-	ds_table (gobo):			"$/structure/table";
-		-- Gobo Eiffel Test Library
-	ts_generation (gobo):		"$/test/generation";
-	ts_harness (gobo):		"$/test/harness";
-		-- Gobo Eiffel Time Library
-	dt_clock (gobo):			"$/time/clock";
-	dt_date (gobo):			"$/time/date";
-	dt_spec (gobo):			"$/time/spec/ise";
-	dt_time_zone (gobo):		"$/time/time_zone";
-			-- Gobo Eiffel Utility Library
-	ut_command (gobo):		"$/utility/command";
-	ut_error (gobo):			"$/utility/error";
-	ut_formatter (gobo):		"$/utility/formatter";
-	ut_support (gobo):		"$/utility/support";
-	ut_spec (gobo):			"$/utility/spec/ise";
+	all gobo:		"$GOBO/library"
+		exclude
+			"other"; "hact"; "se"; "ve"; 
+		end
+
+	dom:		"$GOANNA\library\dom"
+
+	dom_core (dom):		"$\core"
+
+	dom_traversal_range (dom):		"$\traversal-range"
+
+	dom_impl (dom):		"$\implementation"
+
+	dom_impl_core (dom_impl):		"$\core"
+
+	dom_impl_traversal_range (dom_impl):		"$\traversal-range"
+
+	dom_writer (dom):		"$\writer"
+
+	xml_parser:		"$GOANNA\library\xml_parser"
+
+	ucstring:		"$UCSTRING\lib"
+
+	ucstring_ise (ucstring):		"$\spec\ise"
+
+	exml:		"$EXML/library"
+
+	all exml_factory (exml):		"$/factory"
+
+	all exml_general (exml):		"$/general"
+
+	all exml_formater (exml):		"$/formater"
+
+	all exml_event (exml):		"$/event"
+
+	all exml_tree (exml):		"$/tree"
+
+	all exml_source (exml):		"$/source"
+
+	all exml_position (exml):		"$/position"
+
+	exml_implementation (exml):		"$/impl"
+
+	all exml_implementation_interface (exml_implementation):		"$/interface"
+
+	exml_expat_implementation (exml_implementation):		"$/expat"
+
+	exml_expat_expat_implementation (exml_expat_implementation):		"$/expat"
+
+	exml_expat_api_implementation (exml_expat_implementation):		"$/api"
+
+	exml_expat_general_implementation (exml_expat_implementation):		"$/general"
+
+	exml_expat_event_implementation (exml_expat_implementation):		"$/event"
+		use
+			".lace"
+		end
+
+	exml_expat_ise_implementation (exml_expat_implementation):		"$/spec/ise"
 
 external
 
 	include_path:
+		"$EXPAT\lib",
 		"$GOBO\library\kernel\include",
 		"$GOBO\library\time\include",
 		"$GOANNA\library\log4e\appenders\nt\lib"
 
 	object:
-		"$YAESOCKETS\C\Release\cl.lib"
+		"$YAESOCKETS\C\Release\cl.lib",
+		"$EXPAT\lib\Debug\expat.lib",
+		"$EXML/library/impl/expat/spec/c/libexml.lib"
 
 end
