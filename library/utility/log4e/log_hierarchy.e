@@ -126,6 +126,26 @@ feature -- Status Setting
 			categories.wipe_out
 		end
 	
+	close_all is
+			-- Close all appenders for all categories in this
+			-- hierarchy
+		local
+			cursor: DS_HASH_TABLE_CURSOR [LOG_CATEGORY, STRING]
+		do
+			-- close all category specific appenders
+			from
+				cursor := categories.new_cursor
+				cursor.start
+			until
+				cursor.off
+			loop
+				cursor.item.close_appenders
+				cursor.forth
+			end
+			-- close root category appenders
+			root.close_appenders
+		end
+		
 feature {NONE} -- Implementation
 	
 	categories: DS_HASH_TABLE [LOG_CATEGORY, STRING]

@@ -221,9 +221,7 @@ feature {NONE} -- Implementation
 		local
 			is_new_connection, request_read: BOOLEAN
 			peer: STRING
-		do
-			-- TODO: implement WEB_SERVER_ADDRESS security checking.
-			
+		do			
 			-- setup the request and its connection. Use the current request if keep_connection is
 			-- specified. Otherwise create a new one.
 			if request /= Void then

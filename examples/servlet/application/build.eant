@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<project name="standalone" inherit="${GOBO}/misc/eiffel.eant" default="help">
+<project name="application" inherit="${GOBO}/misc/eiffel.eant" default="help">
 
 	<description>
-		description: "Stand alone servlet Example"
+		description: "Servlet Application"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -52,7 +52,7 @@
 
 
 	<target name="init_system">
-		<set name="system" value="standalone"/>
+		<set name="system" value="application"/>
 		<set name="library" value="servlet"/>
 		<set name="system_dir" value="${GOANNA}/examples/${library}/${system}"/>
 	</target>

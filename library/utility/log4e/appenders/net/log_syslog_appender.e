@@ -77,7 +77,8 @@ feature -- Status Setting
 			-- Release any resources for this appender.
 		do
 			if not is_open then
-				socket.close	
+				socket.close
+				is_open := False
 			end
 		end	
 
@@ -100,5 +101,15 @@ feature {NONE} -- Implementation
 	
 	log_facility: INTEGER
 			-- Syslog facility to log messages with
-			
+		
+feature -- Removal
+
+	dispose is
+			-- Close this appender when garbage collected. Perform
+			-- minimal operations to release resources. Do not call
+			-- other object as they may have been garbage collected.
+		do
+			is_open := False
+		end
+		
 end -- class LOG_SYSLOG_APPENDER

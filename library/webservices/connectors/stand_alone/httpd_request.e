@@ -24,8 +24,9 @@ inherit
 --				{NONE} all
 --			end
 			
-creation
-	make
+create
+	
+	make, make_standard_socket
 	
 feature -- Initialisation
 
@@ -38,13 +39,34 @@ feature -- Initialisation
 			raw_stdin_content := ""
 			create parameters.make (20)
 			serving_socket := socket
+			a_servlet_prefix := socket.servlet_manager.servlet_mapping_prefix
+			document_root := socket.servlet_manager.config.document_root
 			parse_request_buffer (buffer)
-			set_server_parameters
+			set_server_parameters (socket.servlet_manager.config.server_port,
+				socket.servlet_manager.config.document_root)
 		end
+	
+	make_standard_socket (socket: TCP_SOCKET; buffer: STRING; server_port: INTEGER; 
+		doc_root, servlet_mapping_prefix: STRING) is
+			-- Parse 'buffer' to initialise the request parameters
+		require
+			socket_exists: socket /= Void
+			buffer_exists: buffer /= Void
+			doc_root_exists: doc_root /= Void
+			prefix_exists: servlet_mapping_prefix /= Void
+		do
+			raw_stdin_content := ""
+			create parameters.make (20)
+			serving_socket := socket
+			document_root := doc_root
+			a_servlet_prefix := servlet_mapping_prefix
+			parse_request_buffer (buffer)
+			set_server_parameters (server_port, doc_root)
+		end	
 		
 feature -- Access
 
-	serving_socket: HTTPD_SERVING_SOCKET
+	serving_socket: TCP_SOCKET
 	
 	parameter (name: STRING): STRING is
 			-- Return value of parameter 'name'
@@ -71,15 +93,17 @@ feature -- Access
 			
 feature {NONE} -- Implementation
 		
-	set_server_parameters is
+	set_server_parameters (server_port: INTEGER; doc_root: STRING) is
 			-- Set server specific parameters for request
+		require
+			doc_root_exists: doc_root /= Void
 		do
 			parameters.force ("Goanna HTTP Server V1.0", Server_software_var)
 			parameters.force ("CGI/1.1", Gateway_interface_var)
-			parameters.force (serving_socket.servlet_manager.config.server_port.out, Server_port_var)
+			parameters.force (server_port.out, Server_port_var)
 			parameters.force (serving_socket.peer_name, Remote_host_var)
 			parameters.force (serving_socket.peer_address, Remote_addr_var)
-			parameters.force (serving_socket.servlet_manager.config.document_root, Document_root_var)
+			parameters.force (doc_root, Document_root_var)
 		end
 		
 	Last_header_line: STRING is "%R%N%R%N"
@@ -148,7 +172,9 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-			
+
+	a_servlet_prefix, document_root: STRING
+	
 	parse_request_uri (token: STRING) is
 			-- Parse the request uri extracting the path info, script path and query string.
 		require
@@ -171,7 +197,7 @@ feature {NONE} -- Implementation
 			-- if the query begins with the virtual servlet prefix then the script name is
 			-- the portion including the prefix and all characters before the next slash.
 			-- everything after the next slash is the path info.
-			servlet_prefix := "/" + serving_socket.servlet_manager.servlet_mapping_prefix
+			servlet_prefix := "/" + a_servlet_prefix
 			script := query
 			if query.count > servlet_prefix.count + 1 then
 				if query.substring (1, servlet_prefix.count).is_equal (servlet_prefix) then
@@ -189,8 +215,7 @@ feature {NONE} -- Implementation
 			-- set the translated path if needed
 			if not path.is_empty then
 				-- path includes leading slash
-				parameters.force (serving_socket.servlet_manager.config.document_root + path, 
-					Path_translated_var)
+				parameters.force (document_root + path, Path_translated_var)
 			end
 		end
 	

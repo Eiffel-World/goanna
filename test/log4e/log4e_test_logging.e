@@ -44,6 +44,7 @@ feature -- Test
 			assert ("cat_a_exists", h.has ("a"))
 			assert ("cat_a.b_exists", h.has ("a.b"))
 			assert ("cat_a.b.c_exists", h.has ("a.b.c"))
+			h.close_all
 		end
 
 	test_priority_inheritance is
@@ -87,7 +88,9 @@ feature -- Test
 			cat.set_priority (Warn_p)
 			assert ("inherited x.y.z", h.category ("x.y.z").priority = Warn_p)
 			assert ("inherited x.y", h.category ("x.y").priority = Warn_p)
-			assert ("set x", h.category ("x").priority = Warn_p)		
+			assert ("set x", h.category ("x").priority = Warn_p)	
+			
+			h.close_all
 		end
 
 	test_priority_match_filter is
@@ -128,6 +131,8 @@ feature -- Test
 			assert_equal ("info_not_match_error", filter.decide (event), Filter_accept)
 			create event.make (cat, Fatal_p, "test event")
 			assert_equal ("info_not_match_fatal", filter.decide (event), Filter_accept)	
+			
+			h.close_all
 		end
 		
 	test_priority_range_filter is
@@ -199,7 +204,9 @@ feature -- Test
 			assert_equal ("debug_not_match", filter.decide (event), Filter_accept)
 
 			create event.make (cat, Fatal_p, "test event")
-			assert_equal ("fatal_not_match", filter.decide (event), Filter_reject)		
+			assert_equal ("fatal_not_match", filter.decide (event), Filter_reject)	
+			
+			h.close_all
 		end
 	
 	test_string_match_filter is
@@ -224,6 +231,8 @@ feature -- Test
 			assert_equal ("match_false", filter.decide (event), Filter_reject)
 			create event.make (cat, Info_p, "doesn't contain it")
 			assert_equal ("no_match_false", filter.decide (event), Filter_neutral)
+			
+			h.close_all
 		end
 	
 	test_file_appender is
@@ -243,6 +252,8 @@ feature -- Test
 			cat.warn ("This is a warning")
 			cat.fatal ("This is fatal")
 			cat.info ("This is information")
+			
+			h.close_all
 		end
 	
 	test_rolling_file_appender is
@@ -270,6 +281,8 @@ feature -- Test
 				cat.info ("This is information")
 				i := i + 1
 			end		
+			
+			h.close_all
 		end
 
 	test_calendar_rolling_file_appender is
@@ -295,6 +308,8 @@ feature -- Test
 				cat.info ("This is information")
 				i := i + 1
 			end		
+			
+			h.close_all
 		end
 		
 	test_nt_event_appender is
@@ -329,6 +344,8 @@ feature -- Test
 			cat.warn ("STDOUT: This is a warning")
 			cat.info ("STDOUT: This is information")
 			cat.debugging ("STDOUT: This is a test")
+			
+			h.close_all
 		end
 		
 	test_stderr_event_appender is
@@ -346,6 +363,8 @@ feature -- Test
 			cat.warn ("STDERR: This is a warning")
 			cat.info ("STDERR: This is information")
 			cat.debugging ("STDERR: This is a test")
+			
+			h.close_all
 		end
 	
 	test_time_layout is
@@ -366,6 +385,8 @@ feature -- Test
 			cat.warn ("This is a warning")
 			cat.info ("This is information")
 			cat.debugging ("This is a test")
+			
+			h.close_all
 		end	
 		
 	test_date_time_layout is
@@ -386,6 +407,8 @@ feature -- Test
 			cat.warn ("This is a warning")
 			cat.info ("This is information")
 			cat.debugging ("This is a test")
+			
+			h.close_all
 		end	
 		
 	test_log_pattern_parser is
@@ -414,6 +437,8 @@ feature -- Test
 			cat.warn ("This is a warning")
 			cat.info ("This is information")
 			cat.debugging ("This is a test")
+			
+			h.close_all
 		end
 		
 --	test_syslog_appender is

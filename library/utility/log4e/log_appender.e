@@ -22,7 +22,7 @@ inherit
 	MEMORY
 		export
 			{NONE} all
-		redefine
+		undefine
 			dispose
 		end
 	
@@ -156,9 +156,10 @@ feature -- Status Setting
 feature -- Removal
 
 	dispose is
-			-- Close this appender when garbage collected
-		do
-			close
+			-- Close this appender when garbage collected. Perform
+			-- minimal operations to release resources. Do not call
+			-- other object as they may have been garbage collected.
+		deferred
 		end
 		
 feature {NONE} -- Implementation

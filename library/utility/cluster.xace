@@ -18,7 +18,9 @@
 	</cluster>
 
 	<mount location="${GOANNA}/library/utility/log4e/cluster.xace"/>
-	<mount location="${GOANNA}/library/utility/codegen/cluster.xace"/>
-	<mount location="${GOANNA}/library/utility/socketstreams/cluster.xace"/>
+
+	<cluster name="codegen"/>
+	<cluster name="socketstreams"/>
+	<cluster name="thread" if="${GOBO_EIFFEL}=ise"/>
 
 </cluster>

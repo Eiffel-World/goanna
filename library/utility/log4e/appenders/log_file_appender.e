@@ -88,5 +88,15 @@ feature {NONE} -- Implementation
 			end
 			stream.put_string (layout.header)
 		end
+
+feature -- Removal
+
+	dispose is
+			-- Close this appender when garbage collected. Perform
+			-- minimal operations to release resources. Do not call
+			-- other object as they may have been garbage collected.
+		do
+			is_open := False
+		end	
 		
 end -- class LOG_FILE_APPENDER

@@ -23,13 +23,23 @@ feature -- Basic Operations
 	close is
 			-- Release any resources for this appender.
 		do
-			-- do nothing
+			is_open := False
 		end
 	
 	do_append (event: LOG_EVENT) is
 			-- Log event on this appender.
 		do
 			io.put_string (layout.format (event))
+		end
+
+feature -- Removal
+
+	dispose is
+			-- Close this appender when garbage collected. Perform
+			-- minimal operations to release resources. Do not call
+			-- other object as they may have been garbage collected.
+		do
+			is_open := False
 		end
 	
 end -- class LOG_STDOUT_APPENDER

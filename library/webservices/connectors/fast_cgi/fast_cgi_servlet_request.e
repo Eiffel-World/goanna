@@ -34,6 +34,7 @@ feature {NONE} -- Initialisation
 			response_exists: resp /= Void
 		do
 			internal_request := fcgi_request
+			internal_response := resp
 			cgi_servlet_make (internal_response)
 			create parameters.make (5)
 			parse_parameters

@@ -129,8 +129,6 @@ feature -- Basic operations
 			end
 			-- extract parameters
 			process_parameter_raw_data
-			-- extract stdin
-			-- TODO: process stdin data
 		end
 	
 	write_stderr (str: STRING) is
@@ -245,13 +243,6 @@ feature {NONE} -- Implementation
 				read_stdin_request_body (record_header)
 --			when Fcgi_abort_request then
 --				create {FAST_CGI_ABORT_REQUEST_BODY} record_body
---			when Fcgi_end_request then
---				create {FAST_CGI_END_REQUEST_BODY} record_body
---			when Fcgi_stdout then
---				create {FAST_CGI_STDOUT_BODY} record_body
---			when Fcgi_stderr then
---				create {FAST_CGI_STDERR_BODY} record_body
---			when  then
 			else
 				-- TODO: handle unknown record type
 			end

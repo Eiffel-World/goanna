@@ -68,7 +68,17 @@ feature -- Initialization
 			content_length := new_content_length
 			padding_length := new_padding_length
 		end
+
+feature -- Access
+
+	version, request_id, type, content_length, padding_length: INTEGER
 	
+	read_ok: BOOLEAN
+	
+	write_ok: BOOLEAN
+	
+feature -- Basic operations
+
 	read (socket: TCP_SOCKET) is
 			-- Read header data from 'socket'
 		local
@@ -84,14 +94,6 @@ feature -- Initialization
 			end
 		end
 	
-feature -- Access
-
-	version, request_id, type, content_length, padding_length: INTEGER
-	
-	read_ok: BOOLEAN
-	
-feature -- Basic operations
-
 	write (socket: TCP_SOCKET) is
 			-- Write this header to 'socket'
 		require
@@ -110,6 +112,7 @@ feature -- Basic operations
 			enc_data.put (character_from_code (padding_length), 7)
 			enc_data.put ('%/0/', 8) -- reserved byte
 			socket.send_string (enc_data)
+			write_ok := socket.last_error_code = Sock_err_no_error
 			debug("fcgi_protocol")
 				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
 			end

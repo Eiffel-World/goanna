@@ -134,5 +134,5 @@ feature {NONE} -- Implementation
   				open_log
 			end
 		end
-
+	
 end -- class LOG_ROLLING_FILE_APPENDER
