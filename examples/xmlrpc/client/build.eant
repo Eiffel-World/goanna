@@ -86,5 +86,5 @@
 		<geant file="build.eant" target="${target}" dir="currenttime-web"/>
 		<geant file="build.eant" target="${target}" dir="spellchecker"/>
 		<geant file="build.eant" target="${target}" dir="test"/>
-
+	</target>
 </project>
