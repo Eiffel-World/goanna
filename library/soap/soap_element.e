@@ -28,10 +28,10 @@ feature -- Initialization
 			create entries.make_default
 		end
 	
-	unmarshall (element: DOM_ELEMENT) is
-			-- Initialise SOAP envelope from DOM element.
+	unmarshall (node: DOM_NODE) is
+			-- Initialise SOAP envelope from DOM node.
 		require
-			element_exists: element /= Void
+			node_exists: node /= Void
 		deferred			
 		end
 
@@ -86,6 +86,19 @@ feature -- Element change
 			removed: not attributes.has (name)
 		end
 
+	declare_namespace (ns_prefix, namespace: STRING) is
+			-- Create attribute for namespace declaration with namespace
+			-- prefix 'ns_prefix' and namespace URI 'namespace'.
+		require
+			ns_prefix_exists: ns_prefix /= Void
+			namespace_exists: namespace /= Void
+		local
+			q_name: Q_NAME
+		do
+			create q_name.make (Ns_uri_xmlns, ns_prefix)
+			add_attribute (q_name.out, namespace)
+		end
+		
 	set_entries (new_entries: DS_LINKED_LIST [DOM_ELEMENT]) is
 			-- Assign `new_entries' to `elements'.
 		require
@@ -94,6 +107,33 @@ feature -- Element change
 			entries := new_entries
 		ensure
 			entries_assigned: entries = new_entries
+		end
+
+feature {NONE} -- Implementation
+
+	unmarshall_attributes (node: DOM_NODE) is
+			-- Unmarshall attributes of 'node' to this element.
+		require
+			node_exists: node /= Void
+		local
+			attrs: DOM_NAMED_MAP [DOM_ATTR]
+			attribute: DOM_ATTR
+			q_name: Q_NAME
+			i: INTEGER
+		do
+			attrs := node.attributes
+			from 
+				i := 0
+			variant
+				attrs.length - i
+			until
+				i >= attrs.length
+			loop
+				attribute := attrs.item (i)
+				create q_name.make (attribute.ns_prefix.out, attribute.local_name.out)
+				add_attribute (q_name.out, attribute.value.out)
+				i := i + 1
+			end
 		end
 
 invariant

@@ -18,7 +18,12 @@ inherit
 		rename
 			make as parent_make
 		redefine
-			set_node_value, node_value, namespace_uri
+			set_node_value, 
+			node_value, 
+			namespace_uri, 
+			local_name,
+			ns_prefix,
+			set_prefix
 		end
 			
 creation
@@ -54,9 +59,21 @@ feature -- Factory creation
 			owner_doc_exists: owner_doc /= Void
 			new_name_exists: new_qualified_name /= Void
 			new_namespace_uri_exists: new_namespace_uri /= Void
+		local
+			i: INTEGER
+			c: UCCHAR
 		do
 			make (owner_doc, new_qualified_name)
 			namespace_uri := new_namespace_uri
+			-- extract prefix and local name
+			c.make_from_character (':')
+			i := new_qualified_name.index_of (c, 1)
+			if i > 0 then
+				ns_prefix := new_qualified_name.substring (1, i - 1)
+				local_name := new_qualified_name.substring (i + 1, new_qualified_name.count)
+			else
+				local_name := clone (new_qualified_name)
+			end
 		end
 		
 feature
@@ -112,6 +129,21 @@ feature
 			-- attribute is not in use.
 			-- DOM Level 2.
 
+	ns_prefix: DOM_STRING
+			-- The namespace prefix of this node, or Void if it is unspecified.
+			-- DOM Level 2.
+
+	set_prefix (new_prefix: DOM_STRING) is
+			-- Set the namespace prefix of this node.
+			-- DOM Level 2.
+		do
+			ns_prefix := new_prefix
+		end
+
+	local_name: DOM_STRING
+			-- Returns the local part of the qualified name of this node.
+			-- DOM Level 2.
+			
 feature -- from DOM_NODE
    
 	node_name: DOM_STRING is

@@ -20,10 +20,10 @@ create
 
 feature -- Initialisation
 
-	unmarshall (element: DOM_ELEMENT) is
-			-- Initialise SOAP header from DOM element.
+	unmarshall (node: DOM_NODE) is
+			-- Initialise SOAP header from DOM node.
 		do
-			
+			make
 		end
 		
 feature -- Marshalling

@@ -123,14 +123,25 @@ feature {NONE} -- Implementation
 	init_soap is
 			-- Initialise SOAP RPC calls
 		local
-			account_service: SERVICE
+			account_service, address_service, calculator_service: SERVICE
 			account: SOAP_ACCOUNT
+			addresses: ADDRESS_REGISTER
+			calculator: CALCULATOR
 		do
 			create account
 			create account_service.make (account)
-			account_service.agent_registry.register ("deposit", account, account~deposit(?))
-			account_service.agent_registry.register ("withdraw", account, account~withdraw(?))
-			registry.register ("account", account_service)
+			account_service.agent_registry.register ("deposit", account, account~deposit (?))
+			account_service.agent_registry.register ("withdraw", account, account~withdraw (?))
+			registry.register ("urn:Account", account_service)
+			create addresses.make
+			create address_service.make (addresses)
+			address_service.agent_registry.register ("getAddressFromName", addresses, addresses~get_address_from_name (?))
+			registry.register ("urn:AddressFetcher", address_service)
+			create calculator
+			create calculator_service.make (calculator)
+			calculator_service.agent_registry.register ("times", calculator, calculator~times (?, ?))
+			calculator_service.agent_registry.register ("divide", calculator, calculator~divide (?, ?))
+			registry.register ("urn:xml-soap-demo-calculator", calculator_service)
 		end
 		
 

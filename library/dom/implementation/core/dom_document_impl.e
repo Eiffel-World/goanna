@@ -170,7 +170,7 @@ feature -- Access
 			-- Creates an element of the given qualified name and namespace URI.
 			-- DOM Level 2.
 		do
-			!DOM_ELEMENT_IMPL! Result.make_with_namespace (Current, 
+			create {DOM_ELEMENT_IMPL} Result.make_with_namespace (Current, 
 				new_namespace_uri, qualified_name)
 		end
 

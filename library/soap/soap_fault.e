@@ -34,9 +34,10 @@ feature -- Initialization
 			create detail_entries.make_default
 		end
 
-	unmarshall (doc: DOM_ELEMENT) is
-			-- Initialise SOAP fault from DOM element.
+	unmarshall (node: DOM_NODE) is
+			-- Initialise SOAP fault from DOM node.
 		do
+			make
 		end
 
 feature -- Access

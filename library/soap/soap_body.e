@@ -20,10 +20,26 @@ create
 
 feature -- Initialisation
 
-	unmarshall (element: DOM_ELEMENT) is
-			-- Initialise SOAP header from DOM element.
+	unmarshall (node: DOM_NODE) is
+			-- Initialise SOAP header from DOM node.
+		local
+			root, temp_element: DOM_ELEMENT
+			body_entries: like entries
 		do
-			
+			make
+			root ?= node
+			check root /= Void end
+			unmarshall_attributes (root)
+			from
+				temp_element ?= root.first_child
+				create body_entries.make_default
+			until
+				temp_element = Void
+			loop
+				body_entries.force_last (temp_element)
+				temp_element ?= temp_element.next_sibling
+			end
+			set_entries (body_entries)
 		end
 		
 feature -- Marshalling

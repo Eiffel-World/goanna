@@ -14,6 +14,11 @@ class
 inherit
 	
 	SOAP_ELEMENT
+		rename
+			make as element_make
+		export
+			{NONE} element_make
+		end
 	
 creation
 	
@@ -21,10 +26,59 @@ creation
 	
 feature -- Initialisation
 
-	unmarshall (element: DOM_ELEMENT) is
-			-- Initialise SOAP header from DOM element.
+	make is
+			-- Initialise with default namespace declarations
 		do
-			
+			element_make
+			declare_namespace (Ns_pre_soap_env, Ns_uri_soap_env)
+			declare_namespace (Ns_pre_schema_xsi, Ns_uri_schema_xsi)
+			declare_namespace (Ns_pre_schema_xsd, Ns_uri_schema_xsd)
+		end
+		
+	unmarshall (node: DOM_NODE) is
+			-- Initialise SOAP header from DOM element.
+		local
+			root: DOM_ELEMENT
+			header_element, body_element, temp_element: DOM_ELEMENT
+			new_entries: like entries
+		do
+			element_make
+			root ?= node
+			check root /= Void end
+			if Q_elem_envelope.matches (root) then
+				-- deserialize attributes into this element.
+				unmarshall_attributes (root)
+				-- deserialize sub-elements
+				temp_element ?= root.first_child
+				check temp_element /= Void end
+				if Q_elem_header.matches (temp_element) then
+					header_element := temp_element
+					temp_element ?= header_element.next_sibling
+				end
+				if Q_elem_body.matches (temp_element) then
+					body_element := temp_element
+					temp_element ?= body_element.next_sibling
+				end
+				-- deserialize header if found
+				if header_element /= Void then
+					create header.unmarshall (header_element)
+				end
+				if body_element /= Void then
+					create body.unmarshall (body_element)
+				end
+				-- deserialize any further elements to entries collection
+				if temp_element /= Void then
+					from
+						create new_entries.make_default
+					until
+						temp_element = Void
+					loop
+						new_entries.force_last (temp_element)
+						temp_element ?= temp_element.next_sibling
+					end
+					set_entries (new_entries)
+				end
+			end	
 		end
 	
 feature -- Access
