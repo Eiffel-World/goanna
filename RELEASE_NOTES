@@ -1,6 +1,19 @@
 Project Goanna Release Notes
 ----------------------------
 
+Release XX
+----------
+
+o Fixed web site WPME link
+
+o Fixed reading of binary files for BINARY_CONTENT_FILE_HANDLER. (Thanks Paul-Georges Crismer). 
+
+o Fixed LOG_FILE_APPENDER for new GOBO classes. (Thanks Neal Lester).
+
+o Added Web interface example for XMLRPC current time service. Also added current time service
+to server example.
+
+
 Release 0.4
 -----------
 12 January 2002

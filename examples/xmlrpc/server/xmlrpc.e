@@ -112,6 +112,7 @@ feature {NONE}
          test: TEST;
          validator: VALIDATOR1;
          calculator: CALCULATOR;
+         date_time: CURRENT_DATE_TIME
          calculator_service: SERVICE_PROXY;
       do  
          log_hierarchy.category(Xmlrpc_category).info("Registering XML-RPC web services");
@@ -125,6 +126,9 @@ feature {NONE}
             -- ADDRESS_REGISTER is a self registering service
          create addresses.make;
          registry.register(addresses,"addressbook");
+         	-- CURRENT_DATE_TIME is a self registering service
+         create date_time.make
+         registry.register(date_time, "currentTime");
             -- CALCULATOR needs to be registered manually
          create calculator;
          create calculator_service.make;

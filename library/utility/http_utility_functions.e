@@ -58,7 +58,7 @@ feature -- Basic operations
 						if hi < 0 or lo < 0 then
 							Result.append_character (ch)
 						else
-							Result.append_character (int_to_char (bit_shift_left (hi, 4) + lo))
+							Result.append_character (int_to_char (bit_shift_left (hi, 4) + lo - 1))
 							i := i + 2
 						end
 					else
