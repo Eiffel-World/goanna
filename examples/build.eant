@@ -30,7 +30,7 @@
 		<geant file="servlet/build.eant" target="install"/>
 	</target>
 
-	<target name="compile" depend="init" dir="${GOANNA}/examples">
+	<target name="compile" depend="install" dir="${GOANNA}/examples">
 		<description>
 			Compile the Goanna examples.
 		</description>
@@ -48,7 +48,7 @@
 		<geant file="servlet/build.eant" target="clean"/>
 	</target>
 
-	<target name="clobber" depend="init" dir="${GOBO}/example">
+	<target name="clobber" depend="init" dir="${GOBO}/examples">
 		<description>
 			Remove all generated files.
 		</description>
