@@ -14,7 +14,7 @@ class
 
 feature 
 
-	mutex: MUTEX is
+	mutex: PRODUCER_CONSUMER_MUTEX is
 			-- Request mutex
 		indexing
 			once_status: "global"

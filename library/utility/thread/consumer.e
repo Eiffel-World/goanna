@@ -14,9 +14,12 @@ deferred class
 
 inherit
 	
-	THREAD
+	NAMED_THREAD
+		rename
+			make as named_thread_make
 		export
 			{PRODUCER_CONSUMER_CONTROL} all
+			{NONE} named_thread_make
 		end
 	
 	SHARED_PRODUCER_CONSUMER_DATA
@@ -26,11 +29,13 @@ inherit
 
 feature {NONE} -- Initialisation
 
-	make (queue: like request_queue) is
+	make (new_name: STRING; queue: like request_queue) is
 			-- Initialise consumer to read from 'queue'
 		require
+			new_name_not_void: new_name /= Void
 			queue_not_void: queue /= Void
 		do
+			named_thread_make (new_name)
 			request_queue := queue
 		end
 		
@@ -46,31 +51,32 @@ feature {PRODUCER_CONSUMER_CONTROL} -- Basic operations
 			until
 				done
 			loop			
-				debug ("producer_consumer") print ("consumer locking%N") end
+				debugging (generator, name + " locking")
 				mutex.lock
+				debugging (generator, name + " checking not done")
 				from
 				until
 					request_queue.is_empty
 				loop
-					debug ("producer_consumer") print ("consumer checking for requests%N") end
+					debugging (generator, name + " checking not done")
 					if not done then
-						debug ("producer_consumer") print ("consumer retrieving request%N") end
+						debugging (generator, name + " retrieving request")
 						next := request_queue.next
-						debug ("producer_consumer") print ("consumer unlocking%N") end						
+						debugging (generator, name + " unlocking")						
 						mutex.unlock
 						process (next)
-						debug ("producer_consumer") print ("consumer relocking%N") end
+						debugging (generator, name + " relocking")
 						mutex.lock
 					end
 				end
 				if request_queue.is_empty then
-					debug ("producer_consumer") print ("consumer waiting%N") end
+					debugging (generator, name + " waiting on condition")
 					condition.wait (mutex)
 				end
-				debug ("producer_consumer") print ("consumer unlocking%N") end
+				debugging (generator, name + " unlocking after signal")
 				mutex.unlock
 			end
-			debug print (thread_id.out + " terminated%N") end
+			debugging (generator, name + " terminated")
 		end
 	
 	terminate is

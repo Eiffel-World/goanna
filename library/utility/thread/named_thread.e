@@ -14,6 +14,11 @@ deferred class
 inherit
 	
 	THREAD
+	
+	GS_APPLICATION_LOGGER
+		export
+			{NONE} all
+		end
 
 feature {NONE} -- Initialization
 

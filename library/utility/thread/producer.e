@@ -14,23 +14,33 @@ deferred class
 
 inherit
 	
-	THREAD
+	NAMED_THREAD
+		rename
+			make as named_thread_make
 		export
 			{PRODUCER_CONSUMER_CONTROL} all
+			{NONE} named_thread_make
 		end
 
 	SHARED_PRODUCER_CONSUMER_DATA
 		export
 			{NONE} all
 		end
-	
+
+	GS_APPLICATION_LOGGER
+		export
+			{NONE} all
+		end
+		
 feature {NONE} -- Initialisation
 
-	make (queue: like request_queue) is
+	make (new_name: STRING; queue: like request_queue) is
 			-- Initialise this producer to write to 'queue'
 		require
+			new_name_not_void: new_name /= Void
 			queue_not_void: queue /= Void
 		do
+			named_thread_make (new_name)
 			request_queue := queue
 		end
 		
@@ -43,13 +53,13 @@ feature {PRODUCER_CONSUMER_CONTROL} -- Basic operations
 			until
 				done
 			loop
-				debug ("producer_consumer") print ("producer locking%N") end
+				debugging (generator, name + " locking")
 				mutex.lock
-				debug ("producer_consumer") print ("producer storing next%N") end
+				debugging (generator, name + " generating next request")
 				request_queue.put (generate_next)
-				debug ("producer_consumer") print ("producer unlocking%N") end
+				debugging (generator, name + " unlocking")
 				mutex.unlock
-				debug ("producer_consumer") print ("producer signalling%N") end
+				debugging (generator, name + " signalling consumers")
 				condition.signal
 			end
 		end

@@ -23,6 +23,11 @@ inherit
 			{NONE} all
 		end
 
+	GS_APPLICATION_LOGGER
+		export
+			{NONE} all
+		end
+		
 feature {NONE} -- Initialization
 
 	make is
@@ -86,9 +91,7 @@ feature {NONE} -- Implementation
 		require
 			not_running: not is_running
 		do
-			debug ("producer_consumer")
-				print ("Starting consumers...%N") 
-			end
+			debugging (generator, "starting consumers") 
 			from
 				consumers.start
 			until
@@ -105,9 +108,7 @@ feature {NONE} -- Implementation
 			not_running: not is_running
 			producers_available: not producers.is_empty
 		do
-			debug ("producer_consumer")
-				print ("Starting producers...%N")
-			end
+			debugging (generator, "starting producers")
 			from
 				producers.start
 			until
@@ -124,9 +125,7 @@ feature {NONE} -- Implementation
 			running: is_running
 			consumers_available: not consumers.is_empty
 		do			
-			debug ("producer_consumer")
-				print ("Waiting for producers...%N") 
-			end
+			debugging (generator, "waiting for producers to terminate") 
 			from
 				producers.start
 			until
@@ -142,9 +141,7 @@ feature {NONE} -- Implementation
 		require
 			running: is_running
 		do			
-			debug ("producer_consumer")
-				print ("Terminating consumers...%N") 
-			end
+			debugging (generator, "terminating consumers") 
 			from
 				consumers.start
 			until

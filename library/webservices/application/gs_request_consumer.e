@@ -20,27 +20,23 @@ inherit
 		export
 			{NONE} consumer_make
 		end
-	
-	GS_APPLICATION_LOGGER
-		export
-			{NONE} all
-		end
-		
+
 creation
 	
 	make
 
 feature {NONE} -- Initialisation
 
-	make (app_context: GS_SERVLET_CONTEXT; queue: THREAD_SAFE_QUEUE [GS_QUEUED_REQUEST]) is
+	make (thread_name: STRING; app_context: GS_SERVLET_CONTEXT; queue: THREAD_SAFE_QUEUE [GS_QUEUED_REQUEST]) is
 			-- Initialise
 		require
+			thread_name_not_void: thread_name /= Void
 			app_context_not_void: app_context /= Void
 			queue_not_void: queue /= Void
 		do
-			debugging (generator, "initialising")
-			consumer_make (queue)
+			consumer_make (thread_name, queue)
 			context := app_context
+			debugging (generator, name.out + " initialised")
 		end
 		
 feature {NONE} -- Implementation
@@ -51,7 +47,8 @@ feature {NONE} -- Implementation
 	process (next: GS_QUEUED_REQUEST) is
 			-- Process the next entry in the queue.
 		do
-			debugging (generator, "handling request")
+			debugging (generator, name.out + " handling request")
+			debugging (generator, name.out + " request = " + next.request.to_string)
 			context.manager.dispatch (next.request, next.response)
 		end
 		

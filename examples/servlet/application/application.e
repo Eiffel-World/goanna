@@ -63,7 +63,7 @@ feature {NONE} -- Implementation
 			
 			-- Standalone connector on 9080
 			create standalone.make (9000, 5, "d:\temp", "")
-			create producer.make (Current, standalone, queue)
+			create producer.make ("producer-1", Current, standalone, queue)
 			processor.add_producer (producer)
 		end
 		
@@ -78,7 +78,7 @@ feature {NONE} -- Implementation
 			until
 				c > 1
 			loop
-				create consumer.make (Current, queue)
+				create consumer.make ("consumer-" + c.out, Current, queue)
 				processor.add_consumer (consumer)
 				c := c + 1
 			end

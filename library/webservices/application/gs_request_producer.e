@@ -14,11 +14,6 @@ class
 
 inherit
 	
-	GS_APPLICATION_LOGGER
-		export
-			{NONE} all
-		end
-	
 	PRODUCER [GS_QUEUED_REQUEST]
 		rename
 			make as producer_make
@@ -32,15 +27,16 @@ create
 		
 feature -- Initialization
 
-	make (app_context: GS_SERVLET_CONTEXT; request_connector: GS_CONNECTOR;
+	make (thread_name: STRING; app_context: GS_SERVLET_CONTEXT; request_connector: GS_CONNECTOR;
 		queue: THREAD_SAFE_QUEUE [GS_QUEUED_REQUEST]) is
 			-- Initialise this request processor
 		require
+			thread_name_not_void: thread_name /= Void
 			app_context_exists: app_context /= Void
 			request_connector_not_void: request_connector /= Void
 			queue_not_void: queue /= Void
 		do
-			producer_make (queue)
+			producer_make (thread_name, queue)
 			context := app_context
 			connector := request_connector
 		end
@@ -66,7 +62,7 @@ feature {NONE} -- Implementation
 	generate_next: GS_QUEUED_REQUEST is
 			-- Generate the next element for the queue
 		do
-			info (generator, "generate next request")
+			debugging (generator, name + " generate next request")
 			connector.read_request
 			if connector.last_operation_ok then
 				create Result.make (connector.last_request, connector.last_response)
