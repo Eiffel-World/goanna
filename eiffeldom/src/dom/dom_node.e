@@ -302,8 +302,6 @@ feature {DOM_NODE} -- DOM Status Setting
 
 	set_parent_node (new_parent: like parent_node) is
 			-- Set the parent node of this node
-		require
-			new_parent_exist: new_parent /= Void
 		deferred
 		ensure
 			parent_node_set: parent_node = new_parent
@@ -311,8 +309,6 @@ feature {DOM_NODE} -- DOM Status Setting
 
 	set_previous_sibling (new_sibling: like previous_sibling) is
 			-- Set the previous sibling of this node
-		require
-			new_sibling_exists: new_sibling /= Void
 		deferred
 		ensure
 			previous_sibling_set: previous_sibling = new_sibling
@@ -320,8 +316,6 @@ feature {DOM_NODE} -- DOM Status Setting
 
 	set_next_sibling (new_sibling: like next_sibling) is
 			-- Set the next sibling of this node
-		require
-			new_sibling_exists: new_sibling /= Void
 		deferred
 		ensure
 			next_sibling_set: next_sibling = new_sibling

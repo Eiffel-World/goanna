@@ -78,6 +78,7 @@ feature
 		local
 			kid, next: DOM_NODE
 			text: DOM_TEXT
+			cdata: DOM_CDATA_SECTION
 			discard: DOM_NODE
 		do
 			from
@@ -89,10 +90,17 @@ feature
 				-- If the next is a text node then combine it with the kid.
 				-- Otherwise, if it is an element, recursively normalize it.
 				if next /= Void and kid.node_type = Text_node and next.node_type = Text_node then
-					text ?= text
+					text ?= kid
 					text.append_data (next.node_value)
 					discard := remove_child (next)
-					print ("removed child...")
+					print ("combined Text child...")
+					-- don't advance; there might be another.
+					next := kid
+				elseif next /= Void and kid.node_type = Cdata_section_node and next.node_type = Cdata_section_node then
+					cdata ?= kid
+					cdata.append_data (next.node_value)
+					discard := remove_child (next)
+					print ("combined Cdata child...%N")
 					-- don't advance; there might be another.
 					next := kid
 				elseif kid.node_type = Element_node then

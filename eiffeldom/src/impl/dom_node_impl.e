@@ -99,7 +99,23 @@ feature
          --    oldChild   The node being removed.
          -- Return Value
          --    The node removed.
+      local
+      	  previous, next: DOM_NODE
 	  do
+           previous := old_child.previous_sibling
+           next := old_child.next_sibling
+           child_nodes.prune (old_child)
+           -- previous and next may be Void if 'old_child' is an only child
+           if previous /= Void then
+           	    previous.set_next_sibling (next)
+           end
+           if next /= Void then
+           		next.set_previous_sibling (previous)
+           end
+            -- clean up 'old_child' before sending it back
+           old_child.set_previous_sibling (Void)
+           old_child.set_next_sibling (Void)
+	       old_child.set_parent_node (Void)
       end
 
    append_child (new_child: DOM_NODE): DOM_NODE is
@@ -113,9 +129,18 @@ feature
          --               of this node
          -- Return Value
          --    The node added.
+      local
+          last: DOM_NODE
 	  do
+	      last := last_child
 		  child_nodes.extend (new_child)
-		  new_child.set_parent_node (Current)
+		          new_child.set_parent_node (Current)
+		  -- last may be Void if this node has no children
+		  if last /= Void then
+		  	  new_child.set_previous_sibling (last)
+		      -- next sibling of new child is Void
+		  	  last.set_next_sibling (new_child)
+		  end
 		  Result := new_child
       end
 

@@ -19,6 +19,7 @@ inherit
 
 	ARRAYED_LIST [DOM_NODE]
 		rename
+			is_empty as empty,
 			make as arrayed_list_make,
 			item as cursor_item,
 			count as length

@@ -78,7 +78,7 @@ feature {NONE} -- Implementation
 	write_header (output: IO_MEDIUM) is
 		do
 			output.put_string ("feature ")
-			if not exports.empty then
+			if not exports.is_empty then
 				write_exports (output)
 			end
 			output.put_string (" -- " + comment)

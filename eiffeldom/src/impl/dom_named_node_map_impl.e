@@ -22,6 +22,7 @@ inherit
 
 	HASH_TABLE [DOM_NODE, DOM_STRING]
 		rename
+			is_empty as empty,
 			count as length,
 			make as hashtable_make,
 			ds_item as get_named_item,

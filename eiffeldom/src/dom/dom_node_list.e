@@ -46,6 +46,13 @@ feature -- Utility
 		deferred
 		end
 
+	prune (old_node: DOM_NODE) is
+			-- Remove 'old_node' from list. If 'old_node' not found go off.
+		require
+			old_node_exists: old_node /= Void
+		deferred
+		end
+	
 	first: DOM_NODE is
 			-- First node in list.
 		deferred
