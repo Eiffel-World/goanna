@@ -18,6 +18,14 @@ feature
 
 	make is
 		do
+			-- test encoder
+			create base_64_encoder
+			print (base_64_encoder.encode ("Hello there!") + "%R%N")
+			print (base_64_encoder.encode ("Hello there!x") + "%R%N")
+			print (base_64_encoder.encode ("Hello there!xx") + "%R%N")
+			print (base_64_encoder.encode_for_session_key ("Hello there!") + "%R%N")
+			print (base_64_encoder.encode_for_session_key ("Hello there!x") + "%R%N")
+			print (base_64_encoder.encode_for_session_key ("Hello there!xx") + "%R%N")
 		end
 
 feature -- References
@@ -28,4 +36,6 @@ feature -- References
 	xmle: XMLE
 	routine: EIFFEL_ROUTINE
 
+	base_64_encoder: BASE64_ENCODER
+	
 end

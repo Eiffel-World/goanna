@@ -7,7 +7,7 @@ root
 default
 	address_expression(no)
 	array_optimization(no)
-	console_application(no)
+	console_application(yes)
 	dead_code_removal(no)
 	dynamic_runtime(no)
 	exception_trace(no)
@@ -15,6 +15,14 @@ default
 	multithreaded(no)
 	check_vape(no)
 	disabled_debug(yes)
+	disabled_debug("fcgi_protocol")
+	debug("base64_encode")
+	disabled_debug("cookie_parsing")
+	disabled_debug("parser_events")
+	disabled_debug("dom_output")
+	disabled_debug("query_string_parsing")
+	disabled_debug("xmle_id_nodes")
+	disabled_debug("normalize")
 	debug(no)
 	line_generation(no)
 	profile(no)
@@ -38,13 +46,13 @@ cluster
 
 	dom_core (dom):		"$\core"
 
-	dom_traversal_range (dom):	"$\traversal-range"
+	dom_traversal_range (dom):		"$\traversal-range"
 
 	dom_impl (dom):		"$\implementation"
 
 	dom_impl_core (dom_impl):		"$\core"
 
-	dom_impl_traversal_range: (dom_impl):	"$\traversal-range"
+	dom_impl_traversal_range (dom_impl):		"$\traversal-range"
 
 	dom_writer (dom):		"$\writer"
 
@@ -61,6 +69,8 @@ cluster
 	servlet:		"$GOANNA\library\servlet"
 
 	goanna_utility:		"$GOANNA\library\utility"
+
+	goanna_utility_ise (goanna_utility):		"$\spec\ise"
 
 	xmle_codegen:		"$GOANNA\library\codegen"
 
