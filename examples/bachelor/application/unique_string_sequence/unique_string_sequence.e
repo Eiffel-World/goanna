@@ -37,7 +37,7 @@ feature -- Access
 		do
 			Result := counter.out
 		ensure
-			valid_new_url : result /= void and not result.empty
+			valid_new_url : result /= void and not result.is_empty
 		end
 
 feature {NONE} -- implementation
@@ -67,7 +67,7 @@ feature {NONE} -- creation
 			last_string_as_integer : INTEGER
 		do
 			create storage_file.make_open_read (storage_file_name)
-			if storage_file.empty then
+			if storage_file.is_empty then
 				counter := minimum_counter
 			else
 				last_string := ""

@@ -16,7 +16,6 @@ inherit
 	ACTIVE_URL_LIST
 	SYSTEM_CONSTANTS
 	PAGE_SEQUENCE_ELEMENT
-	USER_ANCHOR
 
 creation
 
@@ -196,7 +195,7 @@ feature {PAGE_SEQUENCER} -- Access by page_sequencer
 	buildable : BOOLEAN is
 		-- Does the page contain any content to use for building a response
 		do
-			result := not content_list.empty
+			result := not content_list.is_empty
 		end
 
 	historical : BOOLEAN
@@ -250,7 +249,7 @@ feature {NONE} -- Implementation
 		do
 			master_chain := clone (master_sequence.active_chain)
 			result := false
-			if (not master_chain.empty) and (not sequence_element_chain.empty) then
+			if (not master_chain.is_empty) and (not sequence_element_chain.is_empty) then
 				master_chain.start
 				sequence_element_chain.start
 				if master_chain.item = sequence_element_chain.item then
@@ -270,7 +269,7 @@ feature {NONE} -- Implementation
 					result := false
 				end
 			else
-				if master_chain.empty and sequence_element_chain.empty then
+				if master_chain.is_empty and sequence_element_chain.is_empty then
 					result := true
 				else
 					result := false

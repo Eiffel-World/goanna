@@ -203,9 +203,9 @@ feature {LOGIN_FORM} -- Implementation
 		-- Is the USER ID input by the user valid?
 		do
 			if new_user then
-				result := (not user_id.empty) and (not user_list.has (user_id))
+				result := (not user_id.is_empty) and (not user_list.has (user_id))
 			else
-				result := (not user_id.empty) and user_list.has (user_id)
+				result := (not user_id.is_empty) and user_list.has (user_id)
 			end
 		end
 

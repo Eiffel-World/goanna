@@ -76,7 +76,7 @@ feature -- Implement redefined features
 			if login_sequence.valid_user_id then
 				result := ""
 			else
-				if login_sequence.user_id.empty then
+				if login_sequence.user_id.is_empty then
 					result := login_sequence.language.new_user_id_empty
 				else
 					result := login_sequence.language.new_user_id_exists

@@ -49,7 +49,7 @@ feature {LOGIN_SEQUENCE, PAGE_SEQUENCER} -- Active user Management
 		-- The session associated with user_name
 		require
 			valid_user_name : user_name /= Void
-			user_name_not_empty : not user_name.empty
+			user_name_not_empty : not user_name.is_empty
 			active_users_has_user_name : user_is_active (user_name)
 		do
 			result := active_users.item (user_name)
@@ -63,7 +63,7 @@ feature {PAGE_SEQUENCER} -- User removal
 		require
 			valid_new_session : new_session /= Void
 			valid_user_name : user_name /= Void
-			user_name_not_empty : not user_name.empty
+			user_name_not_empty : not user_name.is_empty
 			not_active_user : not user_is_active (user_name)
 		do
 			active_users.force_new (new_session, user_name)
@@ -75,7 +75,7 @@ feature {PAGE_SEQUENCER} -- User removal
 		-- Remove the user associated with user_name
 		require
 			valid_user_name : user_name /= Void
-			user_name_not_empty : not user_name.empty
+			user_name_not_empty : not user_name.is_empty
 		do
 			if user_is_active (user_name) then
 				active_users.remove (user_name)

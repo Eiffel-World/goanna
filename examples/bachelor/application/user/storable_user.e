@@ -13,6 +13,7 @@ deferred class
 
 inherit
 
+	STORABLE
 	USER
 		redefine
 			make
@@ -22,17 +23,18 @@ feature
 
 	store is
 		-- Store this user in persistent media
-		local
-			a_file: RAW_FILE
+--		local
+--			a_file: RAW_FILE
 		do
 			if not anonymous then
-				create a_file.make (full_file_name)
-				a_file.wipe_out
-				a_file.open_write
-				a_file.basic_store (current)
-				if not a_file.is_closed then
-					a_file.close
-				end
+				store_by_name (full_file_name)
+--				create a_file.make (full_file_name)
+--				a_file.wipe_out
+--				a_file.open_write
+--				a_file.basic_store (current)
+--				if not a_file.is_closed then
+--					a_file.close
+--				end
 			end
 		end
 

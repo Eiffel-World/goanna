@@ -22,7 +22,7 @@ feature {PAGE_SEQUENCE_ELEMENT, PAGE_FACTORY, USER, APPLICATION_SESSION_MANAGER}
 	backable : BOOLEAN is
 		-- Is there a previous page to display if requested by the user?
 		do
-			Result := not history.empty
+			Result := not history.is_empty
 		end
 
 	user : like user_anchor
@@ -50,7 +50,7 @@ feature {SERVLET} -- communication with GOANNA Application
 					process_active_page (dynamic_url_to_process)
 					increment_page
 				else
-					if not history.empty then
+					if not history.is_empty then
 						restore_history_item
 					end
 				end
@@ -68,7 +68,7 @@ feature {SERVLET} -- communication with GOANNA Application
 					process_active_page (dynamic_url_to_process)
 					increment_page
 				else				-- User Has Entered a URL from a page that was previously undone
-					if not history.empty then -- user chose 'back' Roll-back history item
+					if not history.is_empty then -- user chose 'back' Roll-back history item
 						restore_history_item
 					end
 				end
@@ -159,7 +159,7 @@ feature {NONE} -- implementation
 	restore_history_item is
 		-- restore the current item in history as the active page
 		require
-			history_not_empty : not history.empty
+			history_not_empty : not history.is_empty
 			history_master_sequence_valid : history.item.master_sequence /= Void
 		do
 			user.set_active_page (history.item)
@@ -246,6 +246,8 @@ feature {NONE} -- Creation
 			create user.make (current)
 			if user.login_required then
 				user.set_up_login
+			else
+				user.replace_active_sequence (user.default_page_sequence)
 			end
 			active_sequence.start
 			set_active_page

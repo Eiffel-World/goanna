@@ -112,7 +112,7 @@ feature {PAGE_SEQUENCER, TOPIC, PAGE_SEQUENCE_ELEMENT}-- Change active sequence 
 	next_page_sequence is
 		-- Increment active sequence
 		do
-			if not pending_page_sequences.empty then
+			if not pending_page_sequences.is_empty then
 				debug
 					io.putstring ("Setting active_sequence to pending_page_sequences.item%N")
 				end
@@ -129,9 +129,9 @@ feature {PAGE_SEQUENCER, TOPIC, PAGE_SEQUENCE_ELEMENT}-- Change active sequence 
 			end
 		ensure
 			valid_active_sequence : active_sequence /= Void
-			pending_page_sequences_empty_implies_default_sequence : old pending_page_sequences.empty implies (active_sequence = default_page_sequence)
-			pending_page_sequences_not_empty_implies_updated : not old pending_page_sequences.empty implies active_sequence = old pending_page_sequences.item
-			pending_page_sequence_removed : (not old pending_page_sequences.empty) implies not (pending_page_sequences.item = old pending_page_sequences.item)
+			pending_page_sequences_empty_implies_default_sequence : old pending_page_sequences.is_empty implies (active_sequence = default_page_sequence)
+			pending_page_sequences_not_empty_implies_updated : not old pending_page_sequences.is_empty implies active_sequence = old pending_page_sequences.item
+			pending_page_sequence_removed : (not old pending_page_sequences.is_empty) implies not (pending_page_sequences.item = old pending_page_sequences.item)
 		end
 
 	interupt_active_sequence (new_sequence : PAGE_SEQUENCE_ELEMENT) is
@@ -209,6 +209,6 @@ invariant
 	valid_pending_page_sequences : pending_page_sequences /= Void
 	login_required_implies_valid_personal_information : login_required implies personal_information /= Void
 	not_anonymous_implies_valid_user_file_name : not anonymous implies user_file_name /= void
-	not_anonymous_implies_user_file_name_not_empty : not anonymous implies not user_file_name.empty
+	not_anonymous_implies_user_file_name_not_empty : not anonymous implies not user_file_name.is_empty
 
 end -- class USER

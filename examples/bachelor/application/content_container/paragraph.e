@@ -14,9 +14,11 @@ deferred class
 inherit
 
 	CONTENT_CONTAINER
+		end
 	ALIGNABLE
-		EXPORT {NONE}
-			set_top, set_middle, set_bottom
+		EXPORT 
+			{NONE}
+				set_top, set_middle, set_bottom
 		end
 
 feature

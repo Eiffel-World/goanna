@@ -106,7 +106,7 @@ feature {NONE} -- Implementation
 	form_handler is
 		-- Code that executes when form input is received
 		require
-			form_elements_not_empty : not form_elements.empty
+			form_elements_not_empty : not form_elements.is_empty
 		do
 			all_processed := true
 			from

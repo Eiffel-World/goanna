@@ -53,11 +53,11 @@ feature {LOGIN_SEQUENCE}
 		-- Add a new user to the user_list
 		require
 			valid_new_user_id : new_user_id /= Void
-			new_user_id_not_empty : not new_user_id.empty
+			new_user_id_not_empty : not new_user_id.is_empty
 			not_has_new_user_id : not has (new_user_id)
 			valid_new_password : new_password /= Void
 			valid_new_file_name : new_file_name /= Void
-			new_file_name_not_empty : not new_file_name.empty
+			new_file_name_not_empty : not new_file_name.is_empty
 		local
 			new_list_element : USER_LIST_ELEMENT
 		do

@@ -41,10 +41,10 @@ feature {NONE} -- Implementation and Creation
 	make (new_user_id, new_password, new_file_name : STRING) is
 		require
 			valid_new_user_id : new_user_id /= Void
-			new_user_id_not_empty : not new_user_id.empty
+			new_user_id_not_empty : not new_user_id.is_empty
 			valid_new_password : new_password /= Void
 			valid_new_file_name : new_file_name /= Void
-			new_file_name_not_empty : not new_file_name.empty
+			new_file_name_not_empty : not new_file_name.is_empty
 		do
 			user_id := new_user_id
 			password := new_password
@@ -58,9 +58,9 @@ feature {NONE} -- Implementation and Creation
 invariant
 
 	valid_user_id : user_id /= Void
-	user_id_not_empty : not user_id.empty
+	user_id_not_empty : not user_id.is_empty
 	valid_password : password /= Void
 	valid_file_name : file_name /= Void
-	file_name_not_empty : not file_name.empty
+	file_name_not_empty : not file_name.is_empty
 
 end -- class USER_LIST_ELEMENT

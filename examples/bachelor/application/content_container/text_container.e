@@ -14,6 +14,8 @@ class
 inherit
 	BOLDABLE
 	CONTENT_CONTAINER
+		export {TEST_TEXT_PARAGRAPH}
+			all
 		redefine
 			make
 		end
@@ -21,7 +23,7 @@ creation
 
 	make
 
-feature {PAGE, PAGE_FACTORY, CONTENT_CONTAINER, TOPIC, USER} -- Access
+feature {TEST_TEXT_PARAGRAPH, PAGE, PAGE_FACTORY, CONTENT_CONTAINER, TOPIC, USER} -- Access
 
 	text : STRING
 		-- The clear text of the paragraph (no programming code)

@@ -87,10 +87,10 @@ feature -- Implement deferred features
 			if current_element = Void then
 				result := title
 			else
-				if current_element.context.empty then
+				if current_element.context.is_empty then
 					result := title
 				else
-					if title.empty then
+					if title.is_empty then
 						result := current_element.context
 					else
 						result := title + " : " + current_element.context

@@ -32,10 +32,13 @@ feature -- Subdirectories for this application
 	application_directory : STRING is "application"
 		-- The FastCGI subdirectory that maps to this servlet; does not include directory separators
 
+	document_root: STRING is ""
+		-- The place where the server looks for static html_documents
+
 feature -- Application Configuration
 
-	port : INTEGER is 8000
-		-- The port the application uses to communicate with the FastCGI
+	port : INTEGER is 80 -8000
+		-- The port the application uses to communicate with the FastCGI or the httpd server listens on
 
 	backlog_requests : INTEGER is 5
 		-- The number of queued requests the servlet can accommodate
