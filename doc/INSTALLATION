@@ -29,7 +29,11 @@ the source. If you execute:
 
 	cvs update -P
 
-these directories will be removed.
+these directories will be removed. You can also add the '-P' option to the
+initial checkout command.
+
+Once installed, create an environment variable named GOANNA that points to the
+root directory of the installation.
 
 Source Tree Contents
 --------------------
