@@ -39,6 +39,7 @@ feature -- Initialisation
 			backlog := new_backlog
 			doc_root := document_root
 			servlet_prefix := servlet_mapping_prefix
+			info (generator, "Listening on port: " + port.out)
 		end
 	
 feature -- Basic operations

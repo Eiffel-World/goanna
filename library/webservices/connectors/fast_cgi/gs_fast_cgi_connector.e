@@ -43,6 +43,7 @@ feature -- Initialisation
 		do
 			Precursor (port, backlog)
 			default_create
+			info (generator, "Listening on port: " + port.out)
 		end
 		
 feature -- Basic operations

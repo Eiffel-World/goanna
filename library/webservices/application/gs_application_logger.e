@@ -18,31 +18,22 @@ inherit
 		export
 			{NONE} all
 			{ANY} is_equal, standard_is_equal
-		redefine
-			default_create
 		end
 
 	KL_SHARED_ARGUMENTS
 		export
 			{NONE} all
-		undefine
-			default_create
 		end
 
-feature -- Initialisation
-
-	default_create is
-			-- Initialise
-		do
-			create mutex
-		end
-		
 feature -- Access
 
 	Log_hierarchy: LOG_HIERARCHY is
 			-- Shared log hierarchy with predefined
 			-- categories for server logging.
 			-- Direct access to this object is not thread safe.
+			-- This object has process (multi-thread) scope.
+		indexing
+			once_status: global
 		local
 			appender: LOG_APPENDER
 			layout: LOG_LAYOUT
@@ -76,9 +67,9 @@ feature -- Logging
 			message_exists: message /= Void
 		do	
 			if log_hierarchy.is_enabled_for (Debug_p) then
-				mutex.lock
+				log_mutex.lock
 				log_hierarchy.category (category).debugging (message)
-				mutex.unlock
+				log_mutex.unlock
 			end
 		end
 	
@@ -92,9 +83,9 @@ feature -- Logging
 			message_exists: message /= Void
 		do
 			if log_hierarchy.is_enabled_for (Warn_p) then
-				mutex.lock
+				log_mutex.lock
 				log_hierarchy.category (category).warn (message)
-				mutex.unlock
+				log_mutex.unlock
 			end
 		end
 	
@@ -108,9 +99,9 @@ feature -- Logging
 			message_exists: message /= Void
 		do
 			if log_hierarchy.is_enabled_for (Info_p) then
-				mutex.lock
+				log_mutex.lock
 				log_hierarchy.category (category).info (message)
-				mutex.unlock
+				log_mutex.unlock
 			end
 		end
 	
@@ -124,9 +115,9 @@ feature -- Logging
 			message_exists: message /= Void
 		do
 			if log_hierarchy.is_enabled_for (Error_p) then
-				mutex.lock
+				log_mutex.lock
 				log_hierarchy.category (category).error (message)
-				mutex.unlock
+				log_mutex.unlock
 			end
 		end
 	
@@ -140,9 +131,9 @@ feature -- Logging
 			message_exists: message /= Void
 		do
 			if log_hierarchy.is_enabled_for (Fatal_p) then
-				mutex.lock
+				log_mutex.lock
 				log_hierarchy.category (category).fatal (message)
-				mutex.unlock
+				log_mutex.unlock
 			end
 		end
 	
@@ -157,17 +148,23 @@ feature -- Logging
 			message_exists: message /= Void
 		do
 			if log_hierarchy.is_enabled_for (event_priority) then
-				mutex.lock
+				log_mutex.lock
 				log_hierarchy.category (category).log (event_priority, message)
-				mutex.unlock
+				log_mutex.unlock
 			end
 		end	
 		
 feature {NONE} -- Implementation
 
-	mutex: MUTEX
-			-- Mutual exclusion variable for thread safety.
-			
+	log_mutex: MUTEX is
+			-- Mutual exclusion variable for logging thread safety.
+			-- This object has process (multi-thread) scope.
+		indexing
+			once_status: global
+		once
+			create Result
+		end
+		
 	Server_category: STRING is "server"
 
 	Application_log: STRING is
@@ -185,6 +182,6 @@ feature {NONE} -- Implementation
 	
 invariant
 	
-	logger_mutex_initialized: mutex /= Void
+	logger_mutex_initialized: log_mutex /= Void
 	
 end -- class GS_APPLICATION_LOGGER
