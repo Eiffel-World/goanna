@@ -127,6 +127,9 @@ feature {NONE} -- Implementation
 			end
 			if socket_ok then
 				call_data := call.marshall
+				debug ("xmlrpc_socket")
+					print (call_data + "%N")
+				end
 				create data.make (2048)
 				data.append ("POST ")
 				data.append (uri)
@@ -141,10 +144,12 @@ feature {NONE} -- Implementation
 				data.append ("%R%N%R%N")
 				data.append (call_data)
 				socket.send_string (data)
-				check_socket_error ("after write")	
-				if not socket_ok then
-					
+				debug ("wire_dump")
+					print ("Sent >>>>>%N")
+					print (data + "%N")
+					print (">>>>>%N%N")
 				end
+				check_socket_error ("after write")	
 			end
 		end
 		
@@ -194,8 +199,10 @@ feature {NONE} -- Implementation
 				until
 					done or not socket_ok
 				loop
-					response_string.append (buffer.substring (1, socket.bytes_received))
-					done := check_response (response_string)
+					if socket.bytes_received > 0 then
+						response_string.append (buffer.substring (1, socket.bytes_received))					
+					end
+					done := check_response (response_string, socket.bytes_received > 0)
 					if not done then
 						buffer.fill_blank
 						socket.receive_string (buffer)
@@ -203,9 +210,10 @@ feature {NONE} -- Implementation
 					end
 				end
 				if socket_ok then
-					debug ("xmlrpc_socket")
-						print (response_string)
-						print ("%N")
+					debug ("wire_dump")
+						print ("Received <<<<<%N")
+						print (response_string + "%N")
+						print ("<<<<<%N%N")
 					end
 					-- determine response type
 					process_response
@@ -218,8 +226,10 @@ feature {NONE} -- Implementation
 	content_length, end_header_index: INTEGER
 	content: STRING
 	
-	check_response (buffer: STRING): BOOLEAN is
-			-- Check response to determine if all headers and body has been read
+	check_response (buffer: STRING; more_bytes: BOOLEAN): BOOLEAN is
+			-- Check response to determine if all headers and body has been read. 'more_bytes' 
+			-- indicates if more bytes were read before entering this routine. If this is false
+			-- the check can assume that the entire message has been read.
 		require
 			buffer /= Void
 		local
@@ -227,6 +237,10 @@ feature {NONE} -- Implementation
 			tokenizer: DC_STRING_TOKENIZER
 			next_token: STRING
 		do
+			debug ("xmlrpc_socket")
+				print (buffer)
+				print ("%N")
+			end
 			if not content_length_found then
 				-- check for "%R%N%R%N" for all headers read.
 				end_header_index := buffer.substring_index ("%R%N%R%N", 1)
@@ -250,9 +264,14 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
-			if content_length_found then
-				-- have enough bytes for the body been read?
-				Result := buffer.count = end_header_index + content_length - 1
+			if content_length_found or not more_bytes then
+				if not more_bytes then
+					-- Nothing more will be read
+					Result := True
+				else
+					-- have enough bytes for the body been read?
+					Result := buffer.count = end_header_index + content_length - 1
+				end
 				if Result then
 					content := buffer.substring (end_header_index, buffer.count)
 				end

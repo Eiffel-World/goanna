@@ -85,7 +85,6 @@ feature {NONE} -- Implementation
 	perform_echo_tests is
 			-- Perform all echo tests
 		local
-			call: XRPC_CALL
 			encoder: BASE64_ENCODER
 			date_time: DT_DATE_TIME
 			array: ARRAY [STRING]

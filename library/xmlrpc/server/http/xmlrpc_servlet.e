@@ -32,6 +32,11 @@ inherit
 		export
 			{NONE} all
 		end
+	
+	HTTPD_LOGGER
+		export
+			{NONE} all
+		end
 		
 creation
 
@@ -63,12 +68,18 @@ feature -- Basic operations
 			failed: BOOLEAN
 		do
 			if not failed then
+				-- reset
+				call := Void
+				response := Void
+				fault := Void
+				-- process call
 				parse_call (req)
 				if valid_call then
 					-- extract service details
 					service_name := call.extract_service_name
 					action := call.extract_action
 					parameters := call.extract_parameters
+					log_hierarchy.category (Xmlrpc_category).info ("Calling: " + call.method_name)
 					-- retrieve service and execute call
 					if registry.has (service_name) then
 						agent_service := registry.get (service_name)
@@ -110,7 +121,7 @@ feature -- Basic operations
 						-- construct fault response for invalid service
 						create fault.make_with_detail (Service_not_found, " " + service_name)
 						response_text := fault.marshall
-					end		
+					end	
 				else
 					response_text := fault.marshall
 				end
@@ -119,6 +130,10 @@ feature -- Basic operations
 			resp.set_content_type (Headerval_content_type)
 			resp.set_content_length (response_text.count)
 			resp.send (response_text)
+			-- check result and log if there was a failure
+			if fault /= Void then
+				log_hierarchy.category (Xmlrpc_category).error ("Call failed: " + fault.string)
+			end
 		rescue
 			if not failed then
 				-- check for an assertion failure and respond with an appropriate fault
@@ -133,7 +148,7 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
-
+	
 	valid_call: BOOLEAN
 			-- Flag indicating whether the request contains a valid
 			-- XMLRPC call.

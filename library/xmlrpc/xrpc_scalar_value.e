@@ -109,14 +109,18 @@ feature -- Initialisation
 			-- treat as a string.
 			if node.node_name.is_equal (Value_element) then
 				type := String_type
-				text ?= node.first_child
-				value := clone (text.node_value.out)
+				if node.has_child_nodes then
+					text ?= node.first_child
+					value := clone (text.node_value.out)
+				else
+					value := ""
+				end	
 				string_value := value.out
 			else
 				-- check for text child node
+				type := node.node_name.out
 				text ?= node.first_child
 				if text /= Void then
-					type := node.node_name.out
 					string_value := text.node_value.out
 					-- check for string
 					if type.is_equal (String_type) then
@@ -171,8 +175,13 @@ feature -- Initialisation
 						unmarshall_error_code := Invalid_value_type
 					end	
 				else
-					unmarshall_ok := False
-					unmarshall_error_code := Value_text_element_missing
+					-- check for empty string or base64
+					if type.is_equal (String_type) or type.is_equal (Base64_type) then
+						value := ""
+					else
+						unmarshall_ok := False
+						unmarshall_error_code := Value_text_element_missing
+					end
 				end
 			end
 		end
@@ -183,13 +192,20 @@ feature -- Mashalling
 			-- Serialize this scalar param to XML format
 		do	
 			create Result.make (100)
-			Result.append ("<value><")
-			Result.append (type)
-			Result.append (">")
+			Result.append ("<value>")
+			-- don't bother wrapping string types in a type element
+			if type /= String_type then
+				Result.append ("<")
+				Result.append (type)
+				Result.append (">")	
+			end
 			Result.append (string_value)
-			Result.append ("</")
-			Result.append (type)
-			Result.append ("></value>")
+			if type /= String_type then
+				Result.append ("</")
+				Result.append (type)	
+				Result.append (">")	
+			end
+			Result.append ("</value>")
 		end
 
 feature -- Status report

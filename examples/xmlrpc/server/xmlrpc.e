@@ -28,6 +28,11 @@ inherit
 		export
 			{NONE} all
 		end
+	
+	XRPC_CONSTANTS
+		export
+			{NONE} all
+		end
 		
 creation
 	make
@@ -59,8 +64,6 @@ feature -- Status report
 				
 feature {NONE} -- Implementation
 
-	Xmlrpc_category: STRING is "httpd.xmlrpc"
-	
 	argument_error: BOOLEAN
 			-- Did an error occur parsing arguments?
 
@@ -104,6 +107,7 @@ feature {NONE} -- Implementation
 			servlet: HTTP_SERVLET	
 		do
 			log_hierarchy.category (Xmlrpc_category).info ("Registering servlets")
+			
 			servlet_manager.set_servlet_mapping_prefix ("servlet")
 			servlet_manager.set_config (config)
 			create {XMLRPC_SERVLET} servlet.init (config)

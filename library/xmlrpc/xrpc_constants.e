@@ -319,5 +319,10 @@ feature -- Factories
 		once
 			create Result.make
 		end
-		
+	
+feature -- Logging
+
+	Xmlrpc_category: STRING is "httpd.xmlrpc"
+			-- Logging category name for XML-RPC services
+			
 end -- class XRPC_CONSTANTS

@@ -45,7 +45,6 @@ feature -- Factory
 	unmarshall (node: DOM_ELEMENT): XRPC_VALUE is
 			-- Unmarshall value
 		local
-			node_elem: DOM_ELEMENT
 			type_elem: DOM_ELEMENT
 		do
 			unmarshall_ok := True	
