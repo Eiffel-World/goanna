@@ -84,12 +84,11 @@ feature -- Initialisation
 		end
 
 	make_base64 (buffer: STRING) is
-			-- Create scalar base64 type from 'buffer'. Encode contents of 'buffer' using
-			-- Base64 encoding method.
+			-- Create scalar base64 type from 'buffer'. Encode value.
 		require
 			buffer_exists: buffer /= Void
 		local
-			encoder: expanded BASE64_ENCODER
+			encoder: BASE64_ENCODER
 		do
 			type := Base64_type
 			value := buffer
@@ -103,12 +102,15 @@ feature -- Initialisation
 			double_ref: DOUBLE_REF
 			bool_ref: BOOLEAN_REF
 			text: DOM_TEXT
-			encoder: BASE64_ENCODER
+			decoder: BASE64_ENCODER 
 		do
 			unmarshall_ok := True
-			-- check for untyped scalar which we treat as a string
-			if node.node_type = Text_node then
-				value := clone (node.node_value.out)
+			-- check if we were passed the value node. If so this is an untyped scalar
+			-- treat as a string.
+			if node.node_name.is_equal (Value_element) then
+				type := String_type
+				text ?= node.first_child
+				value := clone (text.node_value.out)
 				string_value := value.out
 			else
 				-- check for text child node
@@ -155,9 +157,8 @@ feature -- Initialisation
 						end
 					-- check for Base64
 					elseif type.is_equal (Base64_type) then
-						-- TODO process base64
-						create encoder
-						value := encoder.decode (string_value)
+						create decoder
+						value := decoder.decode (string_value)
 					-- check for date/time
 					elseif type.is_equal (Date_time_type) then
 						value := unmarshall_date_iso8601 (string_value)

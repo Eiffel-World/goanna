@@ -93,22 +93,22 @@ feature -- Basic operations
 									end
 								else
 									-- construct fault response for failed call
-									create fault.make_with_detail (Unable_to_execute_service_action, call.method_name)
+									create fault.make_with_detail (Unable_to_execute_service_action, " " + call.method_name)
 									response_text := fault.marshall
 								end	
 							else
 								-- construct fault response for invalid action operands
-								create fault.make_with_detail (Invalid_operands_for_service_action, call.method_name)
+								create fault.make_with_detail (Invalid_operands_for_service_action, " " + call.method_name)
 								response_text := fault.marshall
 							end
 						else
 							-- construct fault response for invalid service action
-							create fault.make_with_detail (Action_not_found_for_service, call.method_name)
+							create fault.make_with_detail (Action_not_found_for_service, " " + call.method_name)
 							response_text := fault.marshall
 						end
 					else
 						-- construct fault response for invalid service
-						create fault.make_with_detail (Service_not_found, service_name)
+						create fault.make_with_detail (Service_not_found, " " + service_name)
 						response_text := fault.marshall
 					end		
 				else
@@ -150,6 +150,7 @@ feature {NONE} -- Implementation
 			create parser.make
 			parser.parse_from_string (req.content)
 			if parser.is_correct then
+				parser.document.normalize
 				debug ("xlmrpc")
 					print (serialize_dom_tree (parser.document))
 					print ("%N")
@@ -157,14 +158,14 @@ feature {NONE} -- Implementation
 				create call.unmarshall (parser.document.document_element)
 				if not call.unmarshall_ok then
 					valid_call := False
-					call := Void
 					create fault.make (call.unmarshall_error_code)
+					call := Void
 				end
 			else
 				valid_call := False
-				call := Void
 				-- create fault
 				create fault.make (Bad_payload_fault_code)
+				call := Void
 			end	
 		ensure
 			fault_exists_if_invalid: not valid_call implies fault /= Void

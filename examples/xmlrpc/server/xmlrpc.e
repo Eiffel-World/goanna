@@ -59,6 +59,8 @@ feature -- Status report
 				
 feature {NONE} -- Implementation
 
+	Xmlrpc_category: STRING is "httpd.xmlrpc"
+	
 	argument_error: BOOLEAN
 			-- Did an error occur parsing arguments?
 
@@ -101,13 +103,12 @@ feature {NONE} -- Implementation
 		local
 			servlet: HTTP_SERVLET	
 		do
+			log_hierarchy.category (Xmlrpc_category).info ("Registering servlets")
 			servlet_manager.set_servlet_mapping_prefix ("servlet")
 			servlet_manager.set_config (config)
-			create {FILE_SERVLET} servlet.init (config)
-			servlet_manager.register_servlet (servlet, "file")
-			servlet_manager.register_default_servlet (servlet)
 			create {XMLRPC_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "xmlrpc")
+			servlet_manager.register_default_servlet (servlet)
 		end
 		
 	init_xmlrpc is
@@ -115,12 +116,19 @@ feature {NONE} -- Implementation
 		local
 			addresses: ADDRESS_REGISTER
 			test: TEST
+			validator: VALIDATOR1
 			calculator: CALCULATOR
 			calculator_service: SERVICE_PROXY
 		do
+			log_hierarchy.category (Xmlrpc_category).info ("Registering XML-RPC web services")
+
 			-- TEST is a self registering service
 			create test.make
 			registry.register (test, "test")
+			
+			-- VALIDATOR1 is a self registering service
+			create validator.make
+			registry.register (validator, "validator1")
 			
 			-- ADDRESS_REGISTER is a self registering service
 			create addresses.make

@@ -249,7 +249,8 @@ feature {NONE} -- Implementation
 						tokenizer.forth
 					end
 				end
-			else
+			end
+			if content_length_found then
 				-- have enough bytes for the body been read?
 				Result := buffer.count = end_header_index + content_length - 1
 				if Result then

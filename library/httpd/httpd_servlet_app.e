@@ -42,8 +42,8 @@ feature {NONE} -- Initialization
 			-- prepare the socket
 			create server_socket.make (port, backlog)
 			socket_multiplexer.register_managed_socket_read (server_socket)
-			internal_category.info ("Goanna HTTPD Server. Version 1.0")
-			internal_category.info ("Copyright (C) 2001 Glenn Maughan.")
+			log_hierarchy.category (Internal_category).info ("Goanna HTTPD Server. Version 1.0")
+			log_hierarchy.category (Internal_category).info ("Copyright (C) 2001 Glenn Maughan.")
 			debug ("status_output")
 				print ("Waiting for connections...%N")
 				print ("----------Legend:---------------------%N")
@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 					end
 					error_code := socket_multiplexer.last_socket_error_code
 					if error_code /= 0 then
-						internal_category.error ("Socket error: " + error_code.out)
+						log_hierarchy.category (Internal_category).error ("Socket error: " + error_code.out)
 					end
 				else
 					debug ("status_output")

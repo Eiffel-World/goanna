@@ -45,6 +45,7 @@ feature -- Factory
 	unmarshall (node: DOM_ELEMENT): XRPC_VALUE is
 			-- Unmarshall value
 		local
+			node_elem: DOM_ELEMENT
 			type_elem: DOM_ELEMENT
 		do
 			unmarshall_ok := True	
@@ -63,8 +64,12 @@ feature -- Factory
 					unmarshall_error_code := Result.unmarshall_error_code
 				end
 			else
-				unmarshall_ok := False
-				unmarshall_error_code := Param_value_type_element_missing
+				-- must be an untyped string, pass the value down
+				create {XRPC_SCALAR_VALUE} Result.unmarshall (node)
+				if not Result.unmarshall_ok then
+					unmarshall_ok := False
+					unmarshall_error_code := Result.unmarshall_error_code
+				end
 			end
 		end
 

@@ -5,11 +5,7 @@ root
 	XMLRPC: make
 
 default
-	assertion(check)
 	assertion(require)
-	assertion(ensure)
-	assertion(loop)
-	assertion(invariant)
 	arguments("9000 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
 	arguments("80 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
 	arguments("9000 d:\goanna\tools\httpd\Documentation")
@@ -53,11 +49,24 @@ default
 
 cluster
 	root_cluster:		"$GOANNA\examples\xmlrpc\server"
-
+		default
+			assertion(check)
+			assertion(require)
+			assertion(ensure)
+			assertion(loop)
+			assertion(invariant)
+		end
 
 	servers (root_cluster):		"$\servers"
 
 	goanna:		"$GOANNA\library"
+		default
+			assertion(check)
+			assertion(require)
+			assertion(ensure)
+			assertion(loop)
+			assertion(invariant)
+		end
 
 	dom (goanna):		"$\dom"
 

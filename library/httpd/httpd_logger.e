@@ -10,45 +10,50 @@ inherit
 		export
 			{NONE} all
 		end
-		
+	
+	KL_SHARED_ARGUMENTS
+		export
+			{NONE} all
+		end
+	
 feature -- Access
 
 	log_hierarchy: LOG_HIERARCHY is
 			-- Shared log hierarchy with predefined
 			-- categories for HTTPD server logging
 		local
-			cat: LOG_CATEGORY
 			appender: LOG_APPENDER
+			layout: LOG_LAYOUT
 		once
 			create Result.make (Debug_p)
-			cat := Result.category (Internal_category_name)
-			create {LOG_FILE_APPENDER} appender.make (Internal_log, True)
-			cat.add_appender (appender)
-			cat := Result.category (Access_category_name)
-			create {LOG_FILE_APPENDER} appender.make (Access_log, True)
-			cat.add_appender (appender)
+			create {LOG_FILE_APPENDER} appender.make (Application_log, True)
+			create {LOG_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
+			appender.set_layout (layout)
+			Result.root.add_appender (appender)
 		end
-		
-	internal_category: LOG_CATEGORY is
-			-- Retrieve internal logging category
-		do
-			Result := log_hierarchy.category (Internal_category_name)
-		end
-	
-	access_category: LOG_CATEGORY is
-			-- Retrieve access logging category
-		do
-			Result := log_hierarchy.category (Access_category_name)
-		end	
 		
 feature {NONE} -- Implementation
 
-	Internal_category_name: STRING is "httpd.internal"
+	Internal_category: STRING is "httpd.internal"
 
-	Internal_log: STRING is "httpd.log"
-	
-	Access_category_name: STRING is "httpd.access"
+	Access_category: STRING is "httpd.access"
 
-	Access_log: STRING is "access.log"
+	Application_log: STRING is
+			-- Construct application log from system name and ".log" extension.
+			-- Any leading path and extension will be removed. eg. The log file
+			-- for 'd:\dev\httpd.exe' will be 'httpd.log' not 'd:\dev\httpd.exe.log'
+		local
+			app_name: STRING
+			p: INTEGER
+		once
+			app_name := clone (arguments.argument (0))
+			p := app_name.last_index_of ('.', app_name.count)
+			if p > 0 then
+				app_name := app_name.substring (1, p - 1)
+			end
+			create Result.make (app_name.count + 4)
+			Result.append (app_name)
+			Result.append (".log")
+		end
 	
 end -- class HTTPD_LOGGER

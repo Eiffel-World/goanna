@@ -53,19 +53,18 @@ feature
 			resp: HTTPD_SERVLET_RESPONSE
 			req: HTTPD_SERVLET_REQUEST
 			path: STRING
+			request: STRING
 		do
 			debug ("status_output")
 				io.put_character ('?')
 			end
 			-- read the request
-			buffer.resize (buffer_size.min (bytes_available))
-			buffer.fill_blank
-			receive_string (buffer)
-			check_socket_error ("recieve")
+			check_socket_error ("read callback")
+			request := receive_request
 			if socket_ok then			
-				create http_request.make (Current, buffer)
+				create http_request.make (Current, request)
 				-- create request and response objects from request buffer
-				create resp.make (buffer, Current)
+				create resp.make (request, Current)
 				create req.make (http_request, resp)
 				-- dispatch to the registered servlet using the path info as the registration name.
 				if req.has_header (Script_name_var) then
@@ -76,18 +75,18 @@ feature
 					end
 				end			
 				if path /= Void then
-					access_category.info ("Servicing request: " + path)
+					log_hierarchy.category (Access_category).info ("Servicing request: /" + path)
 					if servlet_manager.has_registered_servlet (path) then
 						servlet_manager.servlet (path).service (req, resp)
 					elseif servlet_manager.has_default_servlet then
 						servlet_manager.default_servlet.service (req, resp)
 					else
 						handle_missing_servlet (resp)
-						access_category.error ("Servlet not found for URI " + path)
+						log_hierarchy.category (Access_category).error ("Servlet not found for URI " + path)
 					end
 				else
 					handle_missing_servlet (resp)
-					access_category.error ("Request URI not specified")
+					log_hierarchy.category (Access_category).error ("Request URI not specified")
 				end			
 			end
 			-- close socket after sending reply
@@ -96,6 +95,78 @@ feature
 		end
 
 feature {NONE}
+
+	receive_request: STRING is
+			-- Recieve request from client
+		local
+			buffer: STRING
+			done: BOOLEAN
+		do
+			create Result.make (8192)
+			if socket_ok then
+				-- read until complete request has been read 
+				content_length_found := False
+				content_length := -1
+				end_header_index := -1
+				from
+					create buffer.make (8192)
+					buffer.fill_blank
+					receive_string (buffer)
+					check_socket_error ("after priming read")
+				until
+					done or not socket_ok
+				loop
+					Result.append (buffer.substring (1, bytes_received))
+					done := check_request (Result)
+					if not done then
+						buffer.fill_blank
+						receive_string (buffer)
+						check_socket_error ("after loop read")					
+					end
+				end
+			end
+		end
+
+	content_length_found: BOOLEAN
+	content_length, end_header_index: INTEGER
+	
+	check_request (buffer: STRING): BOOLEAN is
+			-- Check request to determine if all headers and body have been read
+		require
+			buffer /= Void
+		local
+			content_length_index: INTEGER
+			tokenizer: DC_STRING_TOKENIZER
+			next_token: STRING
+		do
+			if not content_length_found then
+				-- check for "%R%N%R%N" for all headers read.
+				end_header_index := buffer.substring_index ("%R%N%R%N", 1)
+				if end_header_index /= 0 then
+					end_header_index := end_header_index + 4
+					-- find content length header
+					create tokenizer.make (buffer, "%R%N")
+					from
+						tokenizer.start
+					until
+						tokenizer.off or content_length_found
+					loop
+						next_token := tokenizer.item
+						next_token.to_lower
+						content_length_index := next_token.substring_index ("content-length:", 1)
+						if content_length_index /= 0 then
+							content_length_found := True
+							content_length := next_token.substring (16, next_token.count).to_integer
+						end
+						tokenizer.forth
+					end
+				end
+			end
+			if content_length_found then
+				-- have enough bytes for the body been read?
+				Result := buffer.count = end_header_index + content_length - 1
+			end	
+		end
 
 	socket_ok: BOOLEAN
 			-- Was last socket operation successful?
@@ -108,14 +179,6 @@ feature {NONE}
 			resp.send_error (Sc_not_found)
 		end
 
-    Buffer_size : INTEGER is 1024;
-
-	buffer: STRING is
-		once
-			create Result.make (Buffer_size)
-			Result.fill_blank
-		end
-
 	check_socket_error (message: STRING) is
 			-- Check for socket error and print
 		require
@@ -126,8 +189,8 @@ feature {NONE}
 			end
 			if last_error_code /= Sock_err_no_error then
 				socket_ok := False
-				print ("Socket error: " + last_error_code.out + "%N")
-				print ("Extended error: " + last_extended_socket_error_code.out + "%N")
+				log_hierarchy.category (Internal_category).error ("Socket error: " + last_error_code.out + "%N")
+				log_hierarchy.category (Internal_category).error ("Extended error: " + last_extended_socket_error_code.out + "%N")
 			else
 				socket_ok := True
 			end

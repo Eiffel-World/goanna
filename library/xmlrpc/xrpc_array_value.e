@@ -15,14 +15,14 @@ inherit
 	
 	XRPC_VALUE
 
-creation
+create
 
 	make, make_from_array, unmarshall
 
 feature -- Initialisation
 
 	make (new_value: like value) is
-			-- Create array type from 'new_value'. 
+			-- Create array value from 'new_value'. 
 		require
 			new_value_exists: new_value /= Void
 		do
@@ -32,7 +32,7 @@ feature -- Initialisation
 		end
 
 	make_from_array (array: ARRAY [ANY]) is
-			-- Create array type from 'array'. Recursivly convert all
+			-- Create array value from 'array'. Recursivly convert all
 			-- basic types in array to XRPC_VALUE objects.
 		require
 			array_exists: array /= Void

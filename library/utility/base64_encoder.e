@@ -197,7 +197,6 @@ feature {NONE} -- Implementation
 			char_set_exists: chars /= Void		
  		local
  			len, shift, accum, index, ix, value: INTEGER
- 			cref: CHARACTER_REF
  		do
  			len := ((data.count + 3) // 4) * 3
  			if data.count > 0 and data.item (data.count) = '=' then

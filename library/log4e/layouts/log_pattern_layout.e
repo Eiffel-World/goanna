@@ -8,7 +8,7 @@ indexing
 		Each conversion specifier starts with an & character and is followed by
 		optional format modifiers and a conversion character. The conversion 
 		character specifies the type of data, e.g., category, priority, date,
-		message. Teh format modifiers control such things as field width, padding,
+		message. The format modifiers control such things as field width, padding,
 		left and right justification. 							      
 		]"
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"

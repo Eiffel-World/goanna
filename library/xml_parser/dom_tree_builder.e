@@ -213,8 +213,11 @@ feature {NONE} -- Parser call backs
 	on_xml_declaration (xml_version, encoding: UCSTRING; is_standalone: BOOLEAN) is
 		do
 			debug ("parser_events")
-				print ("on_xml_declaration:R%N%Txml_version=" + quoted_eiffel_string_out (xml_version.out) 
-					+ " encoding=" + quoted_eiffel_string_out (encoding.out))
+				print ("on_xml_declaration:R%N%Txml_version=" + quoted_eiffel_string_out (xml_version.out))
+				if encoding /= Void then
+					print (" encoding=" + quoted_eiffel_string_out (encoding.out))	
+				end
+				
 				print (" is_standalone=" + is_standalone.out)
 				print ("%R%N")
 			end
