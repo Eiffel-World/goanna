@@ -14,19 +14,20 @@ class
 inherit
 
 	BIT_MANIPULATION
---		export
---			{NONE} all
---		end
+		export
+			{NONE} all
+			{ANY} is_equal, standard_is_equal
+		end
 	
 	CHARACTER_MANIPULATION
 		export
 			{NONE} all
 		end
 	
---	ASCII
---		export	
---			{NONE} all
---		end
+	KL_STRING_ROUTINES
+		export
+			{NONE} all
+		end
 		
 feature -- Basic operations
 
@@ -146,8 +147,7 @@ feature {NONE} -- Implementation
  			quad, trip: BOOLEAN
  			i, index, val: INTEGER
  		do
- 			create Result.make (((data.count + 2) // 3) * 4)
- 			Result.fill_blank
+			Result := make_buffer (((data.count + 2) // 3) * 4)
  			from 
  				i := 1
  				index := 1
@@ -185,7 +185,7 @@ feature {NONE} -- Implementation
  				
  				i := i + 3
  				index := index + 4
- 			end		
+	 		end		
  		ensure
 			encoded_string_exists: Result /= Void 			
  		end
@@ -205,8 +205,7 @@ feature {NONE} -- Implementation
  			if data.count > 1 and data.item (data.count - 1) = '=' then
  				len := len - 1
  			end		
- 			create Result.make (len)
- 			Result.fill_blank		
+ 			Result := make_buffer (len)		
  			from
  				ix := 1
  				index := 1

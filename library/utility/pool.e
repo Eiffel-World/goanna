@@ -1,6 +1,5 @@
 indexing
-	description: "Generic notion of a pool of objects. May be bounded or unbounded. Generic items must support %
-		%default creation (ie, default_create)."
+	description: "Generic notion of a pool of objects. May be bounded or unbounded."
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	library: "utility"
 	date: "$Date$"
@@ -10,29 +9,26 @@ indexing
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
-	POOL [K -> ANY create default_create end]
+	POOL [K -> ANY]
 
-inherit
-	
-	ANY
-		redefine
-			default_create
-		end
-		
 creation
 
-	default_create
+	make, make_bounded
 
 feature -- Initialization
 
-	default_create is
+	make is
 			-- Initialise empty pool
 		do
 			create {DS_LINKED_STACK [K]} free_pool.make_default
 			create {DS_LINKED_LIST [K]} busy_pool.make_default
-			build_free_item
-		ensure
-			item_available: free >= 1
+		end
+	
+	make_bounded (new_maximum: like maximum) is
+			-- Initialise bounded pool
+		do
+			make
+			set_maximum (new_maximum)
 		end
 		
 feature -- Access
@@ -41,14 +37,11 @@ feature -- Access
 			-- Retrieve item from the free pool. Create   
 			-- new item if necessary.
 		require
-			item_free: free >= 0
+			free_item: free_count > 0
 		do
 			Result := free_pool.item
 			free_pool.remove
 			busy_pool.force_last (Result)
-			if free = 0 and not full then
-				build_free_item
-			end
 		ensure
 			busy: is_busy (Result)
 		end
@@ -64,7 +57,7 @@ feature -- Access
 			free: is_free (i)
 		end
 	
-	full: BOOLEAN is
+	is_full: BOOLEAN is
 			-- Is the pool full?
 		do
 			Result := maximum /= 0 and then count = maximum
@@ -129,7 +122,7 @@ feature -- Status setting
 	put (i: K) is
 			-- Add 'i' to pool.
 		require
-			not_full: not full
+			not_full: not is_full
 			not_in_pool: not has (i)
 		do
 			free_pool.put (i)
@@ -137,6 +130,15 @@ feature -- Status setting
 			new_item_is_free: is_free (i)
 		end
 			
+	set_maximum (new_maximum: like maximum) is
+			-- Set 'maximum to 'new_maximum'
+		require
+			valid_maximum: new_maximum > 0
+			larger_or_equal_to_count: new_maximum >= count
+		do
+			maximum := new_maximum
+		end
+		
 feature {NONE} -- Implementation
 
 	free_pool: DS_STACK [K]
@@ -144,18 +146,6 @@ feature {NONE} -- Implementation
 	
 	busy_pool: DS_LIST [K]
 			-- List of busy items
-		
-	build_free_item is
-			-- Build new item and make available in the pool. 
-			-- Do not overfill the pool.
-		require
-			not_full: not full
-		local
-			new_item: K
-		do
-			create new_item.default_create
-			free_pool.force (new_item)
-		end
 		
 invariant
 
