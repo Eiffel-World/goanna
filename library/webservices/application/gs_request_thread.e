@@ -12,6 +12,8 @@ class
 	
 	GS_REQUEST_THREAD
 
+obsolete "Replaced by GS_REQUEST_CONSUMER"
+
 inherit
 	
 	NAMED_THREAD

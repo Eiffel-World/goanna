@@ -11,7 +11,7 @@ indexing
 class
 
 	GS_REQUEST_PROCESSOR
-		
+
 inherit
 	
 	GS_APPLICATION_LOGGER
@@ -19,13 +19,11 @@ inherit
 			{NONE} all
 		end
 	
-	NAMED_THREAD
+	PRODUCER_CONSUMER_CONTROL
 		rename
-			make as named_thread_make
+			make as control_make
 		export
-			{NONE} named_thread_make
-		undefine
-			default_create
+			{NONE} control_make
 		end
 	
 create
@@ -34,14 +32,12 @@ create
 		
 feature -- Initialization
 
-	make (application_context: GS_SERVLET_CONTEXT; thread_name: STRING) is
+	make (application_context: GS_SERVLET_CONTEXT) is
 			-- Initialise this request processor
 		require
 			application_context_exists: application_context /= Void
-			thread_name_exists: thread_name /= Void
 		do
-			named_thread_make (thread_name)
-			default_create
+			control_make
 			context := application_context
 		end
 	
@@ -49,61 +45,9 @@ feature -- Access
 
 	context: GS_SERVLET_CONTEXT
 			-- Application context
-			
-	connector: GS_CONNECTOR
-			-- server connector
 
-feature -- Basic operations
-
-	execute is
-			-- Read and process requests from each of the connectors in turn.
-		do
-			if connector /= Void then			
-				from
-					stop := False
-				until
-					stop
-				loop
-					info (generator, "reading request")
-					connector.read_request
-					if connector.last_operation_ok then
-						info (generator, "dispatching request")			
-						context.manager.dispatch (connector.last_request, connector.last_response)
-					else
-						stop := True
-					end
-					yield
-				end	
-			else
-				error (generator, "connector not set")
-			end
-		end
-		
-	terminate is
-			-- Stop this processor from reading requests
-		do
-			stop := True
-		end
-		
-feature -- Status setting
-
-	set_connector (new_connector: GS_CONNECTOR) is
-			-- Set 'new_connector' as the connector for this processor
-		require
-			new_connector_exists: new_connector /= Void
-		do
-			connector := new_connector
-		ensure
-			connector_set: connector = new_connector
-		end
-		
-feature {NONE} -- Implementation
-
-	stop: BOOLEAN 
-			-- Should this processor stop executing?
-			
 invariant
 	
-	context_exists: context /= Void
+	context_not_void: context /= Void
 	
 end -- class GS_REQUEST_PROCESSOR

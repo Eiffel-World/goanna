@@ -37,24 +37,47 @@ feature {NONE} -- Implementation
 		do
 		end
 		
-	register_processors is
-			-- Register all processors and their connectors
+	register_producers is
+			-- Register all producers
 		local
-			processor: GS_REQUEST_PROCESSOR
+			producer: GS_REQUEST_PRODUCER
 			fast_cgi: GS_FAST_CGI_CONNECTOR
 			standalone: GS_STANDALONE_CONNECTOR
 		do
+			create queue
+			
 			-- FastCGI connector on 9090
-			create processor.make (Current, "fast_cgi_1")
-			create fast_cgi.make (9090, 5)
-			processor.set_connector (fast_cgi)
-			add_processor (processor)
+--			create fast_cgi.make (9090, 5)
+--			create producer.make (Current, fast_cgi, queue)
+--			processor.add_producer (producer)
+			
 			-- Standalone connector on 9080
-			create processor.make (Current, "standalone_1")
 			create standalone.make (9000, 5, "d:\temp", "")
-			processor.set_connector (standalone)
-			add_processor (processor)
+			create producer.make (Current, standalone, queue)
+			processor.add_producer (producer)
+		end
+		
+	register_consumers is
+			-- Register all consumers
+		local
+			c: INTEGER
+			consumer: GS_REQUEST_CONSUMER
+		do
+			from
+				c := 1
+			until
+				c > 5
+			loop
+				create consumer.make (Current, queue)
+				processor.add_consumer (consumer)
+				c := c + 1
+			end
 		end
 
+feature {NONE} -- Implementation
+
+	queue: THREAD_SAFE_QUEUE [GS_QUEUED_REQUEST]
+			-- Request queue
+			
 end -- class APPLICATION
 

@@ -12,6 +12,8 @@ class
 
 	GS_SHARED_REQUEST_THREAD_DATA
 
+obsolete "Use SHARED_PRODUCER_CONSUMER_DATA"
+
 feature {GS_REQUEST_THREAD} -- Access
 				
 	request_mutex: MUTEX is

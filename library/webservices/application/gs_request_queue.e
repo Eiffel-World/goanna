@@ -12,6 +12,8 @@ class
 	
 	GS_REQUEST_QUEUE
 
+obsolete "Use THREAD_SAFE_QUEUE instead"
+
 inherit
 	
 	ANY

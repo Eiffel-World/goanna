@@ -19,7 +19,7 @@ feature -- Access
 		deferred
 		end
 
-	processors: DS_LINKED_LIST [GS_REQUEST_PROCESSOR] is
+	processor: GS_REQUEST_PROCESSOR is
 			-- Request processor
 		deferred
 		end

@@ -25,117 +25,107 @@ inherit
 
 feature {NONE} -- Initialization
 
-	make (number_of_consumers, number_of_producers: INTEGER) is
-			-- Initialise with capability to create 'number_of_consumers' 
-			-- consumers and 'number_of_producers' producers.
-		require
-			positive_consumer_count: number_of_consumers >= 1
-			positive_producer_count: number_of_producers >= 1
+	make is
+			-- Initialise
 		do
-			consumer_count := number_of_consumers
-			producer_count := number_of_producers
-			create consumers.make (consumer_count)
-			create producers.make (producer_count)
+			create consumers.make
+			create producers.make
 		end
 
-feature -- Access
+feature -- Status report
 
-	consumer_count: INTEGER
-			-- Number of consumers
-			
-	producer_count: INTEGER
-			-- Number of producers
+	is_running: BOOLEAN 
+			-- Are the producer and consumer threads running?
 
 feature -- Basic operations
 
 	run is
 			-- Start the pipeline
+		require
+			not_running: not is_running
 		do
 			start_consumers
 			start_producers
+			is_running := True
 			wait_for_producers
 			terminate_consumers
+		ensure
+			running: is_running
 		end
 
-feature {NONE} -- Factory operations
+feature -- Element change
 
-	create_consumer: CONSUMER [ANY] is
-			-- Factory method for creating a new concrete consumer instance.
-		deferred
-		ensure
-			consumer_not_void: Result /= Void
+	add_consumer (new_consumer: CONSUMER [ANY]) is
+			-- Add consumer to the list of consumers to start
+		require
+			not_running: not is_running
+			new_consumer_not_void: new_consumer /= Void
+		do
+			consumers.extend (new_consumer)
 		end
 	
-	create_producer: PRODUCER [ANY] is
-			-- Factory method for creating a new concrete producer instance.
-		deferred
-		ensure
-			producer_not_void: Result /= Void
-		end
-
-feature {NONE} -- Factory attributes
-
-	queue: THREAD_SAFE_QUEUE [ANY] is
-			-- Request queue. 
-			--| Descendants should effect as an attribute.
-		deferred
+	add_producer (new_producer: PRODUCER [ANY]) is
+			-- Add producer to the list of producer to start
+		require
+			not_running: not is_running
+			new_producer_not_void: new_producer /= Void
+		do
+			producers.extend (new_producer)
 		end
 
 feature {NONE} -- Implementation
 		
-	consumers: ARRAYED_LIST [like create_consumer]
+	consumers: LINKED_LIST [CONSUMER [ANY]]
 			-- List of consumers
 	
-	producers: ARRAYED_LIST [like create_producer]
+	producers: LINKED_LIST [PRODUCER [ANY]]
 			-- List of producers
 
 	start_consumers is
 			-- Initialise and launch 'number_of_consumers' consumers
-		local
-			c: INTEGER
-			consumer: like create_consumer
+		require
+			not_running: not is_running
 		do
 			debug ("producer_consumer")
 				print ("Starting consumers...%N") 
 			end
 			from
-				c := 1
+				consumers.start
 			until
-				c > consumer_count
+				consumers.off
 			loop	
-				consumer := create_consumer
-				consumers.extend (consumer)
-				consumer.launch
-				c := c + 1
+				consumers.item.launch
+				consumers.forth
 			end
 		end
 	
 	start_producers is
 			-- Start producers
-		local
-			c: INTEGER
-			producer: like create_producer
+		require
+			not_running: not is_running
+			producers_available: not producers.is_empty
 		do
 			debug ("producer_consumer")
 				print ("Starting producers...%N")
 			end
 			from
-				c := 1
+				producers.start
 			until
-				c > producer_count
+				producers.off
 			loop
-				producer := create_producer
-				producers.extend (producer)
-				producer.launch
-				c := c + 1
+				producers.item.launch
+				producers.forth
 			end
 		end
 		
 	wait_for_producers is
 			-- Wait for all producers to terminate
+		require
+			running: is_running
+			consumers_available: not consumers.is_empty
 		do			
 			debug ("producer_consumer")
-				print ("Terminating producers...%N") 
+				print ("Waiting for producers...%N") 
 			end
 			from
 				producers.start
@@ -149,6 +139,8 @@ feature {NONE} -- Implementation
 		
 	terminate_consumers is
 			-- Stop all consumer threads
+		require
+			running: is_running
 		do			
 			debug ("producer_consumer")
 				print ("Terminating consumers...%N") 
@@ -176,9 +168,5 @@ invariant
 	
 	producer_list_not_void: producers /= Void
 	consumer_list_not_void: consumers /= Void
-	correct_producer_count: producers.capacity = producer_count 
-		and producers.count <= producer_count
-	correct_consumer_count: consumers.capacity = consumer_count 
-		and consumers.count <= consumer_count
 	
 end -- class PRODUCER_CONSUMER_CONTROL

@@ -25,14 +25,7 @@ inherit
 		redefine
 			default_create
 		end
-		
-	THREAD_CONTROL
-		export
-			{NONE} all
-		undefine
-			default_create
-		end
-		
+
 feature -- Initialization
 
 	default_create is
@@ -41,11 +34,12 @@ feature -- Initialization
 		do
 			Precursor {GS_APPLICATION_LOGGER}
 			info (generator, "initializing")
-			create processors.make_default
+			create processor.make (Current)
 			create manager
 			register_security
 			register_servlets
-			register_processors
+			register_producers
+			register_consumers
 			run
 			info (generator, "terminating")
 			Log_hierarchy.close_all
@@ -53,36 +47,12 @@ feature -- Initialization
 	
 feature -- Access
 
-	processors: DS_LINKED_LIST [GS_REQUEST_PROCESSOR]
-			-- Request processors
+	processor: GS_REQUEST_PROCESSOR
+			-- Request processor
 			
 	manager: GS_SERVLET_MANAGER
 			-- Servlet manager
 
-feature -- Status setting
-
-	add_processor (new_processor: GS_REQUEST_PROCESSOR) is
-			-- Add 'new_processor' to the list of processors for this application
-		require
-			new_processor_exists: new_processor /= Void
-			new_processor_not_registered: not processors.has (new_processor)
-		do
-			processors.put_last (new_processor)
-		ensure
-			processor_registered: processors.has (new_processor)
-		end
-		
-	remove_processor (processor: GS_REQUEST_PROCESSOR) is
-			-- Remove 'processor' from list of processors
-		require
-			processor_exists: processor /= Void
-			processor_registered: processors.has (processor)
-		do
-			processors.delete (processor)
-		ensure
-			processor_not_registered: not processors.has (processor)
-		end
-		
 feature {NONE} -- Implementation
 
 	register_servlets is
@@ -95,35 +65,26 @@ feature {NONE} -- Implementation
 		deferred
 		end
 		
-	register_processors is
-			-- Register all processors and their connectors
+	register_producers is
+			-- Register all producers
+		deferred
+		end
+
+	register_consumers is
+			-- Register all consumers
 		deferred
 		end
 
 	run is
 			-- Start the request processor threads and wait for them 
 			-- exit
-		local
-			c: DS_LINKED_LIST_CURSOR [GS_REQUEST_PROCESSOR]
 		do
-			from
-				c := processors.new_cursor
-				c.start
-			until
-				c.off
-			loop
-				c.item.launch
-				if log_hierarchy.is_enabled_for (info_p) then
-					info (generator, "Request processor thread launched: " + c.item.name)
-				end
-				c.forth
-			end
-			join_all
+			processor.run
 		end
 		
 invariant
 	
-	processors_exist: processors /= Void
+	processor_exist: processor /= Void
 	manager_exists: manager /= Void
 	
 end -- class GS_SERVLET_APPLICATION
