@@ -21,16 +21,46 @@ inherit
 			{NONE} request_queue
 		end
 
+	GS_APPLICATION_LOGGER
+		export
+			{NONE} all
+		end
+		
 feature -- Basic operations
 
 	execute is
 			-- Check queue for requests and process if any exist
 			-- then wait on the condition variable for a signal that 
 			-- there are more requests.
+		local
+			request_holder: GS_QUEUED_REQUEST
 		do
+			from
+			until
+				stop
+			loop
+				debugging (generator, "checking for requests")
+				if request_queue.is_empty then
+					-- wait for a signal
+					debugging (generator, "waiting for condition signal")
+					request_condition.wait (request_mutex)
+				else
+					-- process the requests in the queue
+					debugging (generator, "handling request in queue")
+					request_holder := request_queue.next
+				end
+			end
+		
 		end
 
+	terminate is
+			-- Indicate that the thread should stop at the next opportunity
+		do
+			stop := True
+		end
+		
 feature {NONE} -- Implementation
 
+	stop: BOOLEAN
 				
 end -- class GS_REQUEST_THREAD

@@ -18,6 +18,13 @@ inherit
 		redefine
 			default_create
 		end
+	
+	GS_APPLICATION_LOGGER
+		export
+			{NONE} all
+		undefine
+			default_create
+		end
 		
 feature -- Initialisation
 
@@ -30,8 +37,8 @@ feature -- Initialisation
 		
 feature -- Access
 
-	next_item: GS_QUEUED_REQUEST is
-			-- Current item in queue. Item is removed from queue
+	next: GS_QUEUED_REQUEST is
+			-- Next request in queue. Request is removed from queue
 		require
 			not_empty: not is_empty
 		do
@@ -39,6 +46,7 @@ feature -- Access
 			Result := queue.item
 			queue.remove
 			queue_mutex.unlock
+			debugging (generator, "next request removed from queue")
 		ensure
 			next_item_exists: Result /= Void
 			item_removed: not has (Result)
@@ -76,7 +84,7 @@ feature -- Status report
 
 feature -- Element change
 
-	add_request (new_request: GS_QUEUED_REQUEST) is
+	put (new_request: GS_QUEUED_REQUEST) is
 			-- Add 'new_request' to the queue
 		require
 			new_request_exists: new_request /= Void
@@ -84,6 +92,7 @@ feature -- Element change
 			queue_mutex.lock
 			queue.put (new_request)
 			queue_mutex.unlock
+			debugging (generator, "request added to queue")
 		end
 
 feature {NONE} -- Implementation
