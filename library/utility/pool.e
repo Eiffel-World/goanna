@@ -19,7 +19,7 @@ inherit
 			default_create
 		end
 		
-create
+creation
 
 	default_create
 
@@ -31,12 +31,15 @@ feature -- Initialization
 			create {DS_LINKED_STACK [K]} free_pool.make_default
 			create {DS_LINKED_LIST [K]} busy_pool.make_default
 			build_free_item
+		ensure
+			item_available: free >= 1
 		end
 		
 feature -- Access
 
 	item: K is
-			-- Retrieve item from the free pool. Create new item if necessary.
+			-- Retrieve item from the free pool. Create   
+			-- new item if necessary.
 		require
 			item_free: free >= 0
 		do
@@ -71,13 +74,13 @@ feature -- Access
 		
 feature -- Measurement
 
-	free: INTEGER is
+	free_count: INTEGER is
 			-- Number of items available on free pool.
 		do
 			Result := free_pool.count
 		end
 		
-	busy: INTEGER is
+	busy_count: INTEGER is
 			-- Number of items currently being used.
 		do
 			Result := busy_pool.count
@@ -86,28 +89,54 @@ feature -- Measurement
 	count: INTEGER is
 			-- Total number of items in pool, free or busy.
 		do
-			Result := free + busy
+			Result := free_count + busy_count
 		ensure
-			free_and_busy_count: Result = free + busy
+			free_and_busy_count: Result = free_count + busy_count
 		end
 		
 	maximum: INTEGER
-			-- Maximum number of items in pool. Zero implies infinite size.
+			-- Maximum number of items in pool. Zero implies 
+			-- infinite size.
 
 feature -- Status report
 
 	is_free (i: K): BOOLEAN is
 			-- Is 'i' currently available for use?
+		require
+			valid_i: i /= Void
 		do
 			Result := free_pool.has (i)
 		end
 		
 	is_busy (i: K): BOOLEAN is
 			-- Is 'i' currently being used?
+		require
+			valid_i: i /= Void
 		do
 			Result := busy_pool.has (i)
 		end
-		
+	
+	has (i: K): BOOLEAN is
+			-- Is 'i' in pool? 'i' may be busy or free.
+		require
+			valid_i: i /= Void
+		do
+			Result := is_free (i) or is_busy (i)
+		end
+	
+feature -- Status setting
+	
+	put (i: K) is
+			-- Add 'i' to pool.
+		require
+			not_full: not full
+			not_in_pool: not has (i)
+		do
+			free_pool.put (i)
+		ensure
+			new_item_is_free: is_free (i)
+		end
+			
 feature {NONE} -- Implementation
 
 	free_pool: DS_STACK [K]
@@ -117,8 +146,8 @@ feature {NONE} -- Implementation
 			-- List of busy items
 		
 	build_free_item is
-			-- Build new item and make available in the pool. Do not overfill
-			-- the pool.
+			-- Build new item and make available in the pool. 
+			-- Do not overfill the pool.
 		require
 			not_full: not full
 		local
