@@ -117,12 +117,18 @@ feature {NONE}
 					done or not socket_ok
 				loop
 					Result.append (buffer.substring (1, bytes_received))
-					done := check_request (Result)
+					debug ("socket")
+						io.putstring ("Current request string: " + result + "%N")
+					end
+					done := true -- check_request (Result)  <===================== Here is the change
 					if not done then
 						buffer.fill_blank
 						receive_string (buffer)
 						check_socket_error ("after loop read")					
 					end
+				end
+				debug ("socket")
+					io.putstring ("Current Buffer Contents: " + buffer + "%N")
 				end
 			end
 		end
@@ -189,6 +195,10 @@ feature {NONE}
 			end
 			if last_error_code /= Sock_err_no_error then
 				socket_ok := False
+				debug ("socket")
+					io.putstring ("Socket error: " + last_error_code.out + "%N")
+					io.putstring ("Extended error: " + last_extended_socket_error_code.out + "%N")
+				end
 				log_hierarchy.category (Internal_category).error ("Socket error: " + last_error_code.out + "%N")
 				log_hierarchy.category (Internal_category).error ("Extended error: " + last_extended_socket_error_code.out + "%N")
 			else

@@ -35,6 +35,7 @@ feature -- Initialisation
 			socket_exists: socket /= Void
 			buffer_exists: buffer /= Void
 		do
+			raw_stdin_content := ""
 			create parameters.make (20)
 			serving_socket := socket
 			parse_request_buffer (buffer)
