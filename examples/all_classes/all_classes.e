@@ -31,11 +31,21 @@ feature
 feature -- References
 
 	dom: ALL_NODES
-	servlet: SERVLET_SERVER
+	serializer: DOM_XML_SERIALIZER
+	factory: DOM_SERIALIZER_FACTORY
 	parser: TREE_BUILDER
 	xmle: XMLE
 	routine: EIFFEL_ROUTINE
-
+	date: DATE_AND_TIME
 	base_64_encoder: BASE64_ENCODER
+	xmle_document: XMLE_DOCUMENT
+	fast_cgi: FAST_CGI_SERVLET_APP
+	string_tokenizer: STRING_TOKENIZER
+	io_string: IO_STRING
+	character_manipulation: CHARACTER_MANIPULATION
+	string_manipulation: STRING_MANIPULATION
+	httpd: HTTPD
+	retriever: RETRIEVER
+	
 	
 end

@@ -56,7 +56,7 @@ feature {NONE} -- Implementation
 			-- create a DOM document and send it.
 			resp.set_content_type ("text/xml")
 			create {DOM_IMPLEMENTATION_IMPL} dom_impl
-			document := dom_impl.create_empty_document (Void)
+			document := dom_impl.create_empty_document
 			create str.make_from_string ("Request")
 			root := document.create_element (str)
 			document.set_document_element (root)

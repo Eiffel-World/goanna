@@ -23,6 +23,8 @@ inherit
 		end
 	
 	EXECUTION_ENVIRONMENT
+		rename
+			system as environment_system
 		export
 			{NONE} all
 		end

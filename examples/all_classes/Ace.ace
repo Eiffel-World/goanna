@@ -30,59 +30,70 @@ default
 
 
 cluster
-	root_cluster:		"$GOANNA\examples"
+	goanna_examples:			"$GOANNA\examples"
 
-	root_cluster1 (root_cluster):		"$\all_classes"
+	all_classes(goanna_examples):		"$\all_classes"
 
-	root_cluster2 (root_cluster):		"$\text_xml_parser"
+	test_xml_parser (goanna_examples):	"$\text_xml_parser"
 
-	root_cluster3 (root_cluster):		"$\servlet"
+	test_dom_nodes (goanna_examples):	"$\test_dom_nodes"
 
-	root_cluster4 (root_cluster):		"$\servlet\templates"
+	goanna_tools:			"$GOANNA\tools"
 
-	root_cluster5 (root_cluster):		"$\test_dom_nodes"
+	httpd (goanna_tools):		"$\httpd"
 
-	dom:		"$GOANNA\library\dom"
+	httpd_servlets (httpd):		"$\servlets"
+	httpd_templates (httpd):	"$\templates"
 
-	dom_core (dom):		"$\core"
+	xmle (goanna_tools):		"$\xmle"
 
-	dom_traversal_range (dom):		"$\traversal-range"
+	bdom_viewer (goanna_tools):	"$\bdom_viewer"
 
-	dom_impl (dom):		"$\implementation"
+	goanna_library:			"$GOANNA\library"
 
-	dom_impl_core (dom_impl):		"$\core"
+	dom (goanna_library):		"$\dom"
 
-	dom_impl_traversal_range (dom_impl):		"$\traversal-range"
+	dom_core (dom):			"$\core"
 
-	dom_writer (dom):		"$\writer"
+	dom_traversal_range (dom):	"$\traversal-range"
+
+	dom_impl (dom):			"$\implementation"
+
+	dom_impl_core (dom_impl):	"$\core"
+
+	dom_impl_traversal_range (dom_impl):	"$\traversal-range"
+
+	dom_writer (dom):			"$\writer"
 
 	xmle_doc (dom_impl):		"$\xmle_doc"
 
-	fast_cgi:		"$GOANNA\library\fast_cgi"
+	fast_cgi (goanna_library):	"$\fast_cgi"
 
-	efcgi (fast_cgi):		"$\efcgi"
+	efcgi (fast_cgi):			"$\efcgi"
 
-	efcgi_servlet (fast_cgi):		"$\servlet"
+	efcgi_servlet (fast_cgi):	"$\servlet"
 
-	xmle:		"$GOANNA\tools\xmle"
-
-	servlet:		"$GOANNA\library\servlet"
+	servlet (goanna_library):	"$\servlet"
 
 	servlet_http (servlet):		"$\http"
 
-	goanna_utility:		"$GOANNA\library\utility"
+	goanna_utility (goanna_library):		"$\utility"
 
-	goanna_utility_ise (goanna_utility):		"$\spec\ise"
+	goanna_utility_ise (goanna_utility):	"$\spec\ise"
 
-	xmle_codegen:		"$GOANNA\library\codegen"
+	xmle_codegen (goanna_library):		"$\codegen"
 
-	xml_parser:		"$GOANNA\library\xml_parser"
+	xml_parser (goanna_library):		"$\xml_parser"
 
 	yaesockets:		"$YAESOCKETS"
 
 	yaesockets_ise (yaesockets):		"$\spec\ise"
 
-	all base:		"$EIFFEL4\library\base"
+	datetime (goanna_library):		"$\datetime"
+
+	logging (goanna_library):		"$\logging"
+
+	all base:		"$ISE_EIFFEL\library\base"
 		exclude
 			"desc"; "table_eiffel3"; "CVS"; 
 		end
@@ -109,17 +120,17 @@ cluster
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
-	exml:		"$EXML\lib"
+	exml:		"$EXML/lib"
 
-	exml_interface (exml):		"$\interface"
+	exml_interface (exml):		"$/interface"
 
-	exml_general_interface (exml_interface):		"$\general"
+	exml_general_interface (exml_interface):		"$/general"
 
-	exml_event_interface (exml_interface):		"$\event"
+	exml_event_interface (exml_interface):		"$/event"
 
-	exml_tree_interface (exml_interface):		"$\tree"
+	exml_tree_interface (exml_interface):		"$/tree"
 
-	exml_factory_interface (exml_interface):		"$\factory"
+	exml_factory_interface (exml_interface):		"$/factory"
 
 	exml_formater_interface (exml_interface):		"$\formater"
 
@@ -131,7 +142,7 @@ cluster
 
 	exml_implementation_interface (exml_implementation):		"$\implementation_interface"
 
-	exml_general_implementatin_interface (exml_implementation_interface):		"$\general"
+	exml_general_implementation_interface (exml_implementation_interface):		"$\general"
 
 	exml_event_implementation_interface (exml_implementation_interface):		"$\event"
 
@@ -139,11 +150,16 @@ cluster
 
 	exml_expat_implementation (exml_implementation):		"$\expat"
 
+	exml_expat_api_implementation (exml_expat_implementation):		"$\api"
+
 	exml_expat_general_implementation (exml_expat_implementation):		"$\general"
 
 	exml_expat_event_implementation (exml_expat_implementation):		"$\event"
+		use
+			".lace"
+		end
 
-	exml_expat_ise_implementation (exml_expat_implementation):		"$\compiler_specific\ise"
+	exml_expat_ise_implementation (exml_expat_implementation):		"$\spec\ise"
 
 	exml_expat_factory_implementation (exml_expat_implementation):		"$\factory"
 
@@ -165,8 +181,10 @@ external
 		"$GOBO\library\kernel\include"
 
 	object:
+		"$EXML\lib\implementation\expat\spec\c\libexml.lib",
+		"$EXPAT\lib\Debug\expat.lib",
 		"$YAESOCKETS\C\Debug\cl.lib",
-		"$EXML\lib\implementation\expat\compiler_specific\ise\clib\msc\exml.lib",
-		"$EXPAT\lib\Debug\expat.lib"
+		"$GOANNA\library\datetime\clib\Debug\datetime.lib"
+
 
 end

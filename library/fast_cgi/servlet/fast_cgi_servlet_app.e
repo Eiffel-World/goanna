@@ -72,7 +72,7 @@ feature -- Basic operations
 			end			
 			if path /= Void and has_registered_servlet (path) then
 				log (Info, "Servicing request: " + path)
-				get_servlet (path).service (req, resp)
+				servlet (path).service (req, resp)
 			else
 				handle_missing_servlet (resp)
 				log (Error, "Servlet not found: " + path)
