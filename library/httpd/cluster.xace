@@ -13,6 +13,8 @@
 		thanks: "Modified version of GOBO cluster.xace files"
 	</description>
 
-	<cluster name="servlets"/>
+	<cluster name="servlets">
+		<cluster name="content_handlers"/>
+	</cluster>
 
 </cluster>
