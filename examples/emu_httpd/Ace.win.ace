@@ -1,0 +1,87 @@
+system
+	emu_httpd
+
+root
+	EMU_HTTPD: make
+
+default
+	assertion(require)
+	assertion(ensure)
+	assertion(check)
+	assertion(loop)
+	assertion(invariant)
+	address_expression(yes)
+	array_optimization(no)
+	console_application(yes)
+	dead_code_removal(yes)
+	dynamic_runtime(no)
+	exception_trace(no)
+	inlining(no)
+	multithreaded(no)
+	check_vape(yes)
+	disabled_debug(yes)
+	debug(no)
+	line_generation(no)
+	profile(no)
+	trace(no)
+
+
+cluster
+	start:		"."
+
+	yeasockets:		"$YAESOCKETS"
+
+	yeassockets_ise (yeasockets):		"$/spec/ise"
+
+	all base:		"$ISE_EIFFEL/library/base"
+		exclude
+			"desc"; "table_eiffel3"; "CVS"; "EIFGEN"; 
+		end
+
+	ds_kernel_ise:		"$GOBO/library/kernel/spec/ise"
+
+	ds_structures:		"$GOBO/library/structure/table"
+
+	ds_cursors:		"$GOBO/library/structure/cursor"
+
+	ds_support:		"$GOBO/library/structure/support"
+
+	ds_container:		"$GOBO/library/structure/container"
+
+	ds_lex:		"$GOBO/library/lexical/skeleton"
+
+	ds_kernel:		"$GOBO/library/kernel"
+
+--	support_cluster:		"$EPOSIX\src\support"
+
+--	capi_cluster:		"$EPOSIX\src\capi"
+
+--	stdc_cluster:		"$EPOSIX\src\standardc"
+--		visible
+--			stdc_signal_switch
+--				export
+--					"switcher"
+--				end
+--		end
+
+--	posix_cluster:		"$EPOSIX\src\posix"
+--		exclude
+--			"epx_factory.e"; 
+--		end
+
+--	papi_cluster:		"$EPOSIX\src\papi"
+
+--	abstract_cluster:		"$EPOSIX\src\abstract"
+
+--	wapi_cluster:		"$EPOSIX\src\wapi"
+
+--	windows_cluster:		"$EPOSIX\src\windows"
+
+--	compatibiliy_cluster:		"$EPOSIX\src\spec\ise"
+
+external
+
+	object:
+		"$YAESOCKETS\C\Debug\cl.lib"
+
+end

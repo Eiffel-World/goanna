@@ -23,16 +23,13 @@ default
 	arguments("rich_iii.xml")
 	arguments("small.xml")
 	disabled_debug(yes)
-	debug("xmle_id_nodes")
-	disabled_debug("parser_events")
-	disabled_debug("normalize")
 	line_generation(no)
 	profile(no)
 	trace(no)
 
 
 cluster
-	xmle:		"$GOANNA\tools\xmle"
+	"xmle":		"$GOANNA\tools\xmle"
 
 	dom:		"$GOANNA\library\dom"
 
@@ -52,13 +49,13 @@ cluster
 
 	servlet:		"$GOANNA\library\servlet"
 
-	goanna_utility:		"$GOANNA\library\utility"
+	"goanna_utility":		"$GOANNA\library\utility"
 
 	xmle_codegen:		"$GOANNA\library\codegen"
 
 	xml_parser:		"$GOANNA\library\xml_parser"
 
-	all base:		"$EIFFEL4\library\base"
+	all "base":		"$ISE_EIFFEL\library\base"
 		exclude
 			"desc"; "table_eiffel3"; "CVS"; 
 		end
