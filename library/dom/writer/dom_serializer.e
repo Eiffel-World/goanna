@@ -64,28 +64,32 @@ feature -- Status setting
 	
 feature -- Serialization
 
-	serialize (doc: DOM_DOCUMENT) is
-			-- Serialize 'doc' to specified output medium.
-		require
-			output_exists: output /= Void
-			doc_exists: doc /= Void
-		deferred
-		end
-	
-	serialize_node (node: DOM_NODE) is
-			-- Serialize 'node' to specified output medium
+	serialize (node: DOM_NODE) is
+			-- Serialize 'node' to specified output medium.
 		require
 			output_exists: output /= Void
 			node_exists: node /= Void
 		deferred
 		end
+	
+	frozen serialize_node (node: DOM_NODE) is
+		obsolete "To be removed in the next version, use serialize"
+			-- Serialize 'node' to specified output medium
+		require
+			output_exists: output /= Void
+			node_exists: node /= Void
+		do
+			serialize (node)
+		end
 		
-	serialize_element (element: DOM_ELEMENT) is
+	frozen serialize_element (element: DOM_ELEMENT) is
+		obsolete "To be removed in the next version, use serialize"
 			-- Serialize 'element' to specified output medium
 		require
 			output_exists: output /= Void
 			element_exists: element /= Void
-		deferred			
+		do
+			serialize (element)
 		end
 	
 feature {NONE} -- Implementation
