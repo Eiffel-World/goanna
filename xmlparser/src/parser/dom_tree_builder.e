@@ -26,8 +26,7 @@ feature {NONE} -- Initialisation
 			do
 				Precursor
 				create {DOM_IMPLEMENTATION_IMPL} dom_impl
-				document := dom_impl.create_document (create {DOM_STRING}.make_from_string (""),
-					create {DOM_STRING}.make_from_string (""), Void)
+				document := dom_impl.create_empty_document (Void)
 				current_open_composite := document
 			end
 
@@ -78,7 +77,7 @@ feature {NONE} -- Parser call backs
 				print ("on_content: '" + chr_data.out + "'")
 				print ("%R%N")
 			end
-			current_node := current_open_composite.append_child (document.create_cdata_section 
+			current_node := current_open_composite.append_child (document.create_text_node 
 					(create {DOM_STRING}.make_from_ucstring (chr_data)))
 		end
 

@@ -77,7 +77,8 @@ feature
          --               which the new node must be inserted.
          -- Return Value
          --    The node being inserted.
-	  do
+	      do
+	  	  ensure_child_list_exists
       end
 
    replace_child (new_child: DOM_NODE; old_child: DOM_NODE): DOM_NODE is
@@ -89,7 +90,8 @@ feature
          --    oldChild   The node being replaced in the list.
          -- Return Value
          --    The node replaced.
-	  do
+	      do
+	  	  ensure_child_list_exists
       end
 
    remove_child (old_child: DOM_NODE): DOM_NODE is
@@ -101,7 +103,8 @@ feature
          --    The node removed.
       local
       	  previous, next: DOM_NODE
-	  do
+	      do
+	       ensure_child_list_exists
            previous := old_child.previous_sibling
            next := old_child.next_sibling
            child_nodes.prune (old_child)
@@ -132,6 +135,7 @@ feature
       local
           last: DOM_NODE
 	  do
+	      ensure_child_list_exists
 	      last := last_child
 		  child_nodes.extend (new_child)
 		          new_child.set_parent_node (Current)
@@ -351,4 +355,11 @@ feature {DOM_WRITER, DOM_NODE} -- Output Implementation
 			print (str.out)
 		end
 		
+feature {NONE} -- Implementation
+
+	ensure_child_list_exists is
+			-- Build the child list if it doesn't already exist
+		deferred
+		end
+	
 end -- class DOM_NODE_IMPL

@@ -23,7 +23,8 @@ inherit
 			first_child,
 			last_child, 
 			has_child_nodes,
-			normalize	
+			normalize,
+			ensure_child_list_exists	
 		end
 
 end -- class DOM_CHILD_AND_PARENT_NODE

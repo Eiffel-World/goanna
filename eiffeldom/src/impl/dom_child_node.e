@@ -53,4 +53,12 @@ feature {DOM_NODE} -- DOM Status Setting
 			parent_node := new_parent
 		end
 
+feature {NONE} -- Implementation
+
+	ensure_child_list_exists is
+			-- Build the child list if it doesn't already exist
+		do
+			-- No children.
+		end
+
 end -- class DOM_CHILD_NODE

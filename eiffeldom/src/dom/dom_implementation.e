@@ -73,6 +73,22 @@ feature
 		deferred
 		end
 
+feature -- Non DOM Utility 
+
+	create_empty_document (doctype: DOM_DOCUMENT_TYPE): DOM_DOCUMENT is
+			-- Creates an XML DOCUMENT object of the specified type.
+			-- Non DOM utility routine.
+			-- Parameters:
+			--	`doctype' - The type of document to be created or Void. 
+		require
+			not_wrong_document_err: -- TODO: check for doctype created with different implementation
+		deferred
+		ensure
+			valid_result: Result /= Void
+			doctype_set_if_specified: Result.doctype /= Void implies 
+				Result.doctype.owner_document = Result
+		end
+
 feature -- Validation Utility 
 
 	valid_qualified_name_chars (qualified_name: DOM_STRING): BOOLEAN is

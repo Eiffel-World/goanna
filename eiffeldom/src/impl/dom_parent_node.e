@@ -21,7 +21,7 @@ feature {DOM_NODE}
 	make is
 			-- Initialise this parent node
 		do
-			!DOM_NODE_LIST_IMPL! child_nodes.make
+			-- TODO: remove this creation procedure
 		end
 
 feature
@@ -65,7 +65,7 @@ feature
          --    True    if the node has any children,
          --    False   if the node has no children.
 	  do
-		  Result := not child_nodes.empty
+		  Result := child_nodes /= Void and not child_nodes.empty
       end
 
 	normalize is
@@ -81,32 +81,38 @@ feature
 			cdata: DOM_CDATA_SECTION
 			discard: DOM_NODE
 		do
-			from
-				kid := first_child
-			until
-				kid = Void
-			loop
-				next := kid.next_sibling
-				-- If the next is a text node then combine it with the kid.
-				-- Otherwise, if it is an element, recursively normalize it.
-				if next /= Void and kid.node_type = Text_node and next.node_type = Text_node then
-					text ?= kid
-					text.append_data (next.node_value)
-					discard := remove_child (next)
-					print ("combined Text child...")
-					-- don't advance; there might be another.
-					next := kid
-				elseif next /= Void and kid.node_type = Cdata_section_node and next.node_type = Cdata_section_node then
-					cdata ?= kid
-					cdata.append_data (next.node_value)
-					discard := remove_child (next)
-					print ("combined Cdata child...%N")
-					-- don't advance; there might be another.
-					next := kid
-				elseif kid.node_type = Element_node then
-					kid.normalize
+			if child_nodes /= Void then
+				from
+					kid := first_child
+				until
+					kid = Void
+				loop
+					next := kid.next_sibling
+					-- If the next is a text node then combine it with the kid.
+					-- Otherwise, if it is an element, recursively normalize it.
+					if next /= Void and kid.node_type = Text_node and next.node_type = Text_node then
+						text ?= kid
+						text.append_data (next.node_value)
+						discard := remove_child (next)
+						debug ("normalize")
+							print ("combined Text child...%N")
+						end
+						-- don't advance; there might be another.
+						next := kid
+					elseif next /= Void and kid.node_type = Cdata_section_node and next.node_type = Cdata_section_node then
+						cdata ?= kid
+						cdata.append_data (next.node_value)
+						discard := remove_child (next)
+						debug ("normalize")
+							print ("combined Cdata child...%N")
+						end
+						-- don't advance; there might be another.
+						next := kid
+					elseif kid.node_type = Element_node then
+						kid.normalize
+					end
+					kid := next
 				end
-				kid := next
 			end
 		end
 
@@ -122,8 +128,14 @@ feature {DOM_NODE} -- DOM Status Setting
 		do
 		end
 
-invariant
+feature {NONE} -- Implementation
 
-	child_nodes_exist: child_nodes /= Void
+	ensure_child_list_exists is
+			-- Build the child list if it doesn't already exist
+		do
+			if child_nodes = Void then
+				!DOM_NODE_LIST_IMPL! child_nodes.make
+			end
+		end
 
 end -- class DOM_PARENT_NODE
