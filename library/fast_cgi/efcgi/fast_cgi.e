@@ -21,7 +21,12 @@ inherit
 		export
 			{NONE} all
 		end
-		
+	
+	EXECUTION_ENVIRONMENT
+		export
+			{NONE} all
+		end
+			
 feature -- Initialisation
 
 	make (port, backlog: INTEGER) is
@@ -33,6 +38,7 @@ feature -- Initialisation
 		do
 			svr_port := port
 			server_backlog := backlog
+			set_valid_peer_addresses
 		end
 	
 feature -- FGCI interface
@@ -164,6 +170,38 @@ feature {NONE} -- Implementation
 	server_backlog: INTEGER
 		-- The number of requests that can remain outstanding.
 	
+	valid_peer_addresses: DS_LINKED_LIST [STRING]
+		-- Peer addresses that are allowed to connect to this server as defined
+		-- in environment variable FCGI_WEB_SERVER_ADDRS.
+		-- Void if all peers can connect.
+		
+	Fcgi_web_server_addrs: STRING is "FCGI_WEB_SERVER_ADDRS"
+	
+	set_valid_peer_addresses is
+			-- Collect valid peer addresses
+		local
+			addrs, address: STRING
+			tokenizer: STRING_TOKENIZER
+		do
+			addrs := get (Fcgi_web_server_addrs)
+			if addrs /= Void and then not addrs.is_empty then
+				create valid_peer_addresses.make
+				create tokenizer.make (addrs)
+				tokenizer.set_token_separator (',')
+				from
+					tokenizer.start
+				until
+					tokenizer.off
+				loop
+					address := tokenizer.token
+					address.right_adjust
+					address.left_adjust
+					valid_peer_addresses.force_last (address)
+					tokenizer.forth
+				end
+			end
+		end
+		
 	accept_request: INTEGER is
 			-- Wait for a request to be received
 		local
@@ -199,19 +237,51 @@ feature {NONE} -- Implementation
 					request.set_socket(srv_socket.wait_for_new_connection)
 					is_new_connection := True
 				end
-				-- attempt to read the request. If this fails and it was an old
-				-- connection then the server probably closed it; try making a new connection
-				-- before giving up.
-				request.read
-				if not request.read_ok then
-					request.socket.close
-					request.set_socket (Void)
-					-- if this was a new connection then we failed, otherwise try again
-					if is_new_connection then
-						Result := -1
+				-- check peer address for allowed server addresses
+--				if peer_address_ok (request.socket.peer_address) then
+					-- attempt to read the request. If this fails and it was an old
+					-- connection then the server probably closed it; try making a new connection
+					-- before giving up.
+					request.read
+					if not request.read_ok then
+						request.socket.close
+						request.set_socket (Void)
+						-- if this was a new connection then we failed, otherwise try again
+						if is_new_connection then
+							Result := -1
+						end
+					else
+						request_read := True
 					end
-				else
-					request_read := True
+--				else
+--					-- reset and attempt a new connection
+--					request.socket.close
+--					request.set_socket (Void)
+--					is_new_connection := False
+--				end
+			end
+		end
+		
+	peer_address_ok (peer_address: STRING): BOOLEAN is
+			-- Does 'perr_address' appear in the allowable peer addresses for
+			-- this server as defined in the environment variable FCGI_WEB_SERVER_ADDRS?
+		require
+			peer_address_exists: peer_address /= Void and then not peer_address.is_empty
+		do		
+			if valid_peer_addresses = Void then
+				Result := True
+			else
+				-- search for address
+				from
+					valid_peer_addresses.start
+				until
+					valid_peer_addresses.off or Result
+				loop
+					if peer_address.is_equal (valid_peer_addresses.item_for_iteration) then
+						Result := True
+					else
+						valid_peer_addresses.forth
+					end
 				end
 			end
 		end
