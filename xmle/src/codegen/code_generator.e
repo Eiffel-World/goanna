@@ -119,10 +119,12 @@ feature {NONE} -- Implementation
 			node_exists: node /= Void
 			positive_node_number: node_number >= 0
 		local
+			next_node_number: INTEGER
 			nstr: STRING
 			pair: DS_PAIR [STRING, STRING]
 		do
-			nstr := node_number.out
+			next_node_number := node_number
+			nstr := next_node_number.out
 			-- check node type and create appropriate local variable and 
 			-- creation instruction
 			inspect node.node_type
@@ -163,7 +165,10 @@ feature {NONE} -- Implementation
 
 			end
 			-- add child node creation
-			add_child_creation (node, node_number) 
+			-- TODO: child nodes should never be Void. Check DOM impl.
+			if node.has_child_nodes then
+				next_node_number := add_child_creation (node, node_number) 
+			end
 		end
 			
 		add_child_creation (parent: DOM_NODE; node_number: INTEGER): INTEGER is
@@ -175,20 +180,23 @@ feature {NONE} -- Implementation
 				positive_node_number: node_number >= 0
 			local
 				child_nodes: DOM_NODE_LIST
+				i: INTEGER
 			do
 				from
 					Result := node_number + 1
 					child_nodes := parent.child_nodes
-					child_nodes.start
+					i := 0
+				variant
+					child_nodes.length - i
 				until
-					child_nodes.off
+					i >= child_nodes.length
 				loop
 					-- recursively add a node creation for the child
-					add_node_creation (child_nodes.item, next_node_number.out)
+					add_node_creation (child_nodes.item (i), node_number)
 					-- add instructions to append the newly created child to the parent
 					build_doc.add_body_line ("node" + node_number.out + ".append_child (node" + Result.out)
 					Result := Result + 1
-					child_nodes.forth
+					i := i + 1
 				end
 			end
 

@@ -159,6 +159,7 @@ feature {NONE} -- Implementation
 			loop
 				output.put_string ("%T%T%T" + locals.item.first + ": " + locals.item.second)
 				output.put_new_line
+				locals.forth
 			end
 		end
 
