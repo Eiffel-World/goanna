@@ -153,7 +153,7 @@ feature {NONE} -- Node-specific serialization
 				loop
 					if use_indentation then
 						serialize_new_line
-						serialize_indent (indent_level)
+						serialize_indent (indent_level + indent_amount)
 					end
 					serialize_node_recurse (child_nodes.item (i), indent_level + indent_amount)
 					i := i + 1
@@ -187,7 +187,7 @@ feature {NONE} -- Node-specific serialization
 			end
 			output.put_string (attr_name.out)
 			output.put_character ('=')
-                        serialize_quoted (attr_value)
+			serialize_quoted (attr_value)
 			character_entity_reference := text_character_entity_reference
 		end
 		
@@ -323,7 +323,7 @@ feature {NONE} -- Node-specific serialization
 		do
 			output.put_string ("<!NOTATION ")
 			output.put_string (node.node_name.out)
-                        notation ?= node
+			notation ?= node
 			if notation /= Void then
 				serialize_external_id (notation.public_id, notation.system_id)
 			end
@@ -366,7 +366,7 @@ feature {NONE} -- Helper features
 				end
 			end
 			output.put_character (attribute_quote)
-                        serialize_escaped (value)
+			serialize_escaped (value)
 			output.put_character (attribute_quote)
 		end
 		
@@ -423,12 +423,12 @@ feature {NONE} -- Helper features
 -- replacement below is equivalent in functionality but not as efficient.
 --					inspect char.code
 --					when
---						9,               -- 0x9
---						10,              -- 0xA
---						13,              -- 0xD
---						32 .. 55295,     -- 0x0020 -   0xD7FF
---                      57344 .. 65533,  -- 0xE000 -   0xFFFD
---                      65536 .. 1114111 -- 0x10000 - 0x10FFFF
+--						9,               --     0x9
+--						10,              --     0xA
+--						13,              --     0xD
+--						32 .. 55295,     --  0x0020 -   0xD7FF
+--						57344 .. 65533,  --  0xE000 -   0xFFFD
+--						65536 .. 1114111 -- 0x10000 - 0x10FFFF
 --					then
 --						is_printable := True
 --					else
@@ -436,23 +436,25 @@ feature {NONE} -- Helper features
 --					end
 					code := char.code
 					is_printable := 
-						(code = 9 
-						or code = 10 
-						or code = 13
-						or (code >= 32 and code <= 55295)
-						or (code >= 57344 and code <= 65533)
-						or (code >= 65536 and code <= 1114111))
-       				-- The character is printable if
-       				-- the encoding allows that
+						code = 9
+						or else code = 10
+						or else code = 13
+						or else (code >= 32 and then code <= 55295)
+						or else (code >= 57344 and then code <= 65533)
+						or else (code >= 65536 and then code <= 1114111)
+					-- The character is printable if
+					-- the encoding allows that
 					-- The encoding should be handled here
 					-- Let's default to ISO-8859-1
-       				if is_printable and then char.code <= 255 then
-       					output.put_character (integer_routines.to_character (char.code))
-       				else
+					if is_printable and then char.code <= 255 then
+						-- TODO: use 'char.as_character' when available
+						output.put_character (integer_routines.to_character (char.code))
+					else
 						output.put_string ("&#x")
+						-- TODO: use 'char.as_hexadecimal' when available
 						output.put_string (as_hexadecimal_number (char))
 						output.put_character (';')
-       				end
+					end
 				end
 				i := i + 1
 			end
