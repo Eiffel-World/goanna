@@ -1,0 +1,25 @@
+Project Goanna Library
+----------------------
+
+Project Goanna provides a library for building server side internet
+applications. The library includes the following components:
+
+	dom - an implementation of the W3C DOM Level 2 API (http://w3c.org), 
+		providing abstract representations of XML/HTML documents 
+		that can be modified and streamed.
+		5/1/2000: Currently only the Core API is implemented.
+
+	servlet - a pure Eiffel servlet framework providing a similar API to
+		Java Servlets.
+
+	fast_cgi - a pure Eiffel implementation of the FastCGI protocol 
+		(http://www.fastcgi.com) for efficient persistent CGI servers. 
+		Included is a FastCGI servlet implementaion.
+		5/1/2000: Currently only support for external FastCGI serversi
+		is supported.
+
+	xml_parser - An XML to DOM parser based on exml and expat.
+
+	utility - General utility classes such as string tokenizers, and
+		string streams.
+

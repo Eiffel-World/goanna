@@ -21,62 +21,73 @@ default
 	debug("dom_output")
 	disabled_debug("query_string_parsing")
 	disabled_debug("normalize")
+	debug(no)
 	line_generation(no)
 	profile(no)
 	trace(no)
 
 
 cluster
-	root_cluster:		"$GOANNA\efcgi\src\samples\servlet"
+	root_cluster:		"$GOANNA\examples\servlet"
 
-	templates (root_cluster):		"templates"
+	templates (root_cluster):		"$\templates"
 
-	fcgi:		"$GOANNA\efcgi\src\efcgi"
+	dom:		"$GOANNA\library\dom"
 
-	fcgi_external:		"$GOANNA\efcgi\src\spec\ise"
+	dom_core (dom):		"$\core"
 
-	servlet:		"$GOANNA\efcgi\src\servlet"
+	dom_impl (dom):		"$\implementation"
 
-	fcgi_servlet:		"$GOANNA\efcgi\src\efcgi_servlet"
+	impl_core (dom_impl):		"$\core"
 
-	dom:		"$GOANNA\eiffeldom\src\dom"
+	dom_writer (dom):		"$\writer"
 
-	dom_impl:		"$GOANNA\eiffeldom\src\impl"
+	xmle_doc (dom_impl):		"$\xmle_doc"
 
-	dom_writer:		"$GOANNA\eiffeldom\src\writer"
+	fast_cgi:		"$GOANNA\library\fast_cgi"
 
-	goanna_utility:		"$GOANNA\efcgi\src\utility"
+	efcgi (fast_cgi):		"$\efcgi"
 
-	ucstring:		"$UCSTRING\lib"
+	efcgi_servlet (fast_cgi):		"$\servlet"
 
-	ucstring_ise:		"$UCSTRING\spec\ise"
+	xmle:		"$GOANNA\tools\xmle"
 
-	xmle_codegen:		"$GOANNA\xmle\src\codegen"
+	servlet:		"$GOANNA\library\servlet"
+
+	goanna_utility:		"$GOANNA\library\utility"
 
 	yaesockets:		"$YAESOCKETS"
 
-	yaesockets_ise:		"$YAESOCKETS\spec\ise"
+	yaesockets_ise (yaesockets):		"$\spec\ise"
 
-	base_kernel:		"$EIFFEL4\library\base\kernel"
+	base:		"$EIFFEL4\library\base"
 
-	base_support:		"$EIFFEL4\library\base\support"
+	base_kernel (base):		"$\kernel"
 
-	gobo_kernel:		"$GOBO\library\kernel"
+	base_support (base):		"$\support"
 
-	gobo_ise_kernel:		"$GOBO\library\kernel\spec\ise"
+	gobo:		"$GOBO\library"
 
-	all gobo_structures:		"$GOBO\library\structure"
+	gobo_kernel (gobo):		"$\kernel"
 
-	all gobo_util:		"$GOBO\library\utility"
+	gobo_ise_kernel (gobo_kernel):		"$\spec\ise"
+
+	all gobo_structures (gobo):		"$\structure"
+
+	all gobo_util (gobo):		"$\utility"
+
+	ucstring:		"$UCSTRING"
+
+	ucstring_lib (ucstring):		"$\lib"
+
+	ucstring_ise (ucstring):		"$\spec\ise"
 
 external
 
 	include_path:
-		"$GOANNA\efcgi\src\spec\ise\clib",
 		"$GOBO\library\kernel\include"
 
 	object:
-		"$GOANNA\efcgi\src\spec\ise\clib\Debug\efcgi.lib",
 		"$YAESOCKETS\C\Debug\cl.lib"
 
 end
