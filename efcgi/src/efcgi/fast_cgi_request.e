@@ -86,6 +86,8 @@ feature -- Access
 		
 	parameters: HASH_TABLE [STRING, STRING]
 			-- Table of parameters passed to this request.
+	
+	raw_stdin_content: STRING
 					
 feature -- Status setting
 
@@ -194,7 +196,7 @@ feature {NONE} -- Implementation
 	stdin_records_done, param_records_done: BOOLEAN
 			-- Have all stdin and param records been read?
 	
-	raw_param_content, raw_stdin_content: STRING	
+	raw_param_content: STRING	
 			-- Buffers to hold raw data collected from stream records.
 				
 	read_header: FAST_CGI_RECORD_HEADER is
@@ -330,6 +332,7 @@ feature {NONE} -- Implementation
 			name, value: STRING
 		do
 			from
+				parameters.clear_all
 				offset := 1
 			until
 				offset >= raw_param_content.count

@@ -30,7 +30,7 @@ feature -- Basic operations
 		end
 	
 	process_request is
-			-- Process a new request.
+			-- Process a request.
 		deferred
 		end
 	

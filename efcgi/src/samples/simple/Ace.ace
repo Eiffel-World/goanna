@@ -15,6 +15,7 @@ default
 	inlining_size("4")
 	multithreaded(no)
 	check_vape(no)
+	arguments("8000 10")
 	disabled_debug(yes)
 	debug("fcgi_protocol")
 	debug(no)

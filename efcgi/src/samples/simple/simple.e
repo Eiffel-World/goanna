@@ -12,6 +12,21 @@ inherit
 			make as fast_cgi_app_make
 		end
 
+	UT_STRING_FORMATTER
+		export
+			{NONE} all
+		end
+	
+	KL_SHARED_ARGUMENTS
+		export
+			{NONE} all
+		end
+		
+	MEMORY
+		export
+			{NONE} all
+		end
+			
 creation
 
 	make
@@ -21,7 +36,7 @@ feature -- Initialisation
 	make is
 			-- Initialise application and begin request processing loop
 		do
-			fast_cgi_app_make (8000, 5)
+			fast_cgi_app_make (Arguments.argument (1).to_integer, Arguments.argument (2).to_integer)
 			run
 		end
 	
@@ -31,8 +46,9 @@ feature -- Basic Operations
 
 	process_request is
 		local
-			read_str: STRING
-			length: INTEGER
+			content: STRING
+			i, length: INTEGER
+			param_keys: ARRAY [STRING]
 		do
 			warn ("Accepted -- YEAH! %N")
 
@@ -41,30 +57,34 @@ feature -- Basic Operations
 --			print (generator + ".process_request: length=" + length.out)
 			
 			putstr ("Content-type: text/html%R%N%R%N")
-			putstr ("TESTING<br>%N")
+			putstr ("TESTING<br>%R%N")
 
 			putstr ("Content Length: ")
 			putstr (length.out)
-			putstr ("<br>%N")
+			putstr ("<br>%R%N")
     
 			putstr ("Visits: ")
 			putstr (count.out)
-			putstr ("<br>%N")
+			putstr ("<br>%R%N")
 			count := count + 1
 
-			putstr ("Server name: ")
-			putstr (getparam (Server_name))
-			putstr ("<br>%N")
-
-			putstr ("User agent: ")
-			putstr (getparam (Http_user_agent))
-			putstr ("<br>%N")
-
+			-- output parameters
+			param_keys := request.parameters.current_keys
+			from
+				putstr ("Parameters:<br>%R%N")
+				i := param_keys.lower
+			until
+				i >= param_keys.upper
+			loop
+				putstr (param_keys.item (i) + " = " 
+					+ quoted_eiffel_string_out (request.parameters.item (param_keys.item (i))))
+				putstr ("<br>%R%N")
+				i := i + 1
+			end
+			
+			-- read and display content
 			if length > 0 then
-				read_str := getstr (length)
-				putstr ("Content: ")
-				putstr (read_str)
-				putstr ("%N")
+				putstr ("<br>%R%NContent = " + quoted_eiffel_string_out (request.raw_stdin_content))
 			end
 		end
 
