@@ -20,16 +20,18 @@ creation
 
 feature -- Initialisation
 
-	make (name: STRING; destination: STRING) is
-			-- Create a new code generator to produce Eiffel code
-			-- on 'destination.
+	make (name: STRING) is
+			-- Create a new code generator to produce XMLE classes.
 		require
 			name_exists: name /= Void
-			destination_exists: destination/= Void
 		do
-			doc_name := name
-			doc_name.to_upper
-			create {PLAIN_TEXT_FILE} dest.make_open_write (destination)
+			document_name := name
+			create class_name.make_from_string (document_name + Xmle_class_name_extension)
+			class_name.to_upper
+			create class_file_name.make_from_string (class_name + Xmle_class_extension)
+			class_file_name.to_lower
+			create bdom_file_name.make_from_string (class_name + Xmle_dom_storage_extension) 
+			bdom_file_name.to_lower
 		end
 
 feature -- Generation
@@ -40,30 +42,49 @@ feature -- Generation
 			doc_exists: doc /= Void
 		do
 			document := doc
-			create eiffel_code.make (doc_name + Xmle_class_name_extension)
-			--build_indexing_clause
-			build_inheritance_clause
-			build_creation_routines
-			build_build_document_routine
-			eiffel_code.write (dest)
-			dest.close
+			build_xmle_document_class
+			store_document
 		end
 
 feature {NONE} -- Implementation
 
 	Xmle_class_name_extension: STRING is "_XMLE"
+	Xmle_document_type: STRING is "XMLE_DOCUMENT"
+	Xmle_class_extension: STRING is ".e"
+	Xmle_dom_storage_extension: STRING is ".bdom"
 
-	doc_name: STRING
-			-- Name of document
+	document_name: STRING
+			-- Generic name of document.
 
-	dest: IO_MEDIUM
-			-- Output medium to generate code to.
+	class_name: STRING
+			-- Class type of generated XMLE class.
+
+	class_file_name: STRING
+			-- Name of file to store XMLE wrapper class.
+
+	bdom_file_name: STRING
+			-- Name of file to store binary representation of document.
 
 	document: DOM_DOCUMENT
 			-- The document to produce
 
-	eiffel_code: EIFFEL_CLASS
+	xmle_document_class: EIFFEL_CLASS
 			-- The Eiffel code representation.
+
+	build_xmle_document_class is
+			-- Generate the code for the XMLE document wrapper class.
+		local
+			dest: IO_MEDIUM
+		do
+			create xmle_document_class.make (class_name)
+			build_indexing_clause
+			build_inheritance_clause
+			build_creation_routine
+			build_retrieve_document_routine
+			create {PLAIN_TEXT_FILE} dest.make_open_write (class_file_name)
+			xmle_document_class.write (dest)
+			dest.close
+		end
 
 	build_indexing_clause is
 			-- Generate indexing clause
@@ -73,132 +94,49 @@ feature {NONE} -- Implementation
 	build_inheritance_clause is
 			-- Build inheritance clause
 		do
+			xmle_document_class.add_parent (Xmle_document_type)
 		end
 
-	build_creation_routines is
+	build_creation_routine is
 			-- build creation clause and creation routines
 		local
 			feature_group: EIFFEL_FEATURE_GROUP
 			make_feature: EIFFEL_ROUTINE
 		do
-			eiffel_code.add_creation_procedure_name ("make")
+			xmle_document_class.add_creation_procedure_name ("make")
 			-- build make procedure
 			create feature_group.make ("Initialisation")
-			eiffel_code.add_feature_group (feature_group)
+			xmle_document_class.add_feature_group (feature_group)
 			create make_feature.make ("make")
-			make_feature.add_body_line ("build_document")
+			make_feature.add_body_line ("retrieve_document")
 			feature_group.add_feature (make_feature)
 		end
 	
-	build_build_document_routine is
-			-- build the build document routine
+	build_retrieve_document_routine is
+			-- build the retrieve document routine
 		local
 			feature_group: EIFFEL_FEATURE_GROUP
-			var: DS_PAIR [STRING, STRING]
-		do
-			create feature_group.make ("Document construction")
-			eiffel_code.add_feature_group (feature_group)
-			-- create build document routine
-			create build_doc.make ("build_document")
-			feature_group.add_feature (build_doc)
-			-- add creation of implementation
-			create var.make ("impl", "DOM_IMPLEMENTATION")
-			build_doc.add_local (var)
-			build_doc.add_body_line ("create {DOM_IMPLEMENTATION_IMPL}.make")
-			add_node_creation (document, 0)
-		end		
-
-	build_doc: EIFFEL_ROUTINE
-			-- The routine representing the 'build_document' feature.
-
-	add_node_creation (node: DOM_NODE; node_number: INTEGER) is
-			-- Add creation instructions to 'build_doc' for 
-			-- 'node' and recursively its children. Name the nodes with 'node_number' as
-			-- a postfix.
-		require
-			node_exists: node /= Void
-			positive_node_number: node_number >= 0
-		local
-			next_node_number: INTEGER
-			nstr: STRING
+			build_doc_routine: EIFFEL_ROUTINE
 			pair: DS_PAIR [STRING, STRING]
 		do
-			next_node_number := node_number
-			nstr := next_node_number.out
-			-- check node type and create appropriate local variable and 
-			-- creation instruction
-			inspect node.node_type
-			when Attribute_node then
-				-- create attribute node
-				--build_doc.add_local (create pair.make ("node" + nstr, "DOM_ATTR")
-				
-			when Cdata_section_node then
-
-			when Comment_node then
+			create feature_group.make ("Implementation")
+			feature_group.add_export ("NONE")
+			xmle_document_class.add_feature_group (feature_group)
+			-- create build document routine
+			create build_doc_routine.make ("retrieve_document")
+			feature_group.add_feature (build_doc_routine)
+			-- add code to retrieve object structure
+			create pair.make ("bdom_file", "RAW_FILE")
+			build_doc_routine.add_local (pair)
+			build_doc_routine.add_body_line ("create bdom_file.make (bdom_file_name)")
+			build_doc_routine.add_body_line ("document ?= bdom_file.retrieved")
+		end		
 	
-			when Document_fragment_node then
-
-			when Document_node then
-				create pair.make ("document", "DOM_DOCUMENT")
-				build_doc.add_local (pair)
-				create pair.make ("node" + nstr, "DOM_NODE")
-				build_doc.add_local (pair)
-				build_doc.add_body_line ("create dstr.make_from_string (%"%")")
-				build_doc.add_body_line ("create dstr2.make_from_string (%"%")")
-				build_doc.add_body_line ("document := impl.create_document (dstr, dstr2, Void)")
-				build_doc.add_body_line ("node" + nstr + " := document")
-			when Document_type_node then
-
-			when Element_node then
-					
-			when Entity_node then
-
-			when Entity_reference_node then
-
-			when Notation_node then
-
-			when Processing_instruction_node then
-
-			when Text_node then
-				
-			else
-
-			end
-			-- add child node creation
-			-- TODO: child nodes should never be Void. Check DOM impl.
-			if node.has_child_nodes then
-				next_node_number := add_child_creation (node, node_number) 
-			end
+	store_document is
+			-- Store the document object structure in the file 'bdom_file_name'.
+		do
+			document.store_by_name (bdom_file_name)
 		end
-			
-		add_child_creation (parent: DOM_NODE; node_number: INTEGER): INTEGER is
-				-- add creation instructions for each child of 'parent'.
-				-- Add 'append_node' instructions to add each child.
-				-- Return the node number for the next node.
-			require
-				parent_exists: parent /= Void
-				positive_node_number: node_number >= 0
-			local
-				child_nodes: DOM_NODE_LIST
-				i: INTEGER
-			do
-				from
-					Result := node_number + 1
-					child_nodes := parent.child_nodes
-					i := 0
-				variant
-					child_nodes.length - i
-				until
-					i >= child_nodes.length
-				loop
-					-- recursively add a node creation for the child
-					add_node_creation (child_nodes.item (i), node_number)
-					-- add instructions to append the newly created child to the parent
-					build_doc.add_body_line ("node" + node_number.out + ".append_child (node" + Result.out)
-					Result := Result + 1
-					i := i + 1
-				end
-			end
 
 end -- class CODE_GENERATOR
 

@@ -86,7 +86,7 @@ feature
 		local
 			code_generator: CODE_GENERATOR
 		do
-			create code_generator.make (document.document_element.node_name.out, "test_output.e")
+			create code_generator.make (document.document_element.node_name.out)
 			code_generator.generate (document)
 		end
 

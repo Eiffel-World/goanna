@@ -13,6 +13,11 @@ inherit
 
 	DOM_DISPLAYABLE
 
+	STORABLE
+		rename
+			tag_name as assertion_tag_name
+		end
+
 feature
 
    node_name: DOM_STRING is

@@ -105,7 +105,19 @@ feature {NONE} -- Implementation
 
 	write_parents (output: IO_MEDIUM) is
 		do
-			output.put_string ("print_parents not implemented...")
+			output.put_string ("inherit")
+			output.put_new_line
+			output.put_new_line
+			from
+				parents.start
+			until
+				parents.off
+			loop
+				output.put_string ("%T" + parents.item)
+				output.put_new_line
+				parents.forth
+			end
+			output.put_new_line
 		end
 
 	write_creation_names (output: IO_MEDIUM) is
