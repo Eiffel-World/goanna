@@ -3,3 +3,5 @@ TESTGEN
 *.exe
 *.epr
 *.melted
+*.ace
+*.log
