@@ -24,19 +24,22 @@ creation
 	
 feature -- Initialisation
 
-	make (serving_socket: HTTPD_SERVING_SOCKET; buffer: STRING) is
+	make (socket: HTTPD_SERVING_SOCKET; buffer: STRING) is
 			-- Parse 'buffer' to initialise the request parameters
 		require
-			socket_exists: serving_socket /= Void
+			socket_exists: socket /= Void
 			buffer_exists: buffer /= Void
 		do
-			create parameters.make (15)
+			create parameters.make (20)
+			serving_socket := socket
 			parse_request_buffer (buffer)
-			set_server_parameters (serving_socket)
+			set_server_parameters
 		end
 		
 feature -- Access
 
+	serving_socket: HTTPD_SERVING_SOCKET
+	
 	parameter (name: STRING): STRING is
 			-- Return value of parameter 'name'
 		require
@@ -59,10 +62,8 @@ feature -- Access
 		
 feature {NONE} -- Implementation
 		
-	set_server_parameters (serving_socket: HTTPD_SERVING_SOCKET) is
+	set_server_parameters is
 			-- Set server specific parameters for request
-		require
-			serving_socket_exists: serving_socket /= Void
 		do
 			parameters.put ("Goanna HTTP Server V1.0", Server_software_var)
 			parameters.put ("CGI/1.1", Gateway_interface_var)
@@ -89,11 +90,11 @@ feature {NONE} -- Implementation
 			request.right_adjust
 			create t2.make (request)
 			t2.start
-			parameters.put (t2.token, Request_method_var)
+			parameters.force (t2.token, Request_method_var)
 			t2.forth
 			parse_request_uri (t2.token)
 			t2.forth
-			parameters.put (t2.token, Server_protocol_var)
+			parameters.force (t2.token, Server_protocol_var)
 			-- parse remaining header lines
 			from
 				t1.forth
@@ -103,14 +104,11 @@ feature {NONE} -- Implementation
 				header.is_empty
 			loop
 				-- parse the next header line
-				print (header + "%R%N")
+				parse_header (header)
 				t1.forth
 				header := t1.token
 				header.right_adjust	
 			end
-			
-			-- debug
-			parameters.put (buffer, Http_from_var)
 		end
 			
 	parse_request_uri (token: STRING) is
@@ -118,18 +116,60 @@ feature {NONE} -- Implementation
 		require
 			token_exists: token /= Void
 		local
-			query_index: INTEGER
-			path: STRING
+			query_index, path_index, slash_index: INTEGER
+			query, script, path, servlet_prefix: STRING
 		do
 			query_index := token.index_of ('?', 1)
 			if query_index /= 0 then
-				path := token.substring (1, query_index - 1)
-				parameters.put (token.substring (query_index + 1, token.count), Query_string_var)
+				query := token.substring (1, query_index - 1)
+				parameters.force (token.substring (query_index + 1, token.count), Query_string_var)
 			else
-				path := token
+				query := token
 			end
-			parameters.put (path, Script_name_var)
-			parameters.put (path, Path_info_var)
+			-- if the query begins with the virtual servlet prefix then the script name is
+			-- the portion including the prefix and all characters before the next slash.
+			-- everything after the next slash is the path info.
+			servlet_prefix := serving_socket.servlet_manager.servlet_mapping_prefix
+			if query.count > servlet_prefix.count + 1 then
+				if query.substring (1, servlet_prefix.count).is_equal (servlet_prefix) then
+					slash_index := query.index_of ('/', servlet_prefix.count + 1)
+					if slash_index /= 0 then
+						path := query.substring (slash_index + 1, query.count)
+					end
+					script := query.substring (1, servlet_prefix.count 
+							+ slash_index.max (query.count))
+				end
+			end
+			parameters.force (script, Script_name_var)
+			parameters.force (path, Path_info_var)
+		end
+		
+	parse_header (header: STRING) is
+			-- Parse the header and set appropriate CGI variables
+		require
+			header_exists: header /= Void
+		local
+			colon_index, i: INTEGER
+			name, value: STRING
+		do
+			-- split the header
+			colon_index := header.index_of (':', 1)
+			-- extract the name
+			name := header.substring (1, colon_index - 1)
+			name.to_upper
+			from
+				i := name.index_of ('-', 1)
+			until
+				i = 0
+			loop
+				name.put ('_', i)
+				i := name.index_of ('-', i + 1)
+			end
+			name := "HTTP_" + name 
+			-- extract the value
+			value := header.substring (colon_index + 1, header.count)
+			value.left_adjust
+			parameters.force (value, name)
 		end
 		
 end -- class HTTPD_REQUEST

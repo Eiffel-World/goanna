@@ -20,6 +20,7 @@ feature -- Initialization
 			-- Initialise with no servlets.
 		do
 			create servlets.make (5)
+			servlet_mapping_prefix := ""
 		end
 	
 feature -- Access
@@ -52,7 +53,10 @@ feature -- Access
 		
 	config: SERVLET_CONFIG
 			-- Servlet configuration
-					
+	
+	servlet_mapping_prefix: STRING
+			-- Prefix for servlet mappings.
+				
 feature -- Status report
 
 	has_registered_servlet (name: STRING): BOOLEAN is
@@ -131,8 +135,5 @@ feature {NONE} -- Implementation
 
 	internal_default_servlet: K
 			-- Default servlet
-		
-	servlet_mapping_prefix: STRING
-			-- Prefix for servlet mappings. No prefix if Void.
-				
+						
 end -- class SERVLET_MANAGER
