@@ -17,8 +17,6 @@ inherit
 			make as appender_make
 		export
 			{NONE} appender_make
-		redefine
-			layout
 		end
 	
 creation
@@ -43,12 +41,6 @@ feature -- Status Report
 
 	append_mode: BOOLEAN
 			-- Append to file or create new file?
-			
-	layout: LOG_LAYOUT is
-			-- Use a simple layout for console output
-		once
-			create {LOG_SIMPLE_LAYOUT} Result
-		end
 
 feature -- Basic Operations
 		
@@ -56,6 +48,7 @@ feature -- Basic Operations
 			-- Release any resources for this appender.
 		do
 			if not stream.is_closed then
+				stream.put_string (layout.footer)
 				stream.close
 				is_open := False
 			end
@@ -86,6 +79,7 @@ feature {NONE} -- Implementation
 			if not stream.is_open_write then
 				internal_log.error ("Failed to open file stream: " + name)
 			end
+			stream.put_string (layout.header)
 		end
 		
 end -- class LOG_FILE_APPENDER

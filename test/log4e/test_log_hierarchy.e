@@ -315,4 +315,73 @@ feature -- Test
 			cat.debugging ("This is a test")
 		end
 		
+	test_stdout_event_appender is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+			appender: LOG_APPENDER
+		do
+			create h.make (Debug_p)
+			cat := h.category ("test")			
+			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
+			cat.add_appender (appender)	
+			cat.fatal ("STDOUT: This is fatal")
+			cat.error ("STDOUT: This is an error")
+			cat.warn ("STDOUT: This is a warning")
+			cat.info ("STDOUT: This is information")
+			cat.debugging ("STDOUT: This is a test")
+		end
+		
+	test_stderr_event_appender is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+			appender: LOG_APPENDER
+		do
+			create h.make (Debug_p)
+			cat := h.category ("test")			
+			create {LOG_STDERR_APPENDER} appender.make ("stderr")
+			cat.add_appender (appender)	
+			cat.fatal ("STDERR: This is fatal")
+			cat.error ("STDERR: This is an error")
+			cat.warn ("STDERR: This is a warning")
+			cat.info ("STDERR: This is information")
+			cat.debugging ("STDERR: This is a test")
+		end
+	
+	test_time_layout is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+			appender: LOG_APPENDER
+		do
+			create h.make (Debug_p)
+			cat := h.category ("test")			
+			create {LOG_STDOUT_APPENDER} appender.make ("stderr")
+			appender.set_layout (create {LOG_TIME_LAYOUT}.make)
+			cat.add_appender (appender)	
+			cat.fatal ("This is fatal")
+			cat.error ("This is an error")
+			cat.warn ("This is a warning")
+			cat.info ("This is information")
+			cat.debugging ("This is a test")
+		end	
+		
+	test_date_time_layout is
+		local
+			h: LOG_HIERARCHY
+			cat: LOG_CATEGORY
+			appender: LOG_APPENDER
+		do
+			create h.make (Debug_p)
+			cat := h.category ("test")			
+			create {LOG_STDOUT_APPENDER} appender.make ("stderr")
+			appender.set_layout (create {LOG_DATE_TIME_LAYOUT})
+			cat.add_appender (appender)	
+			cat.fatal ("This is fatal")
+			cat.error ("This is an error")
+			cat.warn ("This is a warning")
+			cat.info ("This is information")
+			cat.debugging ("This is a test")
+		end	
 end -- class TEST_LOG_HIERARCHY

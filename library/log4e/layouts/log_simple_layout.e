@@ -1,5 +1,5 @@
 indexing
-	description: "Simple layout using formatted with 'priority - message'"
+	description: "Simple layout using 'priority - message'"
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	library: "log4e"
 	date: "$Date$"
@@ -14,6 +14,11 @@ class
 inherit
 	
 	LOG_LAYOUT
+
+	DT_SHARED_SYSTEM_CLOCK
+		export
+			{NONE} all
+		end
 	
 feature -- Rendering
 
@@ -26,6 +31,18 @@ feature -- Rendering
 			Result.append (" - ")
 			Result.append (event.rendered_message)
 			Result.append ("%N")
+		end
+
+	header: STRING is
+			-- Format a header for this layout.
+		do
+			Result := "Log opened: " + system_clock.date_time_now.out + "%N"
+		end
+		
+	footer: STRING is
+			-- Format a footer for this layout.
+		do
+			Result := "Log closed: " + system_clock.date_time_now.out + "%N"
 		end
 				
 end -- class LOG_SIMPLE_LAYOUT

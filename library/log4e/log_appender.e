@@ -19,6 +19,13 @@ inherit
 	
 	LOG_SHARED_LOG_LOG
 	
+	MEMORY
+		export
+			{NONE} all
+		redefine
+			dispose
+		end
+	
 feature -- Initialisation
 	
 	make (new_name: STRING) is
@@ -31,6 +38,7 @@ feature -- Initialisation
 			name := new_name
 			create filters.make
 			is_open := True
+			create {LOG_SIMPLE_LAYOUT} layout
 		end
 	
 feature -- Status Report
@@ -39,17 +47,23 @@ feature -- Status Report
 			-- Name of this appender that uniquely 
 			-- identifies it.
 
-	layout: LOG_LAYOUT is
+	layout: LOG_LAYOUT
 			-- Layout used to format events for this appender. May be Void
 			-- if no layout is used.
-		deferred
-		end
 
 	is_open: BOOLEAN
 			-- Is the appender open for appending?
 			
 feature -- Status Setting
 	
+	set_layout (new_layout: LOG_LAYOUT) is
+			-- Set the layout that this appender should use.
+		require
+			layout_exists: new_layout /= Void
+		do
+			layout := new_layout
+		end
+		
 	close is
 			-- Release any resources for this appender.
 		deferred
@@ -137,6 +151,14 @@ feature -- Status Setting
 			filters.delete (filter)
 		ensure
 			filter_removed: not has_filter (filter)
+		end
+		
+feature -- Removal
+
+	dispose is
+			-- Close this appender when garbage collected
+		do
+			close
 		end
 		
 feature {NONE} -- Implementation

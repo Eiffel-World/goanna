@@ -21,14 +21,7 @@ inherit
 		export
 			{NONE} all
 		end
-	
-	MEMORY
-		export
-			{NONE} all
-		redefine
-			dispose
-		end
-	
+
 	KL_SHARED_EXECUTION_ENVIRONMENT
 		export
 			{NONE} all
@@ -100,9 +93,6 @@ feature -- Basic Operations
 		end
 	
 feature {NONE} -- Implementation
-
-	layout: LOG_LAYOUT
-			-- Not used.
 	
 	source_handle: POINTER
 			-- Handle for event source
@@ -231,14 +221,6 @@ feature {NONE} -- Implementation
 			else
 				Result := c_Log4e_nt_debug
 			end
-		end
-		
-feature {NONE} -- Removal
-
-	dispose is
-			-- Close the event log file handle.
-		do
-			close
 		end
 
 feature {NONE} -- External routines

@@ -23,5 +23,19 @@ feature -- Rendering
 		ensure
 			formatted_exists: Result /= Void
 		end
+
+	header: STRING is
+			-- Format a header for this layout.
+		deferred
+		ensure
+			header_exists: Result /= Void
+		end
 		
+	footer: STRING is
+			-- Format a footer for this layout.
+		deferred
+		ensure
+			footer_exists: Result /= Void
+		end
+	
 end -- class LOG_LAYOUT

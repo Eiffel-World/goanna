@@ -106,6 +106,7 @@ feature {NONE} -- Implementation
 				end
   				
   				-- rename current log file
+  				stream.put_string (layout.footer)
   				stream.close
   				stream.change_name (name + ".1" )
 				

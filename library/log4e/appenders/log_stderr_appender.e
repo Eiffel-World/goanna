@@ -14,21 +14,10 @@ class
 inherit
 
 	LOG_APPENDER
-		redefine
-			layout
-		end
 
 creation
 	
 	make
-
-feature -- Status Report
-
-	layout: LOG_LAYOUT is
-			-- Use a simple layout for console output
-		once
-			create {LOG_SIMPLE_LAYOUT} Result
-		end
 	
 feature -- Basic Operations
 
