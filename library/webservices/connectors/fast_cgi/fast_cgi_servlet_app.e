@@ -79,9 +79,13 @@ feature -- Basic operations
 					 then
 						servlet_found := True
 					else
-						slash_index := servlet_name.last_index_of (Slash.to_character, servlet_name.count)
-						debug ("Fast CGI servlet app")
-							info (Servlet_app_log_category, "Slash index is " + slash_index.out)
+						if servlet_name.count >0 then
+							slash_index := servlet_name.last_index_of (Slash.to_character, servlet_name.count)
+							debug ("Fast CGI servlet app")
+								info (Servlet_app_log_category, "Slash index is " + slash_index.out)
+							end
+						else
+							slash_index := 0
 						end
 						if slash_index > 0 then
 							servlet_name := servlet_name.substring (1, slash_index - 1)
