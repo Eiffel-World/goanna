@@ -11,6 +11,10 @@ indexing
 deferred class
 	DOM_SERIALIZER
 
+inherit
+
+	KL_IMPORTED_OUTPUT_STREAM_ROUTINES
+
 feature -- Initialization
 
 	make is
@@ -22,7 +26,7 @@ feature -- Initialization
 		
 feature -- Status report
 
-	output: IO_MEDIUM
+	output: like OUTPUT_STREAM_TYPE
 			-- Output stream to serialize to.
 
 	indent_amount: INTEGER
@@ -36,7 +40,7 @@ feature -- Status report
 			
 feature -- Status setting
 
-	set_output (output_medium: IO_MEDIUM) is
+	set_output (output_medium: like OUTPUT_STREAM_TYPE) is
 			-- Set the output stream that this serializer will write to.
 		require
 			output_medium_exists: output_medium /= Void			
