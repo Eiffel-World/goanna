@@ -36,37 +36,10 @@ feature -- Initialization
 
 feature -- Serialization
 
-	serialize (doc: DOM_DOCUMENT) is
-			-- Serialize 'doc' to specified output medium.
-		local
-			doc_nodes: DOM_NODE_LIST
-			index: INTEGER
-		do
-			-- output document declaration
-			output.put_string ("<?xml version=%"1.0%" encoding=%"ISO-8859-1%" standalone=%"yes%"?>")
-			from
-				doc_nodes := doc.child_nodes
-			variant
-				doc_nodes.length - index
-			until
-				index >= doc_nodes.length
-			loop
-				serialize_new_line
-				serialize_node_recurse (doc_nodes.item (index), 0)
-				index := index + 1
-			end
-		end
-
-	serialize_node (node: DOM_NODE) is
+	serialize (node: DOM_NODE) is
 			-- Serialize 'node' to specified output medium
 		do
 			serialize_node_recurse (node, 0)
-		end
-		
-	serialize_element (element: DOM_ELEMENT) is
-			-- Serialize 'element' to specified output medium
-		do
-			serialize_element_recurse (element, 0)
 		end
 		
 feature {NONE} -- Implementation
@@ -87,8 +60,9 @@ feature {NONE} -- Implementation
 			-- TODO: when Entity_node                 then serialize_entity (node)
 			when Processing_instruction_node then serialize_processing_instruction (node)
 			when Comment_node                then serialize_comment (node)
-			-- TODO: when Document_node               then serialize_document (node)
-			when Document_type_node          then serialize_doctype (node)
+			when Document_node               then serialize_document (node)
+			when Document_type_node          then serialize_document_type (node)
+			-- TODO: when Document_fragment_node      then serialize_document_fragment (node)
 			when Notation_node               then serialize_notation (node)
 			else
 				debug ("unhandled_node_types")
@@ -249,7 +223,7 @@ feature {NONE} -- Node-specific serialization
 	
 
 	serialize_comment (node: DOM_NODE) is
-			-- Serialize 'node' to output stream
+			-- Serialize 'node' to output stream.
 		require
 			valid_node_type: node.node_type = Comment_node
 		do
@@ -258,7 +232,36 @@ feature {NONE} -- Node-specific serialization
 			output.put_string ("-->")
 		end
 	
-	serialize_doctype (doctype: DOM_NODE) is
+	serialize_document (node: DOM_NODE) is
+			-- Serialize 'node' output medium.
+		require
+			valid_node_type: node.node_type = Document_node
+		local
+			doc_nodes: DOM_NODE_LIST
+			index: INTEGER
+			is_xml_declared: BOOLEAN
+		do
+			-- output document declaration
+			-- TODO: declare 'is_xml_declared' as attribute
+			--       and add required setters
+			is_xml_declared := True
+			if is_xml_declared then
+				output.put_string ("<?xml version=%"1.0%" encoding=%"ISO-8859-1%" standalone=%"yes%"?>")
+			end
+			from
+				doc_nodes := node.child_nodes
+			variant
+				doc_nodes.length - index
+			until
+				index >= doc_nodes.length
+			loop
+				serialize_new_line
+				serialize_node_recurse (doc_nodes.item (index), 0)
+				index := index + 1
+			end
+		end
+
+	serialize_document_type (doctype: DOM_NODE) is
 			-- Serialize 'doctype' to output stream
 		require
 			valid_node_type: doctype.node_type = Document_type_node
