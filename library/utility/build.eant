@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<project name="kernel" inherit="${GOBO}/misc/ge2e.eant" default="help">
+
+	<description>
+		description: "Eiffel Ant file for the Goanna Utility Library"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO build.xml files"
+	</description>
+
+	<target name="help">
+		<echo message="usage:"/>
+		<echo message="   geant install"/>
+		<echo message="   geant clean"/>
+		<echo message="   geant clobber"/>
+	</target>
+
+	<target name="install">
+		<description>
+			Install the Goanna Kernel Library.
+			Generate Eiffel files from .ge files.
+		</description>
+		
+		<set name="gepp_dir" value="."/>
+		<set name="spec_dir" value="spec"/>
+		<set name="gepp_file" value="bit_manipulation"/>
+		<geant target="ge2e"/>
+		<set name="gepp_file" value="character_manipulation"/>
+		<geant target="ge2e"/>
+		<set name="gepp_file" value="ref_type_routines"/>
+		<geant target="ge2e"/>
+		<set name="gepp_file" value="string_manipulation"/>
+		<geant target="ge2e"/>
+	</target>
+
+	<target name="clean">
+		<description>
+			Remove intermediary generated files.
+		</description>
+
+		<ve clean="utility" recursive="true"/>
+	</target>
+
+	<target name="clobber">
+		<description>
+			Remove all generated files.
+		</description>
+
+		<geant target="clean"/>
+		<delete directory="spec"/>
+	</target>
+
+</project>
