@@ -56,8 +56,10 @@ feature {PRODUCER_CONSUMER_CONTROL} -- Basic operations
 					if not done then
 						debug ("producer_consumer") print ("consumer retrieving request%N") end
 						next := request_queue.next
+						debug ("producer_consumer") print ("consumer unlocking%N") end						
 						mutex.unlock
 						process (next)
+						debug ("producer_consumer") print ("consumer relocking%N") end
 						mutex.lock
 					end
 				end
@@ -65,8 +67,8 @@ feature {PRODUCER_CONSUMER_CONTROL} -- Basic operations
 					debug ("producer_consumer") print ("consumer waiting%N") end
 					condition.wait (mutex)
 				end
-				mutex.unlock
 				debug ("producer_consumer") print ("consumer unlocking%N") end
+				mutex.unlock
 			end
 			debug print (thread_id.out + " terminated%N") end
 		end

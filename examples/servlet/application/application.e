@@ -76,7 +76,7 @@ feature {NONE} -- Implementation
 			from
 				c := 1
 			until
-				c > 5
+				c > 1
 			loop
 				create consumer.make (Current, queue)
 				processor.add_consumer (consumer)
