@@ -48,6 +48,7 @@ feature -- Initialisation
 	make is
 			-- Process the request and exit
 		do
+			initialise_logger
 			register_servlets
 			run
 		end
@@ -91,6 +92,18 @@ feature {NONE} -- Implementation
 	
 	Servlet_app_log_category: STRING is "servlet.app"
 	
+	initialise_logger is
+			-- Set logger appenders
+		local
+			appender: LOG_APPENDER
+			layout: LOG_LAYOUT
+		do
+			create {LOG_FILE_APPENDER} appender.make ("log.txt", True)
+			create {LOG_PATTERN_LAYOUT} layout.make ("&d [&-6p] &c - &m%N")
+			appender.set_layout (layout)
+			log_hierarchy.category (Servlet_app_log_category).add_appender (appender)
+		end
+		
 	handle_missing_servlet (resp: CGI_SERVLET_RESPONSE) is
 			-- Send error page indicating missing servlet
 		require
