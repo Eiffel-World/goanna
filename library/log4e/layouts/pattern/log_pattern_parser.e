@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 			from
 				i := 1
 				create current_literal.make (32)
-				create formatting_info
+				create formatting_info.make
 			until
 				i > pattern_length
 			loop
@@ -148,12 +148,14 @@ feature {NONE} -- Implementation
 					when '-' then
 						formatting_info.set_left_align
 					when '.' then
+						state := Dot_state
+					else
 						if c >= '0' and c <= '9' then
 							formatting_info.set_min (c.code - Zero)
 							state := Min_state
+						else
+							finalize_converter (c)
 						end
-					else
-						finalize_converter (c)
 					end
 				when Min_state then
 					current_literal.append_character (c)

@@ -11,6 +11,20 @@ indexing
 class
 	LOG_FORMATTING_INFO
 	
+creation
+	
+	make
+	
+feature -- Initialisation
+
+	make, reset is 
+			-- Initialise to default values
+		do
+			min := -1
+			max := 2_147_483_647
+			left_align := False
+		end
+		
 feature -- Status report
 
 	max: INTEGER
@@ -49,14 +63,6 @@ feature -- Status setting
 	set_right_align is
 			-- Format the string right aligned
 		do
-			left_align := False
-		end
-	
-	reset is
-			-- Reset to default values
-		do
-			max := 0
-			min := 0
 			left_align := False
 		end
 		

@@ -57,7 +57,7 @@ feature -- Basic operations
 			else
 				len := s.count
 				if len > max then
-					sbuf.append (s.substring (1, len - max))
+					sbuf.append (s.substring (len - max, len + 1))
 				elseif len < min then
 					if left_align then
 						sbuf.append (s)
@@ -83,17 +83,21 @@ feature {NONE} -- Implementation
 			converted_string_exists: Result /= Void
 		end
 	
-	space_pad (str: STRING; size: INTEGER) is
-			-- Pad 'str' with space characters so that is
-			-- is at least 'size' characters in length.
+	space_pad (str: STRING; length: INTEGER) is
+			-- Pad 'str' with 'length' space characters.
 		require
 			str_exists: str /= Void
-			positive_size: size >= 0
+			positive_length: length >= 0
+		local
+			pad: STRING
 		do
+			create pad.make (length)
+			pad.fill_blank
+			str.append (pad)
 		ensure
-			correct_size: str.count >= size
+			correct_size: str.count >= old str.count + length
 		end
-		
+
 end -- LOG_PATTERN_CONVERTER
 
 	

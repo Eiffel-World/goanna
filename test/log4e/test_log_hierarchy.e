@@ -389,7 +389,7 @@ feature -- Test
 		local
 			converter: LOG_PATTERN_PARSER
 		do
-			create converter.make ("a &m test")
+			create converter.make ("[&30m]")
 			--assert ("parsing_ok", converter.ok)
 		end
 		
@@ -402,7 +402,7 @@ feature -- Test
 			create h.make (Debug_p)
 			cat := h.category ("test")			
 			create {LOG_STDOUT_APPENDER} appender.make ("stdout")
-			appender.set_layout (create {LOG_PATTERN_LAYOUT}.make ("&d [&p] &c - &m%N"))
+			appender.set_layout (create {LOG_PATTERN_LAYOUT}.make ("&d [&-6p] &c - &.10m%N"))
 			cat.add_appender (appender)	
 			cat.fatal ("This is fatal")
 			cat.error ("This is an error")
