@@ -105,18 +105,19 @@ feature {NONE} -- Implementation
 	init_servlets is
 			-- Initialise servlets
 		local
-			test_servlet: HTTP_SERVLET	
+			servlet: HTTP_SERVLET	
 		do
 			servlet_manager.set_servlet_mapping_prefix ("servlet")
 			servlet_manager.set_config (config)
-			create {TEST_SERVLET} test_servlet.init (config)
-			servlet_manager.register_servlet (test_servlet, "basic")
-			create {XMLE_TEST_SERVLET} test_servlet.init (config)
-			servlet_manager.register_servlet (test_servlet, "xmle")
-			create {DOM_TEST_SERVLET} test_servlet.init (config)
-			servlet_manager.register_servlet (test_servlet, "dom")
-			create {FILE_SERVLET} test_servlet.init (config)
-			servlet_manager.register_default_servlet (test_servlet)
+			create {TEST_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "basic")
+			create {XMLE_TEST_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "xmle")
+			create {DOM_TEST_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "dom")
+			create {FILE_SERVLET} servlet.init (config)
+			servlet_manager.register_default_servlet (servlet)
+			servlet_manager.register_servlet (servlet, "file")
 		end
 		
 	server_socket: HTTPD_SERVER_SOCKET

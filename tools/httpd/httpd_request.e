@@ -119,29 +119,41 @@ feature {NONE} -- Implementation
 			query_index, path_index, slash_index: INTEGER
 			query, script, path, servlet_prefix: STRING
 		do
+			
 			query_index := token.index_of ('?', 1)
 			if query_index /= 0 then
 				query := token.substring (1, query_index - 1)
 				parameters.force (token.substring (query_index + 1, token.count), Query_string_var)
 			else
+				parameters.force ("", Query_string_var)
 				query := token
 			end
+			-- assume this is not a servlet request and set the path info to the request
+			path := query
 			-- if the query begins with the virtual servlet prefix then the script name is
 			-- the portion including the prefix and all characters before the next slash.
 			-- everything after the next slash is the path info.
-			servlet_prefix := serving_socket.servlet_manager.servlet_mapping_prefix
+			servlet_prefix := "/" + serving_socket.servlet_manager.servlet_mapping_prefix
+			script := query
 			if query.count > servlet_prefix.count + 1 then
 				if query.substring (1, servlet_prefix.count).is_equal (servlet_prefix) then
 					slash_index := query.index_of ('/', servlet_prefix.count + 1)
 					if slash_index /= 0 then
-						path := query.substring (slash_index + 1, query.count)
+						script := query.substring (1, slash_index - 1)
+						path := query.substring (slash_index, query.count)
+					else
+						script := query.substring (1, query.count)
 					end
-					script := query.substring (1, servlet_prefix.count 
-							+ slash_index.max (query.count))
 				end
 			end
 			parameters.force (script, Script_name_var)
 			parameters.force (path, Path_info_var)
+			-- set the translated path if needed
+			if not path.is_empty then
+				-- path includes leading slash
+				parameters.force (serving_socket.servlet_manager.config.document_root + path, 
+					Path_translated_var)
+			end
 		end
 		
 	parse_header (header: STRING) is
