@@ -19,6 +19,8 @@ inherit
 			make as parent_node_make
 		export
 			{NONE} parent_node_make
+		redefine
+			append_child, insert_before, remove_child
 		end
 
 creation
@@ -209,6 +211,83 @@ feature -- Access
 		do
 		end
 		
+	append_child (new_child: DOM_NODE): DOM_NODE is
+			-- Adds the node `newChild' to the end of the list of children
+			-- of this node. If the `newChild' is already in the tree,
+			-- it is first removed.
+			-- If `newChild' is an element it is set as the document element.
+			-- If `newChild' is a document type element then it is set as the
+			-- the doc_type element.
+			-- Parameters
+			--    newChild   The node to add. If it is a DocumentFragment
+			--               object, the entire contents of the document
+			--               fragment are moved into the child list
+			--               of this node
+			-- Return Value
+			--    The node added.
+		do
+			Result := Precursor (new_child)
+			if new_child.node_type = Element_node then
+				document_element ?= new_child
+			elseif new_child.node_type = Document_type_node then
+				doctype ?= new_child
+			end
+		ensure then
+			doc_element_if_element: new_child.node_type = Element_node implies document_element = new_child
+			doctype_if_doc_type_element: new_child.node_type = Document_type_node implies doctype = new_child
+		end
+		
+	insert_before (new_child: DOM_NODE; ref_child: DOM_NODE): DOM_NODE is
+			-- Inserts the node newChild before the existing child node
+			-- `refChild'. If `refChild' is `Void', insert `newChild' at the end
+			-- of the list of children. If `newChild' is a DocumentFragment
+			-- object, all of its children are inserted, in the same order,
+			-- before `refChild'. If the `newChild' is already in the tree,
+			-- it is first removed.
+			-- If `newChild' is an element it is set as the document element.
+			-- If `newChild' is a document type element then it is set as the
+			-- the doc_type element.
+			-- Parameters
+			--    newChild   The node to insert.
+			--    refChild   The reference node, i.e., the node before
+			--               which the new node must be inserted.
+			-- Return Value
+			--    The node being inserted.
+			-- (from DOM_NODE_IMPL)
+		do
+			Result := Precursor (new_child, ref_child)
+			if new_child.node_type = Element_node then
+				document_element ?= new_child
+			elseif new_child.node_type = Document_type_node then
+				doctype ?= new_child
+			end
+		ensure then
+			doc_element_if_element: new_child.node_type = Element_node implies document_element = new_child
+			doctype_if_doc_type_element: new_child.node_type = Document_type_node implies doctype = new_child
+		end
+		
+	remove_child (old_child: DOM_NODE): DOM_NODE is
+			-- Removes the child node indicated by oldChild from the list
+			-- of children, and returns it.
+			-- If 'old_child' is the document element then unset it.
+			-- If 'old_child' is the document type then unset it.
+			-- Parameters
+			--    oldChild   The node being removed.
+			-- Return Value
+			--    The node removed.
+			-- (from DOM_NODE_IMPL)
+		do
+			Result := Precursor (old_child)
+			if old_child = document_element then
+				document_element := Void
+			elseif old_child = doctype then
+				doctype := Void
+			end
+		ensure then
+			doc_element_unset_if_equal: old_child = old document_element implies document_element = Void
+			doctype_unset_if_equal: old_child = old doctype implies doctype = Void
+		end
+		
 feature -- Document Traversal
 
 	create_node_iterator (root: DOM_NODE; what_to_show: INTEGER;
@@ -289,24 +368,6 @@ feature -- Validation Utility
 			-- Can 'new_node' be imported into this document?
 		do
 			Result := True
-		end
-
-feature -- Convenience routines
-
-	set_document_element (e: DOM_ELEMENT) is
-			-- Set the root document element.
-		do
-			document_element := e
-		end
-
-	set_doctype (new_doctype: DOM_DOCUMENT_TYPE) is
-			-- Set the document type.
-			-- Non DOM utility.
-		local
-			discard: DOM_NODE
-		do
-			doctype := new_doctype
-			discard := append_child (doctype)
 		end
 		
 end -- class DOM_DOCUMENT_IMPL

@@ -329,31 +329,6 @@ feature -- Validation Utility
 			new_node_exists: new_node /= Void
 		deferred
 		end
-
-feature -- Convenience routines
-
-	set_document_element (e: DOM_ELEMENT) is
-			-- Set the root document element.
-			-- Non DOM utility.
-		require
-			element_exists: e /= Void
-			-- document_has_element: has_child (e)
-		deferred
-		ensure
-			document_element_set: document_element = e
-		end
-
-	set_doctype (new_doctype: DOM_DOCUMENT_TYPE) is
-			-- Set the document type.
-			-- Non DOM utility.
-		require
-			doctype_exists: new_doctype /= Void
-			correct_owner: new_doctype.owner_document = Current
-		deferred
-		ensure
-			doctype_set: doctype = new_doctype
-			doctype_added: has_node (new_doctype)
-		end
 		
 invariant
 

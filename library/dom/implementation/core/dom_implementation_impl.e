@@ -31,7 +31,6 @@ feature
 		do
 			!DOM_DOCUMENT_IMPL! Result.make (doctype)
 			document_element := Result.create_element_ns (namespace_uri, qualified_name)
-			Result.set_document_element (document_element)
 			discard := Result.append_child (document_element)
 		end
 

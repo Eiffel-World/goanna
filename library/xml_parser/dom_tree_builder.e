@@ -114,7 +114,6 @@ feature {NONE} -- Parser call backs
 			-- set new node as root document element if not already set.
 			if document_element = Void then
 				document_element := new_element
-				document.set_document_element (document_element)
 				node_holder.set_node (document.append_child (document_element))
 			else
 				node_holder.set_node (nodes.item_node_as_element.append_child (new_element))
@@ -285,6 +284,8 @@ feature {NONE} -- Parser call backs
 	on_end_doctype is
 			-- This is called for the start of the DOCTYPE declaration when the
 			-- closing > is encountered, but after processing any external subset.
+		local
+			discard: DOM_NODE
 		do
 			debug ("parser_events")
 				print ("on_end_doctype")
@@ -292,7 +293,7 @@ feature {NONE} -- Parser call backs
 			end
 			-- store the doctype
 			document_type.set_owner_document (document)
-			document.set_doctype (document_type)
+			discard := document.append_child (document_type)
 		end
 
 	on_notation_declaration (notation_name, base, system_id, public_id: UCSTRING) is
