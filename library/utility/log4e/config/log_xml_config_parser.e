@@ -497,7 +497,7 @@ feature {NONE} -- Implementation
 		require
 			element_exists: element /= Void
 		local
-			name, type: UC_STRING
+			name: UC_STRING
 		do
 			if element.has_attribute_by_name (Name_attribute) then
 				name := element.attribute_by_name (Name_attribute).value

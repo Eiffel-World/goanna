@@ -25,7 +25,12 @@ inherit
 		export
 			{NONE} all
 		end	
-	
+
+	KL_SHARED_FILE_SYSTEM
+		export
+			{NONE} all
+		end
+
 creation
 	
 	make
@@ -74,8 +79,18 @@ feature {NONE} -- Implementation
 	
 	rollover_required: BOOLEAN is
 			-- Has the current log file reached the maximum_file_size?
+		local
+			current_size: INTEGER
 		do
-			Result := stream.count >= maximum_file_size 
+			-- original version replaced because of compiler incompatibilities
+			-- Result := stream.count >= maximum_file_size 
+			-- new version works with all compilers
+			stream.flush
+			current_size := file_system.file_count (stream.name) 
+			if current_size = -1 then
+        		internal_log.error ("Unable to determine size of log file '" + stream.name + "' for rollover")
+        	end
+        	Result := current_size >= maximum_file_size	
 		end
 	
 	rollover is
