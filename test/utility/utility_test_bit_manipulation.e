@@ -7,7 +7,7 @@ indexing
 	date:       "$Date$"
 	revision:   "$Revision$"
 
-deferred class TEST_BIT_MANIPULATION
+deferred class UTILITY_TEST_BIT_MANIPULATION
 
 inherit
 

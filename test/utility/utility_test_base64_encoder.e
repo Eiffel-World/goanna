@@ -8,7 +8,7 @@ indexing
 	date:       "$Date$"
 	revision:   "$Revision$"
 
-deferred class TEST_BASE64_ENCODER
+deferred class UTILITY_TEST_BASE64_ENCODER
 
 inherit
 

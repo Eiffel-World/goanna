@@ -8,7 +8,7 @@ indexing
 	date:       "$Date$"
 	revision:   "$Revision$"
 
-deferred class TEST_HTTP_UTILITY_FUNCTIONS
+deferred class UTILITY_TEST_HTTP_UTILITY_FUNCTIONS
 
 inherit
 
