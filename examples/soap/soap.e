@@ -113,10 +113,11 @@ feature {NONE} -- Implementation
 	init_soap is
 			-- Initialise SOAP RPC calls
 		local
-			account_service, address_service, calculator_service, test_service: SERVICE
+			account_service, address_service, calculator_service, test_service: SERVICE_PROXY
 			addresses: ADDRESS_REGISTER
 			calculator: CALCULATOR
 			test: TEST_SOAP
+			test_interop: TEST_SOAP_INTEROP
 		do
 			create addresses.make
 			create address_service.make
@@ -137,6 +138,8 @@ feature {NONE} -- Implementation
 			test_service.register (test~test_double (?), "testDouble")
 			test_service.register (test~test_string (?), "testString")
 			registry.register (test_service, "urn:testSOAP")
+			create test_interop.make
+			registry.register (test_interop, "urn:soapinterop")
 		end
 
 end -- class SOAP

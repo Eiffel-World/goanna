@@ -64,7 +64,7 @@ feature -- Basic operations
 			service_name, action: STRING
 			response: STRING
 			ref: INTEGER_REF
-			agent_service: SERVICE
+			agent_service: SERVICE_PROXY
 			parameters: TUPLE [ANY]
 			first: DOM_ELEMENT
 		do

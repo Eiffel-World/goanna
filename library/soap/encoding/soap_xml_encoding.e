@@ -38,10 +38,10 @@ feature -- Unmarshalling
 			if xsd_type.is_equal (Xsd_string) then
 				-- xsd:string
 				Result := value
-			elseif xsd_type.is_equal (Xsd_decimal) or xsd_type.is_equal (Xsd_int) then
-				-- xsd:decimal
-				Result := unmarshall_decimal (value)
-			elseif xsd_type.is_equal (Xsd_float) then
+			elseif xsd_type.is_equal (Xsd_int) then
+				-- xsd:int
+				Result := unmarshall_int (value)
+			elseif xsd_type.is_equal (Xsd_float) or xsd_type.is_equal (Xsd_decimal) then
 				-- xsd:float
 				Result := unmarshall_float (value)
 			elseif xsd_type.is_equal (Xsd_double) then
@@ -109,20 +109,20 @@ feature -- Marshalling
 	
 feature {NONE} -- Implementation
 
-	unmarshall_decimal (value: STRING): ANY is
-			-- Unmarshall decimal XML Schema value
+	unmarshall_int (value: STRING): ANY is
+			-- Unmarshall int XML Schema value
 		require
 			value_exists: value /= Void
 		local
-			decimal: INTEGER_REF
+			int: INTEGER_REF
 		do
-			create decimal
+			create int
 			if value.is_integer then
-				decimal.set_item (value.to_integer)
+				int.set_item (value.to_integer)
 			else
-				decimal.set_item (0)
+				int.set_item (0)
 			end
-			Result := decimal
+			Result := int
 		end
 		
 	unmarshall_boolean (value: STRING): ANY is

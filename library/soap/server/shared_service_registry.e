@@ -13,7 +13,7 @@ class
 
 feature -- Access
 
-	registry: REGISTRY [SERVICE] is
+	registry: SERVICE_REGISTRY is
 			-- Shared registry
 		once
 			create Result.make
