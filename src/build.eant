@@ -81,6 +81,7 @@
 		</description>
 
 		<geant file="build.eant" target="${target}" dir="xmle"/>
+		<geant file="build.eant" target="${target}" dir="pd"/>
 		<geant file="build.eant" target="${target}" dir="bdv"/>
 
 	</target>

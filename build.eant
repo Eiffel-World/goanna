@@ -82,6 +82,7 @@
 		<geant file="build.eant" target="${target}" dir="library"/>
 		<geant file="build.eant" target="${target}" dir="examples"/>
 		<geant file="build.eant" target="${target}" dir="src"/>
+		<geant file="build.eant" target="${target}" dir="test"/>
 	</target>
 
 </project>
