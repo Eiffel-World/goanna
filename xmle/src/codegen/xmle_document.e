@@ -59,7 +59,7 @@ feature -- Basic Operations
 			create stream.make (4096)
 			serializer.set_output (stream)
 			serializer.serialize (document)
-			Result ?= serializer.output
+			Result ?= stream
 		ensure
 			result_exists: Result /= Void
 		end

@@ -27,6 +27,9 @@ feature -- Status report
 	line_separator: STRING
 			-- Line separator
 
+	is_compact_format: BOOLEAN
+			-- Is the serializer using the compact format.
+			
 feature -- Status setting
 
 	set_output (output_medium: IO_MEDIUM) is
@@ -37,6 +40,18 @@ feature -- Status setting
 			output := output_medium
 		ensure
 			output_set: output = output_medium
+		end
+	
+	set_compact_format is
+			-- Set compact format
+		do
+			is_compact_format := True
+		end
+	
+	set_pretty_format is
+			-- Set pretty (indented) format
+		do
+			is_compact_format := False
 		end
 	
 feature -- Serialization

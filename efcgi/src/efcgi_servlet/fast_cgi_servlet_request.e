@@ -33,6 +33,7 @@ feature {NONE} -- Initialisation
 			request_exists: fcgi_request /= Void
 		do
 			internal_request := fcgi_request
+			create parameters.make (5)
 			parse_parameters
 		end
 	
@@ -41,26 +42,25 @@ feature -- Access
 	get_parameter (name: STRING): STRING is
 			-- Returns the value of a request parameter
 		do
-			
+			Result := clone (parameters.item (name))
 		end
 
 	get_parameter_names: LINEAR [STRING] is
 			-- Return all parameter names
 		do
-			
+			Result := parameters.current_keys.linear_representation
 		end
 
 	get_parameter_values: LINEAR [STRING] is
 			-- Return all parameter values
 		do
-			
+			Result := parameters.linear_representation
 		end
 	
 	get_header (name: STRING): STRING is
 			-- Get the value of the specified request header.
 		do
-			Result := internal_request.parameters.item (name)
-
+			Result := clone (internal_request.parameters.item (name))
 		end
 
 	get_headers (name: STRING): LINEAR [STRING] is
@@ -205,7 +205,7 @@ feature -- Status report
 			-- either the servlet name or a path to the servlet, but does not include
 			-- any extra path information or a query string.
 		do
-			
+			Result := get_header (Script_name_var)
 		end
 	
 feature {NONE} -- Implementation
@@ -213,7 +213,7 @@ feature {NONE} -- Implementation
 	internal_request: FAST_CGI_REQUEST
 		-- Internal request information and stream functionality.
 	
-	parameters: HASH_TABLE [LINKED_LIST [STRING], STRING]
+	parameters: HASH_TABLE [STRING, STRING]
 			-- Table of parameter values with support for multiple values per parameter name
 			
 	parse_parameters is
@@ -233,12 +233,53 @@ feature {NONE} -- Implementation
 		end
 	
 	parse_parameter_string (str: STRING) is
-			-- Parse the parameter string 'str' and build parameter structure
+			-- Parse the parameter string 'str' and build parameter structure.
+			-- Parameters are of the form 'name=value' separated by '&' with all
+			-- spaces and special characters encoded. An exception is an image map 
+			-- coordinate pair that is of the form 'value,value'. Any amount of
+			-- whitespace may separate each token.
 		local
-			
+			i, e, next: INTEGER
+			pair, name, value: STRING
+			tokenizer: STRING_TOKENIZER
 		do
 			-- parameters can appear more than once. Add a parameter value for each instance.
-			
+			debug ("query_string_parsing")
+				print (generator + ".parse_parameter_string str = " + quoted_eiffel_string_out (str) + "%R%N")
+			end
+			create tokenizer.make (str)
+			tokenizer.set_token_separator ('&')
+			from
+				tokenizer.start
+			until
+				tokenizer.off
+			loop
+				-- get the parameter pair token
+				pair := tokenizer.token
+				-- find equal character
+				e := pair.index_of ('=', 1)
+				if e > 0 then
+					name := pair.substring (1, e - 1)
+					value := pair.substring (e + 1, pair.count)
+					-- add the parameter
+					add_parameter (name, decode_url(value))
+				else
+					-- TODO: check for a coordinate pair
+				end
+				tokenizer.forth
+			end
 		end
 		
+	add_parameter (name, value: STRING) is
+			-- Set decoded 'value' for the parameter 'name' to the parameters structure.
+			-- Replace any existing parameter value with the same name.
+		do
+			debug ("query_string_parsing")
+				print (generator + ".add_parameter name = " 
+					+ quoted_eiffel_string_out (name) 
+					+ " value = " + quoted_eiffel_string_out (value) + "%R%N")
+			end	
+			parameters.force (value, name)
+		end
+	
 end -- class FAST_CGI_SERVLET_REQUEST

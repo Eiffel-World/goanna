@@ -22,6 +22,10 @@ inherit
 			{NONE} all
 		end
 
+	HTTP_STATUS_CODES
+		export
+			{NONE} all
+		end
 create
 	make
 
@@ -42,13 +46,33 @@ feature -- Basic operations
 	process_request is
 			-- Process a request.
 		local
-			internal_request: FAST_CGI_SERVLET_REQUEST
-			internal_response: FAST_CGI_SERVLET_RESPONSE
+			req: FAST_CGI_SERVLET_REQUEST
+			resp: FAST_CGI_SERVLET_RESPONSE
+			path: STRING
 		do
-			create internal_request.make (request)
-			create internal_response.make (request)
-			-- TODO: dispatch request to correct servlet
-			get_servlet ("test").service (internal_request, internal_response)	
+			create req.make (request)
+			create resp.make (request)
+			-- dispatch to the registered servlet using the path info as the registration name.
+			path := req.get_header (Path_info_var)
+			if path /= Void then
+				-- remove leading slash from path
+				path.tail (path.count - 1)
+			end
+			if path /= Void and has_registered_servlet (path) then
+				get_servlet (path).service (req, resp)
+			else
+				handle_missing_servlet (resp)
+			end	
 		end
 		
+feature {NONE} -- Implementation
+
+	handle_missing_servlet (resp: FAST_CGI_SERVLET_RESPONSE) is
+			-- Send error page indicating missing servlet
+		require
+			resp_exists: resp /= Void
+		do
+			resp.send_error (Sc_not_found)
+		end
+	
 end -- class FAST_CGI_SERVLET_APP

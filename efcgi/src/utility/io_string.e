@@ -266,6 +266,14 @@ feature -- Input
 	-- TODO: redefine those features that can resize a string and reposition the
 	-- index accordingly. 
 	
+feature -- Output
+
+	to_string: STRING is
+			-- Printable representation
+		do
+			Result ?= Current
+		end
+		
 feature {NONE} -- Implementation
 
 	position: INTEGER

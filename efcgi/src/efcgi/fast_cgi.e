@@ -125,7 +125,7 @@ feature -- FGCI interface
 			request_exists: request /= Void
 		do
 			if request.parameters.has (name) then
-				Result := request.parameters.item (name)
+				Result := clone(request.parameters.item (name))
 			end
 		end
 

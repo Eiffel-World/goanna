@@ -24,6 +24,9 @@ feature -- Access
 	Sc_moved_temporarily: INTEGER is 302
 			-- Resource has been moved temporarily.
 			
+	Sc_not_found: INTEGER is 404
+			-- Resource could not be found.
+			
 	Sc_not_implemented: INTEGER is 501
 			-- Server does not support the functionality required to service the
 			-- request.
