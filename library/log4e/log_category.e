@@ -82,10 +82,10 @@ feature -- Status Report
 		require
 			check_priority_exists: check_priority /= Void
 		do
-			Result := context.disabled < check_priority.level and then priority >= check_priority
+			Result := context.disabled < check_priority.level and then priority <= check_priority
 		ensure
 			true_if_priority_enabled: Result = (context.disabled < check_priority.level
-						  and priority >= check_priority)
+						  and priority <= check_priority)
 		end
 	
 feature -- Status Setting
@@ -151,7 +151,7 @@ feature -- Status Setting
 			until
 				c.off
 			loop
-				c.item.do_append (event)
+				c.item.append (event)
 				c.forth
 			end
 			-- if additive then recurse to parent

@@ -9,7 +9,14 @@ indexing
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 	
 deferred class LOG_APPENDER
+		
+inherit
 	
+	LOG_FILTER_CONSTANTS
+--		export
+--			{NONE} all
+--		end
+		
 feature -- Initialisation
 	
 	make (new_name: STRING) is
@@ -20,6 +27,7 @@ feature -- Initialisation
 			new_name_exists: new_name /= Void
 		do
 			name := new_name
+			create filters.make
 		end
 	
 feature -- Status Report
@@ -33,7 +41,7 @@ feature -- Status Report
 			-- if no layout is used.
 		deferred
 		end
-			
+
 feature -- Status Setting
 	
 	close is
@@ -41,9 +49,43 @@ feature -- Status Setting
 		deferred
 		end
 	
-	do_append (event: LOG_EVENT) is
+	append (event: LOG_EVENT) is
 			-- Log event on this appender.
-		deferred
+		require
+			event_exists: event /= Void
+		local
+			done, accept: BOOLEAN
+			c: DS_LINKED_LIST_CURSOR [LOG_FILTER]
+		do
+			-- filter event through filters to determine
+			-- if it should be logged
+			if filters.is_empty then
+				do_append (event)
+			else
+				from
+					c := filters.new_cursor
+					c.start
+				until
+					c.off or done
+				loop
+					inspect c.item.decide (event)
+					when Filter_accept then
+						done := True
+						accept := True
+					when Filter_reject then
+						done := True
+					else -- Filter_neutral
+						c.forth	
+						if c.off then
+							done := True
+							accept := True
+						end
+					end	
+				end
+				if accept then
+					do_append (event)
+				end
+			end
 		end
 	
 	set_name (new_name: STRING) is
@@ -54,5 +96,52 @@ feature -- Status Setting
 			name := new_name
 		end
 	
+	add_filter (filter: LOG_FILTER) is
+			-- Add 'filter' to the list of filters to 
+			-- apply when determining if a log event will
+			-- be processed by this appender.
+		require
+			filter_exists: filter /= Void
+			filter_not_added: not has_filter (filter)
+		do
+			filters.force_last (filter)
+		ensure
+			filter_added: has_filter (filter)
+		end
+		
+	has_filter (filter: LOG_FILTER): BOOLEAN is
+			-- Is 'filter' in the list of filters for this
+			-- appender?
+		require
+			filter_exists: filter /= Void
+		do
+			Result := filters.has (filter)
+		end
+		
+	remove_filter (filter: LOG_FILTER) is
+			-- Remove 'filter' from the list of filters for this
+			-- appender.
+		require
+			filter_exists: filter /= Void
+			filter_added: has_filter (filter)
+		do
+			filters.delete (filter)
+		ensure
+			filter_removed: not has_filter (filter)
+		end
+		
+feature {NONE} -- Implementation
+
+	do_append (event: LOG_EVENT) is
+			-- Append 'event' to this appender
+		require
+			event_exists: event /= Void
+		deferred
+		end
+		
+	filters: DS_LINKED_LIST [LOG_FILTER]
+			-- Filters that determine if a log event is processed for this
+			-- appender or not.
+			
 end -- class LOG_APPENDER
 

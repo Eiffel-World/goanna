@@ -10,6 +10,10 @@ indexing
 	
 class LOG_PRIORITY
 	
+inherit
+	
+	COMPARABLE
+		
 creation
 	
 	make
@@ -36,14 +40,12 @@ feature -- Status Report
 	
 feature -- Comparison
 	
-	infix ">=" (other: like Current): BOOLEAN is
-			-- Is 'other' greater than or equal to Current
-		require
-			other_exists: other /= Void
+	infix "<" (other: like Current): BOOLEAN is
+			-- Is 'other' less than Current?
 		do
-			Result := level >= other.level
+			Result := level < other.level
 		end
-	
+
 end -- class LOG_PRIORITY
 
 						  

@@ -38,6 +38,10 @@ cluster
 
 	goanna_log4e:		"$GOANNA\library\log4e"
 
+	log4e_appenders (goanna_log4e): "$\appenders"
+
+	log4e_filters (goanna_log4e): "$\filters"
+
 	all "base":		"$ISE_EIFFEL/library/base"
 		exclude
 			"desc"; "table_eiffel3"; "CVS"; "EIFGEN"; 

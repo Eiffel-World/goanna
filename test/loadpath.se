@@ -2,6 +2,8 @@ ${GOBO}/library/loadpath.se
 ${GOANNA}/library/utility/
 ${GOANNA}/library/utility/spec/se/
 ${GOANNA}/library/log4e/
+${GOANNA}/library/log4e/appenders/
+${GOANNA}/library/log4e/filters/
 ${GOANNA}/test/utility/
 ${GOANNA}/test/log4e/
 ${GOANNA}/test/TESTGEN/
