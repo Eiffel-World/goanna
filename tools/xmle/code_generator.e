@@ -95,7 +95,7 @@ feature {NONE} -- Implementation
 			build_inheritance_clause
 			build_creation_routine
 			build_bdom_file_name_constant
---			build_id_element_functions
+			build_id_node_functions
 			create {PLAIN_TEXT_FILE} dest.make_open_write (class_file_name)
 			xmle_document_class.write (dest)
 			dest.close
@@ -131,11 +131,69 @@ feature {NONE} -- Implementation
 			group.add_feature (attr)
 		end	
 
+	build_id_node_functions is
+			-- Create a function for each node with an id, as stored in id_nodes table
+		local
+			group: EIFFEL_FEATURE_GROUP
+			routine: EIFFEL_ROUTINE
+			cursor: DS_HASH_TABLE_CURSOR [DOM_NODE, STRING]
+		do
+			create group.make ("Access")
+			xmle_document_class.add_feature_group (group)
+			-- iterate through all stored id nodes and create an access routine for each
+			from
+				cursor := document_wrapper.id_nodes.new_cursor
+				cursor.start
+			until
+				cursor.off
+			loop
+				create routine.make ("get_node_" + cursor.key)
+				routine.set_type (class_type_for_node (cursor.item.node_type))
+				routine.add_body_line ("Result := get_node_by_id (%"" + cursor.key + "%")")
+				group.add_feature (routine)
+				cursor.forth
+			end
+		end
+	
 	store_document is
 			-- Store the document object structure in the file 'bdom_file_name'.
 		do
 			document_wrapper.store_by_name (bdom_file_name)
 		end
 
+	class_type_for_node (node_type: INTEGER): STRING is
+			-- Return class type for 'node_type'
+		do
+			inspect
+				node_type
+			when Attribute_node then
+				Result := "DOM_ATTRIBUTE"
+			when Cdata_section_node then
+				Result := "DOM_CDATA_SECTION"
+			when Comment_node then
+				Result := "DOM_COMMENT"
+			when Document_fragment_node then
+				Result := "DOM_DOCUMENT_FRAGMENT"
+			when Document_node then
+				Result := "DOM_DOCUMENT"
+			when Document_type_node then
+				Result := "DOM_DOCUMENT_TYPE"
+			when Element_node then
+				Result := "DOM_ELEMENT"
+			when Entity_node then
+				Result := "DOM_ENTITY"
+			when Entity_reference_node then
+				Result := "DOM_ENTITY_REFERENCE"
+			when Notation_node then
+				Result := "DOM_NOTATION"
+			when Processing_instruction_node then
+				Result := "DOM_PROCESSING_INSTRUCTION"
+			when Text_node then
+				Result := "DOM_TEXT"
+			else
+				Result := "DOM_NODE"
+			end
+		end
+	
 end -- class CODE_GENERATOR
 

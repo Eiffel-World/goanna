@@ -164,7 +164,7 @@ feature
 	  ensure
 		 result_exists: Result /= Void
 		 result_is_old_child: Result = old_child
-		 removed: not has_node (old_child)
+--		 removed: not has_node (old_child)
       end
 
    append_child (new_child: DOM_NODE): DOM_NODE is

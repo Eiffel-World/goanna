@@ -14,7 +14,7 @@ indexing
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-class
+deferred class
 	DOM_NODE_ITERATOR
 
 feature -- Access

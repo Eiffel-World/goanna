@@ -21,18 +21,18 @@ inherit
 	
 feature -- Basic opterations
 
-	accept_node (node: DOM_NODE): BOOLEAN is
+	accept_node (node: DOM_NODE): INTEGER is
 			-- Test whether a specified node is visible in the logical view of a 
      		-- DOM_TREE_WALKER or DOM_NODE_ITERATOR. This function will be called by the 
      		-- implementation of DOM_TREE_WALKER and DOM_NODE_ITERATOR; it is not intended to 
-     						-- be called directly from user code.
-     				require
+     		-- be called directly from user code.
+     	require
      		node_exists: node /= Void
 		deferred
 		ensure
-			valid_result: Result := Filter_accept
-				or Result := Filter_reject
-				or Result := Filter_skip
+			valid_result: Result = Filter_accept
+				or Result = Filter_reject
+				or Result = Filter_skip
 		end
 	
 end -- class DOM_NODE_FILTER

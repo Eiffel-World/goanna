@@ -23,9 +23,9 @@ default
 	arguments("rich_iii.xml")
 	arguments("small.xml")
 	disabled_debug(yes)
-	debug("parser_events")
+	debug("xmle_id_nodes")
+	disabled_debug("parser_events")
 	disabled_debug("normalize")
-	debug(no)
 	line_generation(no)
 	profile(no)
 	trace(no)
@@ -34,17 +34,17 @@ default
 cluster
 	xmle:		"$GOANNA\tools\xmle"
 
-	dom:			"$GOANNA\library\dom"
+	dom:		"$GOANNA\library\dom"
 
 	dom_core (dom):		"$\core"
 
-	dom_traversal_range (dom):	"$\traversal-range"
+	dom_traversal_range (dom):		"$\traversal-range"
 
 	dom_impl (dom):		"$\implementation"
 
 	dom_impl_core (dom_impl):		"$\core"
 
-	dom_impl_traversal_range (dom_impl):	"$\traversal-range"
+	dom_impl_traversal_range (dom_impl):		"$\traversal-range"
 
 	dom_writer (dom):		"$\writer"
 

@@ -14,6 +14,10 @@ inherit
 
 	DOM_NODE
 
+	DOM_DOCUMENT_TRAVERSAL
+		-- This inheritance is not strictly DOM compliant but removes the need
+		-- to cast when creating an iterator.
+		
 feature
 
 	doctype: DOM_DOCUMENT_TYPE is

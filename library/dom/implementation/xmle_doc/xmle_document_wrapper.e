@@ -14,6 +14,11 @@ class
 inherit
 
 	STORABLE
+	
+	DOM_NODE_FILTER_CONSTANTS
+		export
+			{NONE} all
+		end
 
 create
 	make
@@ -45,18 +50,36 @@ feature -- Access
 		end
 
 feature {NONE} -- Implementation
-
-	Id_attribute_name: STRING is "id"
 	
 	collect_id_nodes is
 			-- Collect all nodes in 'document' with an 'id' attribute and
 			-- store a reference to the element in the 'id_elements' table.
+		local
+			iterator: DOM_NODE_ITERATOR
+			filter: ID_NODE_FILTER
+			current_node: DOM_NODE
 		do
-			-- check this node for 'id' attribute and store if found
---			if node.has_attributes and node.has_attribute (Id_attribute_name) then
---				id_nodes.force (node, node.get_attribute (Id_attribute_name))
---			end
-			
+			create filter
+			iterator := document.create_node_iterator (document, Show_all, filter, false)
+			from
+				current_node := iterator.next_node
+			until
+				current_node = Void
+			loop
+				debug ("xmle_id_nodes")
+					print (generator + ".collect_id_nodes: node = " + current_node.node_name.out + "%R%N")
+				end
+				check
+					id_attribute_exists: current_node.has_attributes and current_node.attributes.has_named_item (Id_attribute)
+				end
+				id_nodes.force (current_node, current_node.attributes.get_named_item (Id_attribute).node_value.out)
+				current_node := iterator.next_node
+			end
+		end
+	
+	Id_attribute: DOM_STRING is
+		once
+			create Result.make_from_string ("id")
 		end
 		
 invariant

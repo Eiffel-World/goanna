@@ -14,8 +14,8 @@ class
 feature -- Access
 
 	Filter_accept: INTEGER is 1
-	Filter_reject: INTEGER is 1
-	Filter_skip: INTEGER is 1
+	Filter_reject: INTEGER is 2
+	Filter_skip: INTEGER is 3
 	
 	Show_all: INTEGER is 65535
 	Show_element: INTEGER is 1

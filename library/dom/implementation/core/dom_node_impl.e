@@ -106,7 +106,7 @@ feature
          --    The node removed.
       local
       	  previous, next: DOM_NODE
-	      do
+      do
 	       ensure_child_list_exists
            previous := old_child.previous_sibling
            next := old_child.next_sibling
@@ -121,7 +121,8 @@ feature
             -- clean up 'old_child' before sending it back
            old_child.set_previous_sibling (Void)
            old_child.set_next_sibling (Void)
-	       old_child.set_parent_node (Void)
+	                     old_child.set_parent_node (Void)
+	       Result := old_child 
       end
 
    append_child (new_child: DOM_NODE): DOM_NODE is

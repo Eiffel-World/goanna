@@ -41,7 +41,7 @@ feature {DOM_IMPLEMENTATION_IMPL} -- Factory creation
 			doctype_owner_set: doctype /= Void implies doctype.owner_document = Current
 		end
 
-feature
+feature -- Access
 
 	doctype: DOM_DOCUMENT_TYPE 
 			-- The Document Type Declaration associated with this
@@ -174,6 +174,30 @@ feature
 				new_namespace_uri, qualified_name)
 		end
 
+feature -- Document Traversal
+
+	create_node_iterator (root: DOM_NODE; what_to_show: INTEGER;
+		filter: DOM_NODE_FILTER; entity_reference_expansion: BOOLEAN): DOM_NODE_ITERATOR is
+			-- Create a new node iterator over the subtree rooted at the specified node.
+			-- Parameters:
+			-- root - The node which will be iterated together with its children. The
+			--		iterator is initially positioned just before this node. The
+			--		what_to_show flags and the filter, if any, are not considered when
+			--		setting this position.
+			-- what_to_show - This flag specifies which node types may appear in the
+			--		logical view of the tree presented by the iterator. See the
+			--		description of iterator for the set of possible values. These flags
+			--		can be combined using 'bit_or'
+			-- filter - The filter to be used with this node iterator, or Void to
+			--		indicate no filter.
+			-- entity_reference_expansion - the value of this flag determines whether
+			--		entity reference nodes are expanded.
+		do
+			create {DOM_NODE_ITERATOR_IMPL} Result.make (Current, root, what_to_show,
+				filter, entity_reference_expansion)
+			-- TODO: need to register this iterator when it supports deletion notification.
+		end
+		
 feature -- from DOM_NODE
    
 	node_name: DOM_STRING is
