@@ -26,7 +26,8 @@ feature -- Initialization
 			doc_exists: doc /= Void
 		do
 			document := doc
-			collect_id_elements
+			create id_nodes.make (10)
+			collect_id_nodes
 		end
 
 feature -- Access
@@ -34,27 +35,33 @@ feature -- Access
 	document: DOM_DOCUMENT
 			-- The document held by this wrapper.
 
-	id_elements: DS_HASH_TABLE [DOM_NODE, STRING]
-			-- Table of elements indexed by 'id'. 
+	id_nodes: DS_HASH_TABLE [DOM_NODE, STRING]
+			-- Table of nodes indexed by 'id'. 
 
-	get_element_by_id (id: STRING): DOM_NODE is
-			-- Retrieve a reference to an element with the given 'id'.
+	get_node_by_id (id: STRING): DOM_NODE is
+			-- Retrieve a reference to a node with the given 'id'.
 		do
-			Result := id_elements.item (id)
+			Result := id_nodes.item (id)
 		end
 
 feature {NONE} -- Implementation
 
-	collect_id_elements is
-			-- Collect all elements in 'document' with an 'id' attribute and
+	Id_attribute_name: STRING is "id"
+	
+	collect_id_nodes is
+			-- Collect all nodes in 'document' with an 'id' attribute and
 			-- store a reference to the element in the 'id_elements' table.
 		do
-			create id_elements.make (10) -- TODO: create to required size to minimize memory
+			-- check this node for 'id' attribute and store if found
+--			if node.has_attributes and node.has_attribute (Id_attribute_name) then
+--				id_nodes.force (node, node.get_attribute (Id_attribute_name))
+--			end
+			
 		end
 		
 invariant
 
 	document_exists: document /= Void
-	id_element_table_exists: id_elements /= Void
+	id_nodes_table_exists: id_nodes /= Void
 
 end -- class XMLE_DOCUMENT_WRAPPER

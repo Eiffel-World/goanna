@@ -95,6 +95,7 @@ feature {NONE} -- Implementation
 			build_inheritance_clause
 			build_creation_routine
 			build_bdom_file_name_constant
+--			build_id_element_functions
 			create {PLAIN_TEXT_FILE} dest.make_open_write (class_file_name)
 			xmle_document_class.write (dest)
 			dest.close

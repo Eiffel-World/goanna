@@ -27,7 +27,7 @@ feature -- Initialization
 		local
 			node_impl: DOM_NODE_IMPL
 			doc: XMLE_DOCUMENT_WRAPPER
-			writer: DOM_WRITER
+			writer: DOM_SERIALIZER
 		do
 			-- check arguments
 			parse_arguments
@@ -35,10 +35,10 @@ feature -- Initialization
 				-- retrieve the object
 				file.open_read
 				doc ?= file.retrieved
-				-- print the tree
-				node_impl ?= doc.document
-				create writer
-				writer.output(node_impl)
+				-- serializer the document
+				writer := serializer_factory.serializer_for_document (doc.document)
+				writer.set_output (io.output)
+				writer.serialize (doc.document)	
 			else
 				show_usage
 			end
@@ -81,6 +81,11 @@ feature {NONE} -- Implementation
 			print (str)
 		end 
 
+	serializer_factory: DOM_SERIALIZER_FACTORY is
+		once
+			create Result
+		end
+	
 feature {NONE} -- DOM storage references
 
 	dom_storage_refs: XMLE_DOM_STORAGE_REFS

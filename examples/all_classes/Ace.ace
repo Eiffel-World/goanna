@@ -38,9 +38,13 @@ cluster
 
 	dom_core (dom):		"$\core"
 
+	dom_traversal_range (dom):	"$\traversal-range"
+
 	dom_impl (dom):		"$\implementation"
 
-	impl_core (dom_impl):		"$\core"
+	dom_impl_core (dom_impl):		"$\core"
+
+	dom_impl_traversal_range: (dom_impl):	"$\traversal-range"
 
 	dom_writer (dom):		"$\writer"
 

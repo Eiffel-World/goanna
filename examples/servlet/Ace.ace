@@ -26,8 +26,9 @@ default
 	disabled_debug("dom_output")
 	disabled_debug("query_string_parsing")
 	disabled_debug("normalize")
+	debug(no)
 	line_generation(no)
-	profile(no)
+	profile(yes)
 	trace(no)
 
 
@@ -40,9 +41,13 @@ cluster
 
 	dom_core (dom):		"$\core"
 
+	dom_traversal_range (dom):	"$\traversal-range"
+
 	dom_impl (dom):		"$\implementation"
 
-	impl_core (dom_impl):		"$\core"
+	dom_impl_core (dom_impl):		"$\core"
+
+	dom_impl_traversal_range: (dom_impl):	"$\traversal-range"
 
 	dom_writer (dom):		"$\writer"
 

@@ -5,6 +5,11 @@ root
 	XMLE: make
 
 default
+	assertion(require)
+	assertion(ensure)
+	assertion(check)
+	assertion(loop)
+	assertion(invariant)
 	address_expression(no)
 	array_optimization(no)
 	console_application(yes)
@@ -25,21 +30,33 @@ default
 	profile(no)
 	trace(no)
 
+
 cluster
+	xmle:		"$GOANNA\tools\xmle"
 
-	xmle:				"$GOANNA\tools\xmle";
+	dom:			"$GOANNA\library\dom"
 
-	dom:				"$GOANNA\library\dom";
-	dom_core (dom):		"$\core";
-	dom_impl (dom):		"$\implementation";
-	impl_core (dom_impl):	"$\core";
-	dom_writer (dom):		"$\writer";
-	xmle_doc (dom_impl): 	"$\xmle_doc";
+	dom_core (dom):		"$\core"
 
-	servlet:			"$GOANNA\library\servlet"
+	dom_traversal_range (dom):	"$\traversal-range"
+
+	dom_impl (dom):		"$\implementation"
+
+	dom_impl_core (dom_impl):		"$\core"
+
+	dom_impl_traversal_range (dom_impl):	"$\traversal-range"
+
+	dom_writer (dom):		"$\writer"
+
+	xmle_doc (dom_impl):		"$\xmle_doc"
+
+	servlet:		"$GOANNA\library\servlet"
+
 	goanna_utility:		"$GOANNA\library\utility"
+
 	xmle_codegen:		"$GOANNA\library\codegen"
-	xml_parser:			"$GOANNA\library\xml_parser"
+
+	xml_parser:		"$GOANNA\library\xml_parser"
 
 	all base:		"$EIFFEL4\library\base"
 		exclude
@@ -61,39 +78,60 @@ cluster
 		exclude
 			"CVS"; 
 		end
-		
-	ucstring:				"$UCSTRING";
-	ucstring_lib (ucstring):	"$\lib";
-	ucstring_ise (ucstring):	"$\spec\ise";
 
-	eXML: "$EXML\lib";
-	eXML_interface (eXML): "$\interface"
-	eXML_general_interface (eXML_interface): "$\general"
-	eXML_event_interface (eXML_interface): "$\event"
-	eXML_tree_interface (eXML_interface): "$\tree"
-	eXML_factory_interface (eXML_interface): "$\factory"
-	eXML_formater_interface (eXML_interface): "$\formater"
-	eXML_position_interface (eXML_interface): "$\position"
-	eXML_source_interface (eXML_interface): "$\source"
+	ucstring:		"$UCSTRING"
 
-	eXML_implementation (eXML): "$\implementation"	
-	eXML_implementation_interface (eXML_implementation): "$\implementation_interface"
-	eXML_general_implementatin_interface (eXML_implementation_interface): "$\general"
-	eXML_event_implementation_interface (eXML_implementation_interface): "$\event"
-	eXML_tree_implementation_interface (eXML_implementation_interface): "$\tree"
+	ucstring_lib (ucstring):		"$\lib"
 
-	eXML_expat_implementation (eXML_implementation): "$\expat"
-	eXML_expat_general_implementation (eXML_expat_implementation): "$\general"
-	eXML_expat_event_implementation (eXML_expat_implementation): "$\event"
-	eXML_expat_ise_implementation (eXML_expat_implementation): "$\compiler_specific\ise"
-	eXML_expat_factory_implementation (eXML_expat_implementation): "$\factory"
-	eXML_expat_position_implementation (eXML_expat_implementation): "$\position"
-	eXML_expat_source_implementation (eXML_expat_implementation): "$\source"
+	ucstring_ise (ucstring):		"$\spec\ise"
 
-	eXML_tree_on_event_implementation (eXML_implementation): "$\tree_on_event"
-	eXML_tree_on_event_tree_implementation (eXML_tree_on_event_implementation): "$\tree"
-	eXML_tree_on_event_factory_implementation (eXML_tree_on_event_implementation): "$\factory"
+	exml:		"$EXML\lib"
 
+	exml_interface (exml):		"$\interface"
+
+	exml_general_interface (exml_interface):		"$\general"
+
+	exml_event_interface (exml_interface):		"$\event"
+
+	exml_tree_interface (exml_interface):		"$\tree"
+
+	exml_factory_interface (exml_interface):		"$\factory"
+
+	exml_formater_interface (exml_interface):		"$\formater"
+
+	exml_position_interface (exml_interface):		"$\position"
+
+	exml_source_interface (exml_interface):		"$\source"
+
+	exml_implementation (exml):		"$\implementation"
+
+	exml_implementation_interface (exml_implementation):		"$\implementation_interface"
+
+	exml_general_implementatin_interface (exml_implementation_interface):		"$\general"
+
+	exml_event_implementation_interface (exml_implementation_interface):		"$\event"
+
+	exml_tree_implementation_interface (exml_implementation_interface):		"$\tree"
+
+	exml_expat_implementation (exml_implementation):		"$\expat"
+
+	exml_expat_general_implementation (exml_expat_implementation):		"$\general"
+
+	exml_expat_event_implementation (exml_expat_implementation):		"$\event"
+
+	exml_expat_ise_implementation (exml_expat_implementation):		"$\compiler_specific\ise"
+
+	exml_expat_factory_implementation (exml_expat_implementation):		"$\factory"
+
+	exml_expat_position_implementation (exml_expat_implementation):		"$\position"
+
+	exml_expat_source_implementation (exml_expat_implementation):		"$\source"
+
+	exml_tree_on_event_implementation (exml_implementation):		"$\tree_on_event"
+
+	exml_tree_on_event_tree_implementation (exml_tree_on_event_implementation):		"$\tree"
+
+	exml_tree_on_event_factory_implementation (exml_tree_on_event_implementation):		"$\factory"
 
 external
 
@@ -104,6 +142,6 @@ external
 
 	object:
 		"$EXML\lib\implementation\expat\compiler_specific\ise\clib\msc\exml.lib",
-		"$EXPAT\lib\Debug\expat.lib";
+		"$EXPAT\lib\Debug\expat.lib"
 
 end

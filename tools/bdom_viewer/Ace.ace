@@ -14,6 +14,7 @@ default
 	inlining(no)
 	multithreaded(no)
 	check_vape(no)
+	arguments("root_xmle")
 	arguments("order_xmle")
 	disabled_debug(yes)
 	disabled_debug("normalize")
@@ -22,8 +23,21 @@ default
 	profile(no)
 	trace(no)
 
+
 cluster
 	retrieve:		"$GOANNA\tools\bdom_viewer"
+
+	dom:		"$GOANNA\library\dom"
+
+	dom_core (dom):		"$\core"
+
+	dom_impl (dom):		"$\implementation"
+
+	impl_core (dom_impl):		"$\core"
+
+	dom_writer (dom):		"$\writer"
+
+	xmle_doc (dom_impl):		"$\xmle_doc"
 
 	dom:				"$GOANNA\library\dom";
 	dom_core (dom):		"$\core";
