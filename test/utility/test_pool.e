@@ -19,8 +19,8 @@ feature -- Test
 	test_unbounded_pool is
 			-- Test unbounded pool
 		local
-			pool: POOL [POOL_ELEMENT]
-			item, item2, item3: POOL_ELEMENT
+--			pool: POOL [POOL_ELEMENT]
+--			item, item2, item3: POOL_ELEMENT
 		do
 --			create pool
 --			item := pool.item

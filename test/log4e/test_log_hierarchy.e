@@ -453,7 +453,7 @@ feature -- Test
 			shared_hierarchy: expanded LOG_SHARED_HIERARCHY
 			config: LOG_XML_CONFIG_PARSER
 		do
-			create config.make ("../../log_config.xml")
+			create config.make ("log_config.xml")
 		end	
 		
 end -- class TEST_LOG_HIERARCHY

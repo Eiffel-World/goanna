@@ -9,7 +9,7 @@ default
 	prefix ("X")
 	testgen ("TESTGEN")
 	compile ("compile se.ace")
-	execute ("./goanna")
+	execute (".\goanna")
 
 cluster
 

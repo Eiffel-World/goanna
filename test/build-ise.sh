@@ -5,5 +5,5 @@ rm -rf EIFGEN
 echo "Compiling Eiffel..."
 ec -batch -finalize -keep -ace ise.ace
 echo "Compiling C..."
-( cd EIFGEN/F_code; finish_freezing -stop )
+( cd EIFGEN/F_code; finish_freezing -stop -silent )
 cp EIFGEN/F_code/*.exe .
