@@ -31,7 +31,7 @@
 				<cluster name="content_handlers"/>
 			</cluster>
 		</cluster>
-		<cluster name="models">
+		<cluster name="models" unless="$GOANNA_WITHOUT_DOM">
 			<option name="abstract" value="true"/>
 			<cluster name="dom">
 				<cluster name="core"/>
@@ -44,7 +44,7 @@
 					<cluster name="xmle_doc"/>
 				</cluster>
 			</cluster>
-		</cluster>
+		</cluster> 
 		<cluster name="protocols">
 			<cluster name="soap">
 				<cluster name="encoding"/>

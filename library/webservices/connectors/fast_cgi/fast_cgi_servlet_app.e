@@ -71,7 +71,7 @@ feature -- Basic operations
 				until
 					servlet_found or slash_index = 0
 				loop
-					debug
+					debug ("Fast CGI servlet app")
 						info (Servlet_app_log_category, "Trying servlet: " + servlet_name)
 					end
 					if
@@ -80,15 +80,18 @@ feature -- Basic operations
 						servlet_found := True
 					else
 						slash_index := servlet_name.last_index_of (Slash.to_character, servlet_name.count)
-						debug
+						debug ("Fast CGI servlet app")
 							info (Servlet_app_log_category, "Slash index is " + slash_index.out)
 						end
 						if slash_index > 0 then
 							servlet_name := servlet_name.substring (1, slash_index - 1)
 						else
-							check
-								servlet_prefix: servlet_name.is_equal (servlet_manager.servlet_mapping_prefix)
+							debug ("Fast CGI servlet app")
+								info (Servlet_app_log_category, "Servlet name is " + servlet_name)
 							end
+							--check -- this is rubbish
+							--	servlet_prefix: servlet_name.is_equal (servlet_manager.servlet_mapping_prefix)
+							--end
 						end
 					end
 				end
