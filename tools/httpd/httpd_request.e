@@ -77,18 +77,59 @@ feature {NONE} -- Implementation
 		require
 			buffer_exists: buffer /= Void
 		local
-			tokenizer: STRING_TOKENIZER
+			t1, t2: STRING_TOKENIZER
+			request, header: STRING
 		do
 			-- parse the request line
-			create tokenizer.make (buffer)
-			tokenizer.start
-			parameters.put (tokenizer.token, Request_method_var)
-			tokenizer.forth
-			parameters.put (tokenizer.token, Script_name_var)
-			tokenizer.forth
-			parameters.put (tokenizer.token, Server_protocol_var)
+			create t1.make (buffer)
+			t1.set_token_separator ('%N')
+			t1.start
+			-- parse request line
+			request := t1.token
+			request.right_adjust
+			create t2.make (request)
+			t2.start
+			parameters.put (t2.token, Request_method_var)
+			t2.forth
+			parse_request_uri (t2.token)
+			t2.forth
+			parameters.put (t2.token, Server_protocol_var)
+			-- parse remaining header lines
+			from
+				t1.forth
+				header := t1.token
+				header.right_adjust
+			until
+				header.is_empty
+			loop
+				-- parse the next header line
+				print (header + "%R%N")
+				t1.forth
+				header := t1.token
+				header.right_adjust	
+			end
+			
 			-- debug
 			parameters.put (buffer, Http_from_var)
 		end
 			
+	parse_request_uri (token: STRING) is
+			-- Parse the request uri extracting the path info, script path and query string.
+		require
+			token_exists: token /= Void
+		local
+			query_index: INTEGER
+			path: STRING
+		do
+			query_index := token.index_of ('?', 1)
+			if query_index /= 0 then
+				path := token.substring (1, query_index - 1)
+				parameters.put (token.substring (query_index + 1, token.count), Query_string_var)
+			else
+				path := token
+			end
+			parameters.put (path, Script_name_var)
+			parameters.put (path, Path_info_var)
+		end
+		
 end -- class HTTPD_REQUEST

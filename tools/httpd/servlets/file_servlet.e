@@ -46,9 +46,9 @@ feature -- Basic operations
 			ctype_code: INTEGER
 		do
 			file_name := clone (servlet_config.document_root)
-			file_name.append (req.query_string)
+			file_name.append (req.path_info)
 			if file_exists (file_name) then
-				file_extension := extension (req.query_string)
+				file_extension := extension (req.path_info)
 				if content_type_codes.has (file_extension) then
 					ctype_code := content_type_codes.item (file_extension)
 				else
