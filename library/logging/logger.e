@@ -10,7 +10,7 @@ indexing
 
 class
 	LOGGER
-
+	
 creation
 	make
 	
