@@ -1,8 +1,12 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "SOAP RPC/Messaging Servlet"
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "SOAP"
 	date: "$Date$"
 	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
 	SOAP_SERVLET
@@ -11,7 +15,7 @@ inherit
 
 	HTTP_SERVLET
 		redefine
-			do_get, do_post
+			do_get, do_post, init
 		end
 	
 	SHARED_SERVICE_REGISTRY
@@ -19,6 +23,11 @@ inherit
 			{NONE} all
 		end
 	
+	SHARED_ENCODING_REGISTRY
+		export
+			{NONE} all
+		end
+		
 	SOAP_CONSTANTS
 		export
 			{NONE} all
@@ -28,6 +37,15 @@ creation
 
 	init
 	
+feature -- Initialisation
+
+	init (config: SERVLET_CONFIG) is
+			-- Initialise encoding registry
+		do
+			Precursor (config)
+			encodings.register (create {SOAP_XML_ENCODING}, Ns_uri_soap_enc)
+		end
+		
 feature -- Basic operations
 
 	do_get (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
@@ -60,29 +78,39 @@ feature -- Basic operations
 				first := envelope.body.entries.first
 				service_name := extract_service_name (first)
 				action := extract_action_name (first)
-				parameters := extract_parameters (first)
-				
-				-- retrieve service and execute call
-				if registry.has (service_name) then
-					agent_service := registry.get (service_name)
-					if agent_service.has (action) then
-						agent_service.call (action, parameters)
+				parameters := extract_parameters (envelope.body.entries.first)
+				-- check validity of parameters
+				if valid_envelope then
+					-- retrieve service and execute call
+					if registry.has (service_name) then
+						agent_service := registry.get (service_name)
+						if agent_service.has (action) then
+							agent_service.call (action, parameters)
+						else
+							-- construct fault response for invalid service action
+							create fault.make
+							fault.set_fault_code (Fault_code_server)
+							fault.set_fault_string ("Service action '" + action + "' for service '" + service_name + "' not found")
+							response := build_fault_response
+						end
 					else
+						-- construct fault response for invalid service
 						create fault.make
 						fault.set_fault_code (Fault_code_server)
-						fault.set_fault_string ("Service action '" + action + "' for service '" + service_name + "' not found")
+						fault.set_fault_string ("Service '" + service_name + "' not found")
 						response := build_fault_response
 					end
-				else
-					create fault.make
-					fault.set_fault_code (Fault_code_server)
-					fault.set_fault_string ("Service '" + service_name + "' not found")
-					response := build_fault_response
-				end
 				
-				-- process result
-				if agent_service.process_ok then
-					response := build_response (service_name, action, agent_service.last_result)
+					-- process result
+					if agent_service.process_ok then
+						response := build_response (service_name, action, agent_service.last_result)
+					end
+				else
+					-- construct fault response for invalid parameter
+					create fault.make
+					fault.set_fault_code (Fault_code_client)
+					fault.set_fault_string (last_error)
+					response := build_fault_response
 				end
 			else
 				-- construct fault response and send
@@ -101,9 +129,12 @@ feature {NONE} -- Implementation
 	valid_envelope: BOOLEAN
 			-- Did the request contain a valid envelope?
 	
+	last_error: STRING
+			-- Last error message
+			
 	fault: SOAP_FAULT
 			-- Fault element created for an error. Void if no error.
-	
+
 	Soap_service: STRING is "service"
 	Soap_action: STRING is "action"
 	
@@ -265,36 +296,46 @@ feature {NONE} -- Implementation
 			Result := first.local_name.out
 		end
 	
-	extract_parameters (first: DOM_ELEMENT): TUPLE [ANY] is
+	extract_parameters (body_elem: DOM_ELEMENT): TUPLE [ANY] is
 			-- Unserialize parameters from the envelope body and construct
 			-- appropriate argument tuple for the agent call.
 		require
-			first_exists: first /= Void
+			first_exists: body_elem /= Void
+			valid_envelope: valid_envelope
 		local
 			elements: DOM_NODE_LIST
 			element: DOM_ELEMENT
-			name, type, value: STRING
+			name, scheme, type, value: STRING
 			i: INTEGER
 			q_name: Q_NAME
 		do
-			create Result.make
-			elements := first.child_nodes
-			Result.resize (1, elements.length)
-			from
-				i := 0
-			variant
-				elements.length - i
-			until
-				i >= elements.length
-			loop
-				element ?= elements.item (i)
-				check element /= Void end
-				name := element.local_name.out
-				value := element.first_child.node_value.out
-				create q_name.make (Ns_pre_schema_xsi, Attr_type)
-				type := element.get_attribute (create {DOM_STRING}.make_from_string (q_name.out)).out
-				Result.force (unmarshall_parameter(type, value), i + 1)
-				i := i + 1
+			scheme := body_elem.get_attribute (create {DOM_STRING}.make_from_string (q_attr_encoding_style.out)).out
+			if encodings.has (scheme) then
+				create Result.make
+				elements := body_elem.child_nodes
+				Result.resize (1, elements.length)
+				from
+					i := 0
+				until
+					i >= elements.length or not valid_envelope
+				loop
+					element ?= elements.item (i)
+					check element /= Void end
+					name := element.local_name.out
+					value := element.first_child.node_value.out
+					create q_name.make (Ns_pre_schema_xsi, Attr_type)
+					type := element.get_attribute (create {DOM_STRING}.make_from_string (q_name.out)).out
+					if encodings.valid_type (scheme, type) then
+						Result.force (encodings.unmarshall (scheme, type, value), i + 1)
+						i := i + 1	
+					else
+						valid_envelope := False
+						last_error := "Unknown type " + type + " in encoding scheme " + scheme
+					end			
+				end
+			else
+				valid_envelope := False
+				last_error := "Unknown encoding scheme " + scheme
 			end
 		end		
 	

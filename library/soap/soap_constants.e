@@ -97,12 +97,12 @@ feature -- Constants
 
 	Q_attr_must_understand: Q_NAME is
 		once
-			create Result.make (Ns_uri_soap_env, Attr_must_understand)
+			create Result.make (Ns_pre_soap_env, Attr_must_understand)
 		end
 
 	Q_attr_encoding_style: Q_NAME is
 		once
-			create Result.make (Ns_uri_soap_env, Attr_encoding_style)
+			create Result.make (Ns_pre_soap_env, Attr_encoding_style)
 		end
 		
 	Attrval_true: STRING is "true"

@@ -1,5 +1,5 @@
 indexing
-	description: "Shared service registry."
+	description: "Shared encoding registry"
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	library: "SOAP"
 	date: "$Date$"
@@ -9,14 +9,14 @@ indexing
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
-	SHARED_SERVICE_REGISTRY
+	SHARED_ENCODING_REGISTRY
 
 feature -- Access
 
-	registry: REGISTRY [SERVICE] is
-			-- Shared registry
+	encodings: SOAP_ENCODING_REGISTRY is
+			-- Shared encoding registry
 		once
 			create Result.make
 		end
-		
-end -- class SHARED_SERVICE_REGISTRY
+
+end -- class SHARED_ENCODING_REGISTRY

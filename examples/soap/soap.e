@@ -123,7 +123,7 @@ feature {NONE} -- Implementation
 			registry.register (address_service, "urn:AddressFetcher")
 			create calculator
 			create calculator_service.make
-			--calculator_service.register (calculator~times (?, ?), "times")
+			calculator_service.register (calculator~times (?, ?), "times")
 			calculator_service.register (calculator~divide (?, ?), "divide")
 			calculator_service.register (calculator~minus (?, ?), "minus")
 			calculator_service.register (calculator~plus(?, ?), "plus")

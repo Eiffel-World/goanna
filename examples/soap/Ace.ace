@@ -2,7 +2,7 @@ system
 	soap
 
 root
-	SOAP: make
+	soap: make
 
 default
 	assertion(require)
@@ -55,7 +55,6 @@ default
 
 cluster
 	root_cluster:		"$GOANNA\examples\soap"
-
 
 	servers (root_cluster):		"$\servers"
 
