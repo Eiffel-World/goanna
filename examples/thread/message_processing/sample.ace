@@ -40,4 +40,6 @@ cluster
 
 	goanna_thread: 	"$GOANNA/library/utility/thread"
 
+	goanna_app: 	"$GOANNA/library/webservices/application"
+
 end

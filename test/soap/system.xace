@@ -33,8 +33,8 @@
 		<cluster name="soap_tester" location="${GOANNA}/test/soap">
 			<cluster name="testgen" location="TESTGEN"/>
 		</cluster>
-		<mount location="${GOANNA}/library/cluster.xace"/>
-		<mount location="${GOBO}/library/cluster.xace"/>
+		<mount location="${GOANNA}/library/library.xace"/>
+		<mount location="${GOBO}/library/library.xace"/>
 		<mount location="${GOBO}/library/kernel.xace"/>
 	</cluster>
 </system>

@@ -69,12 +69,18 @@ feature -- Status setting
 			-- look for the session id cookie, if it exists the session will already exist so
 			-- mark it as old and update its access time.
 			create cookie.make (Session_cookie_name, "")
+			debug ("session_management")
+				print ("Binding session%R%N")
+			end	
 			req.cookies.start
 			req.cookies.search_forth (cookie)
 			if not req.cookies.off then
 				cookie := req.cookies.item_for_iteration
 				-- check for stale cookie
 				if sessions.has (cookie.value) then
+					debug ("session_management")
+						print ("We have the cookie value%R%N")
+					end	
 					session := sessions.item (cookie.value)
 					if session.is_new then
 						session.set_old					
@@ -82,9 +88,15 @@ feature -- Status setting
 					session.touch
 					last_session_id := session.id	
 				else
+					debug ("session_management")
+						print ("Creating session as we don't have the cookie value%R%N")
+					end	
 					create_new_session (resp)
 				end
 			else
+				debug ("session_management")
+					print ("Creating session as we can't find the cookie%R%N")
+				end	
 				create_new_session (resp)
 			end
 		end
