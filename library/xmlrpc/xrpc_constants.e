@@ -258,61 +258,61 @@ feature -- Error codes
 
 feature -- DOM elements
 
-	Method_name_element: DOM_STRING is
+	Method_name_element: UC_STRING is
 			-- Tag <methodName>
 		once
 			create Result.make_from_string ("methodName")
 		end
 
-	Params_element: DOM_STRING is
+	Params_element: UC_STRING is
 			-- Tag <parms>
 		once
 			create Result.make_from_string ("params")
 		end
 		
-	Param_element: DOM_STRING is
+	Param_element: UC_STRING is
 			-- Tag <param>
 		once
 			create Result.make_from_string ("param")
 		end
 
-	Value_element: DOM_STRING is
+	Value_element: UC_STRING is
 			-- Tag <value>
 		once
 			create Result.make_from_string ("value")
 		end
 
-	Array_element: DOM_STRING is
+	Array_element: UC_STRING is
 			-- Tag <array>
 		once
 			create Result.make_from_string ("array")
 		end
 
-	Data_element: DOM_STRING is
+	Data_element: UC_STRING is
 			-- Tag <data>
 		once
 			create Result.make_from_string ("data")
 		end
 		
-	Struct_element: DOM_STRING is
+	Struct_element: UC_STRING is
 			-- Tag <struct>
 		once
 			create Result.make_from_string ("struct")
 		end
 
-	Member_element: DOM_STRING is
+	Member_element: UC_STRING is
 			-- Tag <struct>
 		once
 			create Result.make_from_string ("member")
 		end
 
-	Name_element: DOM_STRING is
+	Name_element: UC_STRING is
 			-- Tag <struct>
 		once
 			create Result.make_from_string ("name")
 		end
 		
-	Fault_element: DOM_STRING is
+	Fault_element: UC_STRING is
 			-- Tag <fault>
 		once
 			create Result.make_from_string ("fault")

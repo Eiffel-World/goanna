@@ -25,8 +25,8 @@
 		<cluster name="pattern"/>
 	</cluster>
 
-	<external>
-		<include_dir location="${GOANNA}/library/log4e/appenders/nt/lib" if="${GOBO_OS}=windows"/>
+	<external if="${GOBO_OS}=windows">
+		<include_dir location="$(GOANNA)/library/log4e/appenders/nt/lib"/>
 	</external>
 
 </cluster>

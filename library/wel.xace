@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<cluster name="wel" location="${ISE_EIFFEL}/wel" abstract="True">
+<cluster name="wel" location="${ISE_EIFFEL}/library/wel" abstract="True">
 
 	<description>
 		description: "Cluster definition for ISE WEL classes"
@@ -28,8 +28,8 @@
 	<cluster name="windows"/>
 
 	<external>
-		<include_dir location="$(ISE_EIFFEL)/library/wel/spec/${ISE_PLATFORM}/include"/>
-		<link_library location="$(ISE_EIFFEL)\library\wel\spec\$(ISE_C_COMPILER)\lib\wel.lib"/>
+		<include_dir location="$(ISE_EIFFEL)/library/wel/spec/$(ISE_PLATFORM)/include"/>
+		<link_library location="$(ISE_EIFFEL)/library/wel/spec/$(ISE_C_COMPILER)/lib/wel.lib"/>
 	</external>
 
 </cluster>

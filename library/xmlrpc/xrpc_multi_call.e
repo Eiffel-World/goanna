@@ -35,7 +35,7 @@ feature -- Initialisation
 			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
 			-- NOTE: Does nothing. Should never be called. Unmarshalling
 			-- occurs in execution of multiCall method.

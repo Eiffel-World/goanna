@@ -41,17 +41,17 @@ feature -- Initialisation
 			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
 		local
-			params, pvalue: DOM_ELEMENT
+			params, pvalue: XM_ELEMENT
 		do
 			unmarshall_ok := True
-			if node.has_child_nodes then
-				params ?= node.first_child
+			if not node.is_empty then
+				params ?= node.first
 				if params /= Void then
-					if params.has_child_nodes then
-						pvalue ?= params.first_child
+					if not params.is_empty then
+						pvalue ?= params.first
 						check
 							value_is_element: pvalue /= Void
 						end

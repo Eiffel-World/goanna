@@ -41,8 +41,8 @@ feature -- Initialization
 				create client.make (host, port, "/servlet/xmlrpc")
 				create factory.make
 				perform_echo_tests
-				perform_introspection_tests
-				perform_multicall_tests
+--				perform_introspection_tests
+--				perform_multicall_tests
 			end
 		end
 

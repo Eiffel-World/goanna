@@ -52,32 +52,30 @@ feature -- Initialisation
 			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Unmarshall struct value from XML node.
 		local
-			members: DOM_NODE_LIST
-			next, next_value, next_name: DOM_ELEMENT
-			name_text: DOM_TEXT
-			i, length: INTEGER
+			member_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			next, next_value, next_name: XM_ELEMENT
+			name_text: UC_STRING
 			unmarshalled: XRPC_VALUE
 		do
 			unmarshall_ok := True
 			type := Struct_type
 			-- unmarshall each member
-			if node.has_child_nodes then
-				members := node.child_nodes
-				length := members.length
-				create value.make (length)
+			if not node.is_empty then
+				member_cursor := node.new_cursor
+				create value.make (node.count)
 				from
-					i := 0
+					member_cursor.start
 				until
-					i >= length or not unmarshall_ok 
+					member_cursor.off or not unmarshall_ok 
 				loop
-					next ?= members.item (i)
+					next ?= member_cursor.item
 					check
 						next_is_element: next /= Void
 					end
-					if next.node_name.is_equal (Member_element) then
+					if next.name.is_equal (Member_element) then
 						-- find name and value elements
 						next_name := get_named_element (next, Name_element)
 						if next_name /= Void then
@@ -86,9 +84,9 @@ feature -- Initialisation
 								-- unmarshall value and store in array
 								unmarshalled := Value_factory.unmarshall (next_value)
 								if unmarshalled.unmarshall_ok then
-									name_text ?= next_name.first_child
+									name_text := next_name.text
 									if name_text /= Void then
-										value.put (unmarshalled, name_text.node_value.out)	
+										value.put (unmarshalled, name_text.out)	
 									else
 										unmarshall_ok := False
 										unmarshall_error_code := Invalid_struct_member_name
@@ -109,7 +107,7 @@ feature -- Initialisation
 						unmarshall_ok := False
 						unmarshall_error_code := Unexpected_struct_element
 					end
-					i := i + 1
+					member_cursor.forth
 				end
 			else
 				-- empty struct is allowed

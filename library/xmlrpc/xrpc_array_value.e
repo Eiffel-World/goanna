@@ -53,39 +53,40 @@ feature -- Initialisation
 			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Unmarshall array value from XML node.
 		local
-			data: DOM_ELEMENT
-			values: DOM_NODE_LIST
-			next: DOM_ELEMENT
+			data: XM_ELEMENT
+			value_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			next: XM_ELEMENT
 			i, length: INTEGER
 			unmarshalled: XRPC_VALUE
 		do
 			unmarshall_ok := True
 			type := Array_type
 			-- child element must be <data>
-			data ?= node.first_child
-			if data.node_name.is_equal (Data_element) then
+			data ?= node.first
+			if data.name.is_equal (Data_element) then
 				-- unmarshall each value
-				if data.has_child_nodes then
-					values := data.child_nodes
-					length := values.length
+				if not data.is_empty then
+					value_cursor := data.new_cursor
+					length := data.count
 					create value.make (1, length)
 					from
-						i := 0
+						value_cursor.start
+						i := 1
 					until
-						i >= length or not unmarshall_ok
+						value_cursor.off or not unmarshall_ok
 					loop
-						next ?= values.item (i)
+						next ?= value_cursor.item
 						check
 							next_is_element: next /= Void
 						end
-						if next.node_name.is_equal (Value_element) then
+						if next.name.is_equal (Value_element) then
 							-- unmarshall value and store in array
 							unmarshalled := Value_factory.unmarshall (next)
 							if unmarshalled.unmarshall_ok then
-								value.put (unmarshalled, i + 1)
+								value.put (unmarshalled, i)
 							else
 								unmarshall_ok := False
 								unmarshall_error_code := unmarshalled.unmarshall_error_code
@@ -94,6 +95,7 @@ feature -- Initialisation
 							unmarshall_ok := False
 							unmarshall_error_code := Array_contains_unexpected_element
 						end
+						value_cursor.forth
 						i := i + 1
 					end
 				else

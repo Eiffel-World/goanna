@@ -22,7 +22,7 @@ inherit
 	
 feature -- Initialization
 
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Initialise XML-RPC element from DOM node.
 		require
 			node_exists: node /= Void
@@ -47,37 +47,33 @@ feature -- Mashalling
 
 feature {NONE} -- Implementation
 
-	get_named_element (parent: DOM_ELEMENT; name: DOM_STRING): DOM_ELEMENT is
+	get_named_element (parent: XM_ELEMENT; name: UC_STRING): XM_ELEMENT is
 			-- Search for and return first element with tag name 'name'. Return
 			-- Void if not found.
 		require
 			parent_exists: parent /= Void
 			name_exists: name /= Void
 		local
-			number_children, index: INTEGER
-			child_nodes: DOM_NODE_LIST
-			child: DOM_ELEMENT
+			child_node_cursor: DS_BILINEAR_CURSOR [XM_NODE]
+			child: XM_ELEMENT
 			found: BOOLEAN
 		do
-			if parent.has_child_nodes then
+			if not parent.is_empty then
 				from
-					child_nodes := parent.child_nodes
-					number_children := child_nodes.length
-					index := 0
-				variant
-					number_children - index + 1
+					child_node_cursor := parent.new_cursor
+					child_node_cursor.start
 				until		
-					index >= number_children or found
+					child_node_cursor.off or found
 				loop
-					child ?= child_nodes.item (index)
+					child ?= child_node_cursor.item
 					check
 						node_is_element: child /= Void
 					end
-					if child.node_name.is_equal (name) then
+					if child.name.is_equal (name) then
 						Result := child
 						found := True
 					end
-					index := index + 1			
+					child_node_cursor.forth			
 				end
 			end
 		end

@@ -12,7 +12,7 @@
 		thanks: "Modified version of GOBO ant files"
 	</description>
 
-	<root class="ADDRESS_BOOK" creation="make"/>
+	<root class="ADDRESS_BOOK" creation="start"/>
 	<cluster>
 		<option unless="${DEBUG}">
 			<require enable="False"/>

@@ -31,15 +31,15 @@ feature -- Initialisation
 			unmarshall_ok := True
 		end
 
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Unmarshall array value from XML node.
 		local
-			value_elem: DOM_ELEMENT
+			value_elem: XM_ELEMENT
 		do
 			unmarshall_ok := True
 			-- check for a value child element
-			value_elem ?= node.first_child
-			if value_elem /= Void and then value_elem.node_name.is_equal (Value_element) then
+			value_elem ?= node.first
+			if value_elem /= Void and then value_elem.name.is_equal (Value_element) then
 				value := value_factory.unmarshall (value_elem)
 				if not value.unmarshall_ok then
 					unmarshall_ok := False

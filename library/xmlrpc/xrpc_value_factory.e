@@ -42,18 +42,18 @@ feature -- Status report
 	
 feature -- Factory
 
-	unmarshall (node: DOM_ELEMENT): XRPC_VALUE is
+	unmarshall (node: XM_ELEMENT): XRPC_VALUE is
 			-- Unmarshall value
 		local
-			type_elem: DOM_ELEMENT
+			type_elem: XM_ELEMENT
 		do
 			unmarshall_ok := True	
 			-- peek at value type to correctly unmarshall
-			type_elem ?= node.first_child
+			type_elem ?= node.first
 			if type_elem /= Void then
-				if type_elem.node_name.is_equal (Array_element) then
+				if type_elem.name.is_equal (Array_element) then
 					create {XRPC_ARRAY_VALUE} Result.unmarshall (type_elem)
-				elseif type_elem.node_name.is_equal (Struct_element) then
+				elseif type_elem.name.is_equal (Struct_element) then
 					create {XRPC_STRUCT_VALUE} Result.unmarshall (type_elem)
 				else
 					create {XRPC_SCALAR_VALUE} Result.unmarshall (type_elem)

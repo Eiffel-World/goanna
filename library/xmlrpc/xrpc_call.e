@@ -35,33 +35,32 @@ feature -- Initialisation
 			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
 		local
-			method_name_elem, params_elem, next_param: DOM_ELEMENT
-			param_set: DOM_NODE_LIST
+			method_name_elem, params_elem, next_param: XM_ELEMENT
+			param_set_cursor: DS_BILINEAR_CURSOR [XM_NODE]
 			param: XRPC_PARAM
-			i: INTEGER
 		do
 			unmarshall_ok := True
 			create params.make_default
 			method_name_elem := get_named_element (node, Method_name_element)
 			if method_name_elem /= Void then
 				-- set method name
-				method_name := method_name_elem.first_child.node_value.out
+				method_name := method_name_elem.text.out
 				-- check for parameters
 				params_elem := get_named_element (node, Params_element)
 				if params_elem /= Void then
 					-- unmarshall all parameters
-					if params_elem.has_child_nodes then		
-						param_set := params_elem.child_nodes
+					if not params_elem.is_empty then		
+						param_set_cursor := params_elem.new_cursor
 						-- unmarshall each parameter
 						from
-							i := 0
+							param_set_cursor.start
 						until
-							i >= param_set.length or not unmarshall_ok
+							param_set_cursor.off or not unmarshall_ok
 						loop
-							next_param ?= param_set.item (i)
+							next_param ?= param_set_cursor.item
 							check
 								param_is_element: next_param /= Void
 							end
@@ -72,7 +71,7 @@ feature -- Initialisation
 								unmarshall_ok := False
 								unmarshall_error_code := param.unmarshall_error_code
 							end
-							i := i + 1
+							param_set_cursor.forth
 						end
 					end
 				end

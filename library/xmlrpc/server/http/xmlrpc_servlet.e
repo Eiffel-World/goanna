@@ -159,19 +159,21 @@ feature {NONE} -- Implementation
 			-- detected then an XRPC_FAULT element will be created that represents
 			-- the problem encountered.
 		local
-			parser: DOM_TREE_BUILDER
-			parser_factory: expanded DOM_TREE_BUILDER_FACTORY
+--			parser: DOM_TREE_BUILDER
+--			parser_factory: expanded DOM_TREE_BUILDER_FACTORY
+			parser_factory: expanded XM_PARSER_FACTORY
+			parser: XM_TREE_PARSER
 		do
 			valid_call := True
-			parser := parser_factory.create_parser
+			parser := parser_factory.new_toe_eiffel_tree_parser
 			parser.parse_from_string (req.content)
 			if parser.is_correct then
-				parser.document.normalize
-				debug ("xlmrpc")
-					print (serialize_dom_tree (parser.document))
-					print ("%N")
-				end
-				create call.unmarshall (parser.document.document_element)
+--				parser.document.normalize
+--				debug ("xlmrpc")
+--					print (serialize_dom_tree (parser.document))
+--					print ("%N")
+--				end
+				create call.unmarshall (parser.document.root_element)
 				if not call.unmarshall_ok then
 					valid_call := False
 					create fault.make (call.unmarshall_error_code)
@@ -196,25 +198,25 @@ feature {NONE} -- Implementation
 	fault: XRPC_FAULT
 			-- Fault to send to client. Void if a valid response was generated.
 	
-	serialize_dom_tree (document: DOM_DOCUMENT): STRING is
-			-- Display dom tree to standard out.
-		require
-			document_exists: document /= Void	
-		local
-			writer: DOM_SERIALIZER
-			string_stream: IO_STRING
-		do
-			create string_stream.make (1024)
-			writer := serializer_factory.serializer_for_document (document)
-			writer.set_output (string_stream)
-			writer.serialize (document)		
-			Result := string_stream.to_string
-		end
+--	serialize_dom_tree (document: DOM_DOCUMENT): STRING is
+--			-- Display dom tree to standard out.
+--		require
+--			document_exists: document /= Void	
+--		local
+--			writer: DOM_SERIALIZER
+--			string_stream: IO_STRING
+--		do
+--			create string_stream.make (1024)
+--			writer := serializer_factory.serializer_for_document (document)
+--			writer.set_output (string_stream)
+--			writer.serialize (document)		
+--			Result := string_stream.to_string
+--		end
 	
-	serializer_factory: DOM_SERIALIZER_FACTORY is
-		once
-			create Result
-		end
+--	serializer_factory: DOM_SERIALIZER_FACTORY is
+--		once
+--			create Result
+--		end
 
 	build_assertion_fault is
 			-- Initialise 'fault' to explain current assertion violation

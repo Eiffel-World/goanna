@@ -317,22 +317,22 @@ feature {NONE} -- Implementation
 		require
 			content_exists: content /= Void
 		local
-			parser_factory: expanded DOM_TREE_BUILDER_FACTORY
-			parser: DOM_TREE_BUILDER
-			child: DOM_ELEMENT
+			parser_factory: expanded XM_PARSER_FACTORY
+			parser: XM_TREE_PARSER
+			child: XM_ELEMENT
 		do
 			invocation_ok := True
-			parser := parser_factory.create_parser
+			parser := parser_factory.new_toe_eiffel_tree_parser
 			parser.parse_from_string (content)
 			if parser.is_correct then
-				debug ("xlmrpc")
-					print (serialize_dom_tree (parser.document))
-					print ("%N")
-				end
+--				debug ("xlmrpc")
+--					print (serialize_dom_tree (parser.document))
+--					print ("%N")
+--				end
 				-- peek at response elements to determine if it is a fault or not
-				child ?= parser.document.document_element.first_child
-				if child /= Void and then child.node_name.is_equal (Fault_element) then
-					create fault.unmarshall (parser.document.document_element)
+				child ?= parser.document.first
+				if child /= Void and then child.name.is_equal (Fault_element) then
+					create fault.unmarshall (parser.document.root_element)
 					if not fault.unmarshall_ok then		
 						-- create fault
 						create fault.make (fault.unmarshall_error_code)
@@ -340,7 +340,7 @@ feature {NONE} -- Implementation
 					end
 					invocation_ok := False
 				else
-					create response.unmarshall (parser.document.document_element)
+					create response.unmarshall (parser.document.root_element)
 					if not response.unmarshall_ok then
 						-- create fault
 						invocation_ok := False
@@ -356,24 +356,24 @@ feature {NONE} -- Implementation
 			end	
 		end
 
-	serialize_dom_tree (document: DOM_DOCUMENT): STRING is
-			-- Display dom tree to standard out.
-		require
-			document_exists: document /= Void	
-		local
-			writer: DOM_SERIALIZER
-			string_stream: IO_STRING
-		do
-			create string_stream.make (1024)
-			writer := serializer_factory.serializer_for_document (document)
-			writer.set_output (string_stream)
-			writer.serialize (document)		
-			Result := string_stream.to_string
-		end
-	
-	serializer_factory: DOM_SERIALIZER_FACTORY is
-		once
-			create Result
-		end
+--	serialize_dom_tree (document: DOM_DOCUMENT): STRING is
+--			-- Display dom tree to standard out.
+--		require
+--			document_exists: document /= Void	
+--		local
+--			writer: DOM_SERIALIZER
+--			string_stream: IO_STRING
+--		do
+--			create string_stream.make (1024)
+--			writer := serializer_factory.serializer_for_document (document)
+--			writer.set_output (string_stream)
+--			writer.serialize (document)		
+--			Result := string_stream.to_string
+--		end
+--	
+--	serializer_factory: DOM_SERIALIZER_FACTORY is
+--		once
+--			create Result
+--		end
 		
 end -- XRPC_LITE_CLIENT

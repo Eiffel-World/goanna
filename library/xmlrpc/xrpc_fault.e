@@ -38,18 +38,19 @@ feature -- Initialisation
 			unmarshall_ok := True
 		end
 		
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
 		local
 			value: XRPC_STRUCT_VALUE
 			member_value: XRPC_SCALAR_VALUE
-			value_elem: DOM_ELEMENT
+			value_elem, fault_elem: XM_ELEMENT
 			int_ref: INTEGER_REF
 		do
 			unmarshall_ok := True
 			-- can assume that the <fault> element exists
 			-- get fault value and attempt to unmarshall
-			value_elem ?= node.first_child.first_child
+			fault_elem ?= node.first
+			value_elem ?= fault_elem.first
 			if value_elem /= Void then
 				value ?= Value_factory.unmarshall (value_elem)
 				-- check that it was a struct

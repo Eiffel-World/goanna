@@ -95,33 +95,32 @@ feature -- Initialisation
 			string_value := encoder.encode (buffer)
 		end
 
-	unmarshall (node: DOM_ELEMENT) is
+	unmarshall (node: XM_ELEMENT) is
 			-- Unmarshall scalar value from XML node.
 		local
 			int_ref: INTEGER_REF
 			double_ref: DOUBLE_REF
 			bool_ref: BOOLEAN_REF
-			text: DOM_TEXT
+			text: STRING
 			decoder: BASE64_ENCODER 
 		do
 			unmarshall_ok := True
 			-- check if we were passed the value node. If so this is an untyped scalar
 			-- treat as a string.
-			if node.node_name.is_equal (Value_element) then
+			if node.name.is_equal (Value_element) then
 				type := String_type
-				if node.has_child_nodes then
-					text ?= node.first_child
-					value := clone (text.node_value.out)
+				if not node.is_empty then
+					value := clone (node.text.out)
 				else
 					value := ""
 				end	
 				string_value := value.out
 			else
 				-- check for text child node
-				type := node.node_name.out
-				text ?= node.first_child
+				type := node.name.out
+				text := node.text.out
 				if text /= Void then
-					string_value := text.node_value.out
+					string_value := text
 					-- check for string
 					if type.is_equal (String_type) then
 						value := clone (string_value)	

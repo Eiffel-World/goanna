@@ -13,6 +13,8 @@
 		thanks: "Modified version of GOBO cluster.xace files"
 	</description>
 
+	<cluster name="event" location="${ISE_EIFFEL}/library/base/event"/>
+
 	<cluster name="contrib" abstract="True">
 		<cluster name="implementation" abstract="True">
 			<cluster name="gtk" if="${GOBO_OS}=unix"/>
@@ -32,6 +34,7 @@
 				<cluster name="dialogs"/>
 				<cluster name="primitives"/>
 			</cluster>
+		</cluster>
 		<cluster name="mswin" abstract="True" if="${GOBO_OS}=windows">
 			<cluster name="events"/>
 			<cluster name="items"/>
@@ -61,10 +64,10 @@
 	</cluster>
 
 	<external>
-		<include_dir location="${ISE_EIFFEL}/library/vision2/spec/include"/>
-		<link_library location="${ISE_EIFFEL}/library/vision2/spec/$(ISE_C_COMPILER)/lib/vision2.lib"/>
-		<link_library location="${ISE_EIFFEL}/library/vision2/spec/$(ISE_C_COMPILER)/lib/libpng.lib"/>
-		<link_library location="${ISE_EIFFEL}/library/vision2/spec/$(ISE_C_COMPILER)/lib/zlib.lib"/>
+		<include_dir location="$(ISE_EIFFEL)/library/vision2/spec/include"/>
+		<link_library location="$(ISE_EIFFEL)/library/vision2/spec/$(ISE_C_COMPILER)/lib/vision2.lib"/>
+		<link_library location="$(ISE_EIFFEL)/library/vision2/spec/$(ISE_C_COMPILER)/lib/libpng.lib"/>
+		<link_library location="$(ISE_EIFFEL)/library/vision2/spec/$(ISE_C_COMPILER)/lib/zlib.lib"/>
 	</external>
 
 </cluster>
