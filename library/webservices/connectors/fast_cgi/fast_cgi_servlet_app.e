@@ -64,7 +64,13 @@ feature -- Basic operations
 				servlet_manager.servlet (path).service (req, resp)
 			else
 				handle_missing_servlet (resp)
-				error (Servlet_app_log_category, "Servlet not found: " + path)
+				if
+					path /= Void
+				 then
+					error (Servlet_app_log_category, "Servlet not found: " + path)
+				else
+					error (Servlet_app_log_category, "Servlet not found: path was Void")
+				end
 			end	
 		end
 		
