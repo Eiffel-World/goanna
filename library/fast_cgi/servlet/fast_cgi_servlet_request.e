@@ -365,9 +365,13 @@ feature {NONE} -- Implementation
 			-- not very efficient but we don't know if we will get any bogus cookies
 			-- along the way
 			create internal_cookies.make
-			if has_header ("cookies") then
+			if has_header (Http_cookie_var) then
 				from
 					create tokenizer.make (get_header (Http_cookie_var))
+					debug ("cookie_parsing")
+						print (generator + ".parse_cookie_header str = "
+							 + quoted_eiffel_string_out (get_header (Http_cookie_var)) + "%R%N")
+					end
 					tokenizer.set_token_separator (',')
 					tokenizer.start
 				until
@@ -379,6 +383,10 @@ feature {NONE} -- Implementation
 						name := pair.substring (1, i)
 						value := pair.substring (i + 1, pair.count)
 						create new_cookie.make (name, value)
+						debug ("cookie_parsing")
+							print (generator + ".parse_cookie_header new_cookie = "
+								+ quoted_eiffel_string_out (new_cookie.header_string) + "%R%N")
+						end		
 						internal_cookies.force_last (new_cookie)
 					else
 						-- bad cookie, ignore it
