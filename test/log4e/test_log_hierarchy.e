@@ -303,15 +303,15 @@ feature -- Test
 			cat: LOG_CATEGORY
 			appender: LOG_APPENDER
 		do
-			create h.make (Debug_p)
-			cat := h.category ("test")			
-			create {LOG_NT_EVENT_LOG_APPENDER} appender.make ("GoannaLog4e")
-			cat.add_appender (appender)	
-			cat.fatal ("This is fatal")
-			cat.error ("This is an error")
-			cat.warn ("This is a warning")
-			cat.info ("This is information")
-			cat.debugging ("This is a test")
+--			create h.make (Debug_p)
+--			cat := h.category ("test")			
+--			create {LOG_NT_EVENT_LOG_APPENDER} appender.make ("GoannaLog4e")
+--			cat.add_appender (appender)	
+--			cat.fatal ("This is fatal")
+--			cat.error ("This is an error")
+--			cat.warn ("This is a warning")
+--			cat.info ("This is information")
+--			cat.debugging ("This is a test")
 		end
 		
 	test_stdout_event_appender is

@@ -317,11 +317,12 @@ feature {NONE} -- Implementation
 		require
 			content_exists: content /= Void
 		local
+			parser_factory: expanded DOM_TREE_BUILDER_FACTORY
 			parser: DOM_TREE_BUILDER
 			child: DOM_ELEMENT
 		do
 			invocation_ok := True
-			create parser.make
+			parser := parser_factory.create_parser
 			parser.parse_from_string (content)
 			if parser.is_correct then
 				debug ("xlmrpc")

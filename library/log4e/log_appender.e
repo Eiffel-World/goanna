@@ -63,7 +63,7 @@ feature -- Status Setting
 		do
 			layout := new_layout
 		end
-		
+	
 	close is
 			-- Release any resources for this appender.
 		deferred

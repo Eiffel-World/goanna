@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 
-<project name="server" default="help">
+<project name="xrpcclient" default="help">
 
 	<description>
-		description: "XMLRPC Address Book Example"
+		description: "XMLRPC Test Example"
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
@@ -176,9 +176,9 @@
 <!-- Implementation -->
 
 	<target name="init">
-		<set name="system" value="xmlrpc"/>
+		<set name="system" value="xrpcclient"/>
 		<set name="library" value="xmlrpc"/>
-		<set name="example" value="server"/>
+		<set name="example" value="client/test"/>
 		<set name="eiffel" value="ise"/>
 		<geant target="init_eiffel"/>
 		<geant target="init_os"/>

@@ -193,7 +193,7 @@ cluster
 
 	ucstring_ise (ucstring):		"$\spec\ise"
 
-	cgi (goanna):		"d:\dev\Eiffel\goanna\library\cgi"
+	cgi (goanna):		"$\cgi"
 
 external
 
