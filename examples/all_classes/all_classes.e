@@ -19,4 +19,6 @@ feature -- References
 	servlet: SERVLET_SERVER
 	parser: TREE_BUILDER
 	xmle: XMLE
+	routine: EIFFEL_ROUTINE
+
 end

@@ -82,13 +82,13 @@ feature -- Basic operations
 			-- Print source code representation of this class
 		do
 			write_header (output)
-			if not parents.is_empty then	
+			if not parents.empty then	
 				write_parents (output)
 			end
-			if not creation_procedure_names.is_empty then
+			if not creation_procedure_names.empty then
 				write_creation_names (output)
 			end
-			if not feature_groups.is_empty then
+			if not feature_groups.empty then
 				write_feature_groups (output)
 			end
 			write_end (output)

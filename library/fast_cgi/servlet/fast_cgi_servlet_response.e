@@ -146,7 +146,7 @@ feature -- Basic operations
 					set_content_length (content_buffer.count)
 					write_headers	
 				end
-				if not content_buffer.is_empty then
+				if not content_buffer.empty then
 					write (content_buffer)
 				end
 			end

@@ -69,7 +69,7 @@ feature -- Status report
 	is_empty: BOOLEAN is
 			-- Is string empty?
 		do
-			Result := internal_string.is_empty
+			Result := internal_string.empty
 		end
 		
 feature -- Status setting
