@@ -13,7 +13,7 @@ class
 
 feature -- Drive & directory locations
 
-	data_directory : STRING is "c:\bachelor\data" -- "d:\dev\Eiffel\goanna\examples\bachelor\data"
+	data_directory : STRING is "c:\dev\goanna\examples\bachelor\data" -- "d:\dev\Eiffel\goanna\examples\bachelor\data"
 		-- The directory where data files are stored
 
 	directory_separator : STRING is "\"

@@ -94,14 +94,21 @@ feature {NONE} -- Creation
 			-- Creation
 		require
 			new_store_file_name_exists: new_store_file_name /= Void
-			new_store_file_name_not_empty: not new_store_file_name.empty
+			new_store_file_name_not_empty: not new_store_file_name.is_empty
+		local
+			a_list: UNIQUE_STRING_LIST
 		do
 			store_file_name := new_store_file_name
-			create internal_list.make (1)
+			a_list ?= retrieve_by_name (store_file_name)
+			if a_list /= Void then
+				internal_list := a_list.internal_list
+			else
+				create internal_list.make_equal (1)
+			end
 		end
 		
 
-feature {NONE} -- Implementation
+feature {UNIQUE_STRING_LIST} -- Implementation
 
 	internal_list: DS_HASH_TABLE [INTEGER, STRING]
 	
