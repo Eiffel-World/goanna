@@ -69,8 +69,8 @@ feature -- Logging
 	
 feature {NONE} -- Implementation
 	
-	Warning_prefix: STRING is "WARN  "
-	Error_prefix: STRING is "ERROR "
+	Warning_prefix: STRING is "log4e WARN "
+	Error_prefix: STRING is "log4e ERROR "
 
 	write (message: STRING) is
 			-- Write 'message' on stdout or stderr 

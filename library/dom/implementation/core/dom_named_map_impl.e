@@ -184,6 +184,10 @@ feature {NONE} -- Implementation
 			combined_name_exists: Result /= Void
 			combined_name_big_enough: Result.count = uri.count + local_name.count + 1
 		end
-		
+	
+	Empty_namespace_uri: DOM_STRING is
+		once
+			create Result.make_from_string ("")
+		end
 		
 end -- class DOM_NAMED_MAP_IMPL

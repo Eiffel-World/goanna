@@ -1,0 +1,116 @@
+indexing
+	description: "Logging XML configuration constants."
+	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
+	library: "log4e"
+	date: "$Date$"
+	revision: "$Revision$"
+	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+
+class
+	LOG_XML_CONFIG_CONSTANTS
+
+feature -- Constants
+
+	Log4e_namespace_uri: DOM_STRING is
+		once
+			create Result.make_from_string ("http://goanna.info/spec/log4e")
+		end
+
+	Empty_namespace_uri: DOM_STRING is
+		once
+			create Result.make_from_string ("")
+		end
+		
+	Appender_element_name: DOM_STRING is
+		once
+			create Result.make_from_string ("appender")
+		end
+	
+	Param_element_name: DOM_STRING is
+		once
+			create Result.make_from_string ("param")
+		end
+		
+	Category_element_name: DOM_STRING is
+		once
+			create Result.make_from_string ("category")
+		end
+	
+	Root_element_name: DOM_STRING is
+		once 
+			create Result.make_from_string ("root")
+		end
+		
+	Appenderref_element_name: DOM_STRING is
+		once 
+			create Result.make_from_string ("appender-ref")
+		end
+		
+	Name_attribute: DOM_STRING is
+		once
+			create Result.make_from_string ("name")
+		end
+	
+	Value_attribute: DOM_STRING is
+		once
+			create Result.make_from_string ("value")
+		end
+		
+	Type_attribute: DOM_STRING is
+		once
+			create Result.make_from_string ("type")
+		end
+	
+	Priority_attribute: DOM_STRING is
+		once
+			create Result.make_from_string ("priority")
+		end
+		
+	Ref_attribute: DOM_STRING is
+		once
+			create Result.make_from_string ("ref")
+		end
+		
+	Stdout_appender_type: DOM_STRING is
+		once 
+			create Result.make_from_string ("stdout")
+		end
+		
+	Stderr_appender_type: DOM_STRING is
+		once 
+			create Result.make_from_string ("stderr")
+		end
+
+	File_appender_type: DOM_STRING is
+		once 
+			create Result.make_from_string ("file")
+		end
+	
+	Rollingfile_appender_type: DOM_STRING is
+		once
+			create Result.make_from_string ("rollingfile")
+		end
+		
+	Filename_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("filename")
+		end
+
+	Append_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("append")
+		end
+	
+	Maxsize_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("maxsize")
+		end
+	
+	Numbackups_param_name: DOM_STRING is
+		once
+			create Result.make_from_string ("numbackups")
+		end
+	
+end -- class LOG_XML_CONFIG_CONSTANTS

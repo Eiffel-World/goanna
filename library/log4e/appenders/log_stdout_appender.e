@@ -23,7 +23,7 @@ feature -- Basic Operations
 	close is
 			-- Release any resources for this appender.
 		do
-			io.output.flush
+			-- do nothing
 		end
 	
 	do_append (event: LOG_EVENT) is

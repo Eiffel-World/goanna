@@ -78,6 +78,12 @@ feature -- Status Report
 	Disable_off: INTEGER is -1
 			-- Priority disabled off
 
+	is_enabled_for (priority: LOG_PRIORITY): BOOLEAN is
+			-- Is 'priority' level logging enabled for this hierarchy?
+		do
+			Result := disabled = Disable_off or disabled <= priority.level
+		end
+		
 feature -- Status Setting
 	
 	disable (priority: LOG_PRIORITY) is
