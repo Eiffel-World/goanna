@@ -19,5 +19,6 @@ ${GOANNA}/library/utility/
 ${GOANNA}/library/utility/spec/se/
 ${GOANNA}/library/logging/
 ${GOANNA}/library/datetime/
-${GOANNA}/examples/cgi_server/
+${GOANNA}/library/httpd/
+${GOANNA}/examples/fast_cgi_server/
 

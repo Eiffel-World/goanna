@@ -19,12 +19,6 @@ inherit
 		export
 			{NONE} all
 		end
-	
-	
-	SHARED_SERVICE_REGISTRY
-		export
-			{NONE} all
-		end
 		
 creation
 

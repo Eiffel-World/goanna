@@ -109,12 +109,12 @@ feature -- Basic Operations
 			end			
 		end
 	
-	display_error (error: STRING) is
+	display_error (new_error: STRING) is
 			-- Display error message and usage	
 		require
-			error_exists: error /= Void
+			error_exists: new_error /= Void
 		do
-			io.put_string (error)
+			io.put_string (new_error)
 			io.put_new_line
 			io.put_string (usage_text)
 			io.put_new_line

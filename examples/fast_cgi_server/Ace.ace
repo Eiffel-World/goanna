@@ -1,33 +1,49 @@
 system
-	simple
+	fast_cgi
 
 root
-	SIMPLE: make
+	FAST_CGI_SERVER: make
 
 default
-	address_expression(no)
-	array_optimization(yes)
-	console_application(yes)
-	dead_code_removal(yes)
-	dynamic_runtime(no)
-	exception_trace(no)
-	inlining(yes)
-	inlining_size("4")
-	multithreaded(no)
-	check_vape(no)
-	arguments("8001 10")
-	arguments("8001 aaaa")
-	arguments("aaaa 10")
+	assertion(check)
+	assertion(require)
+	assertion(ensure)
+	assertion(loop)
+	assertion(invariant)
+	arguments("9000 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
+	arguments("80 d:\dev\Eiffel\goanna\tools\httpd\Documentation")
+	arguments("9000 d:\goanna\tools\httpd\Documentation")
+	arguments("9000 d:\dev\goanna\tools\httpd\Documentation")
+	arguments("9000 d:\goanna\tools\httpd\docroot")
+	arguments("9000 d:\Eiffel50\docs")
+	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
+	arguments(" ")
 	disabled_debug(yes)
-	debug("fcgi_protocol")
-	debug(no)
-	line_generation(no)
+	disabled_debug("fcgi_protocol")
+	disabled_debug("yaesockets")
+	line_generation(yes)
 	profile(no)
 	trace(no)
+	il_verifiable(yes)
+	msil_generation_type("exe")
+	check_vape(yes)
+	console_application(yes)
+	address_expression(yes)
+	array_optimization(yes)
+	dead_code_removal(yes)
+	dynamic_runtime(no)
+	exception_trace(yes)
+	inlining(yes)
+	inlining_size("2")
+	multithreaded(no)
 
+
+--precompiled("$GOANNA/precomp/spec/$PLATFORM/goanna")
+--arguments(" ")
 
 cluster
-	root_cluster:		"$GOANNA\examples\simple_fast_cgi"
+	root_cluster:		"$GOANNA/examples/fast_cgi_server"
+
 
 	goanna:		"$GOANNA\library"
 
