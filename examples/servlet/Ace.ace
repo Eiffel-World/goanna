@@ -5,6 +5,11 @@ root
 	SERVLET_SERVER: make
 
 default
+	assertion(require)
+	assertion(ensure)
+	assertion(check)
+	assertion(loop)
+	assertion(invariant)
 	address_expression(no)
 	array_optimization(yes)
 	console_application(yes)
@@ -19,7 +24,7 @@ default
 	disabled_debug(yes)
 	disabled_debug("fcgi_protocol")
 	disabled_debug("base64_encode")
-	debug("cookie_parsing")
+	disabled_debug("cookie_parsing")
 	disabled_debug("dom_output")
 	disabled_debug("query_string_parsing")
 	disabled_debug("xmle_id_nodes")
@@ -66,7 +71,7 @@ cluster
 
 	goanna_utility_ise (goanna_utility):		"$\spec\ise"
 
-	datetime: 		"$GOANNA\library\datetime"
+	datetime:		"$GOANNA\library\datetime"
 
 	yaesockets:		"$YAESOCKETS"
 

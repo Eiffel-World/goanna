@@ -113,7 +113,7 @@ feature {NONE} -- Implementation
 			end
 			resp.add_cookie (cookie)	
 			-- add a second cookie
-			create cookie.make ("GoannaSessionId", "FSDFDSFAFAFEF0011231");
+			create cookie.make ("GoannaTestCookie", "FSDFDSFAFAFEF0011231");
 			resp.add_cookie (cookie)
 		end
 	
@@ -124,7 +124,8 @@ feature {NONE} -- Implementation
 		do
 			if req.session.has_attribute ("test_variable") then
 				str ?= req.session.get_attribute ("test_variable")
-				resp.send ("Session variable set: " + str + "%R%N")
+				resp.send ("Session variable set: " + str + " (removing)%R%N")
+				req.session.remove_attribute ("test_variable")
 			else
 				req.session.set_attribute ("test_variable", "Hello there!")
 			end

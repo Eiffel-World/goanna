@@ -53,6 +53,28 @@ feature -- Transformation
 			formatted_date_exists: Result /= Void
 		end
 		
+	format_compact_sortable (date: DATE_AND_TIME): STRING is
+			-- Format suitable for string sorting.
+			-- ie, YYYYMMDDHHMMSS
+		require
+			date_exists: date /= Void
+		local
+			formatter: FORMAT_INTEGER
+		do
+			create formatter.make (2)
+			formatter.right_justify
+			formatter.zero_fill
+			create Result.make (14)
+			Result.append (date.year.out)
+			Result.append (formatter.formatted (date.month))
+			Result.append (formatter.formatted (date.day))
+			Result.append (formatter.formatted (date.hour))
+			Result.append (formatter.formatted (date.minute))
+			Result.append (formatter.formatted (date.second))
+		ensure
+			formatted_date_exists: Result /= Void
+		end
+		
 feature {NONE} -- Implementation
 
 	short_weekdays: ARRAY [STRING] is 

@@ -25,6 +25,8 @@ feature {HTTP_SESSION_MANAGER}-- Initialization
 			validated := True
 			is_new := True
 			create attributes.make (5)
+			create creation_time.make_to_now
+			touch
 		ensure
 			valid_session: validated
 			new_session: is_new
@@ -55,10 +57,10 @@ feature -- Status report
 	id: STRING
 			-- Session id
 			
-	creation_time: INTEGER
+	creation_time: DATE_AND_TIME
 			-- Date and time session was created
 			
-	last_accessed_time: INTEGER
+	last_accessed_time: DATE_AND_TIME
 			-- The last time a client sent a request associated with this session
 			
 	max_inactive_interval: INTEGER
@@ -138,7 +140,7 @@ feature {HTTP_SESSION_MANAGER}
 		require
 			valid_session: validated			
 		do
-			-- TODO: update time
+			create last_accessed_time.make_to_now
 		end
 	
 feature {NONE} -- Implementation

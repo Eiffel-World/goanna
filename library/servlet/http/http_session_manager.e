@@ -102,11 +102,18 @@ feature {NONE} -- Implementation
 		end
 	
 	generate_session_id: STRING is
-			-- Generate a new secure session id
-			-- TODO: make this secure	
+			-- Generate a new secure session id.
+			-- Key is generated from a random number and the current date and time.
+			-- TODO: make this secure
+		local
+			date: DATE_AND_TIME
+			formatter: DATE_FORMATTER
 		do
 			current_random := current_random + 1
 			Result := random.next_random (current_random).out
+			create date.make_to_now
+			create formatter
+			Result.append (formatter.format_compact_sortable (date))
 			Result := base64_encoder.encode (Result)
 		ensure
 			new_session_id_exists: Result /= Void
@@ -126,4 +133,5 @@ feature {NONE} -- Implementation
 	
 	current_random: INTEGER
 			-- Current position in random number stream
+			
 end -- class HTTP_SESSION_MANAGER
