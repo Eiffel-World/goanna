@@ -24,7 +24,9 @@ default
 	disabled_debug(yes)
 	disabled_debug("fcgi_protocol")
 	disabled_debug("base64_encode")
+	disabled_debug("session_management")
 	disabled_debug("cookie_parsing")
+	debug("yaesockets")
 	disabled_debug("dom_output")
 	disabled_debug("query_string_parsing")
 	disabled_debug("xmle_id_nodes")
@@ -70,6 +72,8 @@ cluster
 	goanna_utility:		"$GOANNA\library\utility"
 
 	goanna_utility_ise (goanna_utility):		"$\spec\ise"
+
+	logging:		"$GOANNA\library\logging"
 
 	datetime:		"$GOANNA\library\datetime"
 

@@ -80,7 +80,7 @@ feature
          --               which the new node must be inserted.
          -- Return Value
          --    The node being inserted.
-	      do
+	  do
 	  	  ensure_child_list_exists
       end
 
@@ -93,7 +93,7 @@ feature
          --    oldChild   The node being replaced in the list.
          -- Return Value
          --    The node replaced.
-	      do
+	  do
 	  	  ensure_child_list_exists
       end
 
@@ -121,7 +121,7 @@ feature
             -- clean up 'old_child' before sending it back
            old_child.set_previous_sibling (Void)
            old_child.set_next_sibling (Void)
-	                     old_child.set_parent_node (Void)
+	       old_child.set_parent_node (Void)
 	       Result := old_child 
       end
 

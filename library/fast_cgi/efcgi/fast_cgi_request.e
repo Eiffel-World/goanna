@@ -94,10 +94,10 @@ feature -- Access
 feature -- Status setting
 
 	set_socket (new_socket: like socket) is
-			-- Set the socket for this request
+			-- Set the socket for this request.
+			-- Can be set to Void to invalidate the request.
 		require
-			socket_exists: new_socket /= Void
-			valid_socket: new_socket.is_valid
+			valid_socket: new_socket /= Void implies new_socket.is_valid
 		do
 			socket := new_socket
 		end

@@ -26,7 +26,17 @@ inherit
 		export
 			{NONE} all
 		end
-			
+	
+	SOCKET_MIXIN
+		export
+			{NONE} all
+		end
+		
+	SHARED_STANDARD_LOGGER
+		export
+			{NONE} all
+		end
+				
 feature -- Initialisation
 
 	make (port, backlog: INTEGER) is
@@ -197,6 +207,7 @@ feature {NONE} -- Implementation
 					address.right_adjust
 					address.left_adjust
 					valid_peer_addresses.force_last (address)
+					log (Info, "Web server address " + address + " added to ACL")
 					tokenizer.forth
 				end
 			end
@@ -206,6 +217,7 @@ feature {NONE} -- Implementation
 			-- Wait for a request to be received
 		local
 			is_new_connection, request_read: BOOLEAN
+			peer: STRING
 		do
 			-- TODO: implement WEB_SERVER_ADDRESS security checking.
 			
@@ -238,7 +250,16 @@ feature {NONE} -- Implementation
 					is_new_connection := True
 				end
 				-- check peer address for allowed server addresses
---				if peer_address_ok (request.socket.peer_address) then
+				peer := request.socket.peer_address
+				debug ("yaesockets")
+					print("Yeasockets Error :")
+					print(last_socket_error_code)
+					print(',')
+					print(last_extended_socket_error_code)
+					print ("%R%N")
+					print ("peer_address: " + peer + "%R%N")
+				end
+				if peer_address_ok (peer) then
 					-- attempt to read the request. If this fails and it was an old
 					-- connection then the server probably closed it; try making a new connection
 					-- before giving up.
@@ -253,12 +274,13 @@ feature {NONE} -- Implementation
 					else
 						request_read := True
 					end
---				else
---					-- reset and attempt a new connection
---					request.socket.close
---					request.set_socket (Void)
---					is_new_connection := False
---				end
+				else
+					-- reset and attempt a new connection
+					log (Error, "Connection from address " + peer + " rejected.")				
+					request.socket.close
+					request.set_socket (Void)
+					is_new_connection := False
+				end
 			end
 		end
 		

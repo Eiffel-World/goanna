@@ -30,6 +30,12 @@ inherit
 		export
 			{NONE} all
 		end
+		
+	SHARED_STANDARD_LOGGER
+		export
+			{NONE} all
+		end
+		
 creation
 	make
 
@@ -65,9 +71,11 @@ feature -- Basic operations
 				end
 			end			
 			if path /= Void and has_registered_servlet (path) then
+				log (Info, "Servicing request: " + path)
 				get_servlet (path).service (req, resp)
 			else
 				handle_missing_servlet (resp)
+				log (Error, "Servlet not found: " + path)
 			end	
 		end
 		

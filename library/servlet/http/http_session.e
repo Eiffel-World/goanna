@@ -20,10 +20,14 @@ feature {HTTP_SESSION_MANAGER}-- Initialization
 			-- Create a new session with 'id' set to 'session_id'
 		require
 			session_id_exists: session_id /= Void			
-		do
+		do			
 			id := session_id
+			debug ("session_management")
+				print ("New session: " + id + "%R%N")
+			end	
 			validated := True
 			is_new := True
+			max_inactive_interval := 120
 			create attributes.make (5)
 			create creation_time.make_to_now
 			touch
@@ -40,7 +44,7 @@ feature -- Access
 			valid_session: validated
 			name_exists: name /= Void
 			name_bound: has_attribute (name)
-		do
+		do		
 			Result := attributes.item (name)
 		end
 		
@@ -111,6 +115,9 @@ feature -- Element change
 			valid_session: validated
 			not_already_bound: not has_attribute (name)			
 		do
+			debug ("session_management")
+				print ("Binding session attribute: " + name + " to session " + id + "%R%N")
+			end
 			attributes.put (value, name)
 		end
 	
@@ -122,6 +129,9 @@ feature -- Removal
 			valid_session: validated
 			name_is_bound: has_attribute (name)	
 		do
+			debug ("session_management")
+				print ("Unbinding session attribute: " + name + " from session " + id + "%R%N")
+			end
 			attributes.remove (name)
 		end
 	
@@ -141,6 +151,9 @@ feature {HTTP_SESSION_MANAGER}
 			valid_session: validated			
 		do
 			create last_accessed_time.make_to_now
+			debug ("session_management")
+				print ("Touching session: " + id + " at " + last_accessed_time.out + "%R%N")
+			end
 		end
 	
 feature {NONE} -- Implementation
