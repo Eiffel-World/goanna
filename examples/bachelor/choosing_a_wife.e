@@ -38,7 +38,7 @@ feature -- Implement deferred features
 
 	title : STRING is
 		do
-			if user.personal_information.name.empty then
+			if user.personal_information.name.is_empty then
 				result := text.choosing_a_wife
 			else
 				result := text.choosing_a_wife_for + user.personal_information.name

@@ -57,7 +57,7 @@ feature {NONE} -- implementation
 		require
 			new_status_code_exists : new_status_code /= Void
 		do
-			status_history.force_first (clone (status_code))
+			status_history.force_first (status_code)
 			date_time_history.force_first (clone (time_last_modified))
 			status_code := new_status_code
 			update

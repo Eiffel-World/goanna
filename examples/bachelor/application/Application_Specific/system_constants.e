@@ -108,6 +108,12 @@ feature -- File names
 			Result := data_directory + directory_separator + "user_file_name_file" + file_extension
 		end
 
+	valid_organizational_name_list_file_name : STRING is
+			-- Used to store a list of valid organizational names for entities
+		do
+			result := data_directory + directory_separator + "valid_organizational_name_list_file" + file_extension
+		end
+
 feature -- string contants
 
 		new_line : STRING is

@@ -5,7 +5,7 @@ indexing
 	date: "$Date: 2001/05/10"
 	revision: "$Revision$"
 	author: "Neal L. Lester <neal@3dsafety.com>"
-	copyright: "Copyright (c) 2001 Lockheed-Martin Space System Company"
+	copyright: "Copyright (c) 2001 Lockheed-Martin Space System Company and Neal L. Lester"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
 class
@@ -13,7 +13,7 @@ class
 
 feature -- Drive & directory locations
 
-	data_directory : STRING is "d:\dev\Eiffel\goanna\examples\bachelor\data"
+	data_directory : STRING is "c:\bachelor\data" -- "d:\dev\Eiffel\goanna\examples\bachelor\data"
 		-- The directory where data files are stored
 
 	directory_separator : STRING is "\"
@@ -106,6 +106,12 @@ feature -- File names
 			Result := data_directory + directory_separator + "user_file_name_file" + file_extension
 		end
 
+	valid_organizational_name_list_file_name : STRING is
+			-- Used to store a list of valid organizational names for entities
+		do
+			result := data_directory + directory_separator + "valid_organizational_name_list_file" + file_extension
+		end
+
 feature -- string contants
 
 		new_line : STRING is
@@ -116,5 +122,17 @@ feature -- string contants
 				temp_new_line := '%N'
 				Result := temp_new_line.out
 			end
+			
+feature {NONE} -- Validity Checking
+
+	data_directory_tester: DIRECTORY is
+			-- Test the validity of the data directory string
+		once
+			create result.make (data_directory)	
+		end
+
+invariant
+	
+	data_directory_exists: data_directory_tester.exists
 	
 end -- class SYSTEM_CONSTANTS
