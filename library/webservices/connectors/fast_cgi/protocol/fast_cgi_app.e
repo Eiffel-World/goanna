@@ -12,11 +12,12 @@ deferred class
 	FAST_CGI_APP
 
 inherit
-
 	FAST_CGI
 		export
 			{NONE} all
 		end
+
+	EXCEPTIONS
 	
 feature -- Basic operations
 
@@ -30,11 +31,26 @@ feature -- Basic operations
 			loop
 				process_request
 			end
+		rescue
+			if not field_exception then
+				error (Servlet_app_log_category, "Uncaught exception, code: " + original_exception.out + ", retry not requested, so exiting...")
+			else
+				retry
+			end
 		end
 	
 	process_request is
 			-- Process a request.
 		deferred
 		end
-	
+
+
+	field_exception: BOOLEAN is
+			-- Should we attempt to retry?
+		require
+			True
+		do
+			Result := False
+		end
+			
 end -- class FAST_CGI_APP
