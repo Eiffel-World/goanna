@@ -12,7 +12,6 @@ default
 	assertion(invariant)
 	arguments(" ")
 	disabled_debug(yes)
-	disabled_debug("base64_encode")
 	debug(no)
 	line_generation(no)
 	profile(no)
@@ -42,15 +41,17 @@ cluster
 
 	log4e_nt_appenders (log4e_appenders):		"$\nt"
 
+	log4e_net_appenders (log4e_appenders):		"$\net"
+
 	log4e_filters (goanna_log4e):		"$\filters"
 
 	log4e_helpers (goanna_log4e):		"$\helpers"
 
 	log4e_layouts (goanna_log4e):		"$\layouts"
 
-	log4e_pattern (log4e_layouts): 	"$\pattern"
+	log4e_pattern (log4e_layouts):		"$\pattern"
 
-	all "base":		"$ISE_EIFFEL/library/base"
+	all base:		"$ISE_EIFFEL/library/base"
 		exclude
 			"desc"; "table_eiffel3"; "CVS"; "EIFGEN"; 
 		end
@@ -88,11 +89,20 @@ cluster
 
 	testgen:		"$GOANNA\test\TESTGEN"
 
+	all thread:		"$ISE_EIFFEL/library/thread"
+
+	yaesockets:		"$YAESOCKETS"
+
+	yaesockets_ise (yaesockets):		"$\spec\ise"
+
 external
 
 	include_path:
 		"$GOBO\library\kernel\include",
 		"$GOBO\library\time\include",
 		"$GOANNA\library\log4e\appenders\nt\lib"
+
+	object:
+		"$YAESOCKETS\C\Multithread\cl.lib"
 
 end

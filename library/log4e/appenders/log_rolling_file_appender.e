@@ -20,7 +20,12 @@ inherit
 		redefine
 			do_append
 		end
-		
+	
+	DT_SHARED_SYSTEM_CLOCK
+		export
+			{NONE} all
+		end	
+	
 creation
 	
 	make
@@ -106,7 +111,7 @@ feature {NONE} -- Implementation
 				end
   				
   				-- rename current log file
-  				stream.put_string (layout.footer)
+  				stream.put_string ("Log rolled: " + system_clock.date_time_now.out + "%N")
   				stream.close
   				stream.change_name (name + ".1" )
 				

@@ -410,5 +410,5 @@ feature -- Test
 			cat.info ("This is information")
 			cat.debugging ("This is a test")
 		end
-		
+
 end -- class TEST_LOG_HIERARCHY

@@ -90,7 +90,4 @@ feature {NONE} -- Implementation
 			end
 		end
 
-invariant
-	invariant_clause: -- Your invariant here
-
 end -- class HTTPD_SERVLET_APP
