@@ -3,9 +3,9 @@ Project Goanna Release Notes
 
 Release 0.2
 -----------
-XX Feb 2001
+4 Feb 2001
 
-o Added argument checking to simple_fast_cgi argument.
+o Added argument checking to simple_fast_cgi example.
 
 o Added support for cookies and sessions to servlet library.
 
@@ -16,6 +16,14 @@ it is supported in all compilers.
 
 o Changed all keywords 'create' to 'creation' for SmallEiffel compliance.
 
+o Started to port all Goanna libraries to SmallEiffel but stopped because
+too much work is involved. Will wait until SmallEiffel is ELKS2000 compliant.
+
+o Added datetime cluster for simple date and timestamp handling.
+
+o Added compiler specific utility classes to help port to SmallEiffel.
+
+o Added Base64 encoder utility class.
 
 Release 0.1 (Proof-of-Concept)
 ------------------------------
