@@ -1,6 +1,14 @@
 Project Goanna Release Notes
 ----------------------------
 
+Release 0.4
+-----------
+TBA
+
+o Fixed FastCGI response handling for responses over 65535 bytes. Reported by Harald Erdbrugger.
+
+
+
 Release 0.3
 -----------
 20 May 2001
