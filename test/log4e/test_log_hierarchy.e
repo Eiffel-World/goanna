@@ -420,7 +420,7 @@ feature -- Test
 		do
 			create h.make (Debug_p)
 			cat := h.category ("test")			
-			create {LOG_SYSLOG_APPENDER} appender.make ("stdout", "localhost", facilities.Log_local0)
+			create {LOG_SYSLOG_APPENDER} appender.make ("stdout", "192.168.0.67", facilities.Log_local0)
 			cat.add_appender (appender)	
 			cat.fatal ("This is fatal")
 			cat.error ("This is an error")

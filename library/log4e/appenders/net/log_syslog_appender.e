@@ -19,7 +19,21 @@ inherit
 		end
 
 	LOG_SYSLOG_APPENDER_CONSTANTS
+		export
+			{NONE} all
+			{ANY} is_valid_facility
+		end
 	
+	SOCKET_ERRORS 		
+		export
+			{NONE} all
+		end
+
+	LOG_SHARED_LOG_LOG
+		export
+			{NONE} all
+		end
+		
 creation
 	
 	make, make_on_port
@@ -47,6 +61,12 @@ feature -- Initialization
 			valid_facility: is_valid_facility (facility)
 		do
 			create socket.make_connecting_to_port (host, port)
+			if socket.last_error_code /= Sock_err_no_error then
+				internal_log.error ("Syslog socket connect error: " + socket.last_error_code.out)
+				internal_log.error ("    Socket error code: " + socket.last_socket_error_code.out)
+				internal_log.error ("    Extended socket error code: " + socket.last_extended_socket_error_code.out)
+
+			end
 			log_facility := facility
 			appender_make (new_name)
 		end	
@@ -66,7 +86,13 @@ feature {NONE} -- Implementation
 	do_append (event: LOG_EVENT) is
 			-- Append 'event' to this appender
 		do
-		
+			socket.send_string (event.rendered_message)
+			if socket.last_error_code /= Sock_err_no_error then
+				internal_log.error ("Syslog socket write error: " + socket.last_error_code.out)
+				internal_log.error ("    Socket error code: " + socket.last_socket_error_code.out)
+				internal_log.error ("    Extended socket error code: " + socket.last_extended_socket_error_code.out)
+
+			end
 		end	
 
 	socket: UDP_SOCKET
@@ -74,8 +100,5 @@ feature {NONE} -- Implementation
 	
 	log_facility: INTEGER
 			-- Syslog facility to log messages with
-			
-	Syslog_port: INTEGER is 167
-			-- Standard syslog UDP port.
 			
 end -- class LOG_SYSLOG_APPENDER

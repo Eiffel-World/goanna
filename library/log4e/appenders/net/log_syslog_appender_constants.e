@@ -13,6 +13,9 @@ class
 
 feature
 	
+	Syslog_port: INTEGER is 167
+			-- Standard syslog UDP port.
+
 	Log_kern: INTEGER is 0
 			-- Kernel messages
 			
