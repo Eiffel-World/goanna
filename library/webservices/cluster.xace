@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<cluster name="webservices" location="${GOANNA}/library/webservices" abstract="True">
+
+	<description>
+		description: "Cluster definition for Goanna webservices library classes"
+		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
+		date: "$Date$"
+		revision: "$Revision$"
+		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		copyright: "Copyright (c) 2001 Glenn Maughan and others"
+		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		thanks: "Modified version of GOBO cluster.xace files"
+	</description>
+
+	<cluster name="services"/>
+
+	<mount location="${GOANNA}/library/webservices/servlet/cluster.xace"/>
+	<mount location="${GOANNA}/library/webservices/models/dom/cluster.xace"/>
+	<mount location="${GOANNA}/library/webservices/protocols/soap/cluster.xace"/>
+	<mount location="${GOANNA}/library/webservices/protocols/xmlrpc/cluster.xace"/>
+	<mount location="${GOANNA}/library/webservices/connectors/cgi/cluster.xace"/>
+	<mount location="${GOANNA}/library/webservices/connectors/fast_cgi/cluster.xace"/>
+	<mount location="${GOANNA}/library/webservices/connectors/stand_alone/cluster.xace"/>
+
+</cluster>
