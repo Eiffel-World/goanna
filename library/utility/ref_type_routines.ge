@@ -11,20 +11,17 @@ indexing
 class
 	REF_TYPE_ROUTINES
 	
+obsolete "ISE and SmallEiffel now have the same BOOLEAN_REF creation interface."
+
 feature
 	
 	make_boolean_ref (bool: BOOLEAN): BOOLEAN_REF is
 			-- Create a new boolean reference type from 'bool'.
 		do
-#ifndef ISE		
-                        create Result.make (bool)
-#else
-#ifdef SE
+#ifdef SE || ISE
                         create Result
                         Result.set_item (bool)
 #endif
-#endif
-
 		end
 	
 end -- class REF_TYPE_ROUTINES

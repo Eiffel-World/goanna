@@ -32,8 +32,6 @@
 		<geant target="ge2e"/>
 		<set name="gepp_file" value="character_manipulation"/>
 		<geant target="ge2e"/>
-		<set name="gepp_file" value="ref_type_routines"/>
-		<geant target="ge2e"/>
 		<set name="gepp_file" value="string_manipulation"/>
 		<geant target="ge2e"/>
 	</target>
