@@ -21,8 +21,9 @@ default
 	multithreaded(no)
 	check_vape(no)
 	arguments("8000 10")
+	arguments(" ")
 	disabled_debug(yes)
-	disabled_debug("fcgi_protocol")
+	debug("fcgi_protocol")
 	disabled_debug("base64_encode")
 	disabled_debug("session_management")
 	disabled_debug("cookie_parsing")
@@ -30,11 +31,21 @@ default
 	disabled_debug("dom_output")
 	disabled_debug("query_string_parsing")
 	disabled_debug("xmle_id_nodes")
+	disabled_debug("unhandled_node_types")
+	disabled_debug("normalize")
+	debug("fcgi_protocol")
+	disabled_debug("base64_encode")
+	disabled_debug("session_management")
+	disabled_debug("cookie_parsing")
+	debug("yaesockets")
+	disabled_debug("dom_output")
+	disabled_debug("query_string_parsing")
+	disabled_debug("xmle_id_nodes")
+	disabled_debug("unhandled_node_types")
 	disabled_debug("normalize")
 	line_generation(no)
 	profile(yes)
 	trace(no)
-
 
 cluster
 	root_cluster:		"$GOANNA\examples\servlet"
@@ -72,6 +83,12 @@ cluster
 	goanna_utility:		"$GOANNA\library\utility"
 
 	goanna_utility_ise (goanna_utility):		"$\spec\ise"
+		exclude
+			"bit_manipulation.e"; 
+		end
+
+	goanna_uitlity_ise4 (goanna_utility):		"$\spec\ise4"
+
 
 	logging:		"$GOANNA\library\logging"
 
@@ -111,7 +128,9 @@ cluster
 external
 
 	include_path:
-		"$GOBO\library\kernel\include"
+		"$GOBO\library\kernel\include",
+		"$GOANNA\library\utility\spec\ise4\include"
+
 
 	object:
 		"$YAESOCKETS\C\Debug\cl.lib",

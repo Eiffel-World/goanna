@@ -34,17 +34,16 @@ feature -- Initialisation
 	make is
 			-- Initialise application and begin request processing loop
 		local
-			config: SERVLET_CONFIG
-			test_servlet: HTTP_SERVLET
-			
+			servlet_config: SERVLET_CONFIG
+			test_servlet: HTTP_SERVLET	
 		do
 			fast_cgi_servlet_app_make (Arguments.argument (1).to_integer, Arguments.argument (2).to_integer)
-			create config
-			create {TEST_SERVLET} test_servlet.init (config)
+			create servlet_config
+			create {TEST_SERVLET} test_servlet.init (servlet_config)
 			register_servlet (test_servlet, "basic")
-			create {XMLE_TEST_SERVLET} test_servlet.init (config)
+			create {XMLE_TEST_SERVLET} test_servlet.init (servlet_config)
 			register_servlet (test_servlet, "xmle")
-			create {DOM_TEST_SERVLET} test_servlet.init (config)
+			create {DOM_TEST_SERVLET} test_servlet.init (servlet_config)
 			register_servlet (test_servlet, "dom")
 			run
 		end

@@ -23,19 +23,20 @@ default
 	arguments("9000 d:\goanna\tools\httpd\docroot")
 	arguments("9000 d:\Eiffel50\docs")
 	arguments("9000 d:\goanna\examples\emu_httpd\docroot")
+	arguments(" ")
 	disabled_debug(yes)
-	disabled_debug("status_output")
 	disabled_debug("httpd_response_write")
-	disabled_debug("dom_test_servlet")
+	disabled_debug("status_output")
 	disabled_debug("base64_encode")
 	disabled_debug("normalize")
 	disabled_debug("session_management")
-	disabled_debug("cookie_parsing")
+	disabled_debug("dom_test_servlet")
 	disabled_debug("dom_output")
 	debug("query_string_parsing")
 	disabled_debug("xmle_id_nodes")
 	disabled_debug("httpd_servlet_response")
-	debug("httpd_servlet_request")
+	disabled_debug("unhandled_node_types")
+	disabled_debug("cookie_parsing")
 	line_generation(no)
 	profile(no)
 	trace(no)
@@ -73,6 +74,12 @@ cluster
 	goanna_utility:		"$GOANNA\library\utility"
 
 	goanna_utility_ise (goanna_utility):		"$\spec\ise"
+		exclude
+			"bit_manipulation.e"
+		end
+	
+	goanna_utility_ise4 (goanna_utility):		"$\spec\ise4"
+
 
 	logging:		"$GOANNA\library\logging"
 
@@ -112,7 +119,8 @@ cluster
 external
 
 	include_path:
-		"$GOBO\library\kernel\include"
+		"$GOBO\library\kernel\include",
+		"$GOANNA\library\utility\spec\ise4\include"
 
 	object:
 		"$YAESOCKETS\C\Debug\cl.lib",
