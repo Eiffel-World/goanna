@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<cluster name="soap" location="${GOANNA}/library/soap">
+<cluster name="soap" location="${GOANNA}/library/webservices/protocols/soap">
 
 	<description>
 		description: "Cluster definition for Goanna SOAP classes"
@@ -15,8 +15,8 @@
 
 	<cluster name="encoding"/>
 	<cluster name="server">
-		<cluster name="http"/>
+		<cluster name="servlet"/>
 	</cluster>
-	<cluster name="util"/>
+	<cluster name="utility"/>
 
 </cluster>

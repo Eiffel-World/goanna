@@ -16,5 +16,9 @@
 	<cluster name="spec" abstract="True">
 		<cluster name="compiler" location="${GOANNA}/library/utility/spec/${GOBO_EIFFEL}"/>
 	</cluster>
+	<cluster>
+
+	<mount location="${GOANNA}/library/utility/log4e"/>
+	<mount location="${GOANNA}/library/utility/codegen"/>
 
 </cluster>
