@@ -23,6 +23,7 @@ feature -- Initialization
 			if arguments_ok then
 				create parser.make
 				parser.parse_from_file_name (file_name)
+				parser.document.normalize
 				if parser.last_error = parser.Xml_err_none then
 					generate_eiffel_code (parser.document)
 				else

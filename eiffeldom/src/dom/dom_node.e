@@ -309,6 +309,24 @@ feature {DOM_NODE} -- DOM Status Setting
 			parent_node_set: parent_node = new_parent
 		end
 
+	set_previous_sibling (new_sibling: like previous_sibling) is
+			-- Set the previous sibling of this node
+		require
+			new_sibling_exists: new_sibling /= Void
+		deferred
+		ensure
+			previous_sibling_set: previous_sibling = new_sibling
+		end
+
+	set_next_sibling (new_sibling: like next_sibling) is
+			-- Set the next sibling of this node
+		require
+			new_sibling_exists: new_sibling /= Void
+		deferred
+		ensure
+			next_sibling_set: next_sibling = new_sibling
+		end
+
 feature -- Validation Utility
 
 	is_right_document (new_child: DOM_NODE): BOOLEAN is

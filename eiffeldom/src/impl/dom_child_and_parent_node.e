@@ -12,6 +12,8 @@ inherit
 		undefine
 			previous_sibling,
 			next_sibling,
+			set_previous_sibling,
+			set_next_sibling,
 			parent_node,
 			set_parent_node
 		end

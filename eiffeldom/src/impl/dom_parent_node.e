@@ -26,20 +26,38 @@ feature {DOM_NODE}
 
 feature
 
-   first_child: DOM_NODE is
-         -- The first child of this node.
-         -- If there is no such node, this returns `Void'.
-	  do
-		  Result := child_nodes.first
-	  end
+	first_child: DOM_NODE is
+			-- The first child of this node.
+			-- If there is no such node, this returns `Void'.
+		do
+			if has_child_nodes then
+				Result := child_nodes.first
+			end
+		end
 
-   last_child: DOM_NODE is
-         -- The last child of this node.
-         -- If there is no such node, this returns `Void'.
-	  do
-		  Result := child_nodes.last
-	  end
+	last_child: DOM_NODE is
+			-- The last child of this node.
+			-- If there is no such node, this returns `Void'.
+		do
+			if has_child_nodes then
+				Result := child_nodes.last
+			end
+		end
    
+   previous_sibling: DOM_NODE is
+         -- The node immediately preceding this node.
+         -- If there is no such node, this returns `Void'.
+      	 -- No siblings for a parent node
+		do
+		end
+
+   next_sibling: DOM_NODE is
+         -- The node immediately following this node.
+         -- If there is no such node, this returns `Void'.
+		 -- No siblings for a parent node.
+      do
+      end
+
 	has_child_nodes: BOOLEAN is
          -- This is a convenience method to allow easy determination
          -- of whether a node has any children.
@@ -57,7 +75,42 @@ feature
 			-- instructions, CDATA sections and entity references) separates
 			-- Text nodes, ie, there are neither adjacent Text nodes nor empty
 			-- Text nodes.
-			--| No children to normalize at this level.
+		local
+			kid, next: DOM_NODE
+			text: DOM_TEXT
+			discard: DOM_NODE
+		do
+			from
+				kid := first_child
+			until
+				kid = Void
+			loop
+				next := kid.next_sibling
+				-- If the next is a text node then combine it with the kid.
+				-- Otherwise, if it is an element, recursively normalize it.
+				if next /= Void and kid.node_type = Text_node and next.node_type = Text_node then
+					text ?= text
+					text.append_data (next.node_value)
+					discard := remove_child (next)
+					print ("removed child...")
+					-- don't advance; there might be another.
+					next := kid
+				elseif kid.node_type = Element_node then
+					kid.normalize
+				end
+				kid := next
+			end
+		end
+
+feature {DOM_NODE} -- DOM Status Setting
+
+	set_previous_sibling (new_sibling: like previous_sibling) is
+			-- Set the previous sibling of this node
+		do
+		end
+
+	set_next_sibling (new_sibling: like next_sibling) is
+			-- Set the next sibling of this node
 		do
 		end
 

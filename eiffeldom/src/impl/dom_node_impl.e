@@ -55,18 +55,6 @@ feature
 	  do
 	  end
 
-   previous_sibling: DOM_NODE is
-         -- The node immediately preceding this node.
-         -- If there is no such node, this returns `Void'.
-	  do
-	  end
-
-   next_sibling: DOM_NODE is
-         -- The node immediately following this node.
-         -- If there is no such node, this returns `Void'.
-	  do
-	  end
-
    attributes: DOM_NAMED_MAP [DOM_ATTR]
          -- A NamedNodeMap containing the attributes of this node
          -- (if it is an Element) or `Void' otherwise.
@@ -127,7 +115,7 @@ feature
          --    The node added.
 	  do
 		  child_nodes.extend (new_child)
-			new_child.set_parent_node (Current)
+		  new_child.set_parent_node (Current)
 		  Result := new_child
       end
 
@@ -167,7 +155,7 @@ feature
 			-- instructions, CDATA sections and entity references) separates
 			-- Text nodes, ie, there are neither adjacent Text nodes nor empty
 			-- Text nodes.
-			--| No children to normalize at this level.
+			--| No children to normalize at this level. Do nothing.
 		do
 		end
 
