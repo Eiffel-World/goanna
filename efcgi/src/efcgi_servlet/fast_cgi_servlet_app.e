@@ -47,8 +47,8 @@ feature -- Basic operations
 		do
 			create internal_request.make (request)
 			create internal_response.make (request)
-			get_servlet ("test").service (internal_request, internal_response)
-			
+			-- TODO: dispatch request to correct servlet
+			get_servlet ("test").service (internal_request, internal_response)	
 		end
 		
 end -- class FAST_CGI_SERVLET_APP
