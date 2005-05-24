@@ -22,7 +22,10 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
+	-- Comment out create of XSLT_SERVLET if you do not have
+	-- Gestalt available
+
 creation
 
 	make
@@ -104,6 +107,8 @@ feature {NONE} -- Implementation
 			servlet_manager.register_default_servlet (servlet)
 			create {SNOOP_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "snoop")
+			create {XSLT_SERVLET} servlet.init (config)
+			servlet_manager.register_servlet (servlet, "xslt")
 		end
 
 end -- class SERVLET_SERVER

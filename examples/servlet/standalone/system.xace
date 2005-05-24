@@ -32,4 +32,11 @@
 	<mount location="${GOANNA}/library/library.xace"/>
 	<mount location="${GOANNA}/library/yaesockets.xace"/>
 
+	<!-- comment out the remaining lines if you do not have Gestalt
+
+	<mount location="${EPOSIX}/src/library.xace"/>
+	<cluster name="gestalt" location="${HOME}/gestalt"/>
+
+	 -->
+ 
 </system>

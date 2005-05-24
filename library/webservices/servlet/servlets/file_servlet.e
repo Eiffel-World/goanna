@@ -57,7 +57,7 @@ feature -- Basic operations
 				print ("Document root ends with slash? " + final_slash.out + "%N")
 			end
 			s := req.path_info
-			if
+			if file_servlet_name /= Void and then
 				s.substring(2, file_servlet_name.count + 1).is_equal(file_servlet_name)
 			 then
 				debug
