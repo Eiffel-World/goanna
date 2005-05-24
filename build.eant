@@ -81,7 +81,7 @@
 			in all subdirectories.
 		</description>
 		<geant file="build.eant" target="${target}" dir="examples"/>
-		<geant file="build.eant" target="${target}" dir="src"/>
+		<!-- <geant file="build.eant" target="${target}" dir="src"/> -->
 	</target>
 
 </project>

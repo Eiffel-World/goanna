@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="utility" inherit="${GOBO}/misc/test.eant" default="help">
+<project name="utility" default="help">
 
 	<description>
 		system:      "Goanna Utility Library Tester"
@@ -12,6 +12,11 @@
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 	</description>
 
+	<inherit>
+		<parent location="${GOBO}/misc/test.eant">
+		  <redefine target="init_system"/>
+		</parent>
+	</inherit>
 
 <!-- Implementation -->
 

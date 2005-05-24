@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="utility" inherit="${GOBO}/misc/ge2e.eant" default="help">
+<project name="utility" default="help">
 
 	<description>
 		description: "Eiffel Ant file for the Goanna Utility Library"
@@ -12,6 +12,10 @@
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 		thanks: "Modified version of GOBO build.xml files"
 	</description>
+
+	<inherit>
+		<parent location="${GOBO}/misc/ge2e.eant"/>
+	</inherit>
 
 	<target name="help">
 		<echo message="usage:"/>
