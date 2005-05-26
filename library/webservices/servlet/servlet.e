@@ -42,7 +42,7 @@ feature -- Access
 feature -- Basic operations
 
 	service (req: SERVLET_REQUEST; resp: SERVLET_RESPONSE) is
-			-- Called by teh servlet manager to allow the servlet to
+			-- Called by the servlet manager to allow the servlet to
 			-- respond to a request.
 		require
 			request_exists: req /= Void

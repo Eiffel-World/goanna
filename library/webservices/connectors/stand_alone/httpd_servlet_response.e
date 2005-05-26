@@ -299,7 +299,7 @@ feature {NONE} -- Implementation
 			create Result.make (100)
 			Result.append ("<HTML><HEAD><TITLE>")
 			Result.append (status_code_message (sc))
-			Result.append ("</TITLE><CENTER><H1>")
+			Result.append ("</TITLE><BODY><CENTER><H1>")
 			Result.append (status_code_message (sc))
 			Result.append ("</H1></CENTER><P>")
 			Result.append (msg)

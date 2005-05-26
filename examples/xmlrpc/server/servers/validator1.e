@@ -238,7 +238,7 @@ feature {NONE} -- Implementation
 	Echo_struct_test_name: STRING is "echoStructTest"
 			-- Name of `echo_struct_test' service
 
-	Many_types_test_name: STRING is "manyTypes"
+	Many_types_test_name: STRING is "manyTypesTest"
 			-- Name of `many_types_test' service
 
 	Moderate_size_array_check_name: STRING is "moderateSizeArrayCheck"

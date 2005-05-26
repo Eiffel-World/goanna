@@ -129,7 +129,7 @@ feature -- Implementation
 					debug ("socket")
 						io.putstring ("Current request string: " + result + "%N")
 					end
-					done := true -- check_request (Result)  <===================== Here is the change
+					done :=  check_request (Result) -- (was True) <===================== Here is the change
 					if not done then
 						buffer.fill_blank
 						socket.receive_string (buffer)
@@ -181,7 +181,7 @@ feature -- Implementation
 			if content_length_found then
 				-- have enough bytes for the body been read?
 				Result := buffer.count = end_header_index + content_length - 1
-			end	
+			end
 		end
 
 	check_socket_error (socket: ABSTRACT_SOCKET) is

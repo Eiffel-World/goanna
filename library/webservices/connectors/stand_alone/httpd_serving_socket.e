@@ -121,7 +121,7 @@ feature {NONE}
 					debug ("socket")
 						io.putstring ("Current request string: " + result + "%N")
 					end
-					done := true -- check_request (Result)  <===================== Here is the change
+					done := check_request (Result) -- (was True) <===================== Here is the change
 					if not done then
 						buffer.fill_blank
 						receive_string (buffer)

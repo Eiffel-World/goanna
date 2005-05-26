@@ -71,12 +71,14 @@ feature -- Initialisation
 							param_set_cursor.off or not unmarshall_ok
 						loop
 							next_param ?= param_set_cursor.item
-							check
-								param_is_element: next_param /= Void
-							end
-							create param.unmarshall (next_param)
-							if param.unmarshall_ok then
-								params.force_last (param)
+							if next_param /= Void then
+								create param.unmarshall (next_param)
+								if param.unmarshall_ok then
+									params.force_last (param)
+								else
+									unmarshall_ok := False
+									unmarshall_error_code := param.unmarshall_error_code
+								end
 							else
 								unmarshall_ok := False
 								unmarshall_error_code := param.unmarshall_error_code

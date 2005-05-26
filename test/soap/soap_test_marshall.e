@@ -70,7 +70,7 @@ feature -- Test
 	parse_xml (xml: STRING): XM_ELEMENT is
 			-- Parser xml string and return document element
 		local
-			a_tree_builder: XM_TREE_CALLBACKS_PIPE
+			a_tree_builder: GOA_TREE_CALLBACKS_PIPE
 			a_parser: XM_PARSER
 		do
 			create a_tree_builder.make

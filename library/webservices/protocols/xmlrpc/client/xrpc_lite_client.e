@@ -318,7 +318,7 @@ feature {NONE} -- Implementation
 			content_exists: content /= Void
 		local
 			parser: XM_EIFFEL_PARSER
-			tree_pipe: XM_TREE_CALLBACKS_PIPE
+			tree_pipe: GOA_TREE_CALLBACKS_PIPE
 			child: XM_ELEMENT
 		do
 			invocation_ok := True

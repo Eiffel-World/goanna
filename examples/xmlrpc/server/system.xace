@@ -23,6 +23,7 @@
 	<option if="${DEBUG}">
 		<option name="assertion" value="all"/>
 		<option name="finalize" value="false"/>
+	<!--	<option name="debug_tag" value="raw_snoop"/>  -->
 	</option>
 		
 	<cluster name="root_cluster" location=".">

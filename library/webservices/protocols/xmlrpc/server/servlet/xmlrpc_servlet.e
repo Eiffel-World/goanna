@@ -160,7 +160,7 @@ feature {NONE} -- Implementation
 			-- the problem encountered.
 		local
 			parser: XM_EIFFEL_PARSER
-			tree_pipe: XM_TREE_CALLBACKS_PIPE
+			tree_pipe: GOA_TREE_CALLBACKS_PIPE
 		do
 			valid_call := True
 			create parser.make

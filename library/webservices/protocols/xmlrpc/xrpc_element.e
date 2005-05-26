@@ -66,10 +66,7 @@ feature {NONE} -- Implementation
 					child_node_cursor.off or found
 				loop
 					child ?= child_node_cursor.item
-					check
-						node_is_element: child /= Void
-					end
-					if child.name.is_equal (name) then
+					if child /= Void and then child.name.is_equal (name) then
 						Result := child
 						found := True
 					end
