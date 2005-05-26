@@ -78,13 +78,13 @@ feature -- Basic operations
 					-- extract service details
 					service_name := call.extract_service_name.out
 					action := call.extract_action.out
-					parameters := call.extract_parameters
 					log_hierarchy.logger (Xmlrpc_category).info ("Calling: " + call.method_name.out)
 					-- retrieve service and execute call
 					if registry.has (service_name) then
 						agent_service := registry.get (service_name)
 						if agent_service.has (action) then
-							if agent_service.valid_operands (action, parameters) then
+							parameters := call.extract_parameters (agent_service, action)
+							if call.are_parameters_valid and then agent_service.valid_operands (action, parameters) then
 								agent_service.call (action, parameters)
 								if agent_service.process_ok then
 									-- check for a result, if so pack it up to send back

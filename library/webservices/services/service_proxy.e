@@ -8,27 +8,24 @@ indexing
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-class
+deferred class
 	SERVICE_PROXY
 	
 inherit
 	
 	REGISTRY [ROUTINE [ANY, TUPLE]]
 	
-creation
-	
-	make
 	
 feature -- Status report
 
-	valid_operands (name: STRING; operands: TUPLE): BOOLEAN is
-			-- Are 'operands' valid operands for the function named 'name'?
+	valid_operands (a_name: STRING; operands: TUPLE): BOOLEAN is
+			-- Are 'operands' valid operands for the function named 'a_name'?
 		require
-			name_exists: name /= Void
-			service_exists: has (name)
+			name_exists: a_name /= Void
+			service_exists: has (a_name)
 			args_exist: operands /= Void
 		do
-			Result := get (name).valid_operands (operands)
+			Result := get (a_name).valid_operands (operands)
 		end
 		
 	process_ok: BOOLEAN
@@ -37,14 +34,14 @@ feature -- Status report
 	last_result: ANY
 			-- The result of the last execution. Void if no result.
 
-	help (name: STRING): STRING is
+	help (a_name: STRING): STRING is
 			-- Documentation for the named service.
 		require
-			name_exists: name /= Void
-			service_exists: has (name)
+			name_exists: a_name /= Void
+			service_exists: has (a_name)
 		do
-			if routine_help /= Void and then routine_help.has (name) then
-				Result := routine_help.item (name)		
+			if routine_help /= Void and then routine_help.has (a_name) then
+				Result := routine_help.item (a_name)		
 			else
 				Result := ""
 			end			
@@ -52,29 +49,29 @@ feature -- Status report
 			
 feature -- Status setting
 
-	register_with_help (element: ROUTINE [ANY, TUPLE]; name, help_string: STRING) is
-			-- Register 'element' with 'name' and 'help_string'
+	register_with_help (element: ROUTINE [ANY, TUPLE]; a_name, help_string: STRING) is
+			-- Register 'element' with 'a_name' and 'help_string'
 		require
-			name_exists: name /= Void
+			name_exists: a_name /= Void
 			element_exists: element /= Void
 			help_exists: help_string /= Void
 		do
-			elements.force (element, name)
-			set_help (name, help_string)
+			elements.force (element, a_name)
+			set_help (a_name, help_string)
 		ensure
-			element_registered: has (name)
-			help_set: help (name).is_equal (help_string)
+			element_registered: has (a_name)
+			help_set: help (a_name).is_equal (help_string)
 		end
 		
-	call (name: STRING; args: TUPLE) is
+	call (a_name: STRING; args: TUPLE) is
 			-- Call named routine
 		local
 			function: FUNCTION [ANY, TUPLE, ANY]
 			routine: ROUTINE [ANY, TUPLE]
 		do
 			last_result := Void
-			if has (name) then
-				routine := get (name)
+			if has (a_name) then
+				routine := get (a_name)
 				-- check if it is a function so that a result is returned
 				function ?= routine
 				if function /= Void then
@@ -89,21 +86,33 @@ feature -- Status setting
 			end	
 		end
 
-	set_help (name, help_string: STRING) is
+	set_help (a_name, help_string: STRING) is
 			-- Set the help string for the named routine.
 		require
-			name_exists: name /= Void
-			service_exists: has (name)
+			name_exists: a_name /= Void
+			service_exists: has (a_name)
 			help_exists: help_string /= Void
 		do
 			if routine_help = Void then
 				create routine_help.make_default
 			end
-			routine_help.force (help_string, name)
+			routine_help.force (help_string, a_name)
 		ensure
-			help_set: help (name).is_equal (help_string)
+			help_set: help (a_name).is_equal (help_string)
 		end
-		
+
+feature -- Creation
+
+	new_tuple (a_name: STRING): TUPLE is
+			--	Tuple of default-valued arguments to pass to call `a_name'.
+		require
+			name_exists: a_name /= Void
+			service_exists: has (a_name)
+		deferred
+		ensure
+			tuple_not_void: Result /= Void
+		end
+
 feature -- Implementation
 
 	routine_help: DS_HASH_TABLE [STRING, STRING]

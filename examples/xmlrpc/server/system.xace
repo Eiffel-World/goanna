@@ -21,7 +21,7 @@
 		<option name="finalize" value="true"/>
 	</option>
 	<option if="${DEBUG}">
-		<option name="assertion" value="require"/>
+		<option name="assertion" value="all"/>
 		<option name="finalize" value="false"/>
 	</option>
 		

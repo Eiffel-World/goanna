@@ -17,23 +17,23 @@ feature -- XML constants
 	
 feature -- Namespace constants
 
-	Ns_separator: UC_STRING is 
+	Ns_separator: STRING is 
 		once 
 			create Result.make_from_string (":")
 		end
 	
-	Ns_prefix_env: UC_STRING is 
+	Ns_prefix_env: STRING is 
 		once 
 			create Result.make_from_string ("env")
 		end
 		
-	Ns_name_env: UC_STRING is 
+	Ns_name_env: STRING is 
 		once 
-			create Result.make_from_string ("http://www.w3.org/2001/09/soap-envelope")
+			create Result.make_from_string ("http://www.w3.org/2003/05/soap-envelope")
 		end
 	
-	Ns_prefix_enc: STRING is "enc"
-	Ns_name_enc: STRING is "http://www.w3.org/2001/09/soap-encoding"
+	Ns_prefix_enc: STRING is "enc" -- ??
+	Ns_name_enc: STRING is "http://www.w3.org/2003/09/soap-encoding"
 	
 	Ns_prefix_xs: STRING is "xs"
 	Ns_name_xs: STRING is "http://www.w3.org/2001/XMLSchema"
@@ -42,71 +42,71 @@ feature -- Namespace constants
 	Ns_name_xsi: STRING is "http://www.w3.org/2001/XMLSchema-instance"
 	
 	Ns_prefix_fault: STRING is "fault"
-	Ns_name_fault: STRING is "http://www.w3.org/2001/09/soap-faults"
+	Ns_name_fault: STRING is "http://www.w3.org/2003/05/soap-faults"
 	
 	Ns_prefix_upgrade: STRING is "upgrade"
-	Ns_name_upgrade: STRING is "http://www.w3.org/2001/09/soap-upgrade"
+	Ns_name_upgrade: STRING is "http://www.w3.org/2003/05/soap-upgrade"
 	
 feature -- Actor constants
 
-	Actor_next: STRING is "http://www.w3.org/2001/09/soap-envelope/actor/next"
-	Actor_none: STRING is "http://www.w3.org/2001/09/soap-envelope/actor/none"
+	Actor_next: STRING is "http://www.w3.org/2003/05/soap-envelope/actor/next"
+	Actor_none: STRING is "http://www.w3.org/2003/05/soap-envelope/actor/none"
 	
 feature -- Element constants
 
-	Envelope_element_name: UC_STRING is 
+	Envelope_element_name: STRING is 
 		once 
 			create Result.make_from_string ("Envelope")
 		end
 		
-	Header_element_name: UC_STRING is 
+	Header_element_name: STRING is 
 		once 
 			create Result.make_from_string ("Header")
 		end
 		
-	Body_element_name: UC_STRING is 
+	Body_element_name: STRING is 
 		once 
 			create Result.make_from_string ("Body")
 		end
 		
-	Fault_element_name: UC_STRING is 
+	Fault_element_name: STRING is 
 		once 
 			create Result.make_from_string ("Fault")
 		end
 		
-	Fault_code_element_name: UC_STRING is 
+	Fault_code_element_name: STRING is 
 		once 
 			create Result.make_from_string ("faultcode")
 		end
 		
-	Fault_string_element_name: UC_STRING is 
+	Fault_string_element_name: STRING is 
 		once 
 			create Result.make_from_string ("faultstring")
 		end
 		
-	Fault_actor_element_name: UC_STRING is 
+	Fault_actor_element_name: STRING is 
 		once 
 			create Result.make_from_string ("faultactor")
 		end
 		
-	Fault_detail_element_name: UC_STRING is 
+	Fault_detail_element_name: STRING is 
 		once 
 			create Result.make_from_string ("detail")
 		end
 	
 feature -- Attribute constants
 
-	Encoding_style_attr: UC_STRING is 
+	Encoding_style_attr: STRING is 
 		once 
 			create Result.make_from_string ("encodingStyle")
 		end
 		
-	Must_understand_attr: UC_STRING is 
+	Must_understand_attr: STRING is 
 		once 
 			create Result.make_from_string ("mustUnderstand")
 		end
 		
-	Actor_attr: UC_STRING is 
+	Actor_attr: STRING is 
 		once 
 			create Result.make_from_string ("actor")
 		end

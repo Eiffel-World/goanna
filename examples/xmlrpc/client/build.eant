@@ -80,11 +80,11 @@
 			in all subdirectories.
 		</description>
 
-		<geant file="build.eant" target="${target}" dir="addressbook"/>
-		<geant file="build.eant" target="${target}" dir="calculator"/>
-		<geant file="build.eant" target="${target}" dir="currenttime"/>
-		<geant file="build.eant" target="${target}" dir="currenttime-web"/>
-		<geant file="build.eant" target="${target}" dir="spellchecker"/>
+		<geant file="build.eant" target="${target}" dir="addressbook" if="${GOBO_OS}=windows"/>
+		<geant file="build.eant" target="${target}" dir="calculator" if="${GOBO_OS}=windows"/>
+		<geant file="build.eant" target="${target}" dir="currenttime" if="${GOBO_OS}=windows"/>
+		<!-- <geant file="build.eant" target="${target}" dir="currenttime-web"/> this seems to be a server -->
+		<geant file="build.eant" target="${target}" dir="spellchecker" if="${GOBO_OS}=windows"/>
 		<geant file="build.eant" target="${target}" dir="test"/>
 	</target>
 </project>

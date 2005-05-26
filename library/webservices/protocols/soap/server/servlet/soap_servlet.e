@@ -77,13 +77,13 @@ feature -- Basic operations
 				first := envelope.body.entries.first
 				service_name := extract_service_name (first)
 				action := extract_action_name (first)
-				parameters := extract_parameters (envelope.body.entries.first)
-				-- check validity of parameters
 				if valid_envelope then
 					-- retrieve service and execute call
 					if registry.has (service_name) then
 						agent_service := registry.get (service_name)
-						if agent_service.has (action) then
+						parameters := extract_parameters (envelope.body.entries.first, action)
+						-- check validity of parameters
+						if are_parameters_valid and then agent_service.has (action) then
 							agent_service.call (action, parameters)
 						else
 							-- construct fault response for invalid service action

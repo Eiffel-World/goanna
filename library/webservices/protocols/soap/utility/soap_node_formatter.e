@@ -16,7 +16,7 @@ inherit
 	XM_FORMATTER
 		export
 			{NONE} all
-			{ANY} make, wipe_out, last_string
+			{ANY} make, wipe_out, set_output
 		redefine
 			wipe_out
 		end
@@ -51,7 +51,6 @@ feature {NONE} -- Implementation
 	
 	process_root_element (el: XM_ELEMENT) is
 		do
-			try_process_position (el)
 			process_root_start_tag (el)
 			process_composite (el)
 			process_end_tag (el)
@@ -88,5 +87,80 @@ feature {NONE} -- Implementation
 				append (block.encoding_style_attribute)
 			end
 		end
+
+	append (a_string: STRING) is
+			-- Append chracters to stream.
+		require
+			string_not_void: a_string /= Void
+			is_open_write: last_output.is_open_write
+		do
+			last_output.put_string (a_string)
+		end
+
+	ucappend (str: STRING) is
+		require
+			str_not_void: str /= Void
+		do
+			append (str)
+		end
+
+	process_composite (c: XM_COMPOSITE) is
+		require
+			c_not_void: c /= Void
+		local
+			cs: DS_BILINEAR_CURSOR [XM_NODE]
+		do
+			from
+				cs := c.new_cursor
+				cs.start
+			until
+				cs.off
+			loop
+				cs.item.process (Current)
+				cs.forth
+			end
+		end
+
+	process_end_tag (el: XM_ELEMENT) is
+		require
+			el_not_void: el /= Void
+		do
+			append ("</")
+			process_named (el)
+			append (">")
+		end
+
+	process_named (n: XM_NAMED_NODE) is
+		require
+			n_not_void: n /= Void
+		do
+			if n.has_namespace then
+				append (n.namespace.uri)
+				append ("=")
+			end
+			ucappend (n.name)
+		end
+
+	process_position (node: XM_NODE) is
+		require
+			node_not_void: node /= Void
+			position_included: is_position_included
+		local
+			pos: XM_POSITION
+		do
+			if position_table.has (node) then
+				pos := position_table.item (node)
+			end
+
+			append ("<!--")
+			if pos /= Void then
+				append (pos.out)
+			else
+				append ("No position info available")
+			end
+			append ("-->%N")
+		end
+
+	position_table: XM_POSITION_TABLE
 
 end -- class SOAP_NODE_FORMATTER

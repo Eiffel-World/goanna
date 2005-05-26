@@ -152,7 +152,9 @@
 		</description>
 
 		<geant file="build.eant" target="${target}" dir="utility"/>
+		<geant file="build.eant" target="${target}" dir="soap"/>
 		<geant file="build.eant" target="clean" dir="utility" if="${do_clean}"/>
+		<geant file="build.eant" target="clean" dir="soap" if="${do_clean}"/>
 	</target>
 
 </project>

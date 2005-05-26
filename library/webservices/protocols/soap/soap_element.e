@@ -28,7 +28,12 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
+	KL_IMPORTED_STRING_ROUTINES
+		export
+			{NONE} all
+		end
+	
 feature -- Initialization
 	
 	unmarshall (node: XM_ELEMENT) is
@@ -40,7 +45,7 @@ feature -- Initialization
 
 feature -- Access
 
-	encoding_style: UC_STRING
+	encoding_style: STRING
 			-- Space separated encoding style URIs scoped within this element.
 
 feature -- Status report
@@ -85,7 +90,7 @@ feature {NONE, SOAP_NODE_FORMATTER} -- Implementation
 		
 feature {NONE} -- Implementation
 
-	get_named_element (parent: XM_ELEMENT; name, namespace: UC_STRING): XM_ELEMENT is
+	get_named_element (parent: XM_ELEMENT; name, namespace: STRING): XM_ELEMENT is
 			-- Search for and return first element with 'name' and 'namespace'. Return
 			-- Void if not found.
 		require
@@ -105,8 +110,8 @@ feature {NONE} -- Implementation
 				loop
 					child ?= child_node_cursor.item
 					if child /= Void then
-						if child.name.is_equal (name) and then child.has_namespace 
-							and then child.namespace.is_equal (namespace) then
+						if STRING_.same_string (child.name, name) and then child.has_namespace 
+							and then STRING_.same_string (child.namespace.uri, namespace) then
 							Result := child
 							found := True
 						end
@@ -116,16 +121,16 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	check_qualified_name (elem: XM_NAMED_NODE; name, namespace: UC_STRING): BOOLEAN is
+	check_qualified_name (elem: XM_NAMED_NODE; name, namespace: STRING): BOOLEAN is
 			-- Does 'elem' have the specified 'name' and 'namespace'?
 		require
 			node_exists: elem /= Void
 			name_exists: name /= Void
 			namespace_exists: namespace /= Void
 		do
-			Result := elem.name.is_equal (name) 
+			Result := STRING_.same_string (elem.name, name) 
 				and then elem.has_namespace
-				and then elem.namespace.is_equal (namespace)
+				and then STRING_.same_string (elem.namespace.uri, namespace)
 		end
 		
 	unmarshall_encoding_style_attribute (node: XM_ELEMENT) is
@@ -137,12 +142,12 @@ feature {NONE} -- Implementation
 			node_exists: node /= Void
 		local
 			new_value: SOAP_VALUE
-			str: UC_STRING
+			str: STRING
 			attr: XM_ATTRIBUTE
 		do
 			if node.has_attribute_by_name (Encoding_style_attr) then
 				attr := node.attribute_by_name (Encoding_style_attr)
-				if attr.has_namespace and attr.namespace.is_equal (Ns_name_env) then
+				if attr.has_namespace and STRING_.same_string (attr.namespace.uri, Ns_name_env) then
 					value_factory.unmarshall_value (attr.value, Ns_name_xs, Xsd_anyuri)
 					if not value_factory.unmarshall_ok then
 						unmarshall_ok := False

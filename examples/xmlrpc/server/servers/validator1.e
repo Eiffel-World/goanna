@@ -193,20 +193,76 @@ feature -- Access
 			Result.force (arg * 100, "times100")
 			Result.force (arg * 1000, "times1000")
 		end
+
+feature -- Creation
+
+	new_tuple (a_name: STRING): TUPLE is
+			--	Tuple of default-valued arguments to pass to call `a_name'.
+		local
+			an_int_tuple: TUPLE [INTEGER_REF]
+			a_string_tuple: TUPLE [STRING]
+			an_array_tuple: TUPLE [ARRAY [ANY]]
+			a_struct_tuple: TUPLE [DS_HASH_TABLE [ANY, STRING]]
+			a_multi_tuple: TUPLE [INTEGER_REF, BOOLEAN_REF, STRING, DOUBLE_REF, DT_DATE_TIME, STRING]
+		do
+			if a_name.is_equal (Array_of_structs_test_name) then
+				create an_array_tuple; Result := an_array_tuple	
+			elseif a_name.is_equal (Count_the_entities_name) then
+				create a_string_tuple; Result := a_string_tuple
+			elseif a_name.is_equal (Easy_struct_test_name) then
+				create a_struct_tuple; Result := a_struct_tuple
+			elseif a_name.is_equal (Echo_struct_test_name) then
+				create a_struct_tuple; Result := a_struct_tuple
+			elseif a_name.is_equal (Many_types_test_name) then
+				create a_multi_tuple; Result := a_multi_tuple
+			elseif a_name.is_equal (Moderate_size_array_check_name) then
+				create an_array_tuple; Result := an_array_tuple
+			elseif a_name.is_equal (Nested_struct_test_name) then
+				create a_struct_tuple; Result := a_struct_tuple
+			elseif a_name.is_equal (Simple_struct_return_test_name) then
+				create an_int_tuple; Result := an_int_tuple
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	Array_of_structs_test_name: STRING is "arrayOfStructsTest"
+			-- Name of `array_of_structs_test' service
+
+	Count_the_entities_name: STRING is "countTheEntities"
+			-- Name of `count_the_entities' service
+
+	Easy_struct_test_name: STRING is "easyStructTest"
+			-- Name of `easy_struct_test' service
+
+	Echo_struct_test_name: STRING is "echoStructTest"
+			-- Name of `echo_struct_test' service
+
+	Many_types_test_name: STRING is "manyTypes"
+			-- Name of `many_types_test' service
+
+	Moderate_size_array_check_name: STRING is "moderateSizeArrayCheck"
+			-- Name of `moderate_size_array_check' service
+
+	Nested_struct_test_name: STRING is "nestedStructTest"
+			-- Name of `nested_struct_test' service
+
+	Simple_struct_return_test_name: STRING is "simpleStructReturnTest"
+			-- Name of `simple_struct_return_test' service
 		
 feature {NONE} -- Initialisation
 
 	self_register is
 			-- Register all actions for this service
 		do	
-			register (agent array_of_structs_test, "arrayOfStructsTest")
-			register (agent count_the_entities, "countTheEntities")	
-			register (agent easy_struct_test, "easyStructTest")
-			register (agent echo_struct_test, "echoStructTest")
-			register (agent many_types_test, "manyTypesTest")
-			register (agent moderate_size_array_check, "moderateSizeArrayCheck")
-			register (agent nested_struct_test, "nestedStructTest")
-			register (agent simple_struct_return_test, "simpleStructReturnTest")
+			register (agent array_of_structs_test, Array_of_structs_test_name)
+			register (agent count_the_entities, Count_the_entities_name)	
+			register (agent easy_struct_test, Easy_struct_test_name)
+			register (agent echo_struct_test, Echo_struct_test_name)
+			register (agent many_types_test, Many_types_test_name)
+			register (agent moderate_size_array_check, Moderate_size_array_check_name)
+			register (agent nested_struct_test, Nested_struct_test_name)
+			register (agent simple_struct_return_test, Simple_struct_return_test_name)
 		end
 
 end -- class VALIDATOR1

@@ -27,11 +27,6 @@ inherit
 			{NONE} all
 		end
 	
---	INTERNAL
---		export
---			{NONE} all
---		end
-	
 	HTTPD_LOGGER
 		export
 			{NONE} all
@@ -99,6 +94,7 @@ feature -- Access
 			method_name_exists: method_name /= Void
 			method_registered: has_method (method_name).item
 		do
+			-- TODO: this wasn't implemented. Is it necessary? review.
 		ensure
 			signature_exists: Result /= Void
 		end
@@ -177,13 +173,13 @@ feature -- Access
 						-- call as normal and process result
 						service_name := sub_call.extract_service_name.out
 						action := sub_call.extract_action.out
-						parameters := sub_call.extract_parameters
 						log_hierarchy.logger (Xmlrpc_category).info ("Multicall calling: " + sub_call.method_name.out)
 						-- retrieve service and execute call
 						if registry.has (service_name) then
 							agent_service := registry.get (service_name)
 							if agent_service.has (action) then
-								if agent_service.valid_operands (action, parameters) then
+								parameters := sub_call.extract_parameters (agent_service, action)
+								if sub_call.are_parameters_valid and then agent_service.valid_operands (action, parameters) then
 									agent_service.call (action, parameters)
 									if agent_service.process_ok then
 										-- check for a result, if so pack it up to send back
@@ -233,17 +229,51 @@ feature -- Access
 			results_exist: Result /= Void
 			correct_result_count: Result.count = calls.count
 		end
-		
+
+feature -- Creation
+
+	new_tuple (a_name: STRING): TUPLE is
+			--	Tuple of default-valued arguments to pass to call `a_name'.
+		local
+			a_tuple: TUPLE []
+			a_string_tuple: TUPLE [STRING]
+			an_array_tuple: TUPLE [ARRAY [ANY]]
+		do
+			if a_name.is_equal (List_methods_name) then
+				create a_tuple; Result := a_tuple				
+			elseif a_name.is_equal (Method_help_name) then
+				create a_string_tuple; Result := a_string_tuple
+			elseif a_name.is_equal (Has_method_name) then
+				create a_string_tuple; Result := a_string_tuple
+			elseif a_name.is_equal (Multi_call_name) then
+				create an_array_tuple; Result := an_array_tuple
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	List_methods_name: STRING is "listMethods"
+			-- Name of `list_methods' service
+
+	Method_help_name: STRING is "methodHelp"
+			-- Name of `method_help' service
+
+	Has_method_name: STRING is "hasMethod"
+			-- Name of `has_method' service
+
+	Multi_call_name: STRING is "multiCall"
+			-- Name of `multi_call' service
+				
 feature {NONE} -- Initialisation
 
 	self_register is
 			-- Register all actions for this service
 		do		
-			register_with_help (agent list_methods, "listMethods", "Enumerate all methods implemented by this server")
+			register_with_help (agent list_methods, List_methods_name, "Enumerate all methods implemented by this server")
 --			register_with_help (agent method_signature, "methodSignature", "Return the possible signatures for the named method")
-			register_with_help (agent method_help, "methodHelp", "Return the documentation string for the named method")
-			register_with_help (agent has_method, "hasMethod", "Determine if a named method implemented by this server")
-			register_with_help (agent multi_call, "multiCall", "Execute multiple calls")
+			register_with_help (agent method_help, Method_help_name, "Return the documentation string for the named method")
+			register_with_help (agent has_method, Has_method_name, "Determine if a named method implemented by this server")
+			register_with_help (agent multi_call, Multi_call_name, "Execute multiple calls")
 		end
 
 end -- class XRPC_SYSTEM

@@ -95,10 +95,14 @@ feature -- Marshalling
 
 	marshall: STRING is
 			-- Serialize this block to XML format
+		local
+			a_stream: KL_STRING_OUTPUT_STREAM
 		do
+			create a_stream.make_empty
+			formatter.set_output (a_stream)
 			formatter.wipe_out
 			formatter.format (node, Current)
-			Result := formatter.last_string.out
+			Result := a_stream.string
 		end
 	
 feature {NONE} -- Implementation
@@ -122,7 +126,7 @@ feature {NONE} -- Implementation
 		do
 			if new_node.has_attribute_by_name (Actor_attr) then
 				attr := node.attribute_by_name (Actor_attr)
-				if attr.has_namespace and attr.namespace.is_equal (Ns_name_env) then
+				if attr.has_namespace and STRING_.same_string (attr.namespace.uri, Ns_name_env) then
 					value_factory.unmarshall_value (attr.value, Ns_name_xs, Xsd_anyuri)
 					if not value_factory.unmarshall_ok then
 						unmarshall_ok := False
@@ -151,7 +155,7 @@ feature {NONE} -- Implementation
 		do
 			if new_node.has_attribute_by_name (Must_understand_attr) then
 				attr := node.attribute_by_name (Must_understand_attr)
-				if attr.has_namespace and attr.namespace.is_equal (Ns_name_env) then
+				if attr.has_namespace and STRING_.same_string (attr.namespace.uri, Ns_name_env) then
 					value_factory.unmarshall_value (attr.value, Ns_name_xs, Xsd_boolean)
 					if not value_factory.unmarshall_ok then
 						unmarshall_ok := False

@@ -53,7 +53,7 @@ feature -- Factory
 			make	
 		end
 		
-	unmarshall_value (value: UC_STRING; encoding_style, type: STRING) is
+	unmarshall_value (value: STRING; encoding_style, type: STRING) is
 			-- Unmarshall 'value' according to 'type' as defined in 'encoding_style'. Make
 			-- result available in 'last_value'.
 		do

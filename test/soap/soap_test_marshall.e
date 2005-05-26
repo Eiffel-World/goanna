@@ -16,6 +16,8 @@ inherit
 
 	TS_TEST_CASE
 
+	XM_EIFFEL_PARSER_FACTORY
+
 feature -- Test
 
 	test_empty is
@@ -68,20 +70,21 @@ feature -- Test
 	parse_xml (xml: STRING): XM_ELEMENT is
 			-- Parser xml string and return document element
 		local
-			parser_factory: expanded XM_PARSER_FACTORY
-			parser: XM_TREE_PARSER
+			a_tree_builder: XM_TREE_CALLBACKS_PIPE
+			a_parser: XM_PARSER
 		do
-			parser := parser_factory.new_toe_eiffel_tree_parser
---			parser.enable_position_table
-			parser.parse_from_string (xml)
-			if parser.is_correct then
-				Result := parser.document.root_element
-				Result.resolve_namespaces_start
+			create a_tree_builder.make
+			a_parser := new_eiffel_parser
+			a_parser.set_callbacks (a_tree_builder.start)
+			a_parser.parse_from_string (xml)
+			if a_parser.is_correct then
+				Result := a_tree_builder.document.root_element
+-- commented out as routine no longer exists				Result.resolve_namespaces_start
 --				Result.remove_namespace_declarations_from_attributes
 			else
-				io.put_string (parser.last_error_description)
+				io.put_string (a_parser.last_error_description)
 				io.new_line
-				io.put_string (parser.last_error_extended_description)
+				io.put_string (a_parser.last_error_extended_description)
 				io.new_line
 			end	
 
@@ -91,7 +94,7 @@ feature -- Test
 	Body_block: STRING is "<?xml version=%"1.0%" ?><body><child>This is a child of body</child></body>"
 	
 	Envelope1: STRING is 
-		"<env:Envelope xmlns:env=%"http://www.w3.org/2001/09/soap-envelope%">%
+		"<env:Envelope xmlns:env=%"http://www.w3.org/2003/05/soap-envelope%">%
 		%	<env:Header>%
 		%		<n:alertcontrol xmlns:n=%"http://example.org/alertcontrol%" env:mustUnderstand=%"1%">%
 		%			<n:priority>1</n:priority>%

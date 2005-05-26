@@ -120,7 +120,7 @@ feature {NONE} -- Implementation
 			validator: VALIDATOR1;
 			calculator: CALCULATOR;
 			date_time: CURRENT_DATE_TIME
-			calculator_service: SERVICE_PROXY;
+			calculator_service: CALCULATOR_SERVICE_PROXY
 		do  
 			log_hierarchy.logger (Xmlrpc_category).info ("Registering XML-RPC web services")
 			create system_services.makE

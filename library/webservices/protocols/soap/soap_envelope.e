@@ -48,7 +48,7 @@ feature -- Initialisation
 			encoding_attr: XM_ATTRIBUTE
 		do
 			unmarshall_ok := True
-			if node.is_root_node and check_qualified_name (node, Envelope_element_name, Ns_name_env) then
+			if node.parent.is_root_node and then check_qualified_name (node, Envelope_element_name, Ns_name_env) then
 				-- search for optional encodingStyle attribute
 				unmarshall_encoding_style_attribute (node)
 				if unmarshall_ok then
@@ -119,8 +119,8 @@ feature -- Marshalling
 			-- start Envelope element
 			Result.append ("<env:Envelope")
 			-- add all globally used namespaces
-			Result.append (" xmlns:env=%"http://www.w3.org/2001/09/soap-envelope%"")
-			Result.append (" xmlns:enc=%"http://www.w3.org/2001/09/soap-encoding%"")
+			Result.append (" xmlns:env=%"http://www.w3.org/2003/05/soap-envelope%"")
+			Result.append (" xmlns:enc=%"http://www.w3.org/2003/05/soap-encoding%"")
 			Result.append (" xmlns:xs=%"http://www.w3.org/2001/XMLSchema%"")
 			Result.append (" xmlns:xsi=%"http://www.w3.org/2001/XMLSchema-instance%"")
 			-- add encoding style attribute if it exists

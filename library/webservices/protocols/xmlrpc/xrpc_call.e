@@ -183,27 +183,39 @@ feature -- Access
 			empty_action_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")	
 		end	
 		
-	extract_parameters: TUPLE is
+	extract_parameters (a_service: SERVICE_PROXY; an_action: STRING): TUPLE is
 			-- Convert params to a tuple suitable for passing to an agent.
 		require
+			service_exists: a_service /= Void
+			action_exists: an_action /= Void and then a_service.has (an_action)
 			params_exists: params /= Void
 		local
 			c: DS_LINKED_LIST_CURSOR [XRPC_PARAM]
 			i: INTEGER
+			an_object: ANY
 		do
-			create Result.make
+			are_parameters_valid := True
+			Result := a_service.new_tuple (an_action)
 			if not params.is_empty then				
-				Result.resize (1, params.count)
 				from
 					c := params.new_cursor
 					c.start
 					i := 1
 				until
-					c.off
+					not are_parameters_valid or else c.off
 				loop
-					Result.force (c.item.value.as_object, i)
-					c.forth
-					i := i + 1
+					if Result.valid_index (i) then
+						an_object := c.item.value.as_object
+						if Result.valid_type_for_index (an_object, i) then
+							Result.put (c.item.value.as_object, i)
+						else
+							are_parameters_valid := False
+						end
+						c.forth
+						i := i + 1
+					else
+						are_parameters_valid := False
+					end
 				end
 			end
 		ensure
@@ -211,6 +223,11 @@ feature -- Access
 			valid_number_of_params: Result.count = params.count
 		end
 		
+feature -- Status report
+
+	are_parameters_valid: BOOLEAN
+			-- Did `extract_parameters' return a TUPLE of valid parameters?
+
 feature -- Status setting
 
 	set_method_name (new_name: STRING) is
