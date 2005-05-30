@@ -39,7 +39,7 @@ feature {HTTP_SESSION_MANAGER}-- Initialization
 			end	
 			validated := True
 			is_new := True
-			max_inactive_interval := 120
+			max_inactive_interval := 14400
 			create attributes.make (5)
 			creation_time := system_clock.date_time_now
 			touch

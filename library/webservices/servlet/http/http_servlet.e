@@ -83,8 +83,9 @@ feature -- Basic operations
 		rescue
 			-- attempt to send an internal error page
 			if not failed then
+				log_service_error
 				resp.send_error (Sc_internal_server_error)
-				failed := True
+				failed := True		
 				retry
 			end
 		end
@@ -94,6 +95,12 @@ feature -- Basic operations
 			-- is being taken out of service. The servlet can then clean
 			-- up any resources that are being held.
 		do
+		end
+		
+	log_service_error is
+			-- Called if service routine generates an exception; may be redefined by descendents
+		do
+			
 		end
 		
 feature {NONE} -- Implementation

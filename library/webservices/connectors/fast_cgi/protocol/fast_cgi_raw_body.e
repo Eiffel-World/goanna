@@ -38,11 +38,11 @@ feature -- Initialization
 	
 feature -- Basic operations
 
-	write (socket: TCP_SOCKET) is
+	write (socket: ABSTRACT_TCP_SOCKET) is
 			-- Write this raw data body to 'socket'
 		require
 			socket_exists: socket /= Void
-			valid_socket: socket.is_valid
+--			valid_socket: socket.is_valid
 		local
 			enc_data: STRING
 			padding: STRING
@@ -53,7 +53,11 @@ feature -- Basic operations
 				padding := create_blank_buffer (padding_length)
 				enc_data.append (padding)
 			end
-			socket.send_string (enc_data)
+--			io.put_string ("FAST_CGI_RAW_BODY.write bytes to send: " + enc_data.count.out + "%N")
+--			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%N")
+--			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
+			socket.put_string (enc_data)
+--			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
 			debug("fcgi_protocol")
 				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
 			end

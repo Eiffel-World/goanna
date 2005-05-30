@@ -49,8 +49,7 @@ feature -- Basic operations
 			-- Should we attempt to retry?
 		require
 			True
-		do
-			Result := False
+		deferred
 		end
 			
 end -- class FAST_CGI_APP

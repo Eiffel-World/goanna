@@ -32,6 +32,7 @@ feature -- Access
 	Content_type_var: STRING is "CONTENT_TYPE"
 	Content_length_var: STRING is "CONTENT_LENGTH"
 	Http_from_var: STRING is "HTTP_FROM"
+	Https_var: STRING is "HTTPS"
 	Http_accept_var: STRING is "HTTP_ACCEPT"
 	Http_user_agent_var: STRING is "HTTP_USER_AGENT"
 	Http_referer_var: STRING is "HTTP_REFERER"

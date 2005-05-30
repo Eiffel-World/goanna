@@ -285,8 +285,9 @@ feature -- Status report
 	is_secure: BOOLEAN is
 			-- Was this request made using a secure channel, such as HTTPS?
 		do
-			Result := False
-			-- TODO: may need to change this when we support https.
+			if has_header (Https_var) and then equal (get_header (Https_var), "on") then
+				Result := True
+			end
 		end
 		
 	has_header (name: STRING): BOOLEAN is
@@ -428,7 +429,14 @@ feature -- Status report
 				end					
 				internal_content := ""
 			end
-			Result := internal_content
+
+-- WASHERE
+			if internal_content /= Void then
+				Result := internal_content
+			else
+				Result := ""
+			end
+			
 		end
 		
 feature {CGI_SERVLET_REQUEST} -- Implementation
@@ -453,19 +461,24 @@ feature {NONE} -- Implementation
 	parse_parameters is
 			-- Parse the query string or stdin data for parameters and
 			-- store in params structure.			
+		local
+			string_to_process: STRING
 		do
 			-- If the request is a GET then the parameters are stored in the query
 			-- string. Otherwise, the parameters are in the stdin data.
 			if method.is_equal ("GET") then
-				parse_parameter_string (query_string)
+				string_to_process := clone (query_string)
 			elseif method.is_equal ("POST") then
 				debug ("CGI servlet request")
 					print ("POST - parse content%N")
 				end	
-				parse_parameter_string (content)
+				string_to_process := clone (content)
 			else
 				-- not sure where the parameters will be for other request methods.
 				-- Need to experiment.
+			end
+			if string_to_process /= Void and then not string_to_process.is_empty then
+				parse_parameter_string (string_to_process)
 			end
 		end
 	
@@ -475,6 +488,8 @@ feature {NONE} -- Implementation
 			-- spaces and special characters encoded. An exception is an image map 
 			-- coordinate pair that is of the form 'value,value'. Any amount of
 			-- whitespace may separate each token.
+		require
+			valid_str: str /= Void
 		local
 			e: INTEGER
 			pair, name, value: STRING
@@ -499,7 +514,7 @@ feature {NONE} -- Implementation
 					name := pair.substring (1, e - 1)
 					value := pair.substring (e + 1, pair.count)
 					-- add the parameter
-					add_parameter (name, decode_url(value))
+					add_parameter (decode_url(name), decode_url(value))
 				else
 					-- TODO: check for a coordinate pair
 				end
@@ -561,7 +576,9 @@ feature {NONE} -- Implementation
 						if value.item (1) = '%"' then
 							value := value.substring (2, value.count - 1)							
 						end
-						create new_cookie.make (name, value)
+						if not tester.is_reserved_cookie_word (name) then
+							create new_cookie.make (name, value)
+						end
 						debug ("cookie_parsing")
 							print (generator + ".parse_cookie_header new_cookie = "
 								+ quoted_eiffel_string_out (new_cookie.header_string) + "%R%N")
@@ -574,5 +591,12 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+		
+	tester: COOKIE is
+			-- Used to test validity of values
+		once
+			create result.make ("test", "test")
+		end
+		
 	
 end -- class CGI_SERVLET_REQUEST

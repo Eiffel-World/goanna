@@ -51,6 +51,7 @@ feature {NONE} -- Initialisation
 			-- These next two are already carried out by cgi_servlet_make
 --			create parameters.make (5)
 --			parse_parameters
+--			io.put_string ("================================== Request Created%N")
 		end
 	
 feature -- Access

@@ -22,10 +22,10 @@ inherit
 			{NONE} all
 		end
 
-	SOCKET_ERRORS
-		export
-			{NONE} all
-		end
+--	SOCKET_ERRORS
+--		export
+--			{NONE} all
+--		end
 
 	YAES_HELPER
 		export
@@ -44,21 +44,22 @@ inherit
 			
 feature -- Initialization
 
-	read (header: FAST_CGI_RECORD_HEADER; socket: TCP_SOCKET) is
+	read (header: FAST_CGI_RECORD_HEADER; socket: ABSTRACT_TCP_SOCKET) is
 			-- Construct this request record body from the data provided in header
 		require
 			header_exists: header /= Void
 			socket_exists: socket /= Void
-			valid_socket: socket.is_valid
+--			valid_socket: socket.is_valid
 		local
 			raw_padding: STRING
 		do
 			read_ok := True
 			-- read content data
 			if header.content_length > 0 then
-				raw_content_data := create_blank_buffer (header.content_length)
-				socket.receive_string (raw_content_data)
-				if socket.last_error_code = Sock_err_no_error then
+				
+				socket.read_string (header.content_length)
+				raw_content_data := socket.last_string
+				if raw_content_data.count = header.content_length then
 					process_body_fields
 				else
 					read_ok := False
@@ -66,8 +67,8 @@ feature -- Initialization
 			end
 			-- read padding data
 			if read_ok and header.padding_length > 0 then
-				raw_padding := create_blank_buffer (header.padding_length)
-				socket.receive_string (raw_padding)
+				socket.read_string (header.padding_length)
+				raw_padding := socket.last_string
 			end
 		end
 	

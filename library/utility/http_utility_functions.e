@@ -37,7 +37,7 @@ feature -- Basic operations
 		 	-- either a key or a value pair, so '=', '?', and '&' are not
 	     	-- treated as separators.
 		local
-			i, hi, lo: INTEGER
+			i, hi, lo, dec: INTEGER
 			ch: CHARACTER
 		do
 			create Result.make (url.count)
@@ -58,9 +58,10 @@ feature -- Basic operations
 						if hi < 0 or lo < 0 then
 							Result.append_character (ch)
 						else
-							Result.append_character (int_to_char (bit_shift_left (hi, 4) + lo)) -- -1
-							i := i + 2
+							dec := bit_shift_left (hi, 4) + lo
+							Result.append_character (int_to_char (dec)) -- -1
 						end
+							i := i + 2
 					else
 						Result.append_character (ch)
 					end
@@ -120,7 +121,7 @@ feature -- Basic operations
 			if ch.is_digit then
 				Result := ch.out.to_integer
 			else
-				Result := char_to_lower (ch).code - 86 -- -97 + 11
+				Result := char_to_lower (ch).code - 87
 			end
 		end
 	

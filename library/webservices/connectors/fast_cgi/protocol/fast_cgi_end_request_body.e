@@ -40,21 +40,29 @@ feature -- Access
 	
 feature -- Basic operations
 
-	write (socket: TCP_SOCKET) is
+	write (socket: ABSTRACT_TCP_SOCKET) is
 			-- Write this body to 'socket'
 		require
 			socket_exists: socket /= Void
-			valid_socket: socket.is_valid
+--			valid_socket: socket.is_valid
 		local
 			enc_data: STRING
 		do
+--			io.put_string ("FAST_CGI_END_REQUEST_BODY.app_status: " + app_status.out + "%N")
+--			io.put_string ("FAST_CGI_END_REQUEST_BODY.protocol_status: " + protocol_status.out + "%N")
 			enc_data := create_blank_buffer (Fcgi_end_req_body_len)
 			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 24), 255)), 1)
 			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 16), 255)), 2)
 			enc_data.put (character_from_code (bit_and (bit_shift_right (app_status, 8), 255)), 3)
 			enc_data.put (character_from_code (bit_and (app_status, 255)), 4)
 			enc_data.put (character_from_code (protocol_status), 5)
-			socket.send_string (enc_data)
+--			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
+--			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
+			socket.put_string (enc_data)
+--			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
+--			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
+--			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+--			io.put_string ("Bytes Sent: " + socket.bytes_sent.out + "%N")	
 			debug("fcgi_protocol")
 				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
 			end

@@ -27,10 +27,10 @@ inherit
 			{NONE} all
 		end
 	
-	SOCKET_MIXIN
-		export
-			{NONE} all
-		end
+--	SOCKET_MIXIN
+--		export
+--			{NONE} all
+--		end
 		
 	L4E_SHARED_HIERARCHY
 		rename
@@ -62,6 +62,9 @@ feature -- FGCI interface
 			-- Returns zero for a successful call, -1 for error.
 		local
 			failed: BOOLEAN
+			host: EPX_HOST
+			service: EPX_SERVICE
+			host_port: EPX_HOST_PORT
 		do
 			debug ("fcgi_interface")
 				print (generator + ".accept%R%N")
@@ -70,7 +73,10 @@ feature -- FGCI interface
 				-- if first call mark it and create server socket
 				if not accept_called then
 					accept_called := True
-					create srv_socket.make (svr_port, server_backlog) 
+					create host.make_from_name ("localhost")
+					create service.make_from_port (svr_port, "tcp")
+					create host_port.make (host, service)
+					create srv_socket.listen_by_address (host_port) 
 				end
 				-- finish the previous request
 				finish
@@ -141,7 +147,8 @@ feature -- FGCI interface
 		do
 			create Result.make (amount)
 			Result.fill_blank
-			request.socket.receive_string (Result)
+			request.socket.read_string (amount)
+			Result := request.socket.last_string
 		end
 
 	getline (amount: INTEGER): STRING is
@@ -189,7 +196,7 @@ feature {NONE} -- Implementation
 	accept_called: BOOLEAN
 		-- Has accept been called?
 				
-	srv_socket: TCP_SERVER_SOCKET
+	srv_socket: EPX_TCP_SERVER_SOCKET
 		-- The server socket that this applications listens for requests on.
 	
 	svr_port: INTEGER
@@ -262,20 +269,20 @@ feature {NONE} -- Implementation
 			loop
 				if request.socket = Void then
 					-- accept new connection (blocking)
-					request.set_socket(srv_socket.wait_for_new_connection)
+					request.set_socket(srv_socket.accept)
 					is_new_connection := True
 				end
 				-- check peer address for allowed server addresses
-				peer := request.socket.peer_address
-				debug ("yaesockets")
-					print("Yaesockets Error :")
-					print(last_socket_error_code)
-					print(',')
-					print(last_extended_socket_error_code)
-					print ("%R%N")
-					print ("peer_address: " + peer + "%R%N")
-				end
-				if peer_address_ok (peer) then
+--				peer := request.socket.remote_address
+--				debug ("yaesockets")
+--					print("Yaesockets Error :")
+--					print(last_socket_error_code)
+--					print(',')
+--					print(last_extended_socket_error_code)
+--					print ("%R%N")
+--					print ("peer_address: " + peer + "%R%N")
+--				end
+--				if peer_address_ok (peer) then
 					-- attempt to read the request. If this fails and it was an old
 					-- connection then the server probably closed it; try making a new connection
 					-- before giving up.
@@ -290,16 +297,16 @@ feature {NONE} -- Implementation
 					else
 						request_read := True
 					end
-					debug ("yaesockets")
-						print ("Yaesockets - request readOK? " + request_read.out + "%N")
-					end
-				else
+--					debug ("yaesockets")
+--						print ("Yaesockets - request readOK? " + request_read.out + "%N")
+--					end
+--				else
 					-- reset and attempt a new connection
-					error (Servlet_app_log_category, "Connection from address " + peer + " rejected.")				
-					request.socket.close
-					request.set_socket (Void)
-					is_new_connection := False
-				end
+--					error (Servlet_app_log_category, "Connection from address " + peer + " rejected.")				
+--					request.socket.close
+--					request.set_socket (Void)
+--					is_new_connection := False
+--				end
 			end
 		end
 		

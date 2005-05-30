@@ -22,10 +22,10 @@ inherit
 			{NONE} all
 		end
 		
-	SOCKET_ERRORS
-		export
-			{NONE} all
-		end
+--	SOCKET_ERRORS
+--		export
+--			{NONE} all
+--		end
 
 	YAES_HELPER
 		export
@@ -79,14 +79,15 @@ feature -- Access
 	
 feature -- Basic operations
 
-	read (socket: TCP_SOCKET) is
+	read (socket: ABSTRACT_TCP_SOCKET) is
 			-- Read header data from 'socket'
 		local
 			buffer: STRING
 		do
 			buffer := create_blank_buffer (Fcgi_header_len)
-			socket.receive_string (buffer)
-			if socket.last_error_code = Sock_err_no_error then
+			socket.read_string (Fcgi_header_len)
+			buffer := socket.last_string
+			if buffer /= Void and then buffer.count = Fcgi_header_len then
 				process_header_bytes (buffer)
 				read_ok := True
 			else
@@ -94,14 +95,20 @@ feature -- Basic operations
 			end
 		end
 	
-	write (socket: TCP_SOCKET) is
+	write (socket: ABSTRACT_TCP_SOCKET) is
 			-- Write this header to 'socket'
 		require
 			socket_exists: socket /= Void
-			valid_socket: socket.is_valid
+--			valid_socket: socket.is_valid
 		local
 			enc_data: STRING
 		do
+--			io.put_string ("Starting write...%N")
+--			io.put_string ("Version: " + version.out + "%N")
+--			io.put_string ("request_id: " + request_id.out + "%N")
+--			io.put_string ("type: " + type.out + "%N")
+--			io.put_string ("content_length: " + content_length.out + "%N")
+--			io.put_string ("padding_length: " + padding_length.out + "%N")
 			enc_data := create_blank_buffer (Fcgi_header_len)
 			enc_data.put (character_from_code (version), 1)
 			enc_data.put (character_from_code (type), 2)
@@ -111,11 +118,24 @@ feature -- Basic operations
 			enc_data.put (character_from_code (bit_and (content_length, 255)), 6)
 			enc_data.put (character_from_code (padding_length), 7)
 			enc_data.put ('%/0/', 8) -- reserved byte
-			socket.send_string (enc_data)
-			write_ok := socket.last_error_code = Sock_err_no_error
+--			io.put_string ("FAST_CGI_RECORD_HEADER.write: " + quoted_eiffel_string_out(enc_data) + "%N")
+--	7		io.put_string ("FAST_CGI_RECORD_HEADER bytes to send: " + enc_data.count.out + "%N")
+--			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+--			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
+--			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
+--			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+--			io.put_string ("Sending data...%N")
+			socket.put_string (enc_data)
+--			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
+--			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
+--			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+--			write_ok := socket.last_error_code = Sock_err_no_error
+--			io.put_string ("FAST_CGI_RECORD_HEADER Write OK: " + write_ok.out + "%N")
+--			io.put_string ("FAST_CGI_RECORD_HEADER bytes sent: " + socket.bytes_sent.out + "%N")
 			debug("fcgi_protocol")
 				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
 			end
+--			io.put_string ("Starting write finished.%N")
 		end
 	
 feature {NONE} -- Implementation

@@ -57,6 +57,14 @@ feature -- Status report
 			
 feature -- Status setting
 
+	session_count: INTEGER is
+			-- Number of active sessions
+		do
+			expire_sessions
+			Result := sessions.count
+		end
+		
+
 	bind_session (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
 			-- If the request does not already have a session, then create one.
 			-- If the request includes the session id cookie then mark the session
@@ -157,40 +165,29 @@ feature {NONE} -- Implementation
 	generate_session_id: STRING is
 			-- Generate a new secure session id.
 			-- Key is generated from a random number and the current date and time.
-			-- TODO: make this secure
 		local
 			date: DT_DATE_TIME
 			formatter: DATE_FORMATTER
+			random: RANDOM
 		do
-			-- Not using RANDOM because SmallEiffel has a different random
-			-- class and I'm tired of building non-OO classes to support
-			-- porting!
-			--current_random := current_random + 1
-			--Result := random.next_random (current_random).out
-			create Result.make (15)
+			create Random.make
+			random.set_seed (system_clock.date_time_now.hash_code)
+			random.forth
 			date := system_clock.date_time_now
 			create formatter
-			Result.append (formatter.format_compact_sortable (date))
+			Result := ""
+			Result.append (formatter.format_compact_sortable (date) + random.item.out)
 			Result := base64_encoder.encode (Result)
 		ensure
 			new_session_id_exists: Result /= Void
 		end
-	
+		
 	base64_encoder: BASE64_ENCODER is
 			-- Base64 encoder
 		once
 			create Result
 		end
 	
---	random: RANDOM is
---			-- Random number generator
---		do
---			create Result.make
---		end
-	
---	current_random: INTEGER
---			-- Current position in random number stream
-		
 	expire_sessions is
 			-- Check all current sessions and expire if appropriate.
 		local

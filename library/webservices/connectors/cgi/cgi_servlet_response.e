@@ -156,14 +156,16 @@ feature -- Basic operations
 			-- this routine directly after creating the response object.
 			-- This routine is automatically called by the service routine of HTTP_SERVLET.
 		do
-			if content_buffer /= Void then
-				if not is_committed then
-					set_content_length (content_buffer.count)
-					write_headers	
-				end
-				if not content_buffer.is_empty then
-					write (content_buffer)
-				end
+			if content_buffer = Void then
+				content_buffer := ""
+			end
+			if not is_committed then
+				set_content_length (content_buffer.count)
+				write_headers
+				is_committed := True
+			end
+			if not content_buffer.is_empty then
+				write (content_buffer)
 			end
 		end
 
@@ -392,6 +394,7 @@ feature {NONE} -- Implementation
 		require
 			data_exists: data /= Void
 		do
+--			io.put_string (generator + ".write " + quoted_eiffel_string_out (data))
 			std.output.put_string (data)
 			-- TODO: check ok and handle errors
 		end
