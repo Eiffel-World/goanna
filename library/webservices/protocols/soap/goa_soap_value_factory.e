@@ -8,16 +8,18 @@ indexing
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-class
-
-	SOAP_VALUE_FACTORY
+class	GOA_SOAP_VALUE_FACTORY
 
 inherit
 	
-	SOAP_CONSTANTS
+	GOA_SOAP_CONSTANTS
 		export
 			{NONE} all
 		end
+
+	GOA_SHARED_ENCODING_REGISTRY
+	
+	-- TODO: -needs lot's of work
 
 creation
 	
@@ -28,20 +30,20 @@ feature -- Initialisation
 	make is
 			-- Initialise
 		do
-			unmarshall_ok := True
-			unmarshall_fault := Void
+			validated := True
+			validation_fault := Void
 			last_value := Void
 		end
 		
 feature -- Status report
 
-	last_value: SOAP_VALUE
+	last_value: GOA_SOAP_VALUE
 			-- Last value unmarshalled.
 			
-	unmarshall_ok: BOOLEAN
+	validated: BOOLEAN
 			-- Was unmarshalling performed successfully?
 			
-	unmarshall_fault: SOAP_FAULT
+	validation_fault: GOA_SOAP_FAULT_INTENT
 			-- Fault representing unmarshalling error.
 	
 feature -- Factory
@@ -50,7 +52,12 @@ feature -- Factory
 			-- Unmarshall value contained in 'node' according to 'encoding_style'. Make
 			-- result available in 'last_value'.
 		do
-			make	
+			if encodings.has (encoding_style) then
+				--last_value := encodings.get (encoding_style).unmarshall (node)
+				validated := False -- TODO
+			else
+				make
+			end
 		end
 		
 	unmarshall_value (value: STRING; encoding_style, type: STRING) is
@@ -71,7 +78,7 @@ feature -- Factory
 		
 invariant
 	
-	unmarshall_error: not unmarshall_ok implies unmarshall_fault /= Void
-	marshalling_ok: unmarshall_ok implies unmarshall_fault = Void
+-- TODO	unmarshall_error: not val implies unmarshall_fault /= Void
+--	marshalling_ok: unmarshall_ok implies unmarshall_fault = Void
 
-end -- class SOAP_VALUE_FACTORY
+end -- class GOA_SOAP_VALUE_FACTORY

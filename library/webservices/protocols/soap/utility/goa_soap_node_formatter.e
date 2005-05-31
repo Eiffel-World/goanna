@@ -6,10 +6,9 @@ indexing
 	revision: "$Revision$"
 	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	SOAP_NODE_FORMATTER
+class	GOA_SOAP_NODE_FORMATTER
 
 inherit
 	
@@ -27,7 +26,7 @@ creation
 	
 feature -- Formatting
 
-	format (el: XM_ELEMENT; blk: SOAP_BLOCK) is
+	format (el: XM_ELEMENT; blk: GOA_SOAP_BLOCK) is
 			-- Format 'el' including any optional attributes as defined in 'blk'
 		require
 			el_exists: el /= Void
@@ -46,7 +45,7 @@ feature -- Formatting
 		
 feature {NONE} -- Implementation
 
-	block: SOAP_BLOCK
+	block: GOA_SOAP_BLOCK
 			-- Block holding optional attribute values
 	
 	process_root_element (el: XM_ELEMENT) is
@@ -71,20 +70,15 @@ feature {NONE} -- Implementation
 			-- Process attributes adding optional attributes as needed.
 		local
 			cs: DS_BILINEAR_CURSOR [XM_ATTRIBUTE]
+			a_header_block: GOA_SOAP_HEADER_BLOCK
 		do
 			process_attributes (e)
-			if block.actor /= Void then
-				append ("env:actor=%"")
-				append (block.actor.out)
-				append ("%" ")
-			end
-			if block.must_understand /= Void then
-				append ("env:mustUnderstand=%"")
-				append (block.must_understand.out)
-				append ("%" ")
-			end
-			if block.encoding_style /= Void then
-				append (block.encoding_style_attribute)
+			append (block.encoding_style_attribute)
+			a_header_block ?= block
+			if a_header_block /= Void then
+				append (a_header_block.role_attribute)
+				append (a_header_block.relay_attribute)
+				append (a_header_block.must_understand_attribute)
 			end
 		end
 
@@ -163,4 +157,4 @@ feature {NONE} -- Implementation
 
 	position_table: XM_POSITION_TABLE
 
-end -- class SOAP_NODE_FORMATTER
+end -- class GOA_SOAP_NODE_FORMATTER

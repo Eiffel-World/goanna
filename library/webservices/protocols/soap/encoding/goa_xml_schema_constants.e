@@ -8,12 +8,11 @@ indexing
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-class
-	XML_SCHEMA_CONSTANTS
+class GOA_XML_SCHEMA_CONSTANTS
 
 inherit
 	
-	SOAP_CONSTANTS
+	GOA_SOAP_CONSTANTS
 		export
 			{NONE} all
 		end
@@ -145,4 +144,4 @@ feature -- Constants
 				or type.is_equal (Xsd_double)
 		end
 
-end -- class XML_SCHEMA_CONSTANTS
+end -- class GOA_XML_SCHEMA_CONSTANTS

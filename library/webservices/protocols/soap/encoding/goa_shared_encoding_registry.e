@@ -8,15 +8,14 @@ indexing
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-class
-	SHARED_ENCODING_REGISTRY
+class	GOA_SHARED_ENCODING_REGISTRY
 
 feature -- Access
 
-	encodings: REGISTRY [SOAP_ENCODING] is
+	encodings: REGISTRY [GOA_SOAP_ENCODING] is
 			-- Shared encoding registry
 		once
 			create Result.make
 		end
 
-end -- class SHARED_ENCODING_REGISTRY
+end -- class GOA_SHARED_ENCODING_REGISTRY

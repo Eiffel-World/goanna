@@ -8,29 +8,27 @@ indexing
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-deferred class
-
-	SOAP_VALUE
+deferred class	GOA_SOAP_VALUE
 
 inherit
 	
-	SOAP_ELEMENT
+	GOA_SOAP_ELEMENT
 	
 feature -- Access
 
-	type: UC_STRING
+	type: STRING
 			-- Type of parameter (used as the tag value)
 
 feature -- Conversion
 
 	as_object: ANY is
 			-- Return value as an object. ie, extract the actual 
-			-- object value from the SOAP_VALUE.
+			-- object value from the GOA_SOAP_VALUE.
 		deferred
 		end
 		
 invariant
 	
-	type_exists: unmarshall_ok implies type /= Void
+	type_exists: validated implies type /= Void
 		
-end -- class SOAP_VALUE
+end -- class GOA_SOAP_VALUE

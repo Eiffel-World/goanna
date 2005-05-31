@@ -8,8 +8,7 @@ indexing
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-deferred class
-	SOAP_ENCODING
+deferred class GOA_SOAP_ENCODING
 
 feature -- Status checking
 
@@ -22,7 +21,7 @@ feature -- Status checking
 		
 feature -- Unmarshalling
 
-	unmarshall (type, value: STRING): SOAP_VALUE is
+	unmarshall (type, value: STRING): GOA_SOAP_VALUE is
 			-- Unmarshall 'value' according to 'type' using the 
 			-- current encoding scheme.
 		require
@@ -31,4 +30,4 @@ feature -- Unmarshalling
 		deferred
 		end
 		
-end -- class SOAP_ENCODING
+end -- class GOA_SOAP_ENCODING
