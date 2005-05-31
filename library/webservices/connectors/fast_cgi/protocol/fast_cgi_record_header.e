@@ -27,15 +27,12 @@ inherit
 --			{NONE} all
 --		end
 
-	YAES_HELPER
-		export
-			{NONE} all
-		end
-		
 	UT_STRING_FORMATTER
 		export
 			{NONE} all
 		end
+		
+	UC_UNICODE_ROUTINES
 		
 	BIT_MANIPULATION
 --		export
@@ -110,13 +107,13 @@ feature -- Basic operations
 --			io.put_string ("content_length: " + content_length.out + "%N")
 --			io.put_string ("padding_length: " + padding_length.out + "%N")
 			enc_data := create_blank_buffer (Fcgi_header_len)
-			enc_data.put (character_from_code (version), 1)
-			enc_data.put (character_from_code (type), 2)
-			enc_data.put (character_from_code (bit_and (bit_shift_right (request_id, 8), 255)), 3)
-			enc_data.put (character_from_code (bit_and (request_id, 255)), 4)
-			enc_data.put (character_from_code (bit_and (bit_shift_right (content_length, 8), 255)), 5)
-			enc_data.put (character_from_code (bit_and (content_length, 255)), 6)
-			enc_data.put (character_from_code (padding_length), 7)
+			enc_data.put (code_to_string (version).item (1), 1)
+			enc_data.put (code_to_string (type).item (1), 2)
+			enc_data.put (code_to_string (bit_and (bit_shift_right (request_id, 8), 255)).item (1), 3)
+			enc_data.put (code_to_string (bit_and (request_id, 255)).item (1), 4)
+			enc_data.put (code_to_string (bit_and (bit_shift_right (content_length, 8), 255)).item (1), 5)
+			enc_data.put (code_to_string (bit_and (content_length, 255)).item (1), 6)
+			enc_data.put (code_to_string (padding_length).item (1), 7)
 			enc_data.put ('%/0/', 8) -- reserved byte
 --			io.put_string ("FAST_CGI_RECORD_HEADER.write: " + quoted_eiffel_string_out(enc_data) + "%N")
 --	7		io.put_string ("FAST_CGI_RECORD_HEADER bytes to send: " + enc_data.count.out + "%N")

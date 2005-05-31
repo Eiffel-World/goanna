@@ -27,11 +27,8 @@ inherit
 --			{NONE} all
 --		end
 
-	YAES_HELPER
-		export
-			{NONE} all
-		end
-		
+	UC_UNICODE_ROUTINES
+	
 	UT_STRING_FORMATTER
 --		export
 --			{NONE} all
