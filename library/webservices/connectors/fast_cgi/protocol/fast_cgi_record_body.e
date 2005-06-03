@@ -22,11 +22,6 @@ inherit
 			{NONE} all
 		end
 
---	SOCKET_ERRORS
---		export
---			{NONE} all
---		end
-
 	UC_UNICODE_ROUTINES
 	
 	UT_STRING_FORMATTER
@@ -46,7 +41,7 @@ feature -- Initialization
 		require
 			header_exists: header /= Void
 			socket_exists: socket /= Void
---			valid_socket: socket.is_valid
+			valid_socket: socket.is_open
 		local
 			raw_padding: STRING
 		do

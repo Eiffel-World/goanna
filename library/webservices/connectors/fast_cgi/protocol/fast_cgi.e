@@ -26,11 +26,6 @@ inherit
 		export
 			{NONE} all
 		end
-	
---	SOCKET_MIXIN
---		export
---			{NONE} all
---		end
 		
 	L4E_SHARED_HIERARCHY
 		rename

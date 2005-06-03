@@ -17,144 +17,24 @@ inherit
 			{NONE} all
 			{ANY} make, wipe_out, set_output
 		redefine
-			wipe_out
+			process_document
 		end
 
-creation
+create
 	
 	make
 	
-feature -- Formatting
 
-	format (el: XM_ELEMENT; blk: GOA_SOAP_BLOCK) is
-			-- Format 'el' including any optional attributes as defined in 'blk'
-		require
-			el_exists: el /= Void
-			block_exists: blk /= Void
-		do
-			block := blk
-			process_root_element (el)
-		end
-	
-	wipe_out is
-			-- Clean up the processor
-		do
-			Precursor
-			block := Void
-		end
-		
-feature {NONE} -- Implementation
+feature -- Tree processor routines
 
-	block: GOA_SOAP_BLOCK
-			-- Block holding optional attribute values
-	
-	process_root_element (el: XM_ELEMENT) is
-		do
-			process_root_start_tag (el)
-			process_composite (el)
-			process_end_tag (el)
-		end
-	
-	process_root_start_tag (el: XM_ELEMENT) is
-		require
-			el_not_void: el /= Void
-		do
-			append ("<")
-			process_named (el)
-			append (" ")
-			process_root_attributes (el)
-			append (">")
-		end
-	
-	process_root_attributes (e: XM_ELEMENT) is
-			-- Process attributes adding optional attributes as needed.
+	process_document (a_document: XM_DOCUMENT) is
+			-- Process document using xmlns generator and pretty print filters.
 		local
-			cs: DS_BILINEAR_CURSOR [XM_ATTRIBUTE]
-			a_header_block: GOA_SOAP_HEADER_BLOCK
+			pretty_print: XM_PRETTY_PRINT_FILTER
 		do
-			process_attributes (e)
-			append (block.encoding_style_attribute)
-			a_header_block ?= block
-			if a_header_block /= Void then
-				append (a_header_block.role_attribute)
-				append (a_header_block.relay_attribute)
-				append (a_header_block.must_understand_attribute)
-			end
+			create pretty_print.make_null
+			pretty_print.set_output_stream (last_output)
+			a_document.process_to_events (pretty_print)
 		end
-
-	append (a_string: STRING) is
-			-- Append chracters to stream.
-		require
-			string_not_void: a_string /= Void
-			is_open_write: last_output.is_open_write
-		do
-			last_output.put_string (a_string)
-		end
-
-	ucappend (str: STRING) is
-		require
-			str_not_void: str /= Void
-		do
-			append (str)
-		end
-
-	process_composite (c: XM_COMPOSITE) is
-		require
-			c_not_void: c /= Void
-		local
-			cs: DS_BILINEAR_CURSOR [XM_NODE]
-		do
-			from
-				cs := c.new_cursor
-				cs.start
-			until
-				cs.off
-			loop
-				cs.item.process (Current)
-				cs.forth
-			end
-		end
-
-	process_end_tag (el: XM_ELEMENT) is
-		require
-			el_not_void: el /= Void
-		do
-			append ("</")
-			process_named (el)
-			append (">")
-		end
-
-	process_named (n: XM_NAMED_NODE) is
-		require
-			n_not_void: n /= Void
-		do
-			if n.has_namespace then
-				append (n.namespace.uri)
-				append ("=")
-			end
-			ucappend (n.name)
-		end
-
-	process_position (node: XM_NODE) is
-		require
-			node_not_void: node /= Void
-			position_included: is_position_included
-		local
-			pos: XM_POSITION
-		do
-			if position_table.has (node) then
-				pos := position_table.item (node)
-			end
-
-			append ("<!--")
-			if pos /= Void then
-				append (pos.out)
-			else
-				append ("No position info available")
-			end
-			append ("-->%N")
-		end
-
-	position_table: XM_POSITION_TABLE
 
 end -- class GOA_SOAP_NODE_FORMATTER

@@ -49,7 +49,7 @@ feature -- XML constants and routines
 
 feature -- Namespace constants
 
-	Ns_openening_brace: STRING is 
+	Ns_opening_brace: STRING is 
 		once 
 			create Result.make_from_string ("{")
 		end
@@ -151,6 +151,11 @@ feature -- Element constants
 			create Result.make_from_string ("Upgrade")
 		end
 
+	Not_understood_element_name: STRING is 
+		once 
+			create Result.make_from_string ("NotUnderstood")
+		end
+
 	Supported_envelope_element_name: STRING is 
 		once 
 			create Result.make_from_string ("SupportedEnvelope")
@@ -176,6 +181,18 @@ feature -- Attribute constants
 	Relay_attr: STRING is 
 		once 
 			create Result.make_from_string ("relay")
+		end
+
+	Qname_attr: STRING is 
+		once 
+			create Result.make_from_string ("qname")
+		end
+
+feature -- Error strings
+
+	Wrong_envelope_error: STRING is 
+		once 
+			create Result.make_from_string ("Not a recognised Envelope")
 		end
 
 feature -- Value marshalling

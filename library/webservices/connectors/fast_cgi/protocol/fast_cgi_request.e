@@ -98,7 +98,7 @@ feature -- Status setting
 			-- Set the socket for this request.
 			-- Can be set to Void to invalidate the request.
 		require
---			valid_socket: new_socket /= Void implies new_socket.is_valid
+			valid_socket: new_socket /= Void implies new_socket.is_open
 		do
 			socket := new_socket
 		end
@@ -139,7 +139,7 @@ feature -- Basic operations
 			-- Write 'str' as a stderr record to the socket
 		require
 			socket_exists: socket /= Void
---			valid_socket: socket.is_valid	
+			valid_socket: socket.is_open
 		local
 			record_header: FAST_CGI_RECORD_HEADER
 			record_body: FAST_CGI_RAW_BODY
@@ -174,7 +174,7 @@ feature -- Basic operations
 			-- Write 'str' as a stdout record to the socket
 		require
 			socket_exists: socket /= Void
---			valid_socket: socket.is_valid	
+			valid_socket: socket.is_open
 		local
 			record_header: FAST_CGI_RECORD_HEADER
 			record_body: FAST_CGI_RAW_BODY
@@ -226,7 +226,7 @@ feature -- Basic operations
 			-- Notify the web server that this request has completed.
 		require
 			socket_exists: socket /= Void
---			valid_socket: socket.is_valid	
+			valid_socket: socket.is_open
 		local
 			record_header: FAST_CGI_RECORD_HEADER
 			record_body: FAST_CGI_END_REQUEST_BODY

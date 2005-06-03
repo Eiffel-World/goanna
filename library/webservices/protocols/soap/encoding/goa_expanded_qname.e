@@ -4,12 +4,11 @@ indexing
 	library: "SOAP"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
-	copyright: "Copyright (c) 2001 Glenn Maughan and others"
+	author: "Colin Adams <colin@colina.demon.co.uk>"
+	copyright: "Copyright (c) 2005 Colin Adams and others"
 	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 
-class
-	Q_NAME
+class GOA_EXPANDED_QNAME
 
 inherit
 	
@@ -34,29 +33,36 @@ feature -- Initialization
 			local_name := new_local_name
 		end
 
-	make_from_node (node: DOM_NODE) is
+	make_from_node (a_node: XM_NAMED_NODE) is
 			-- Initialise a new fully qualified name from the namespace
 			-- and localname of 'node'.
 		require
-			node_exists: node /= Void
-			node_qualified: node.namespace_uri /= Void and node.local_name /= Void
+			node_exists: a_node /= Void
 		do
-			namespace := node.namespace_uri.out
-			local_name := node.local_name.out
+			namespace := a_node.namespace.uri
+			local_name := a_node.name
 		end
 
-	make_from_qname (qname: STRING) is
-			-- Initialise a new fully qualified name from
-			-- separated 'qname'. Separator is ':'.
+	make_from_qname (an_expanded_qname: STRING) is
+			-- Initialise a new fully qualified name from `an_expanded_qname'
 		require
-			qname_exists: qname /= Void
-			qname_has_separator: qname.occurrences (':') = 1
+			qname_exists: an_expanded_qname /= Void
 		local
-			index: INTEGER
+			an_index: INTEGER
 		do
-			index := qname.index_of (':', 1)
-			namespace := qname.substring (1, index - 1)
-			local_name := qname.substring (index + 1, qname.count)
+			if an_expanded_name.item (1).is_equal (Ns_openening_brace.item (1)) then
+				an_index := an_expanded_name.index_of (Ns_closing_brace.item (1), 2)
+				check
+					closing_brace_found: an_index > 1
+					local_name_present: an_expanded_name.count > an_index
+					-- definition of expanded name
+				end
+				local_name := an_expanded_name.substring (an_index + 1, an_expanded_name.count)
+				namespace := an_expanded_name.substring (2, an_index - 1)
+			else
+				local_name := an_expanded_qname
+				namespace := ""
+			end
 		end
 		
 feature -- Access
@@ -114,18 +120,21 @@ feature -- Transformation
 			if namespace.is_empty then
 				Result := local_name
 			else
-				Result := namespace + ":" + local_name
+				Result := Ns_openening_brace + namespace + Ns_closing_brace.item + local_name
 			end
 		ensure then
 			out_exists: Result /= Void
 		end
 	
-	matches (node: DOM_NODE): BOOLEAN is
+	matches (a_node: XM_NAMED_NODE): BOOLEAN is
 			-- Does this qualified name match the qualified name of 'node'?
 		require
-			node_exists: node /= Void
+			node_exists: a_node /= Void
+		local
+			a_qname: GOA_EXPANDED_QNAME
 		do
-			Result := node /= Void and then is_equal (create {Q_NAME}.make_from_node (node))
+			create a_qname.make_from_node (a_node)
+			Result := is_equal (a_qname)
 		end
 
 invariant
@@ -133,4 +142,4 @@ invariant
 	namespace_exists: namespace /= Void
 	local_name_exists: local_name /= Void
 	
-end -- class Q_NAME
+end -- class GOA_EXPANDED_QNAME

@@ -42,7 +42,7 @@ feature -- Basic operations
 			-- Write this raw data body to 'socket'
 		require
 			socket_exists: socket /= Void
---			valid_socket: socket.is_valid
+			valid_socket: socket.is_open
 		local
 			enc_data: STRING
 			padding: STRING

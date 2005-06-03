@@ -60,5 +60,6 @@
 			</cluster>
 		</cluster>
 	</cluster>
+	<mount location="${EPOSIX}/src/library.xace"/>
 
 </library>

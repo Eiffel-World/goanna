@@ -21,11 +21,6 @@ inherit
 		export
 			{NONE} all
 		end
-		
---	SOCKET_ERRORS
---		export
---			{NONE} all
---		end
 
 	UT_STRING_FORMATTER
 		export
@@ -96,7 +91,7 @@ feature -- Basic operations
 			-- Write this header to 'socket'
 		require
 			socket_exists: socket /= Void
---			valid_socket: socket.is_valid
+			valid_socket: socket.is_open
 		local
 			enc_data: STRING
 		do

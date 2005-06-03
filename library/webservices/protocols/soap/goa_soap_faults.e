@@ -12,7 +12,7 @@ class	GOA_SOAP_FAULTS
 
 inherit
 
-	GOA_SOAP_CONSTANTS
+	GOA_SOAP_MESSAGE_FACTORY
 
 	KL_IMPORTED_STRING_ROUTINES
 
@@ -92,16 +92,31 @@ feature -- Conversions
 
 feature -- Faults
 
-	new_validation_fault (a_code: INTEGER; a_text: STRING; a_node_uri, a_role_uri: UT_URI): GOA_SOAP_FAULT_INTENT is
+	new_validation_fault (a_code: INTEGER; a_text: STRING; a_node_uri: UT_URI): GOA_SOAP_FAULT_INTENT is
 			-- Validation fault
 		require
 			text_not_empty: a_text /= Void and then not a_text.is_empty
 			valid_code: is_valid_fault_code (a_code)
-			node_uri_not_void: a_role_uri /= Void and then not STRING_.same_string (a_role_uri.full_reference, Role_ultimate_receiver) implies a_node_uri /= Void
+			node_uri_not_void: a_node_uri /= Void
 		do
-			create Result.make (a_code, a_text, "en", a_node_uri, a_role_uri, Void)
+			create Result.make (a_code, a_text, "en", a_node_uri, Void)
 		ensure
 			fault_created: Result /= Void
 		end
 
+	new_fault_message (an_intent: GOA_SOAP_FAULT_INTENT): GOA_SOAP_ENVELOPE is
+			-- New SOAP fault message
+		require
+			intent_not_void: an_intent /= Void
+		local
+			a_body: GOA_SOAP_BODY
+			a_fault: GOA_SOAP_FAULT
+		do
+			a_fault := an_intent.new_fault
+			a_body ?= a_fault.parent
+			Result ?= a_body.parent
+		ensure
+			fault_exists: Result /= Void and then Result.is_fault_message
+		end
+		
 end -- class GOA_SOAP_FAULTS

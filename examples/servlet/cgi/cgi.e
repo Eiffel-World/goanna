@@ -14,7 +14,10 @@ class
 inherit
 
 	CGI_SERVLET_APP
-		
+		redefine
+			initialise_logger
+		end
+
 	KL_SHARED_ARGUMENTS
 		export
 			{NONE} all
@@ -50,6 +53,18 @@ feature {NONE} -- Implementation
 			servlet_manager.register_default_servlet (servlet)
 			create {SNOOP_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "snoop")
+		end
+
+	initialise_logger is
+			-- Set logger appenders
+		local
+			appender: L4E_APPENDER
+			layout: L4E_LAYOUT
+		do
+			create {L4E_STDERR_APPENDER} appender.make ("CGItest")
+			create {L4E_PATTERN_LAYOUT} layout.make ("@d [@-6p] @c - @m%N")
+			appender.set_layout (layout)
+			log_hierarchy.logger (Servlet_app_log_category).add_appender (appender)
 		end
 
 end -- class CGI

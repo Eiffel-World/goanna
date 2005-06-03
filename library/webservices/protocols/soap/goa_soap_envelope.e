@@ -19,27 +19,7 @@ inherit
 
 creation
 	
-	make_root, construct, construct_with_header
-	
-feature -- Initialisation
-
-	construct_with_header (a_header: GOA_SOAP_HEADER; a_body: GOA_SOAP_BODY) is
-			-- Initialise envelope with header and body
-		require
-			header_exists: a_header /= Void
-			body_exists: a_body /= Void
-		do
-			-- TODO
-		end
-	
-	construct (a_body: GOA_SOAP_BODY) is
-			-- Initialise envelope with body
-		require
-			body_exists: a_body /= Void
-		do
-			-- TODO
-		end	
-		
+	make_root
 	
 feature -- Access
 
@@ -49,10 +29,19 @@ feature -- Access
 	body: GOA_SOAP_BODY
 			-- Envelope body
 
-feature -- Status report
+	unique_identifiers: DS_HASH_TABLE [GOA_SOAP_ELEMENT, STRING]
+			-- Document-wide unique indentiers of elements
 
-	validation_complete: BOOLEAN
-			-- Has `validate' finished?
+	encoding_styles: DS_HASH_SET [STRING]
+			-- Names of encoding styles used
+
+	is_fault_message: BOOLEAN is
+			-- Is this a SOAP Fault message?
+		require
+			validated: validation_complete and then validated
+		do
+			Result := body.is_fault_message
+		end
 
 feature -- Status Setting
 
@@ -76,57 +65,84 @@ feature -- Status Setting
 			body_set: body = a_body
 		end
 
-	validate is
+	validate (an_identity: UT_URI) is
 			-- Validate `Current'.
 		local
 			child_elements: DS_LIST [XM_ELEMENT]
 			a_count: INTEGER
 		do
-			Precursor
-			if validated then check_encoding_style_attribute (Void, Void) end
+			create unique_identifiers.make_with_equality_testers (10, Void, string_equality_tester)
+			create encoding_styles.make_default; encoding_styles.set_equality_tester (string_equality_tester)
+			scan_attributes (an_identity, True)
+			if validated then check_encoding_style_attribute (an_identity) end
 			if validated then
 				child_elements := elements
 				a_count := child_elements.count
 				if a_count = 0 then
-					set_validation_fault (Sender_fault, "Missing env:Body element", Void, Void)
+					set_validation_fault (Sender_fault, "Missing env:Body element", an_identity)
 				elseif a_count > 2 then
-					set_validation_fault (Sender_fault, "Too many child elements in env:Envelope", Void, Void)
+					set_validation_fault (Sender_fault, "Too many child elements in env:Envelope", an_identity)
 				elseif a_count = 2 then
 					header ?= elements.item (1)
 					if header = Void then
-						set_validation_fault (Sender_fault, "First child element of env:Envelope is not env:Header", Void, Void)
+						set_validation_fault (Sender_fault, "First child element of env:Envelope is not env:Header", an_identity)
 					else
 						body ?= elements.item (2)
 						if body = Void then
-							set_validation_fault (Sender_fault, "Second child element of env:Envelope is not env:Body", Void, Void)
+							set_validation_fault (Sender_fault, "Second child element of env:Envelope is not env:Body", an_identity)
 						end
 					end
 				else
 					body ?= elements.item (1)
 					if body = Void then
-						set_validation_fault (Sender_fault, "Sole child element of env:Envelope is not env:Body", Void, Void)
+						set_validation_fault (Sender_fault, "Sole child element of env:Envelope is not env:Body", an_identity)
 					end
 				end
 				if validated then
 					if header /= Void then
-						header.validate
+						header.validate (an_identity)
 						if not header.validated then
 							validated := False; validation_fault := header.validation_fault
 						end
 					end
 				end
 				if validated then
-					body.validate
+					body.validate (an_identity)
 					if not body.validated then
 						validated := False; validation_fault := body.validation_fault
 					end
 				end
 			end
 			validation_complete := True
+			post_validate (an_identity)
 		end
+
+	post_validate (an_identity: UT_URI) is
+			-- Perform post-validation checks on `Current'.
+		require
+			identity_not_void: an_identity /= Void
+		local
+			a_validator: GOA_SOAP_ELEMENT_VALIDATOR
+			a_cursor: DS_HASH_SET_CURSOR [STRING]
+		do
+			from
+				a_cursor := encoding_styles.new_cursor; a_cursor.start
+			until not validated or else a_cursor.after loop
+				create a_validator.make (unique_identifiers, encodings.get (a_cursor.item), an_identity)
+				a_validator.process_document (root_node)
+				if not a_validator.validated then
+					validated := False; validation_fault := a_validator.validation_fault
+				end
+				a_cursor.forth
+			end
+		end
+
 
 invariant
 
+	correct_name: is_valid_element (Current, Envelope_element_name)
 	body_exists: validation_complete and then validated implies body /= Void
+	unique_identifiers_not_void: validated implies unique_identifiers /= Void
+	encoding_styles_not_void: validated implies encoding_styles /= Void
 	
 end -- class GOA_SOAP_ENVELOPE

@@ -42,7 +42,7 @@ feature {NONE} -- Initialization
 				unicode_validation,
 				content,
 				error,
-				tree_filter >>)
+				tree_filter>>)
 		end
 		
 feature -- Filters (part of the pipe)

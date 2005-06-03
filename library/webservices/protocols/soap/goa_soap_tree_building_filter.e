@@ -14,8 +14,8 @@ inherit
 
 	XM_CALLBACKS_TO_TREE_FILTER
 		redefine
-			make_null, set_next, on_start_tag, on_processing_instruction, on_xml_declaration,
-			on_end_tag, on_comment, on_error
+			on_start_tag, on_processing_instruction, on_xml_declaration,
+			on_end_tag, on_comment, on_error, on_attribute, on_content
 		end
 
 	XM_DTD_CALLBACKS_NULL
@@ -23,7 +23,7 @@ inherit
 			on_doctype
 		end
 
-	GOA_SOAP_CONSTANTS
+	GOA_SOAP_NODE_FACTORY
 
 	KL_IMPORTED_STRING_ROUTINES
 
@@ -31,27 +31,6 @@ create
 
 	make_null,
 	set_next
-
-feature {NONE} -- Initialization
-
-	make_null is
-			-- Next is null processor.
-		do
-			create node_factory.make
-			Precursor
-		end
-
-	set_next (a_callbacks: like next) is
-			-- Set `next' to `a_callbacks'.
-		do
-			create node_factory.make
-			Precursor (a_callbacks)
-		end
-
-feature -- Access
-
-	node_factory: GOA_SOAP_NODE_FACTORY
-			-- Factory for creating nodes
 
 feature -- Status report
 
@@ -105,6 +84,7 @@ feature -- Errors
 		do
 			is_parse_error := True
 			last_parse_error := a_message
+			if not is_parse_error then Precursor (a_message) end
 		end
 
 feature -- Document
@@ -130,6 +110,8 @@ feature -- Meta
 		do
 			if not is_within_document_element then
 				invalid_comment := True
+			else
+				Precursor (a_content)
 			end
 		end
 
@@ -140,59 +122,82 @@ feature -- Elements
 		local
 			an_element: XM_ELEMENT
 		do
-			check
-				document_not_void: document /= Void
-			end
-				
-			if current_element = Void then
-				-- This is the first element in the document.
-
-				is_within_document_element := True
-				if STRING_.same_string (namespace, Ns_name_env) and then
-					STRING_.same_string (a_name, Envelope_element_name) then
-					an_element := node_factory.new_document_element (document, ns_prefix)
-				else
-					on_error ("Document element is not env:Envelope")
-					no_envelope := True
-				end
-			else
-					-- This is not the first element in the parent.
+			if not is_error then
 				check
-					document_not_finished: current_element /= Void
+					document_not_void: document /= Void
 				end
-				an_element := node_factory.new_element (current_element, a_name, namespace, ns_prefix, is_header_block, is_body_block)
-				if header_depth > 0 then
-					header_depth := header_depth + 1
-				elseif body_depth > 0 then
-					body_depth := body_depth + 1
-				elseif STRING_.same_string (namespace, Ns_name_env) then
-					if STRING_.same_string (a_name, Header_element_name) then
-						header_depth := 1
-					elseif STRING_.same_string (a_name, Body_element_name) then
-						body_depth := 1
+				
+				if current_element = Void then
+					-- This is the first element in the document.
+					
+					is_within_document_element := True
+					if STRING_.same_string (namespace, Ns_name_env) and then
+						STRING_.same_string (a_name, Envelope_element_name) then
+						an_element := new_document_element (document, ns_prefix)
+					else
+						on_error (Wrong_envelope_error)
+						no_envelope := True
+					end
+				else
+					-- This is not the first element in the parent.
+					check
+						document_not_finished: current_element /= Void
+					end
+					an_element := new_element (current_element, a_name, namespace, ns_prefix, is_header_block, is_body_block)
+					if header_depth > 0 then
+						header_depth := header_depth + 1
+					elseif body_depth > 0 then
+						body_depth := body_depth + 1
+					elseif STRING_.same_string (namespace, Ns_name_env) then
+						if STRING_.same_string (a_name, Header_element_name) then
+							header_depth := 1
+						elseif STRING_.same_string (a_name, Body_element_name) then
+							body_depth := 1
+						end
 					end
 				end
-			end
-			current_element := an_element
-			handle_position (current_element)
-			check
-				element_not_void: current_element /= Void
+				check
+					element_not_void: not no_envelope implies an_element /= Void
+				end
+				if not no_envelope then
+					current_element := an_element
+					handle_position (current_element)
+				end
 			end
 		end
 
 	on_end_tag (a_namespace: STRING; a_prefix: STRING; a_local_part: STRING) is
 			-- End tag.
 		do
-			if STRING_.same_string (a_namespace, Ns_name_env) and then
-				STRING_.same_string (a_local_part, Envelope_element_name) then
-				is_within_document_element := False
-			elseif header_depth > 0 then
-				header_depth := header_depth - 1
-			elseif body_depth > 0 then
-				body_depth := body_depth - 1
+			if not is_error then
+				Precursor (a_namespace, a_prefix, a_local_part)
+				if STRING_.same_string (a_namespace, Ns_name_env) and then
+					STRING_.same_string (a_local_part, Envelope_element_name) then
+					is_within_document_element := False
+				elseif header_depth > 0 then
+					header_depth := header_depth - 1
+				elseif body_depth > 0 then
+					body_depth := body_depth - 1
+				end
 			end
 		end
 
+	on_attribute (namespace, a_prefix, a_name: STRING; a_value: STRING) is
+			-- Add attribute.
+		do
+			if not is_error then
+				Precursor (namespace, a_prefix, a_name, a_value)
+			end
+		end
+
+	on_content (a_data: STRING) is
+			-- Character data
+		do
+			if not is_error then
+				Precursor (a_data)
+			end
+		end
+	
 feature -- Implementation
 
 	is_header_block: BOOLEAN is
@@ -212,7 +217,6 @@ feature -- Implementation
 
 invariant
 
-	node_factory_not_void: node_factory /= Void
 	parse_error: is_parse_error implies last_parse_error /= Void
 	not_header_and_body: not (is_header_block and is_body_block)
 

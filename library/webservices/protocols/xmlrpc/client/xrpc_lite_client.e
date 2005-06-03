@@ -19,11 +19,6 @@ inherit
 			{NONE} all
 		end
 		
-	SOCKET_ERRORS
-		export
-			{NONE} all
-		end
-	
 	KL_EXCEPTIONS
 		export
 			{NONE} all
@@ -112,7 +107,7 @@ feature {NONE} -- Implementation
 	uri: STRING
 			-- Server XMLRPC uri
 			
-	socket: TCP_SOCKET
+	socket: EPX_TCP_CLIENT_SOCKET
 	
 	send_call (call: XRPC_CALL) is
 			-- Send 'call' over the wire
@@ -122,7 +117,7 @@ feature {NONE} -- Implementation
 			data: STRING
 			call_data: STRING
 		do
-			if socket = Void or else not socket.is_valid then
+			if socket = Void or else not socket.is_open then
 				connect
 			end
 			if socket_ok then
@@ -136,30 +131,29 @@ feature {NONE} -- Implementation
 				data.append (" HTTP/1.0%R%N")
 				data.append ("User-Agent: Goanna XML-RPC Client%R%N")
 				data.append ("Host: ")
-				data.append (socket.peer_name)
+				-- data.append (socket.peer_name)
+				data.append (host)
 				data.append ("%R%N")
 				data.append ("Content-Type: text/xml%R%N")
 				data.append ("Content-Length: ")
 				data.append (call_data.count.out)
 				data.append ("%R%N%R%N")
 				data.append (call_data)
-				socket.send_string (data)
+				socket.put_string (data)
 				debug ("wire_dump")
 					print ("Sent >>>>>%N")
 					print (data + "%N")
 					print (">>>>>%N%N")
 				end
-				check_socket_error ("after write")	
 			end
 		end
 		
 	connect is
 			-- Open socket connected to service
 		do
-			create socket.make_connecting_to_port (host, port)
-			check_socket_error ("after connect")
+			create socket.open_by_name_and_port (host, port)
 		ensure
-			socket_ready: socket_ok implies socket.is_valid
+			socket_ready: socket_ok implies socket.is_open
 		end
 		
 	disconnect is
@@ -167,7 +161,6 @@ feature {NONE} -- Implementation
 		do
 			if socket /= Void then
 				socket.close
-				check_socket_error ("after disconnect")
 				socket := Void
 			end
 		ensure
@@ -182,7 +175,7 @@ feature {NONE} -- Implementation
 			done: BOOLEAN
 		do
 			create response_string.make (8192)
-			if socket = Void or else not socket.is_valid then
+			if socket = Void or else not socket.is_open then
 				connect
 			end
 			if socket_ok then
@@ -192,21 +185,18 @@ feature {NONE} -- Implementation
 				end_header_index := -1
 				content := Void
 				from
-					create buffer.make (8192)
-					buffer.fill_blank
-					socket.receive_string (buffer)
-					check_socket_error ("after priming read")
+					socket.read_string (8192)
+					buffer := socket.last_string
 				until
 					done or not socket_ok
 				loop
-					if socket.bytes_received > 0 then
-						response_string.append (buffer.substring (1, socket.bytes_received))					
+					if buffer.count > 0 then
+						response_string.append (buffer)
 					end
-					done := check_response (response_string, socket.bytes_received > 0)
+					done := check_response (response_string, socket.last_string.count > 0)
 					if not done then
-						buffer.fill_blank
-						socket.receive_string (buffer)
-						check_socket_error ("after loop read")					
+						socket.read_string (8192)
+						buffer := socket.last_string
 					end
 				end
 				if socket_ok then
@@ -276,39 +266,6 @@ feature {NONE} -- Implementation
 					content := buffer.substring (end_header_index, buffer.count)
 				end
 			end	
-		end
-		
-	check_socket_error (message: STRING) is
-			-- Check for socket error and print
-		require
-			message_exists: message /= Void
-		do
-			debug ("xmlrpc_socket")
-				print ("Socket status (" + message + "):%N")
-			end
-			if socket.last_error_code /= Sock_err_no_error then
-				socket_ok := False
-				-- setup fault
-				invocation_ok := False
-				response := Void
-				-- create fault
-				create fault.make (Socket_error)
-			else
-				socket_ok := True
-			end
-			debug ("xmlrpc_socket")
-				print ("%TSocket error: " + socket.last_error_code.out + "%N")
-				print ("%TExtended error: " + socket.last_extended_socket_error_code.out + "%N")
-				if socket.is_valid then
-					print ("%TBytes received: " + socket.bytes_received.out + "%N")
-					print ("%TBytes sent: " + socket.bytes_sent.out + "%N")
-					print ("%TBytes available: " + socket.bytes_available.out + "%N")
-				end
-				print ("%TSocket valid: " + socket.is_valid.out + "%N")				
-			end
-			if not socket_ok then
-				socket := Void
-			end
 		end
 		
 	process_response is

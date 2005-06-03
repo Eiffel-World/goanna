@@ -12,7 +12,7 @@ deferred class	GOA_SOAP_VALUE
 
 inherit
 	
-	GOA_SOAP_ELEMENT
+	GOA_SOAP_ELEMENT --?? - surely not!
 	
 feature -- Access
 

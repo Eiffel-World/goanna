@@ -16,20 +16,9 @@ inherit
 
 	KL_IMPORTED_STRING_ROUTINES
 
-create
-
-	make
-
-feature {NONE} -- Initialization
-
-	make is
-			-- Do nothing.
-		do
-		end
-
 feature -- Creation
 
-	new_document_element (a_document: XM_DOCUMENT; ns_prefix: STRING): XM_ELEMENT is
+	new_document_element (a_document: XM_DOCUMENT; ns_prefix: STRING): GOA_SOAP_ENVELOPE is
 			-- New SOAP Envelope
 		require
 			document_not_void: a_document /= Void
@@ -37,12 +26,12 @@ feature -- Creation
 			a_namespace: XM_NAMESPACE
 		do
 			create a_namespace.make (ns_prefix, Ns_name_env)
-			create {GOA_SOAP_ENVELOPE} Result.make_root (a_document, Envelope_element_name, a_namespace)
+			create Result.make_root (a_document, Envelope_element_name, a_namespace)
 		ensure
 			document_element_not_void: Result /= Void
 		end
 
-	new_element (a_parent: XM_ELEMENT; a_name, namespace, ns_prefix: STRING; is_header_block, is_body_block: BOOLEAN):  XM_ELEMENT is
+	new_element (a_parent: XM_ELEMENT; a_name, namespace, ns_prefix: STRING; is_header_block, is_body_block: BOOLEAN):  GOA_SOAP_ELEMENT is
 			-- New element
 		require
 			parent_not_void: a_parent /= Void
@@ -54,23 +43,39 @@ feature -- Creation
 			if namespace /= Void then
 				create a_namespace.make (ns_prefix, namespace)
 			end
-			if namespace /= Void and then STRING_.same_string (namespace, Ns_name_env)
-				and then STRING_.same_string (a_name, Header_element_name) then
+			if namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Header_element_name) then
 				create {GOA_SOAP_HEADER} Result.make_last (a_parent, a_name, a_namespace)
-			elseif  namespace /= Void and then STRING_.same_string (namespace, Ns_name_env)
-				and then STRING_.same_string (a_name, Body_element_name) then
+			elseif  namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Body_element_name) then
 				create {GOA_SOAP_BODY}  Result.make_last (a_parent, a_name, a_namespace)
 			elseif is_header_block then
-				create {GOA_SOAP_HEADER_BLOCK} Result.make_last (a_parent, a_name, a_namespace)
-			elseif is_body_block then
-				if  namespace /= Void and then STRING_.same_string (namespace, Ns_name_env)
-					and then STRING_.same_string (a_name, Fault_element_name) then
-					create {GOA_SOAP_FAULT} Result.make_last (a_parent, a_name, a_namespace)
+				if namespace /= Void and then STRING_.same_string (namespace, Ns_name_env)	and then STRING_.same_string (a_name, Upgrade_element_name) then
+					create {GOA_SOAP_UPGRADE} Result.make_last (a_parent, a_name, a_namespace)
 				else
-					create {GOA_SOAP_BLOCK} Result.make_last (a_parent, a_name, a_namespace)
+					create {GOA_SOAP_HEADER_BLOCK} Result.make_last (a_parent, a_name, a_namespace)
 				end
+			elseif is_body_block and then namespace /= Void and then	STRING_.same_string (namespace, Ns_name_env) and then
+				STRING_.same_string (a_name, Fault_element_name) then
+				create {GOA_SOAP_FAULT} Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Fault_code_element_name) then
+				create {GOA_SOAP_FAULT_CODE}  Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Fault_value_element_name) then
+				create {GOA_SOAP_FAULT_VALUE}  Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Fault_subcode_element_name) then
+				create {GOA_SOAP_FAULT_SUBCODE}  Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Fault_reason_element_name) then
+				create {GOA_SOAP_FAULT_REASON}  Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Reason_text_element_name) then
+				create {GOA_SOAP_REASON_TEXT}  Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Fault_node_element_name) then
+				create {GOA_SOAP_FAULT_NODE}  Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Fault_role_element_name) then
+				create {GOA_SOAP_FAULT_ROLE}  Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Fault_detail_element_name) then
+				create {GOA_SOAP_FAULT_DETAIL}  Result.make_last (a_parent, a_name, a_namespace)
+			elseif namespace /= Void and then STRING_.same_string (namespace, Ns_name_env) and then STRING_.same_string (a_name, Fault_detail_element_name) then
+				create {GOA_SOAP_SUPPORTED_ENVELOPE}  Result.make_last (a_parent, a_name, a_namespace)
 			else
-				create {GOA_SOAP_ELEMENT} Result.make_last (a_parent, a_name, a_namespace)
+				create Result.make_last (a_parent, a_name, a_namespace)
 			end
 		ensure
 			element_not_void: Result /= Void

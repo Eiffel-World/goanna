@@ -107,4 +107,9 @@ feature {NONE} -- Implementation
 			servlet_manager.register_servlet (servlet, "snoop")
 		end
 
+	field_exception: BOOLEAN is
+			-- Should we attempt to retry?
+		do
+		end
+			
 end -- class FAST_CGI_SERVER

@@ -8,33 +8,26 @@
 		revision: "$Revision$"
 		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
 		copyright: "Copyright (c) 2001 Glenn Maughan and others"
-		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		license: "Eiffel Forum License v2 (see forum.txt)."
 	</description>
 
 	<root class="XSOAP" creation="make"/>
-	<cluster>
-		<option unless="${DEBUG}">
-			<require enable="False"/>
-			<ensure enable="False"/>
-			<invariant enable="False"/>
-			<loop enable="False"/>
-			<check enable="False"/>
-			<optimize enable="True"/>
-		</option>
-		<option if="${DEBUG}">
-			<require enable="True"/>
-			<ensure enable="True"/>
-			<invariant enable="True"/>
-			<loop enable="True"/>
-			<check enable="True"/>
-			<optimize enable="False"/>
-		</option>
 
-		<cluster name="soap_tester" location="${GOANNA}/test/soap">
-			<cluster name="testgen" location="TESTGEN"/>
-		</cluster>
-		<mount location="${GOANNA}/library/library.xace"/>
-		<mount location="${GOBO}/library/library.xace"/>
-		<mount location="${GOBO}/library/kernel.xace"/>
+	<option unless="${DEBUG}">
+		<option name="assertion" value="none"/>
+		<option name="finalize" value="true"/>
+		<option name="debug" value="false"/>
+	</option>
+	<option if="${DEBUG}">
+		<option name="assertion" value="all"/>
+		<option name="finalize" value="false"/>
+	</option>
+	<cluster name="soap_tester" location="${GOANNA}/test/soap">
+	  <cluster name="testgen" location="TESTGEN"/>
 	</cluster>
+
+	<mount location="${GOANNA}/library/library.xace"/>
+	<mount location="${GOBO}/library/library.xace"/>
+	<mount location="${GOBO}/library/kernel.xace"/>
+
 </system>

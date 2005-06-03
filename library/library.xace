@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<library name="goanna" location="${GOANNA}/library" prefix="g_">
+<library name="goanna"  prefix="g_">
 
 	<description>
 		description: "Cluster definition for Goanna library classes"
