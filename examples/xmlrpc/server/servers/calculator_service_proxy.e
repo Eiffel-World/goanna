@@ -3,18 +3,17 @@ indexing
 	project: "Project Goanna <http://sourceforge.net/projects/goanna>"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Colin Adams <colin@colina.demon.co.uk>"
+	author: "Colin Adams <colin-adams@users.sourceforge.net>"
 	copyright: "Copyright (c) 2005 Colin Adams and others"
 	license: "Eiffel Forum License v2 (see forum.txt)."
 	
-class
-	CALCULATOR_SERVICE_PROXY
+class	CALCULATOR_SERVICE_PROXY
 
 inherit
 
-	SERVICE_PROXY
+	GOA_SERVICE_PROXY
 
-creation
+create
 
 	make
 

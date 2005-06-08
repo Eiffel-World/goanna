@@ -1,5 +1,4 @@
-class
-	ROOT_CLASS
+class	ROOT_CLASS
 
 creation
 	

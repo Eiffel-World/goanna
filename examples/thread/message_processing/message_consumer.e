@@ -4,17 +4,15 @@ indexing
 	library: "examples thread"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	
-	MESSAGE_CONSUMER
+class MESSAGE_CONSUMER
 
 inherit
 	
-	CONSUMER [STRING]
+	GOA_CONSUMER [STRING]
 
 create
 	

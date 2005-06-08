@@ -17,9 +17,9 @@ inherit
 feature -- Test
 
 	test_encoding is
-			-- Test standard encoding features of BASE64_ENCODER
+			-- Test standard encoding features of GOA_BASE64_ENCODER
 		local
-			encoder: BASE64_ENCODER
+			encoder: GOA_BASE64_ENCODER
 		do
 			!! encoder
 			assert_equal ("empty", "", encoder.encode(""))
@@ -31,7 +31,7 @@ feature -- Test
 	test_session_id_encoding is
 			-- Test session ID encoding features of BASE^$_ENCODER
 		local
-			encoder: BASE64_ENCODER
+			encoder: GOA_BASE64_ENCODER
 		do
 			!! encoder
 			assert_equal ("Hello there!", "SGVsbG8gdGhlcmUh", encoder.encode_for_session_key ("Hello there!"))
@@ -40,9 +40,9 @@ feature -- Test
 		end
 
 	test_decoding is
-			-- Test standard encoding features of BASE64_ENCODER
+			-- Test standard encoding features of GOA_BASE64_ENCODER
 		local
-			encoder: BASE64_ENCODER
+			encoder: GOA_BASE64_ENCODER
 		do
 			!! encoder
 			assert_equal ("empty", "", encoder.encode(""))

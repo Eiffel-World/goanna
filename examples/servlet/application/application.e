@@ -4,12 +4,11 @@ indexing
 	library: "examples"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	APPLICATION
+class	APPLICATION
 	
 inherit
 
@@ -18,7 +17,7 @@ inherit
 			default_create
 		end
 	
-creation
+create
 
 	default_create
 
@@ -36,11 +35,11 @@ feature {NONE} -- Implementation
 	register_servlets is
 			-- Register all servlets for this application
 		local
-			servlet: HTTP_SERVLET
-			config: SERVLET_CONFIG
+			servlet: GOA_HTTP_SERVLET
+			config: GOA_SERVLET_CONFIG
 		do
 			create config
-			create {SNOOP_SERVLET} servlet.init (config)
+			create {GOA_SNOOP_SERVLET} servlet.init (config)
 			manager.registry.register_servlet (servlet, "snoop")
 		end
 		
@@ -53,8 +52,8 @@ feature {NONE} -- Implementation
 			-- Register all producers
 		local
 			producer: GS_REQUEST_PRODUCER
-			fast_cgi: GS_FAST_CGI_CONNECTOR
-			standalone: GS_STANDALONE_CONNECTOR
+			--fast_cgi: GOA_FAST_CGI_CONNECTOR
+			standalone: GOA_STANDALONE_CONNECTOR
 		do			
 			-- FastCGI connector on 9090
 --			create fast_cgi.make (9090, 5)

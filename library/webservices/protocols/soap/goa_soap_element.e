@@ -54,7 +54,12 @@ inherit
 		undefine
 			copy, is_equal
 		end
-	
+
+	XM_XPATH_NAME_UTILITIES
+		undefine
+			copy, is_equal
+		end
+
 create
 
 	make_last
@@ -103,6 +108,7 @@ feature -- Access
 			Result.append (name)
 		ensure
 			block_name_not_void: Result /= Void
+			expanded_name: is_valid_expanded_name (Result)
 		end
 
 	encoding_style: UT_URI is
@@ -127,6 +133,27 @@ feature -- Access
 			end
 		ensure
 			style_may_be_unknown: True
+		end
+
+	type_name: GOA_EXPANDED_QNAME is
+			-- Type name
+		local
+			a_lexical_qname: STRING
+			a_parent: GOA_SOAP_ELEMENT
+		do
+			if has_attribute_by_qualified_name (Ns_name_xsi, Type_attr) then
+				a_lexical_qname := attribute_by_qualified_name (Ns_name_xsi, Type_attr).value
+			else
+				a_parent ?= parent
+				if a_parent /= Void and then a_parent.has_attribute_by_qualified_name (Ns_name_enc, Item_type_attr) then
+					a_lexical_qname := a_parent.attribute_by_qualified_name (Ns_name_enc, Item_type_attr).value
+				end
+			end
+			if a_lexical_qname /= Void then
+				create Result.make_from_qname (qname_to_expanded_name (a_lexical_qname))
+			end
+		ensure
+			may_be_unspecified: True
 		end
 
 	is_encoding_style_permitted: BOOLEAN is
@@ -463,6 +490,30 @@ feature {NONE} -- Implementation
 			end
 		ensure
 			result_not_void: Result /= Void
+		end
+	
+	qname_to_expanded_name (a_qname: STRING): STRING is
+			-- QName from `an_expanded_name, if prefix is in scope
+		require
+			is_qname: a_qname /= Void and then not a_qname.is_empty and then is_qname (a_qname)
+		local
+			qname_parts: DS_LIST [ STRING]
+			a_splitter: ST_SPLITTER
+		do
+			create a_splitter.make
+			a_splitter.set_separators (Prefix_separator)
+			qname_parts := a_splitter.split (a_qname)
+			if qname_parts.count = 1 then
+				Result := qname_parts.item (1)
+			else
+				Result := STRING_.concat (Ns_opening_brace, prefix_to_namespace (qname_parts.item (1)))
+				Result := STRING_.appended_string (Result, Ns_closing_brace)
+				Result := STRING_.appended_string (Result, qname_parts.item (2))
+			end
+			
+		ensure
+			result_not_void: Result /= Void
+			expanded_name: is_valid_expanded_name (Result)
 		end
 	
 invariant

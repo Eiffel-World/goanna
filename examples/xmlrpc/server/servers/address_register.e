@@ -4,21 +4,20 @@ indexing
 	library: "XMLRPC examples"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	ADDRESS_REGISTER
+class	ADDRESS_REGISTER
 
 inherit
 	
-	SERVICE
+	GOA_SERVICE
 		redefine
 			make
 		end
 
-creation
+create
 	
 	make
 	

@@ -11,6 +11,8 @@ indexing
 class
 	CHARACTER_MANIPULATION
 
+	obsolete "See 'obsolete' clause for individual routines"
+
 feature -- Basic operations
 
 	set_char_code (ch: CHARACTER_REF; code: INTEGER): CHARACTER is
@@ -30,6 +32,7 @@ feature -- Basic operations
 		
 	int_to_char (code: INTEGER): CHARACTER is
 			-- Convert int to character
+		obsolete "Use Gobo's {KL_INTEGER_ROUTINES}.to_character"
 		do
 #ifdef ISE
 			Result := '%U' + code
@@ -42,6 +45,7 @@ feature -- Basic operations
 
 	char_to_lower (ch: CHARACTER): CHARACTER is
 			-- Convert 'ch' to lower case.
+		obsolete "Use Gobo's {KL_CHARACTER_ROUTINES}.as_lower"
 		do
 #ifdef ISE
 			Result := ch.lower

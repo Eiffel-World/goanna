@@ -4,16 +4,16 @@ indexing
 	library: "examples Fast CGI server"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
 class
 	FAST_CGI_SERVER
 
 inherit
 
-	FAST_CGI_SERVLET_APP
+	GOA_FAST_CGI_SERVLET_APP
 		rename
 			make as parent_make
 		end
@@ -56,7 +56,7 @@ feature {NONE} -- Implementation
 	argument_error: BOOLEAN
 			-- Did an error occur parsing arguments?
 
-	config: SERVLET_CONFIG
+	config: GOA_SERVLET_CONFIG
 			-- Configuration for servlets
 			
 	parse_arguments is
@@ -93,8 +93,8 @@ feature {NONE} -- Implementation
 	register_servlets is
 			-- Initialise servlets
 		local
-			servlet: HTTP_SERVLET
-			file_servlet: FILE_SERVLET	
+			servlet: GOA_HTTP_SERVLET
+			file_servlet: GOA_FILE_SERVLET	
 		do
 			-- register servlets
 			servlet_manager.set_servlet_mapping_prefix ("servlet")
@@ -103,7 +103,7 @@ feature {NONE} -- Implementation
 			file_servlet.set_name (servlet_manager.servlet_mapping_prefix + "file")
 			servlet_manager.register_servlet (file_servlet, "file")
 			servlet_manager.register_default_servlet (file_servlet)
-			create {SNOOP_SERVLET} servlet.init (config)
+			create {GOA_SNOOP_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "snoop")
 		end
 

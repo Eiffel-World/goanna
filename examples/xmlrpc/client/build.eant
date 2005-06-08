@@ -80,11 +80,20 @@
 			in all subdirectories.
 		</description>
 
+		<geant file="build.eant" target="${target}" dir="test"/>
+		<geant target="do_if_ise" if="${GOBO_EIFFEL}=ise"/>
+	</target>
+
+	<target name="do_if_ise" depend="init">
+		<description>
+			Call 'geant' with the same target ${target}
+			in all subdirectories.
+		</description>
+
 		<geant file="build.eant" target="${target}" dir="addressbook" if="${GOBO_OS}=windows"/>
-		<geant file="build.eant" target="${target}" dir="calculator" if="${GOBO_OS}=windows"/>
+		<geant file="build.eant" target="${target}" dir="calculator" if="{GOBO_OS}=windows"/>
 		<geant file="build.eant" target="${target}" dir="currenttime" if="${GOBO_OS}=windows"/>
 		<!-- <geant file="build.eant" target="${target}" dir="currenttime-web"/> this seems to be a server -->
 		<geant file="build.eant" target="${target}" dir="spellchecker" if="${GOBO_OS}=windows"/>
-		<geant file="build.eant" target="${target}" dir="test"/>
 	</target>
 </project>

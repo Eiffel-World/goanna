@@ -4,18 +4,17 @@ indexing
 	library: "XMLRPC examples validator"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	VALIDATOR1
+class	VALIDATOR1
 
 inherit
 	
-	SERVICE
+	GOA_SERVICE
 		
-creation
+create
 	
 	make
 			

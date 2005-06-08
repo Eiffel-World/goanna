@@ -11,6 +11,8 @@ indexing
 class
 	POOL [K -> ANY]
 
+		-- TODO: this is only used by the test cases - delete it perhaps
+
 creation
 
 	make, make_bounded

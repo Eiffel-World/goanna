@@ -12,6 +12,9 @@
 		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
 	</description>
 
-	<cluster name="eiffel_thread" location="${ISE_EIFFEL}/library/thread"/>
+	<cluster name="eiffel_thread" location="${ISE_EIFFEL}/library/thread">
+	  <option name="recursive" value="true"/>
+	  <option name="read_only" value="true"/>
+	</cluster>
 
 </library>

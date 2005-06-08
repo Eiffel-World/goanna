@@ -4,23 +4,22 @@ indexing
 	library: "XMLRPC examples test"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	CURRENT_DATE_TIME
+class	CURRENT_DATE_TIME
 
 inherit
 	
-	SERVICE
+	GOA_SERVICE
 	
 	DT_SHARED_SYSTEM_CLOCK
 		export
 			{NONE} all
 		end
 		
-creation
+create
 	
 	make
 			

@@ -11,7 +11,7 @@ indexing
 class
 	STRING_TOKENIZER
 	
-obsolete "Use DC_STRING_TOKENIZER instead"
+obsolete "Use GOA_STRING_TOKENIZER instead"
 
 inherit
 

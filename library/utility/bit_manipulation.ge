@@ -11,6 +11,8 @@ indexing
 class
 	BIT_MANIPULATION
 
+obsolete "Use Gobo's KL_INTEGER_ROUTINES}"
+
 feature -- Basic operations
 
 	bit_shift_right (i, n: INTEGER): INTEGER is

@@ -14,7 +14,7 @@ inherit
 
 	TS_TEST_CASE
 
-	HTTP_UTILITY_FUNCTIONS
+	GOA_HTTP_UTILITY_FUNCTIONS
 		export
 			{NONE} all
 		end

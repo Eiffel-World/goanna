@@ -81,7 +81,8 @@
 		</description>
 
 		<geant file="build.eant" target="${target}" dir="client"/>
-		<geant file="build.eant" target="${target}" dir="server"/>
+		<echo message="XML-RPC server needs standalone HTTPD"/>
+		<!-- <geant file="build.eant" target="${target}" dir="server"/> -->
 	</target>
 
 </project>

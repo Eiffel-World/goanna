@@ -8,7 +8,7 @@ indexing
 	copyright: "Copyright (c) 2005 Colin Adams and others"
 	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class	GOA_SOAP_PROCESSOR
+deferred class	GOA_SOAP_PROCESSOR
 
 inherit
 
@@ -16,42 +16,49 @@ inherit
 
 	XM_EIFFEL_PARSER_FACTORY
 
+	XM_SHARED_CATALOG_MANAGER
+
 	KL_IMPORTED_STRING_ROUTINES
 
 	KL_SHARED_STANDARD_FILES
 
 	UC_SHARED_STRING_EQUALITY_TESTER
 
-		-- This class acts as a SOAP node processor.
-		-- To get customised behaviour, create a descendant
-		--  and redefine some or all of the Template routines.
-
-create
-
-	make
+	GOA_SHARED_QNAME_TESTER
 
 feature {NONE} -- Initialization
 
-	make (an_identity: like node) is
-		require
-			identity_not_void: an_identity /= Void
+	initialize_structures is
+			-- Establish invariant.
 		do
-			node := an_identity
+			initialize_roles
+			create recognised_headers.make_default
+			recognised_headers.set_equality_tester (qname_tester)
+		end
+
+	initialize_roles is
+			-- Setup known and active roles.
+		do
 			create known_roles.make_default
 			known_roles.set_equality_tester (string_equality_tester)
 			known_roles.put_new (Role_next)
 			add_additional_known_roles
 			create active_roles.make_default
 			active_roles.set_equality_tester (string_equality_tester)
-		ensure
-			identity_set: node = an_identity
 		end
 
 feature -- Template routines
 
+	send_build_failure_message (a_message: STRING) is
+			-- Send a build-failure message.
+		require
+			message_not_empty: a_message /= Void and then not a_message.is_empty
+		deferred
+		end
+
 	add_additional_known_roles is
 			-- Add non-standard roles.
-		do
+		deferred
 		end
 
 	determine_active_roles is
@@ -59,21 +66,7 @@ feature -- Template routines
 		require
 			no_build_error: is_build_sucessful
 			valid: is_valid
-		local
-			a_cursor: DS_LINKED_LIST_CURSOR [GOA_SOAP_HEADER_BLOCK]
-		do
-			active_roles.wipe_out
-			if envelope.header /= Void then
-				a_cursor := envelope.header.header_blocks.new_cursor
-				from a_cursor.start until a_cursor.after loop
-					examine_header_for_roles (a_cursor.item)
-					a_cursor.forth
-				end
-			end
-			examine_body_for_active_roles
-			if is_ultimate_receiver and then not active_roles.has (Role_ultimate_receiver) then
-				active_roles.force_new (Role_ultimate_receiver)
-			end
+		deferred
 		end
 
 	examine_header_for_roles (a_header: GOA_SOAP_HEADER_BLOCK) is
@@ -82,60 +75,37 @@ feature -- Template routines
 			header_block_not_void: a_header /= Void
 			no_build_error: is_build_sucessful
 			valid: is_valid
-		local
-			a_candidate_role: STRING
-		do
-			if a_header.role /= Void then
-				a_candidate_role := a_header.role.full_reference
-				if known_roles.has (a_candidate_role) and then not active_roles.has (a_candidate_role) then
-					active_roles.force_new (a_candidate_role)
-				end
-			end
+		deferred
 		end
 
 	is_header_understood (a_header: GOA_SOAP_HEADER_BLOCK): BOOLEAN is
 			-- Do we understand `a_header'?
 		require
 			header_exists: a_header /= Void
+		local
+			a_qname: GOA_EXPANDED_QNAME
 		do
-
-			-- This default implementation doesn't understand any headers (!)
-
-			Result := False
+			create a_qname.make_from_node (a_header)
+			Result := recognised_headers.has (a_qname)
 		end
 								 
 	examine_body_for_active_roles is
 			-- Examine message body to determine roles in which `Current' will act.
-		do
+		deferred
 		end
 
 	process_headers is
 			-- Process all mandatory headers (and optionally, non-mandatory headers) targetted at `Current'.
 		require
 			all_mandatory_headers_understood: are_all_mandatory_headers_understood
-		local
-			a_cursor: DS_LINKED_LIST_CURSOR [GOA_SOAP_HEADER_BLOCK]
-		do
-			is_header_fault := False
-			if envelope.header /= Void then
-				a_cursor := envelope.header.header_blocks.new_cursor
-				from a_cursor.start until a_cursor.after loop
-					if is_mandatory_header (a_cursor.item) then
-						process_header (a_cursor.item)
-					elseif are_optional_headers_processed and then is_targetted_header (a_cursor.item) then
-						process_header (a_cursor.item)
-					end
-					a_cursor.forth
-				end
-			end
+		deferred
 		end
 
 	process_header (a_header:  GOA_SOAP_HEADER_BLOCK) is
 			-- Process `_header'
 		require
 			header_exists: a_header /= Void
-		do
-			is_header_fault := False
+		deferred
 		end
 
 	process_body is
@@ -143,52 +113,33 @@ feature -- Template routines
 		require
 			ultimate_receiver: is_ultimate_receiver
 			no_header_faults: not is_header_fault
-		local
-			a_formatter: GOA_SOAP_NODE_FORMATTER
-		do
-
-			-- Default implementation just serializes message to standard output
-
-			if envelope.is_fault_message then
-				print ("Received message was a SOAP Fault%N")
-			end
-			--create a_formatter.make
-			--a_formatter.set_output (std.output)
-			--a_formatter.process_document (envelope.root_node)
-			print ("%N")
+		deferred
 		end
 
 	create_and_send_must_understand_fault is
 			-- Send a MustUnderstand fault.
 		require
 			some_headers_not_understood: not_understood_headers /= Void and then not_understood_headers.count > 0
-		local
-			a_fault_intent: GOA_SOAP_FAULT_INTENT
-		do
-			create a_fault_intent.make (Must_understand_fault, "At least one mandatory header was not understood", "en", node, Void)
-			a_fault_intent.set_not_understood_headers (not_understood_headers)
-			send_message (new_fault_message (a_fault_intent))
+		deferred
+		end
+
+	create_and_send_fault (a_fault_intent: GOA_SOAP_FAULT_INTENT) is
+			-- Create and send a fault_message.
+		require
+			fault_intent_not_void: a_fault_intent /= Void
+		deferred
 		end
 
 	send_message (an_envelope: GOA_SOAP_ENVELOPE) is
 			-- Send a SOAP message.
 		require
 			envelope_not_void: an_envelope /= Void
-		local
-			a_formatter: GOA_SOAP_NODE_FORMATTER
-		do
-
-			-- Default implementation just serializes message to standard output
-
-			create a_formatter.make
-			a_formatter.set_output (std.output)
-			a_formatter.process_document (an_envelope.root_node)
-			print ("%N")
+		deferred
 		end
 
 	relay_message is
 			-- TODO
-		do
+		deferred
 		end
 
 feature -- Access
@@ -207,6 +158,9 @@ feature -- Access
 
 	not_understood_headers: DS_LINKED_LIST [GOA_SOAP_HEADER_BLOCK]
 			-- Mandatory headers of current message which are not understood
+
+	recognised_headers: DS_HASH_SET [GOA_EXPANDED_QNAME]
+			-- Names of headers recognised by `Current'
 
 	is_relaying: BOOLEAN
 			-- Are we relaying messages?
@@ -260,7 +214,7 @@ feature -- Status report
 			Result := known_roles.has (Role_ultimate_receiver)
 		end
 
-feature -- Status setting
+feature -- Setting
 
 	set_ultimate_receiver (yes_or_no: BOOLEAN) is
 			-- Determine if we are to act as the ultimate receiver for the next call to `process'.
@@ -284,14 +238,26 @@ feature -- Status setting
 			set: are_optional_headers_processed = yes_or_no
 		end
 
+	recognise_header (a_qname: GOA_EXPANDED_QNAME) is
+			-- Recognise headers identified by `a_qname'.
+			-- TODO: Logic for processing a recognised header? 
+		require
+			qname_not_void: a_qname /= Void
+			not_already_recognised: not recognised_headers.has (a_qname)
+		do
+			recognised_headers.force (a_qname)
+		ensure
+			header_recognised: recognised_headers.has (a_qname)
+		end
+		
 feature -- Process
 
-	process (a_message: STRING) is
+	process (a_message: STRING; a_base_uri: UT_URI) is
 			-- Process message.
 		require
 			message_not_void: a_message /= Void
 		do
-			parse_xml (a_message, Void)
+			parse_xml (a_message, a_base_uri)
 			if tree_builder.error.has_error then
 				send_build_failure_message (tree_builder.error.last_error)
 			elseif tree_builder.tree_filter.is_error then
@@ -414,28 +380,24 @@ feature {NONE} -- Implementation
 		require
 			xml_not_void: an_xml /= Void
 		local
+			a_resolver: XM_CATALOG_RESOLVER
 			a_parser: XM_PARSER
 			a_stop_parser: XM_PARSER_STOP_ON_ERROR_FILTER
 		do
-			-- TODO: use `a_base_uri'
 			create tree_builder.make
 			a_parser := new_eiffel_parser
 			create a_stop_parser.make (a_parser)
 			tree_builder.last.set_next (a_stop_parser)
 			a_parser.set_callbacks (tree_builder.start)
 			a_parser.set_dtd_callbacks (tree_builder.dtd_target)
+			create a_resolver.make
+			a_parser.set_resolver (a_resolver)
+			if a_base_uri /= Void then
+				shared_catalog_manager.bootstrap_resolver.uri_scheme_resolver.push_uri (a_base_uri)
+			end
 			a_parser.parse_from_string (an_xml)
 		ensure
 			tree_builder_created: tree_builder /= Void
-		end
-
-	send_build_failure_message (a_message: STRING) is
-			-- Send a build-failure message.
-		require
-			message_not_empty: a_message /= Void and then not a_message.is_empty
-		do
-			-- TODO
-			print (a_message);print ("%N")
 		end
 
 	send_version_mismatch_fault is
@@ -445,17 +407,6 @@ feature {NONE} -- Implementation
 		do
 			create a_fault_intent.make (Version_mismatch_fault, "Version mismatch", "en", node, Void)
 			create_and_send_fault (a_fault_intent)
-		end
-
-	create_and_send_fault (a_fault_intent: GOA_SOAP_FAULT_INTENT) is
-			-- Create and send a fault_message.
-		require
-			fault_intent_not_void: a_fault_intent /= Void
-		local
-			an_envelope: GOA_SOAP_ENVELOPE
-		do
-			an_envelope := new_fault_message (a_fault_intent)
-			send_message (an_envelope)
 		end
 
 invariant

@@ -20,30 +20,26 @@ Only FastCGI connections are supported, standard CGI invocation of
 Eiffel FastCGI servers are not supported. Future versions may support this
 type of execution.
 
-The implementation relies on the Yaesockets library to perform low-level
-socket operations. Yaesockets provides an efficient and portable socket
-library with good support for multiplexed connections.
-
 Usage
 -----
 
-The FastCGI protocol is handled by the class FAST_CGI which provides similar
+The FastCGI protocol is handled by the class GOA_FAST_CGI which provides similar
 features to the standard FastCGI API including 'accept' and 'finish'. This
 class can be used to perform standard FastCGI operations.
 
-Class FAST_CGI_APP provides a higher-level abstraction for FastCGI 
+Class GOA_FAST_CGI_APP provides a higher-level abstraction for FastCGI 
 applications. This class provides a standard application request processing
 loop and a deferred feature 'process_request' that is typically overridden
 to perform appropriate request handling.
 
-To use FAST_CGI_APP, all you need to do is create a decendant class that
+To use GOA_FAST_CGI_APP, all you need to do is create a decendant class that
 implements 'process_request':
 
 ------------------------------------------------------------------
 class MY_FAST_CGI_APP
 
 inherit
-	FAST_CGI_APP
+	GOA_FAST_CGI_APP
 creation
 	make
 feature
@@ -63,7 +59,7 @@ The Fast CGI Servlets library implements the Servlet API using FastCGI
 as the connection mechanism. This library provides a wrapper on top of 
 FastCGI that can be used to build servlet compliant applications.
 
-The library extends FAST_CGI_APP to provide a FAST_CGI_SERVLET_APP
+The library extends GOA_FAST_CGI_APP to provide a GOA_FAST_CGI_SERVLET_APP
 that manages the registration of servlets and dispatch of servlet
 requests.
 
@@ -73,14 +69,14 @@ Usage
 -----
 
 To build a FastCGI servlet application you need to create a descendant of
-FAST_CGI_SERVLET_APP, register instances of your servlets (descendants of
-HTTP_SERVLET) and call run. For example:
+GOA_FAST_CGI_SERVLET_APP, register instances of your servlets (descendants of
+GOA_HTTP_SERVLET) and call run. For example:
 
 ---------------------------------------------------------------------
 class MY_FAST_CGI_SERVLET_APP
 
 inherit
-	FAST_CGI_SERVLET_APP
+	GOA_FAST_CGI_SERVLET_APP
 		rename
 			make as parent_make
 		end
@@ -89,8 +85,8 @@ creation
 feature
 	make is
 		local
-			config: SERVLET_CONFIG
-			servlet: HTTP_SERVLET
+			config: GOA_SERVLET_CONFIG
+			servlet: GOA_HTTP_SERVLET
 		do
 			parent_make (8000, 5) -- port 8000, 5 backlog requests
 			create config

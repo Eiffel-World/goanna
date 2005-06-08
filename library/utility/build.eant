@@ -32,11 +32,7 @@
 		
 		<set name="gepp_dir" value="."/>
 		<set name="spec_dir" value="spec"/>
-		<set name="gepp_file" value="bit_manipulation"/>
-		<geant target="ge2e"/>
-		<set name="gepp_file" value="character_manipulation"/>
-		<geant target="ge2e"/>
-		<set name="gepp_file" value="string_manipulation"/>
+		<set name="gepp_file" value="goa_string_manipulation"/>
 		<geant target="ge2e"/>
 		<set name="gepp_file" value="integer_formatter"/>
 		<geant target="ge2e"/>

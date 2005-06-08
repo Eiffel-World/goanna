@@ -7,14 +7,14 @@
 		project: "Project Goanna [http://sourceforge.net/projects/goanna]"
 		date: "$Date$"
 		revision: "$Revision$"
-		author: "Glenn Maughan [glennmaughan@optushome.com.au]"
+		author: "Glenn Maughan [glennmaughan@sourceforge.users.net]"
 		copyright: "Copyright (c) 2001 Glenn Maughan and others"
-		license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+		license: "Eiffel Forum License v2 (see forum.txt)."
 	</description>
 
 	<cluster name="webservices" location="${GOANNA}/library/webservices">
 		<option name="abstract" value="true"/>
-		<cluster name="application"/>
+		<cluster name="application" if="${GOBO_EIFFEL}=ise" />
 		<cluster name="connectors">
 			<cluster name="cgi"/>
 			<cluster name="fast_cgi">
@@ -44,7 +44,7 @@
 				</cluster>
 			</cluster>
 		</cluster> 
-		<cluster name="protocols">
+		<cluster name="protocols" unless="${GOBO_EIFFEL}=ve">
 			<cluster name="soap">
 				<cluster name="encoding"/>
 				<cluster name="server" prefix="soap_">

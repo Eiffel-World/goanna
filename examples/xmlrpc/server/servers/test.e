@@ -4,18 +4,17 @@ indexing
 	library: "XMLRPC examples test"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	TEST
+class	TEST
 
 inherit
 	
-	SERVICE
+	GOA_SERVICE
 		
-creation
+create
 	
 	make
 			
@@ -60,7 +59,7 @@ feature -- Access
 	echo_decoded_base64 (arg: STRING): STRING is
 			-- Echo a base64 string. Return the string decoded.
 		local
-			encoder: BASE64_ENCODER
+			encoder: GOA_BASE64_ENCODER
 		do
 			create encoder
 			Result := encoder.decode (arg)

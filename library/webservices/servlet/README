@@ -12,15 +12,15 @@ the fcgi/servlet library for an implementation.
 Usage
 -----
 
-The SERVLET class and its descendant HTTP_SERVLET provide the central
+The GOA_SERVLET class and its descendant GOA_HTTP_SERVLET provide the central
 functionality of a servlet application. Each servlet you need to implement
 should implement one of these classes. 
 
 If you are developing an application for the internet you will typically
-inherit from HTTP_SERVLET and redefine one or more of the 'do_' routines, 
+inherit from GOA_HTTP_SERVLET and redefine one or more of the 'do_' routines, 
 such as, 'do_get' or 'do_post'. Each of these routines is passed an instance
-of SERVLET_REQUEST and SERVLET_RESPONSE that represent the initiating request
-and the response to send back.
+of GOA_HTTP_SERVLET_REQUEST and GOA_HTTP_SERVLET_RESPONSE that
+represent the initiating request and the response to send back.
 
 For example, a basic servlet that responds with a simple HTML page could
 be coded as follows:
@@ -29,14 +29,14 @@ be coded as follows:
 class MY_SERVLET
 
 inherit
-	HTTP_SERVLET
+	GOA_HTTP_SERVLET
 		redefine
 			do_get
 		end
 creation
 	init
 feature
-	do_get (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
+	do_get (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 		do
 			resp.send ("<html><head>%R%N")
 			resp.send ("<title>Test Servlet</title>%R%N")

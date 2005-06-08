@@ -26,12 +26,12 @@ feature -- Test
 			-- Test parse of test1.xml.
 		local
 			a_node: UT_URI
-			a_processor: GOA_SOAP_PROCESSOR
+			a_processor: GOA_SOAP_TEST_PROCESSOR
 		do
 			create a_node.make ("http://goanna.sourceforge.net/test")
 			create a_processor.make (a_node)
 			a_processor.set_ultimate_receiver (True)
-			a_processor.process (fault_message) 
+			a_processor.process (fault_message, base_uri) 
 			assert ("Parse sucessful", a_processor.is_build_sucessful)
 			assert ("Validation sucessful", a_processor.is_valid)
 		end
@@ -57,12 +57,12 @@ feature -- Test
 			-- Test generation of Fault for a bad header.
 		local
 			a_node: UT_URI
-			a_processor: GOA_SOAP_PROCESSOR
+			a_processor: GOA_SOAP_TEST_PROCESSOR
 		do
 			create a_node.make ("http://goanna.sourceforge.net/test")
 			create a_processor.make (a_node)
 			a_processor.set_ultimate_receiver (True)
-			a_processor.process (faulty_message_one) 
+			a_processor.process (faulty_message_one, base_uri) 
 			assert ("Parse sucessful", a_processor.is_build_sucessful)
 		end
 
@@ -70,12 +70,12 @@ feature -- Test
 			-- Test construction of a VersionMismatch fault, with upgrade header
 		local
 			a_node: UT_URI
-			a_processor: GOA_SOAP_PROCESSOR
+			a_processor: GOA_SOAP_TEST_PROCESSOR
 		do
 			create a_node.make ("http://goanna.sourceforge.net/test")
 			create a_processor.make (a_node)
 			a_processor.set_ultimate_receiver (True)
-			a_processor.process (faulty_message_two) 
+			a_processor.process (faulty_message_two, base_uri) 
 			assert ("Parse error", not a_processor.is_build_sucessful)
 		end
 
@@ -83,13 +83,21 @@ feature -- Test
 			-- Test construction of a MustUnderstand fault, with NotUnderstood headers.
 		local
 			a_node: UT_URI
-			a_processor: GOA_SOAP_PROCESSOR
+			a_processor: GOA_SOAP_TEST_PROCESSOR
 		do
 			create a_node.make ("http://goanna.sourceforge.net/test")
 			create a_processor.make (a_node)
 			a_processor.set_ultimate_receiver (True)
-			a_processor.process (faulty_message_three) 
+			a_processor.process (faulty_message_three, base_uri) 
 			assert ("No parse error", a_processor.is_build_sucessful)
+		end
+
+feature -- Access
+
+	base_uri: UT_URI is
+			-- Base URI for all requests
+		do
+			create Result.make ("dummy:request-uri")
 		end
 
 feature -- Messages

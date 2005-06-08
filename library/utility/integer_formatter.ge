@@ -11,6 +11,8 @@ indexing
 class
 	INTEGER_FORMATTER
 
+		-- TODO: this needs VE version
+
 feature -- Transformation
 
 	zero_fill (value, length: INTEGER): STRING is

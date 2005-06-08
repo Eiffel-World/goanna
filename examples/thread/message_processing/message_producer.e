@@ -4,38 +4,20 @@ indexing
 	library: "examples thread"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	MESSAGE_PRODUCER
+class	MESSAGE_PRODUCER
 
 inherit
 	
-	PRODUCER [STRING]
-		rename
-			make as producer_make
-		export
-			{NONE} producer_make
-		end
+	GOA_PRODUCER [STRING]
 
 create
 	
 	make
-	
-feature {NONE} -- Initialisation
 
-	make (new_name: STRING; queue: like request_queue) is
-			-- Initialise
-		require
-			name_not_void: new_name /= Void
-			queue_not_void: queue /= Void
-		do
-			producer_make (queue)
-			name := new_name
-		end
-		
 feature {NONE} -- Implementation
 
 	generate_next: STRING is
@@ -56,7 +38,5 @@ feature {NONE} -- Implementation
 			
 	Max_number_messages: INTEGER is 100
 	
-	name: STRING
-			-- Name of this message producer
 			
 end -- class MESSAGE_PRODUCER

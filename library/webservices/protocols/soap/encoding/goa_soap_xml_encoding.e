@@ -23,6 +23,33 @@ inherit
 
 	GOAP_SOAP_FAULTS
 
+
+feature -- Access
+
+	declared_id (an_element: GOA_SOAP_ELEMENT): STRING is
+			-- Value of enc:id
+		require
+			element_exists: an_element /= Void
+		do
+			if an_element.has_attribute_by_qualified_name (Ns_name_enc, Id_attr) then
+				Result := an_element.attribute_by_qualified_name (Ns_name_enc, Id_attr).value
+			end
+		ensure
+			may_not_be_present: True
+		end
+
+	referenced_id (an_element: GOA_SOAP_ELEMENT): STRING is
+			-- Value of enc:ref
+		require
+			element_exists: an_element /= Void
+		do
+			if an_element.has_attribute_by_qualified_name (Ns_name_enc, Ref_attr) then
+				Result := an_element.attribute_by_qualified_name (Ns_name_enc, Ref_attr).value
+			end
+		ensure
+			may_not_be_present: True
+		end
+
 feature -- Subcodes
 
 	Duplicate_id: STRING is

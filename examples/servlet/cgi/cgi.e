@@ -4,16 +4,15 @@ indexing
 	library: "tools httpd"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	CGI
+class	CGI
 
 inherit
 
-	CGI_SERVLET_APP
+	GOA_CGI_SERVLET_APP
 		redefine
 			initialise_logger
 		end
@@ -29,13 +28,13 @@ creation
 				
 feature {NONE} -- Implementation
 
-	config: SERVLET_CONFIG
+	config: GOA_SERVLET_CONFIG
 			-- Configuration for servlets
 	
 	register_servlets is
 			-- Initialise servlets
 		local
-			servlet: HTTP_SERVLET	
+			servlet: GOA_HTTP_SERVLET	
 			doc_root: STRING
 		do
 			-- set document root from environment variable DOCUMENT_ROOT which is normally
@@ -48,10 +47,10 @@ feature {NONE} -- Implementation
 			-- register servlets
 			servlet_manager.set_servlet_mapping_prefix ("servlet")
 			servlet_manager.set_config (config)
-			create {FILE_SERVLET} servlet.init (config)
+			create {GOA_FILE_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "file")
 			servlet_manager.register_default_servlet (servlet)
-			create {SNOOP_SERVLET} servlet.init (config)
+			create {GOA_SNOOP_SERVLET} servlet.init (config)
 			servlet_manager.register_servlet (servlet, "snoop")
 		end
 

@@ -4,12 +4,11 @@ indexing
 	library: "examples xmlrpc"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	XRPC_CLIENT
+class XRPC_CLIENT
 
 inherit
 		
@@ -23,12 +22,12 @@ inherit
 			{NONE} all
 		end
 	
-	XRPC_CONSTANTS
+	GOA_XRPC_CONSTANTS
 		export
 			{NONE} all
 		end
 		
-creation
+create
 
 	make
 
@@ -85,16 +84,16 @@ feature {NONE} -- Implementation
 			print ("Usage: test <host> <port-number>%R%N")
 		end
 	
-	client: XRPC_LITE_CLIENT
+	client: GOA_XRPC_LITE_CLIENT
 			-- XML-RPC client
 	
-	factory: XRPC_VALUE_FACTORY
+	factory: GOA_XRPC_VALUE_FACTORY
 			-- Value factory
 
 	perform_echo_tests is
 			-- Perform all echo tests
 		local
-			encoder: BASE64_ENCODER
+			encoder: GOA_BASE64_ENCODER
 			date_time: DT_DATE_TIME
 			array: ARRAY [STRING]
 			struct: DS_HASH_TABLE [ANY, STRING]
@@ -134,8 +133,8 @@ feature {NONE} -- Implementation
 	perform_introspection_tests is
 			-- Call introspection methods
 		local
-			call: XRPC_CALL
-			param: XRPC_PARAM
+			call: GOA_XRPC_CALL
+			param: GOA_XRPC_PARAM
 			methods: ARRAY [ANY]
 		do
 			create call.make_from_string ("system.listMethods")
@@ -160,9 +159,9 @@ feature {NONE} -- Implementation
 	perform_multicall_tests is
 			-- Call multicall methods
 		local
-			multi_call: XRPC_MULTI_CALL
-			call: XRPC_CALL
-			param: XRPC_PARAM
+			multi_call: GOA_XRPC_MULTI_CALL
+			call: GOA_XRPC_CALL
+			param: GOA_XRPC_PARAM
 			methods: ARRAY [ANY]
 		do		
 			create multi_call.make
@@ -180,7 +179,7 @@ feature {NONE} -- Implementation
 			execute_multi_call (multi_call)
 		end
 		
-	execute_call (call: XRPC_CALL) is
+	execute_call (call: GOA_XRPC_CALL) is
 			-- Invoke call and check result
 		require
 			call_exists: call /= Void
@@ -193,7 +192,7 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-	execute_multi_call (multi_call: XRPC_MULTI_CALL) is
+	execute_multi_call (multi_call: GOA_XRPC_MULTI_CALL) is
 			-- Invoke call and check result
 		require
 			call_exists: multi_call /= Void
@@ -214,9 +213,9 @@ feature {NONE} -- Implementation
 			name_exists: name /= Void
 			arg_exists: arg /= Void
 		local
-			call: XRPC_CALL
-			param: XRPC_PARAM
-			response_param: XRPC_PARAM
+			call: GOA_XRPC_CALL
+			param: GOA_XRPC_PARAM
+			response_param: GOA_XRPC_PARAM
 			obj: ANY
 			array: ARRAY [ANY]
 			struct: DS_HASH_TABLE [ANY, STRING]

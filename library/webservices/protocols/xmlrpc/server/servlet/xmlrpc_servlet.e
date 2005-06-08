@@ -4,26 +4,25 @@ indexing
 	library: "XML-RPC"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Glenn Maughan <glennmaughan@optushome.com.au>"
+	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum Freeware License v1 (see forum.txt)."
+	license: "Eiffel Forum License v2 (see forum.txt)."
 
-class
-	XMLRPC_SERVLET
+class	GOA_XMLRPC_SERVLET
 
 inherit
 
-	HTTP_SERVLET
+	GOA_HTTP_SERVLET
 		redefine
 			do_get, do_post
 		end
 	
-	SHARED_SERVICE_REGISTRY
+	GOA_SHARED_SERVICE_REGISTRY
 		export
 			{NONE} all
 		end
 	
-	XRPC_CONSTANTS
+	GOA_XRPC_CONSTANTS
 		export
 			{NONE} all
 		end
@@ -33,7 +32,7 @@ inherit
 			{NONE} all
 		end
 	
-	HTTPD_LOGGER
+	GOA_HTTPD_LOGGER
 		export
 			{NONE} all
 		end
@@ -44,7 +43,7 @@ creation
 		
 feature -- Basic operations
 
-	do_get (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
+	do_get (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
 		local
 			response_text: STRING
@@ -57,14 +56,14 @@ feature -- Basic operations
 			resp.send (response_text)
 		end
 	
-	do_post (req: HTTP_SERVLET_REQUEST; resp: HTTP_SERVLET_RESPONSE) is
+	do_post (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Process POST request
 		local
 			response_text: STRING
 			service_name, action: STRING
-			agent_service: SERVICE_PROXY
+			agent_service: GOA_SERVICE_PROXY
 			parameters: TUPLE
-			result_value: XRPC_VALUE
+			result_value: GOA_XRPC_VALUE
 			failed: BOOLEAN
 		do
 			if not failed then
@@ -91,7 +90,7 @@ feature -- Basic operations
 									if agent_service.last_result /= Void then
 										result_value := Value_factory.build (agent_service.last_result)
 										if result_value /= Void then
-											create response.make (create {XRPC_PARAM}.make (result_value))
+											create response.make (create {GOA_XRPC_PARAM}.make (result_value))
 											response_text := response.marshall	
 										else
 											-- construct fault response for invalid return type
@@ -153,10 +152,10 @@ feature {NONE} -- Implementation
 			-- Flag indicating whether the request contains a valid
 			-- XMLRPC call.
 			
-	parse_call (req: HTTP_SERVLET_REQUEST) is
+	parse_call (req: GOA_HTTP_SERVLET_REQUEST) is
 			-- Parse XMLRPC call from request data. Will set 'valid_call' 
 			-- if the request contained a valid XMLRPC call. If an error is
-			-- detected then an XRPC_FAULT element will be created that represents
+			-- detected then an GOA_XRPC_FAULT element will be created that represents
 			-- the problem encountered.
 		local
 			parser: XM_EIFFEL_PARSER
@@ -184,13 +183,13 @@ feature {NONE} -- Implementation
 			fault_exists_if_invalid: not valid_call implies fault /= Void
 		end
 
-	call: XRPC_CALL
+	call: GOA_XRPC_CALL
 			-- Received call
 			
-	response: XRPC_RESPONSE
+	response: GOA_XRPC_RESPONSE
 			-- Response to send to client. Void if a fault occurred.
 			
-	fault: XRPC_FAULT
+	fault: GOA_XRPC_FAULT
 			-- Fault to send to client. Void if a valid response was generated.
 
 	build_assertion_fault is
@@ -215,4 +214,4 @@ feature {NONE} -- Implementation
 			fault_initialised: fault /= Void and then fault.code = Assertion_failure
 		end
 		
-end -- class XMLRPC_SERVLET
+end -- class GOA_XMLRPC_SERVLET

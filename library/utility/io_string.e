@@ -11,6 +11,8 @@ indexing
 class
 	IO_STRING
 
+		-- TODO: This is not used by any GOA_ classes - maybe it vcan be deleted
+
 inherit
 
 	IO_MEDIUM
