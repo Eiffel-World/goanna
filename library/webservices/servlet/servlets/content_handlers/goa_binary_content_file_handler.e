@@ -37,7 +37,7 @@ feature -- Basic operations
 				file.end_of_input
 			loop
 				file.read_string (Max_raw_chunk)
-				buffer.append (file.last_string)
+				buffer.append_string (file.last_string)
 			end
 			file.close	
 			-- setup response

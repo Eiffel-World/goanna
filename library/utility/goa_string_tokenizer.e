@@ -198,4 +198,4 @@ feature
 	count: INTEGER 
 		-- how many tokens?
 
-end -- class GOA__STRING_TOKENIZER
+end -- class GOA_STRING_TOKENIZER

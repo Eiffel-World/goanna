@@ -17,6 +17,7 @@ inherit
 	DT_SHARED_SYSTEM_CLOCK
 		export
 			{NONE} all
+			{ANY} is_equal -- for SE 1.0
 		end
 		
 create
@@ -136,50 +137,50 @@ feature -- Conversion
 			-- See also http://www.netscape.com/newsref/std/cookie_spec.html
 		do
 			create Result.make (50)
-			Result.append (name)
-			Result.append (Name_value_separator)
-			Result.append (value)
+			Result.append_string (name)
+			Result.append_string (Name_value_separator)
+			Result.append_string (value)
 			-- version
-			Result.append (Term_separator)
-			Result.append (Version_label)
-			Result.append (Name_value_separator)
-			Result.append (version.out)
+			Result.append_string (Term_separator)
+			Result.append_string (Version_label)
+			Result.append_string (Name_value_separator)
+			Result.append_string (version.out)
 			-- optional comment
 			if comment /= Void and then not comment.is_empty then
-				Result.append (Term_separator)
-				Result.append (Comment_label)
-				Result.append (Name_value_separator)
-				Result.append (comment)
+				Result.append_string (Term_separator)
+				Result.append_string (Comment_label)
+				Result.append_string (Name_value_separator)
+				Result.append_string (comment)
 			end
 			-- optional expires (depends on version)
 			if max_age >= 0 then
-				Result.append (Term_separator)
-				Result.append (Expires_label)
-				Result.append (Name_value_separator)
+				Result.append_string (Term_separator)
+				Result.append_string (Expires_label)
+				Result.append_string (Name_value_separator)
 				if max_age = 0 then
-					Result.append (Expired_date)
+					Result.append_string (Expired_date)
 				else
-					Result.append (max_age_to_date (max_age))
+					Result.append_string (max_age_to_date (max_age))
 				end
 			end
 			-- optional domain
 			if domain /= Void and then not domain.is_empty then
-				Result.append (Term_separator)
-				Result.append (Domain_label)
-				Result.append (Name_value_separator)
-				Result.append (domain)
+				Result.append_string (Term_separator)
+				Result.append_string (Domain_label)
+				Result.append_string (Name_value_separator)
+				Result.append_string (domain)
 			end
 			-- optional path
 			if path /= Void and then not path.is_empty then
-				Result.append (Term_separator)
-				Result.append (Path_label)
-				Result.append (Name_value_separator)
-				Result.append (path)
+				Result.append_string (Term_separator)
+				Result.append_string (Path_label)
+				Result.append_string (Name_value_separator)
+				Result.append_string (path)
 			end
 			-- optional secure, no value
 			if secure then
-				Result.append (Term_separator)
-				Result.append (Secure_label)
+				Result.append_string (Term_separator)
+				Result.append_string (Secure_label)
 			end
 		end
 

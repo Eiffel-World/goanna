@@ -24,10 +24,7 @@ inherit
 		
 	UC_UNICODE_ROUTINES
 		
-	BIT_MANIPULATION
-		export
-			{NONE} all
-		end
+	KL_IMPORTED_INTEGER_ROUTINES
 	
 	GOA_STRING_MANIPULATION
 		export
@@ -99,10 +96,10 @@ feature -- Basic operations
 			enc_data := create_blank_buffer (Fcgi_header_len)
 			enc_data.put (code_to_string (version).item (1), 1)
 			enc_data.put (code_to_string (type).item (1), 2)
-			enc_data.put (code_to_string (bit_and (bit_shift_right (request_id, 8), 255)).item (1), 3)
-			enc_data.put (code_to_string (bit_and (request_id, 255)).item (1), 4)
-			enc_data.put (code_to_string (bit_and (bit_shift_right (content_length, 8), 255)).item (1), 5)
-			enc_data.put (code_to_string (bit_and (content_length, 255)).item (1), 6)
+			enc_data.put (code_to_string (INTEGER_.bit_and (INTEGER_.bit_shift_right (request_id, 8), 255)).item (1), 3)
+			enc_data.put (code_to_string (INTEGER_.bit_and (request_id, 255)).item (1), 4)
+			enc_data.put (code_to_string (INTEGER_.bit_and (INTEGER_.bit_shift_right (content_length, 8), 255)).item (1), 5)
+			enc_data.put (code_to_string (INTEGER_.bit_and (content_length, 255)).item (1), 6)
 			enc_data.put (code_to_string (padding_length).item (1), 7)
 			enc_data.put ('%/0/', 8) -- reserved byte
 --			io.put_string ("FAST_CGI_RECORD_HEADER.write: " + quoted_eiffel_string_out(enc_data) + "%N")
@@ -136,9 +133,9 @@ feature {NONE} -- Implementation
 			version := buffer.item (1).code
 			type := buffer.item (2).code
 			-- request id in two bytes
-			request_id := bit_shift_left (buffer.item (3).code, 8) + buffer.item (4).code
+			request_id := INTEGER_.bit_shift_left (buffer.item (3).code, 8) + buffer.item (4).code
 			-- content length in two bytes
-			content_length := bit_shift_left (buffer.item (5).code, 8) + buffer.item (6).code
+			content_length := INTEGER_.bit_shift_left (buffer.item (5).code, 8) + buffer.item (6).code
 			padding_length := buffer.item (7).code
 			-- reserved byte is also read but ignored
 		end

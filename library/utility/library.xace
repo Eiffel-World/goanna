@@ -17,8 +17,7 @@
 			<option name="abstract" value="true"/>
 			<cluster name="${GOBO_EIFFEL}"/>
 		</cluster>
-		<cluster name="codegen"/>
-		<cluster name="socketstreams"/>
+		<!-- needs looking into <cluster name="codegen"/> -->
 		<cluster name="thread" if="${GOBO_EIFFEL}=ise"/>
 	</cluster>
 

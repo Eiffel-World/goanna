@@ -12,10 +12,10 @@ deferred class GOA_SOAP_ENCODING
 
 feature -- Status checking
 
-	valid_type (type: STRING): BOOLEAN is
-			-- Is 'type' a known data type in this encoding scheme?
+	is_valid_type (a_type: STRING): BOOLEAN is
+			-- Is `a_type' a known data type in this encoding scheme?
 		require
-			type_exists: type /= Void
+			type_not_empty: a_type /= Void and then not a_type.is_empty
 		deferred
 		end
 
@@ -47,15 +47,19 @@ feature -- Validation
 
 feature -- Unmarshalling
 
-	unmarshall (type, value: STRING): GOA_SOAP_VALUE is
-			-- Unmarshall 'value' according to 'type' using the 
+	unmarshalled_value (a_type, a_value: STRING): GOA_SOAP_VALUE is
+			-- Unmarshall `a_value' according to `a_type' using the 
 			-- current encoding scheme.
 		require
-			type_exists: type /= Void
-			value_exists: value /= Void
+			type_not_empty: a_type /= Void and then not a_type.is_empty
+			value_exists: a_value /= Void
 		deferred
+		ensure
+			value_unmarshalled: Result /= Void
 		end
 
+feature -- Marshalling
+		
 invariant
 	
 	validate: was_valid implies validation_fault = Void

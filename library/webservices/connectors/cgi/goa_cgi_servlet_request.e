@@ -43,13 +43,7 @@ inherit
 		export
 			{NONE} all
 		end
-		
-	KL_INPUT_STREAM_ROUTINES
-		rename
-			name as stream_name
-		export
-			{NONE} all
-		end
+
 create
 
 	make
@@ -61,21 +55,9 @@ feature {NONE} -- Initialisation
 		require
 			response_exists: resp /= Void
 		do
-			debug ("CGI servlet request")
-				print ("Make entered%N")
-			end			
 			internal_response := resp
-			debug ("CGI servlet request")
-				print ("Internal response assigned%N")
-			end						
 			create parameters.make (5)
-			debug ("CGI servlet request")
-				print ("Parameters created%N")
-			end						
 			parse_parameters
-			debug ("CGI servlet request")
-				print ("Parameters parsed%N")
-			end									
 		end
 	
 feature -- Access
@@ -136,18 +118,17 @@ feature -- Access
 			-- result. If only one value exists, it is added as the sole entry in the
 			-- list.
 		local
-			tokenizer: STRING_TOKENIZER
+			tokenizer: GOA_STRING_TOKENIZER
 			list: DS_LINKED_LIST [STRING]
 		do
 			create list.make
-			create tokenizer.make (get_header (name))
-			tokenizer.set_token_separator (',')
+			create tokenizer.make (get_header (name), ",")
 			from
 				tokenizer.start
 			until
 				tokenizer.off
 			loop
-				list.force_last (tokenizer.token)
+				list.force_last (tokenizer.item)
 				tokenizer.forth
 			end
 			Result := list
@@ -411,7 +392,8 @@ feature -- Status report
 							print ("Content length > 0%N")
 						end	
 						-- TODO: check for errors
-						internal_content := read_string (std.input, content_length)
+						std.input.read_string (content_length)
+						internal_content := std.input.last_string
 						debug ("CGI servlet request")
 							print ("Internal content is: " + internal_content + "%N")
 						end							
@@ -492,21 +474,20 @@ feature {NONE} -- Implementation
 		local
 			e: INTEGER
 			pair, name, value: STRING
-			tokenizer: STRING_TOKENIZER
+			tokenizer: GOA_STRING_TOKENIZER
 		do
 			-- parameters can appear more than once. Add a parameter value for each instance.
 			debug ("query_string_parsing")
 				print (generator + ".parse_parameter_string str = " + quoted_eiffel_string_out (str) + "%R%N")
 			end
-			create tokenizer.make (str)
-			tokenizer.set_token_separator ('&')
+			create tokenizer.make (str, "&")
 			from
 				tokenizer.start
 			until
 				tokenizer.off
 			loop
 				-- get the parameter pair token
-				pair := tokenizer.token
+				pair := tokenizer.item
 				-- find equal character
 				e := index_of_char (pair, '=', 1)
 				if e > 0 then
@@ -539,7 +520,7 @@ feature {NONE} -- Implementation
 			-- This routine parsed the cookies using version 0 of the cookie spec (RFC 2109).
 			-- See also http://www.netscape.com/newsref/std/cookie_spec.html
 		local
-			tokenizer: STRING_TOKENIZER
+			tokenizer: GOA_STRING_TOKENIZER
 			comparator: GOA_COOKIE_NAME_EQUALITY_TESTER
 			pair, name, value: STRING
 			new_cookie: GOA_COOKIE
@@ -552,17 +533,16 @@ feature {NONE} -- Implementation
 			internal_cookies.set_equality_tester (comparator)
 			if has_header (Http_cookie_var) then
 				from
-					create tokenizer.make (get_header (Http_cookie_var))
+					create tokenizer.make (get_header (Http_cookie_var), ";")
 					debug ("cookie_parsing")
 						print (generator + ".parse_cookie_header str = "
 							 + quoted_eiffel_string_out (get_header (Http_cookie_var)) + "%R%N")
 					end
-					tokenizer.set_token_separator (';')
 					tokenizer.start
 				until
 					tokenizer.off
 				loop
-					pair := tokenizer.token
+					pair := tokenizer.item
 					i := index_of_char (pair, '=', 1)
 					if i > 0 then
 						name := pair.substring (1, i - 1)

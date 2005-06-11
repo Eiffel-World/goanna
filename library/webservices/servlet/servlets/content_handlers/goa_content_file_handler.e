@@ -22,7 +22,12 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
+	GOA_STRING_MANIPULATION
+		export
+			{NONE} all
+		end
+	
 feature -- Basic operations
 
 	service (file_name: STRING; content_type_code: INTEGER;
@@ -42,8 +47,7 @@ feature {NONE} -- Implemtation
 
 	buffer : STRING is
 		once
-			create Result.make (4 * 1024) -- 4KB initially
-			Result.fill_blank
+			Result := create_blank_buffer (4 * 1024) -- 4KB initially
 		end
 	
 end -- class GOA_CONTENT_FILE_HANDLER

@@ -211,19 +211,18 @@ feature {NONE} -- Implementation
 			-- Collect valid peer addresses
 		local
 			addrs, address: STRING
-			tokenizer: STRING_TOKENIZER
+			tokenizer: GOA_STRING_TOKENIZER
 		do
 			addrs := Execution_environment.variable_value (Fcgi_web_server_addrs)
 			if addrs /= Void and then not addrs.is_empty then
 				create valid_peer_addresses.make
-				create tokenizer.make (addrs)
-				tokenizer.set_token_separator (',')
+				create tokenizer.make (addrs, ";")
 				from
 					tokenizer.start
 				until
 					tokenizer.off
 				loop
-					address := tokenizer.token
+					address := tokenizer.item
 					address.right_adjust
 					address.left_adjust
 					valid_peer_addresses.force_last (address)
@@ -237,7 +236,6 @@ feature {NONE} -- Implementation
 			-- Wait for a request to be received
 		local
 			is_new_connection, request_read: BOOLEAN
-			peer: STRING
 		do			
 			-- setup the request and its connection. Use the current request if keep_connection is
 			-- specified. Otherwise create a new one.

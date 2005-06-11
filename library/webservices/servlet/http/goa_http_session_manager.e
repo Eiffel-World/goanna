@@ -168,15 +168,13 @@ feature {NONE} -- Implementation
 		local
 			date: DT_DATE_TIME
 			formatter: GOA_DATE_FORMATTER
-			random: RANDOM
+			a_random_number: INTEGER
 		do
-			create Random.make
-			random.set_seed (system_clock.date_time_now.hash_code)
-			random.forth
+			a_random_number := system_clock.date_time_now.hash_code
 			date := system_clock.date_time_now
 			create formatter
 			Result := ""
-			Result.append (formatter.format_compact_sortable (date) + random.item.out)
+			Result.append_string (formatter.format_compact_sortable (date) + a_random_number.out)
 			Result := base64_encoder.encode (Result)
 		ensure
 			new_session_id_exists: Result /= Void

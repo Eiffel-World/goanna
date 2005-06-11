@@ -24,25 +24,25 @@ feature -- Transformation
 		do
 			create Result.make (27)
 			-- weekday
-			Result.append (short_weekdays.item (date.week_day))
-			Result.append (", ")
+			Result.append_string (short_weekdays.item (date.day_of_week.code))
+			Result.append_string (", ")
 			-- date
-			Result.append (zero_fill (date.day.out, 2))
+			Result.append_string (zero_fill (date.day.out, 2))
 			Result.append_character ('-')
-			Result.append (short_months.item (date.month + 1))
+			Result.append_string (short_months.item (date.month + 1))
 			Result.append_character ('-')
 			century := date.year.out
 			century.keep_tail (2)
-			Result.append (century)
+			Result.append_string (century)
 			-- time
 			Result.append_character (' ')
-			Result.append (zero_fill (date.hour.out, 2))
+			Result.append_string (zero_fill (date.hour.out, 2))
 			Result.append_character (':')
-			Result.append (zero_fill (date.minute.out, 2))
+			Result.append_string (zero_fill (date.minute.out, 2))
 			Result.append_character (':')
-			Result.append (zero_fill (date.second.out, 2))
+			Result.append_string (zero_fill (date.second.out, 2))
 			-- timezone
-			Result.append (" GMT")
+			Result.append_string (" GMT")
 		ensure
 			formatted_date_exists: Result /= Void
 		end
@@ -54,12 +54,12 @@ feature -- Transformation
 			date_exists: date /= Void
 		do
 			create Result.make (14)
-			Result.append (date.year.out)
-			Result.append (zero_fill (date.month.out, 2))
-			Result.append (zero_fill (date.day.out, 2))
-			Result.append (zero_fill (date.hour.out, 2))
-			Result.append (zero_fill (date.minute.out, 2))
-			Result.append (zero_fill (date.second.out, 2))
+			Result.append_string (date.year.out)
+			Result.append_string (zero_fill (date.month.out, 2))
+			Result.append_string (zero_fill (date.day.out, 2))
+			Result.append_string (zero_fill (date.hour.out, 2))
+			Result.append_string (zero_fill (date.minute.out, 2))
+			Result.append_string (zero_fill (date.second.out, 2))
 		ensure
 			formatted_date_exists: Result /= Void
 		end
@@ -102,7 +102,7 @@ feature {NONE} -- Implementation
 				Result.append_character ('0')
 				i := i + 1
 			end
-			Result.append (value)
+			Result.append_string (value)
 		ensure
 			correct_length: Result.count = length
 		end

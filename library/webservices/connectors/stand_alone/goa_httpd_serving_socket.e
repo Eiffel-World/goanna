@@ -213,4 +213,4 @@ feature {NONE}
 			end
 		end
 		
-end -- GOA_HTTPD_SERVING_SOCKET
+end -- class GOA_HTTPD_SERVING_SOCKET

@@ -30,7 +30,7 @@
 				<cluster name="content_handlers"/>
 			</cluster>
 		</cluster>
-		<cluster name="models" unless="$GOANNA_WITHOUT_DOM">
+		<!-- <cluster name="models" unless="$GOANNA_WITHOUT_DOM">
 			<option name="abstract" value="true"/>
 			<cluster name="dom">
 				<cluster name="core"/>
@@ -43,7 +43,7 @@
 					<cluster name="xmle_doc"/>
 				</cluster>
 			</cluster>
-		</cluster> 
+		</cluster> --> 
 		<cluster name="protocols" unless="${GOBO_EIFFEL}=ve">
 			<cluster name="soap">
 				<cluster name="encoding"/>

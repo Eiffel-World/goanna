@@ -21,12 +21,9 @@ inherit
 		export
 			{NONE} all
 		end
-	
-	BIT_MANIPULATION
-		export
-			{NONE} all
-		end
-			
+
+	KL_IMPORTED_INTEGER_ROUTINES
+
 creation
 	make
 
@@ -341,7 +338,7 @@ feature {NONE} -- Implementation
 					if raw_param_content = Void then
 						create raw_param_content.make (record_header.content_length)
 					end
-					raw_param_content.append (record_body.raw_content_data)	
+					raw_param_content.append_string (record_body.raw_content_data)	
 					debug ("fcgi_protocol")
 						print (generator + ".read_param_request_body = ")
 						print (quoted_eiffel_string_out (record_body.raw_content_data) + "%R%N")
@@ -373,7 +370,7 @@ feature {NONE} -- Implementation
 						create raw_stdin_content.make (record_header.content_length)
 					end
 					-- store body elements
-					raw_stdin_content.append (record_body.raw_content_data)
+					raw_stdin_content.append_string (record_body.raw_content_data)
 					debug ("fcgi_protocol")
 						print (generator + ".read_stdin_request_body = ")
 						print (quoted_eiffel_string_out (record_body.raw_content_data) + "%R%N")
@@ -400,28 +397,28 @@ feature {NONE} -- Implementation
 				offset >= raw_param_content.count
 			loop
 				-- determine number of bytes in name length, 1 or 4
-				short_name := bit_shift_right (raw_param_content.item (offset).code, 7) = 0 
+				short_name := INTEGER_.bit_shift_right (raw_param_content.item (offset).code, 7) = 0 
 				-- build name length
 				if short_name then
-					name_length := bit_and (raw_param_content.item (offset).code, 127)
+					name_length := INTEGER_.bit_and (raw_param_content.item (offset).code, 127)
 					offset := offset + 1
 				else
-					name_length := bit_shift_left (bit_and (raw_param_content.item (offset).code, 127), 24)
-						+ bit_shift_left (raw_param_content.item (offset + 1).code, 16)
-						+ bit_shift_left (raw_param_content.item (offset + 2).code, 8)
+					name_length := INTEGER_.bit_shift_left (INTEGER_.bit_and (raw_param_content.item (offset).code, 127), 24)
+						+ INTEGER_.bit_shift_left (raw_param_content.item (offset + 1).code, 16)
+						+ INTEGER_.bit_shift_left (raw_param_content.item (offset + 2).code, 8)
 						+ raw_param_content.item (offset + 3).code
 					offset := offset + 4
 				end
 				-- determine number of bytes in value length, 1 or 4
-				short_value := bit_shift_right (raw_param_content.item (offset).code, 7) = 0 
+				short_value := INTEGER_.bit_shift_right (raw_param_content.item (offset).code, 7) = 0 
 				-- build value length
 				if short_value then
-					value_length := bit_and (raw_param_content.item (offset).code, 127)
+					value_length := INTEGER_.bit_and (raw_param_content.item (offset).code, 127)
 					offset := offset + 1
 				else
-					value_length := bit_shift_left (bit_and (raw_param_content.item (offset).code, 127), 24)
-						+ bit_shift_left (raw_param_content.item (offset + 1).code, 16)
-						+ bit_shift_left (raw_param_content.item (offset + 2).code, 8)
+					value_length := INTEGER_.bit_shift_left (INTEGER_.bit_and (raw_param_content.item (offset).code, 127), 24)
+						+ INTEGER_.bit_shift_left (raw_param_content.item (offset + 1).code, 16)
+						+ INTEGER_.bit_shift_left (raw_param_content.item (offset + 2).code, 8)
 						+ raw_param_content.item (offset + 3).code
 					offset := offset + 4
 				end

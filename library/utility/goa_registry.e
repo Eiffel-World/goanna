@@ -24,21 +24,23 @@ feature -- Initialization
 		
 feature -- Access
 	
-	get (name: STRING): G is
-			-- Retrieve element registered under 'name'
+	get (a_name: STRING): G is
+			-- Retrieve element registered under `a_name'
 		require
-			name_exists: name /= Void
-			element_registered: has (name)
+			name_not_empty: a_name /= Void and then not a_name.is_empty
+			element_registered: has (a_name)
 		do
-			Result := elements.item (name)
+			Result := elements.item (a_name)
+		ensure
+			result_not_void: Result /= Void
 		end
 	
-	has (name: STRING): BOOLEAN is
-			-- Is a element registered under 'name'?
+	has (a_name: STRING): BOOLEAN is
+			-- Is a element registered under `a_name'?
 		require
-			name_exists: name /= Void
+			name_not_empty: a_name /= Void and then not a_name.is_empty
 		do
-			Result := elements.has (name)
+			Result := elements.has (a_name)
 		end
 
 	elements: DS_HASH_TABLE [G, STRING]
@@ -46,15 +48,15 @@ feature -- Access
 			
 feature -- Status setting
 
-	register (element: G; name: STRING) is
-			-- Register 'element' with 'name'
+	register (an_element: G; a_name: STRING) is
+			-- Register `an_element' with `a_name'
 		require
-			name_exists: name /= Void
-			element_exists: element /= Void
+			name_not_empty: a_name /= Void and then not a_name.is_empty
+			element_exists: an_element /= Void
 		do
-			elements.force (element, name)
+			elements.force (an_element, a_name)
 		ensure
-			element_registered: has (name)
+			element_registered: has (a_name)
 		end
 
 invariant

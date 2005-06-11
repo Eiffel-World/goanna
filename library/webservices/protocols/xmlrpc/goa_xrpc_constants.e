@@ -40,7 +40,7 @@ feature -- Types
 			-- Structure
 
 	valid_scalar_type (new_value: ANY): BOOLEAN is
-			-- Is 'new_value' one of the supported XML-RPC scalar types?
+			-- Is `new_value' one of the supported XML-RPC scalar types?
 		require
 			new_value_exists: new_value /= Void
 		local
@@ -70,7 +70,7 @@ feature -- Types
 		end
 		
 	valid_array_type (new_value: ANY): BOOLEAN is
-			-- Is 'new_value' a valid XML-RPC array type?
+			-- Is `new_value' a valid XML-RPC array type?
 			-- A valid array type is an 'ARRAY [ANY]' or conforming
 			-- object.
 		require
@@ -83,8 +83,8 @@ feature -- Types
 		end
 		
 	valid_struct_type (new_value: ANY): BOOLEAN is
-			-- Is 'new_value' a valid XML-RPC array type?
-			-- A valid array type is an 'DS_HASH_TABLE [ANY, STRING]' or conforming
+			-- Is `new_value' a valid XML-RPC struct type?
+			-- A valid struct type is an 'DS_HASH_TABLE [ANY, STRING]' or conforming
 			-- object.
 		require
 			new_value_exists: new_value /= Void

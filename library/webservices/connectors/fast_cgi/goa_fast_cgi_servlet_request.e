@@ -32,25 +32,10 @@ feature {NONE} -- Initialisation
 			request_exists: fcgi_request /= Void
 			response_exists: resp /= Void
 		do
-			debug ("Fast CGI servlet request")
-				print ("Make entered%N")
-			end			
 			internal_request := fcgi_request
-			debug ("Fast CGI servlet request")
-				print ("Internal request created%N")
-			end						
 			internal_response := resp
-			debug ("Fast CGI servlet request")
-				print ("Internal response created%N")
-			end									
-			cgi_servlet_make (internal_response)
-			debug ("Fast CGI servlet request")
-				print ("CGI servlet created%N")
-			end
-			-- These next two are already carried out by cgi_servlet_make
---			create parameters.make (5)
---			parse_parameters
---			io.put_string ("================================== Request Created%N")
+			create parameters.make (5)
+			parse_parameters
 		end
 	
 feature -- Access

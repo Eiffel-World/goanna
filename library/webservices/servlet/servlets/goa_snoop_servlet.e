@@ -38,10 +38,10 @@ feature -- Basic operations
 			debug ("snoop")
 				print ("Snoop Servlet%R%N")
 			end
-			response.append ("<html><head><title>Snoop Servlet</title></head>%R%N")
-			response.append ("<h1>Snoop Servlet</h1>")
-			response.append (request_html (req, resp))
-			response.append ("</body></html>%R%N")	
+			response.append_string ("<html><head><title>Snoop Servlet</title></head>%R%N")
+			response.append_string ("<h1>Snoop Servlet</h1>")
+			response.append_string (request_html (req, resp))
+			response.append_string ("</body></html>%R%N")	
 			resp.set_content_length (response.count)
 			resp.send (response)
 		end
@@ -87,11 +87,11 @@ feature {NONE} -- Implementation
 					print ("Content Data:%R%N")
 					print ("%T" + quoted_eiffel_string_out (req.content) + "%R%N")
 				end
-				Result.append ("<h2>Content Data</h2>%R%N")
-				Result.append (quoted_eiffel_string_out (req.content))
+				Result.append_string ("<h2>Content Data</h2>%R%N")
+				Result.append_string (quoted_eiffel_string_out (req.content))
 			end
 			-- display all parameters
-			Result.append ("<h2>Parameters</h2>%R%N")
+			Result.append_string ("<h2>Parameters</h2>%R%N")
 			debug ("snoop")
 				print ("Parameters:%R%N")
 			end
@@ -106,7 +106,7 @@ feature {NONE} -- Implementation
 				debug ("snoop")
 					print ("%T" + line + "%R%N")
 				end
-				Result.append (line + "<br>%R%N")
+				Result.append_string (line + "<br>%R%N")
 				parameter_names.forth
 			end				
 

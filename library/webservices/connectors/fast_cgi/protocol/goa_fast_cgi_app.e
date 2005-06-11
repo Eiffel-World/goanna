@@ -17,7 +17,7 @@ inherit
 			{NONE} all
 		end
 
-	EXCEPTIONS
+	KL_SHARED_EXCEPTIONS
 	
 feature -- Basic operations
 
@@ -33,7 +33,7 @@ feature -- Basic operations
 			end
 		rescue
 			if not field_exception then
-				error (Servlet_app_log_category, "Uncaught exception, code: " + original_exception.out + ", retry not requested, so exiting...")
+				error (Servlet_app_log_category, "Uncaught exception, code: " + Exceptions.exception.out + ", retry not requested, so exiting...")
 			else
 				retry
 			end

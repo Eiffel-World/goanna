@@ -15,8 +15,6 @@ inherit
 	GOA_SOAP_ENCODING
 	
 	GOA_XML_SCHEMA_CONSTANTS
-		rename
-			valid_type_constant as valid_type
 		export
 			{NONE} all
 		end
@@ -48,6 +46,15 @@ feature -- Access
 			end
 		ensure
 			may_not_be_present: True
+		end
+
+feature -- Status report
+
+	is_valid_type (a_type: STRING): BOOLEAN is
+			-- Is `a_type' a known data type in this encoding scheme?
+		do
+			Result := is_valid_type_constant (a_type) -- what about compound values?
+			-- or does this only apply to simple values?
 		end
 
 feature -- Subcodes

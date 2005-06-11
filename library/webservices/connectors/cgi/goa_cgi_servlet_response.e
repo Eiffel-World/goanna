@@ -42,11 +42,8 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	buffer_size: INTEGER is
-			-- Actual size of response buffer.
-		do
-			Result := content_buffer.capacity
-		end
+	buffer_size: INTEGER
+			-- Actual size of response buffer. -- Warning: Changed for VE - was content_buffer.capacity
 
 	contains_header (name: STRING): BOOLEAN is
 			-- Has the header named 'name' already been set?
@@ -84,7 +81,7 @@ feature -- Status setting
 			-- Adds a response header with the given naem and value. This
 			-- method allows response headers to have multiple values.
 		local
-			new_values: DS_LINKED_LIST [like value]
+			new_values: DS_LINKED_LIST [STRING]
 		do
 			if headers.has (name) then
 				headers.item (name).force_last (value)
@@ -120,7 +117,7 @@ feature -- Status setting
 			-- header already exists, the new value overwrites the previous
 			-- one.
 		local
-			new_values: DS_LINKED_LIST [like value]
+			new_values: DS_LINKED_LIST [STRING]
 		do
 			create new_values.make
 			new_values.force_last (value)
@@ -238,7 +235,7 @@ feature -- Basic operations
 			if content_buffer = Void then
 				create content_buffer.make (initial_buffer_size)			
 			end
-			content_buffer.append (data)
+			content_buffer.append_string (data)
 		end
 		
 feature {NONE} -- Implementation
@@ -274,14 +271,14 @@ feature {NONE} -- Implementation
 			msg_exists: msg /= Void
 		do
 			create Result.make (100)
-			Result.append ("<HTML><HEAD><TITLE>")
-			Result.append (status_code_message (sc))
-			Result.append ("</TITLE></HEAD><BODY><CENTER><H1>")
-			Result.append (status_code_message (sc))
-			Result.append ("</H1></CENTER><P>")
-			Result.append (msg)
-			Result.append ("</P>")
-			Result.append ("</BODY></HTML>")
+			Result.append_string ("<HTML><HEAD><TITLE>")
+			Result.append_string (status_code_message (sc))
+			Result.append_string ("</TITLE></HEAD><BODY><CENTER><H1>")
+			Result.append_string (status_code_message (sc))
+			Result.append_string ("</H1></CENTER><P>")
+			Result.append_string (msg)
+			Result.append_string ("</P>")
+			Result.append_string ("</BODY></HTML>")
 		end
 		
 	build_redirect_page (location: STRING): STRING is
@@ -290,14 +287,14 @@ feature {NONE} -- Implementation
 			location_exists: location /= Void			
 		do
 			create Result.make (100)
-			Result.append("<HTML><HEAD><TITLE>Document Has Moved</TITLE></HEAD>")
-       		Result.append("<BODY><CENTER><H1>Document Has Moved</H1></CENTER>")
-        	Result.append("This document has moved to <A HREF=%"")
-        	Result.append(location)
-        	Result.append("%">")
-        	Result.append(location)
-        	Result.append("</A><P>")
-        	Result.append("</BODY></HTML>")
+			Result.append_string ("<HTML><HEAD><TITLE>Document Has Moved</TITLE></HEAD>")
+       		Result.append_string ("<BODY><CENTER><H1>Document Has Moved</H1></CENTER>")
+        	Result.append_string ("This document has moved to <A HREF=%"")
+        	Result.append_string (location)
+        	Result.append_string ("%">")
+        	Result.append_string (location)
+        	Result.append_string ("</A><P>")
+        	Result.append_string ("</BODY></HTML>")
 		end
 			
 	build_headers: STRING is
@@ -321,10 +318,10 @@ feature {NONE} -- Implementation
 				until
 					header_values.off
 				loop
-					Result.append (name)
-					Result.append (": ")
-					Result.append (header_values.item_for_iteration)
-					Result.append ("%R%N")
+					Result.append_string (name)
+					Result.append_string (": ")
+					Result.append_string (header_values.item_for_iteration)
+					Result.append_string ("%R%N")
 					header_values.forth
 				end
 				header_keys.forth

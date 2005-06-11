@@ -30,8 +30,6 @@ inherit
 		export
 			{NONE} all
 		end
-
-	ASCII
 	
 feature -- Initialisation
 
@@ -50,7 +48,7 @@ feature -- Basic operations
 			resp: GOA_FAST_CGI_SERVLET_RESPONSE
 			path, servlet_name: STRING
 			servlet_found: BOOLEAN
-			slash_index: INTEGER
+			slash_index, an_index: INTEGER
 		do
 			debug ("Fast CGI servlet app")
 						info (Servlet_app_log_category, "Process request")
@@ -72,7 +70,7 @@ feature -- Basic operations
 				path := req.get_header (Path_info_var)
 				if path /= Void then
 					-- remove leading slash from path
-					path.tail (path.count - 1)
+					path.keep_tail (path.count - 1)
 				end
 			end
 			debug ("Fast CGI servlet app")
@@ -98,7 +96,14 @@ feature -- Basic operations
 						servlet_found := True
 					else
 						if servlet_name.count >0 then
-							slash_index := servlet_name.last_index_of (Slash.to_character, servlet_name.count)
+							from
+								slash_index := 0; an_index := 1
+							until
+								an_index = 0
+							loop
+								an_index := servlet_name.index_of ('/', slash_index + 1)
+								if an_index > slash_index then slash_index := an_index end
+							end
 							debug ("Fast CGI servlet app")
 								info (Servlet_app_log_category, "Slash index is " + slash_index.out)
 							end
@@ -111,9 +116,6 @@ feature -- Basic operations
 							debug ("Fast CGI servlet app")
 								info (Servlet_app_log_category, "Servlet name is " + servlet_name)
 							end
-							--check -- this is rubbish
-							--	servlet_prefix: servlet_name.is_equal (servlet_manager.servlet_mapping_prefix)
-							--end
 						end
 					end
 				end

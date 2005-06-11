@@ -84,21 +84,21 @@ feature -- Basic operations
 			loop
 				inspect str.item (i)
 				when ' ' then
-			 		Result.append ("+")
+			 		Result.append_string ("+")
 				when '<' then
-					Result.append ("&lt;")
+					Result.append_string ("&lt;")
 				when '>' then
-					Result.append ("&gt;")
+					Result.append_string ("&gt;")
 				when '&' then
-					Result.append ("&amp;")
+					Result.append_string ("&amp;")
 				when '%'' then
-					Result.append ("&#39;")
+					Result.append_string ("&#39;")
 				when '"' then
-					Result.append ("&quot;")
+					Result.append_string ("&quot;")
 				when '\' then
-					Result.append ("&#92;")
+					Result.append_string ("&#92;")
 				when '%/205/' then
-					Result.append ("&#133;")
+					Result.append_string ("&#133;")
 				else
 					Result.append_character (str.item (i))	
 				end
@@ -111,9 +111,9 @@ feature -- Basic operations
 	digit_from_hex (ch: CHARACTER): INTEGER is
 			-- Return the integer representation of the hexadecimal character 'ch'
 		require
-			hex_character: ch.is_digit or (ch >= 'A' and ch <= 'F') or (ch >= 'a' and ch <= 'f')
+			hex_character: (ch >= '0' and ch <= '9') or (ch >= 'A' and ch <= 'F') or (ch >= 'a' and ch <= 'f')
 		do
-			if ch.is_digit then
+			if (ch >= '0' and ch <= '9') then
 				Result := ch.out.to_integer
 			else
 				Result := CHARACTER_.as_lower (ch).code - 87

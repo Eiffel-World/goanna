@@ -31,6 +31,32 @@ feature -- Creation
 			envelope_created: Result /= Void
 		end	
 
+	new_rpc_envelope: GOA_SOAP_ENVELOPE is
+			-- New SOAP rpc invocation or response
+		local
+			a_namespace: XM_NAMESPACE
+			an_attribute: XM_ATTRIBUTE
+		do
+			Result := new_envelope
+			create a_namespace.make (Xmlns, Xmlns_namespace)
+			create an_attribute.make_last (Ns_prefix_rpc, a_namespace, Ns_name_rpc, Result)
+		ensure
+			envelope_created: Result /= Void
+		end
+
+	new_rpc_soap_envelope: GOA_SOAP_ENVELOPE is
+			-- New SOAP rpc invocation or response with SOAP encoding
+		local
+			a_namespace: XM_NAMESPACE
+			an_attribute: XM_ATTRIBUTE
+		do
+			Result := new_rpc_envelope
+			create a_namespace.make (Xmlns, Xmlns_namespace)
+			create an_attribute.make_last (Ns_prefix_enc, a_namespace, Ns_name_enc, Result)
+		ensure
+			envelope_created: Result /= Void
+		end
+
 	new_body (an_envelope: GOA_SOAP_ENVELOPE; an_identity: UT_URI): GOA_SOAP_BODY is
 			-- New SOAP body
 		require

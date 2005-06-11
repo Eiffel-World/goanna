@@ -48,10 +48,10 @@ feature -- Basic operations
 			padding: STRING
 		do
 			create enc_data.make (raw_content_data.count + padding_length)
-			enc_data.append (raw_content_data)
+			enc_data.append_string (raw_content_data)
 			if padding_length > 0 then
 				padding := create_blank_buffer (padding_length)
-				enc_data.append (padding)
+				enc_data.append_string (padding)
 			end
 --			io.put_string ("FAST_CGI_RAW_BODY.write bytes to send: " + enc_data.count.out + "%N")
 --			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%N")

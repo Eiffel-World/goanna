@@ -3,7 +3,7 @@
 	library: "SOAP"
 	date: "$Date$"
 	revision: "$Revision$"
-	author: "Colin Adams <colin@colina.demon.co.uk>"
+	author: "Colin Adams <colin-adams@users.sourceforge.net>"
 	copyright: "Copyright (c) 2005 Colin Adams and others"
 	license: "Eiffel Forum License v2 (see forum.txt)."
 
@@ -18,11 +18,11 @@ inherit
 			{NONE} all
 		end
 
-	GOA_SHARED_ENCODING_REGISTRY
-		export
-			{NONE} all
-		end
+feature -- Status report
 
+	extracted_parameters: TUPLE
+			-- Set by `extract_parameters'
+	
 feature -- Basic Operations
 
 	call (an_envelope: GOA_SOAP_ENVELOPE; a_node_identity: UT_URI; a_role: UT_URI) is
@@ -52,7 +52,7 @@ feature -- Basic Operations
 							extract_parameters (a_request, a_method_name)
 							if is_valid_parameters then
 								a_service_agent.call (a_method_name, extracted_parameters)
-								build_rpc_response (a_service_name, a_method_name, a_service_agent.last_result)
+								send_rpc_response (rpc_response (a_service_name, a_method_name, a_service_agent.last_result, extracted_parameters, a_node_identity, a_role))
 							else
 								send_invalid_parameters_response (a_node_identity, a_role)
 							end
@@ -85,15 +85,16 @@ feature -- Messages
 		end
 
 feature {NONE} -- Implementation
-	
-		build_rpc_response (a_service_name, a_method_name: STRING; a_parameter_block: TUPLE) is
-			-- Build a SOAP response Envelope.
+
+	rpc_response (a_service_name, a_method_name: STRING; a_result_value: ANY; some_parameters: TUPLE; a_node_identity: UT_URI; a_role: UT_URI): GOA_SOAP_ENVELOPE is
+			-- SOAP response Envelope.
 		require
-			service_name_not_empty: a_service_name /= Void and then not a_service_name.is_empty -- TODO: - check service manager ensures this
-			method_name_not_empty: a_method_name /= Void and then not a_method_name.is_empty -- TODO: - check service manager ensures this
-			parameters_exist: a_parameter_block /= Void -- ?? is this mnecessary? check
-		do
-			-- TODO
+			service_name_not_empty: a_service_name /= Void and then not a_service_name.is_empty
+			method_name_not_empty: a_method_name /= Void and then not a_method_name.is_empty
+			node_uri_not_void: a_role /= Void and then not STRING_.same_string (a_role.full_reference, Role_ultimate_receiver) implies a_node_uri /= Void
+		deferred
+		ensure
+			response_envelope_built: Result /= Void 
 		end
 
 	send_unknown_service_message (a_service_name: STRING; a_node_identity: UT_URI; a_role: UT_URI) is

@@ -74,7 +74,8 @@ feature -- Namespace constants
 	
 	Ns_prefix_rpc: STRING is "rpc"
 	Ns_name_rpc: STRING is "http://www.w3.org/2003/09/soap-rpc"
-	
+	Rpc_result_name: STRING is "result"
+
 	Ns_prefix_xs: STRING is "xs"
 	Ns_name_xs: STRING is "http://www.w3.org/2001/XMLSchema"
 	

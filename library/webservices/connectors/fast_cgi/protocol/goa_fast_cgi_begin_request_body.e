@@ -14,11 +14,8 @@ inherit
 
 	GOA_FAST_CGI_RECORD_BODY
 		
-	BIT_MANIPULATION
-		export
-			{NONE} all
-		end
-		
+	KL_IMPORTED_INTEGER_ROUTINES
+			
 feature -- Access
 
 	role, flags: INTEGER
@@ -28,7 +25,7 @@ feature {NONE} -- Implementation
 	process_body_fields is
 			-- Extract body fields from raw content data.
 		do
-			role := bit_shift_left (raw_content_data.item (1).code, 8) 
+			role := INTEGER_.bit_shift_left (raw_content_data.item (1).code, 8) 
 				+ raw_content_data.item (2).code
 			flags := raw_content_data.item (3).code
 			-- 5 reserved bytes also read. Ignore them.

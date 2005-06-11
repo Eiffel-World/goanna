@@ -62,7 +62,25 @@ inherit
 
 create
 
-	make_last
+	make_last, construct
+
+feature {NONE} -- Initialization
+
+	construct (a_parent: GOA_SOAP_ELEMENT; a_namespace, a_name: STRING) is
+			-- Initialise new element.
+		require
+			parent_validated: a_parent /= Void and then a_parent.validation_complete and then a_parent.validated
+			name_not_empty: a_name /= Void and then not a_name.is_empty
+		local
+			a_namespace: XM_NAMESPACE
+		do
+			if a_namespace /= Void then
+				create a_namespace.make (Void, a_namespace)
+			else
+				create a_namespace.make (Void, Default_namespace)
+			end
+			make_last (a_parent, a_name, a_namespace)
+		end	
 
 feature -- Access
 

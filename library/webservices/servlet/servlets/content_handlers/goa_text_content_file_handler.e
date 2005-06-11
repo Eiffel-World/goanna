@@ -49,7 +49,7 @@ feature -- Basic operations
 				debug
 					print ("Read line from " + file_name + ", was: " + file.last_string + "%N")
 				end
-				buffer.append (file.last_string)
+				buffer.append_string (file.last_string)
 			end
 			file.close	
 			-- setup response

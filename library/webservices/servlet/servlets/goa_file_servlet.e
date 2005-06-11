@@ -31,12 +31,7 @@ inherit
 		export
 			{NONE} all
 		end
-	
-	KL_INPUT_STREAM_ROUTINES
-		export
-			{NONE} all
-		end
-		
+
 create
 
 	init
@@ -46,7 +41,7 @@ feature -- Basic operations
 	do_get (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
 		local
-			file_name, file_extension, file_path, s,s2: STRING
+			file_name, file_extension, file_path, s: STRING
 			ctype_code: INTEGER
 			final_slash: BOOLEAN
 		do
@@ -71,7 +66,7 @@ feature -- Basic operations
 				end
 			end
 			create file_path.make_from_string (s)
-			file_name.append (file_path)
+			file_name.append_string (file_path)
 			debug
 				print ("File_servlet_name is " + file_servlet_name + "%N")
 				print ("File_servlet_name count is " + file_servlet_name.count.out + "%N")
@@ -153,12 +148,13 @@ feature {NONE} -- Implementation
 			--| Not called file_exists because a SmallEiffel developer thought
 			--| it was a good idea to put file manipulation routines in GENERAL!
 		local
-			file: like input_stream_type
+			file: KL_TEXT_INPUT_FILE
 		do
-			file := make_file_open_read (file_name)
-			Result := is_open_read (file)
-			if is_open_read (file) then
-				close (file)		
+			create file.make (file_name)
+			file.open_read
+			Result := file.is_open_read
+			if file.is_open_read then
+				file.close
 			end
 		end
 		

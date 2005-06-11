@@ -130,18 +130,19 @@ feature -- Constants
 			-- of tuples {namespace name, local part}, where namespace name is an anyURI
 			-- and local part is an NCName. 
 			
-	valid_type_constant (type: STRING): BOOLEAN is
-			-- Is 'type' a valid XML Schema type constant
+	is_valid_type_constant (a_type: STRING): BOOLEAN is
+			-- Is `a_type' a valid XML Schema type constant?
 		require
-			type_exists: type /= Void
+			type_not_empty: a_type /= Void and then not a_type.is_empty
 		do
-			Result := type.is_equal (Xsd_string)
-				or type.is_equal (Xsd_boolean)
-				or type.is_equal (Xsd_decimal)
-				or type.is_equal (Xsd_int)
-				or type.is_equal (Xsd_short)
-				or type.is_equal (Xsd_float)
-				or type.is_equal (Xsd_double)
+			Result := a_type.is_equal (Xsd_string)
+				or else a_type.is_equal (Xsd_boolean)
+				or else a_type.is_equal (Xsd_decimal)
+				or else a_type.is_equal (Xsd_int)
+				or else a_type.is_equal (Xsd_short)
+				or else a_type.is_equal (Xsd_float)
+				or else a_type.is_equal (Xsd_double)
+			-- TODO: all the others in http://www.w3.org/2003/05/soap-encoding
 		end
 
 end -- class GOA_XML_SCHEMA_CONSTANTS
