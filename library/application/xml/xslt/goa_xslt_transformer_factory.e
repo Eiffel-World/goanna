@@ -14,6 +14,8 @@ inherit
 	XM_XPATH_SHARED_CONFORMANCE
 	XM_XSLT_TRANSFORMER_FACTORY
 	KL_SHARED_EXCEPTIONS
+	UT_SHARED_FILE_URI_ROUTINES
+	KL_SHARED_FILE_SYSTEM
 	
 creation
 	
@@ -29,20 +31,16 @@ feature
 			valid_new_file_name: new_file_name /= Void
 			valid_new_file_name: True -- new_file_name represents an existing file containing a valid XSLT stylesheet
 		local
-			xslt_configuration: XM_XSLT_CONFIGURATION
 			stylesheet: XM_XSLT_STYLESHEET_COMPILER
+			a_cwd: KI_PATHNAME
+			a_uri: UT_URI
 			stylesheet_source: XM_XSLT_URI_SOURCE
 			resolver_scheme: STRING
 		do
-				conformance.set_basic_xslt_processor
-					-- Perhaps this shouldn't be here; and a precondition of conformance_set should be used instead
-				create xslt_configuration.make_with_defaults
-				create stylesheet.make (xslt_configuration)
-				create stylesheet_source.make ("file://" + new_file_name)
---				stylesheet.prepare (stylesheet_source)
---				if stylesheet.load_stylesheet_module_failed then
---					print (new_file_name + ": " + stylesheet.load_stylesheet_module_error + "%N")
---				else
+				a_cwd := file_system.string_to_pathname (file_system.current_working_directory)
+				create a_uri.make_resolve_uri (file_uri.pathname_to_uri (a_cwd), file_uri.filename_to_uri (new_file_name))
+				create stylesheet.make (configuration)
+				create stylesheet_source.make (a_uri.full_reference)
 				create_new_transformer (stylesheet_source)
 				if was_error then
 					io.put_string (new_file_name + ": " + last_error_message + "%N")
@@ -60,7 +58,6 @@ feature
 			shared_catalog_manager.bootstrap_resolver.uri_scheme_resolver.register_scheme (Result)
 		end
 
-
 feature {NONE} -- Creation
 
 	make_without_configuration is
@@ -69,6 +66,8 @@ feature {NONE} -- Creation
 		do
 				create xslt_configuration.make_with_defaults
 				make (xslt_configuration)
+				conformance.set_basic_xslt_processor
+				-- TODO Transition to Tiny Tree model
 		end
 		
 

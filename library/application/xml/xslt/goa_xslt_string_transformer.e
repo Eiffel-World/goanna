@@ -33,9 +33,12 @@ feature -- Transformation
 			a_result: XM_XSLT_TRANSFORMATION_RESULT
 			document_source: XM_XSLT_URI_SOURCE
 		do
-			if always_clear_document_pool then
+--			if always_clear_document_pool then
 				transformer.clear_document_pool
-			end		
+--			else
+--				transformer.remove_document (input_uri)
+--				TODO Uncomment this when this feature becomes available in XM_XSLT_TRANSFORMER
+--			end
 			create a_destination
 			a_destination.set_output_to_string
 			create a_result.make (a_destination, output_uri)
