@@ -1,9 +1,10 @@
 indexing
 	description: "Parameters that operate on one item in a list of existing items; with suffix indicating the list index"
-	author: "Neal L Lester <neal@3dsafety.com>"
+	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 deferred class
 	GOA_ITEM_LIST_PARAMETER [G]

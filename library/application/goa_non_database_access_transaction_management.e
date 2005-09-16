@@ -1,9 +1,10 @@
 indexing
 	description: "Transaction management where no database access is required"
-	author: "Neal L Lester <neal@3dsafety.com>"
+	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 class
 	GOA_NON_DATABASE_ACCESS_TRANSACTION_MANAGEMENT

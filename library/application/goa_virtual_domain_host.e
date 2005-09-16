@@ -1,9 +1,10 @@
 indexing
 	description: "A virtual domain host; VIRTUAL_DOMAIN_HOST should inherit from this class"
-	author: "Neal L Lester <neal@3dsafety.com>"
+	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 class
 	GOA_VIRTUAL_DOMAIN_HOST

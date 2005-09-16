@@ -1,9 +1,10 @@
 indexing
 	description: "Parameter that is labeled with a single string (with a single CSS class)"
-	author: "Neal L Lester <neal@3dsafety.com>"
+	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 deferred class
 	GOA_STRING_LABELED_PARAMETER

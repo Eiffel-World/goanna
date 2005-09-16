@@ -1,9 +1,10 @@
 indexing
 	description: "System Messages displayed to the user"
-	author: "Neal L Lester <neal@3dsafety.com>"
+	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 -- MESSAGE_CATALOG should inherit from this class
 -- The design intent is that this should (eventually) be a fully deferred class

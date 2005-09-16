@@ -2,11 +2,11 @@
 indexing
 
 	description: "An XML Document used to generate HTML within a Web Application"
-	author: "Neal L. Lester <neal@3dsafety.com>"
+	author: "Neal L. Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) 2004 Neal L. Lester"
-	license: "Eiffel Forum License v2.0"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 	
 deferred class
 	GOA_XML_DOCUMENT

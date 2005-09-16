@@ -1,9 +1,10 @@
 indexing
 	description: "An application servlet that may generate a response to the user"
-	author: "Neal L Lester <neal@3dsafety.com>"
+	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 deferred class
 	MSP_DISPLAYABLE_SERVLET

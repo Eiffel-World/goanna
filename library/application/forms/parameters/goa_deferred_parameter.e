@@ -1,9 +1,10 @@
 indexing
 	description: "Interface for a parameters in an HTML form"
-	author: "Neal L Lester <neal@3dsafety.com>"
+	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 	
 -- All parameters should be instantiated as once functions in class SHARED_GOA_REQUEST_PARAMETERS
 -- Suffix may be used if the parameter is included in the request multiple times.

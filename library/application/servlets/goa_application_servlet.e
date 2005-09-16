@@ -1,9 +1,10 @@
 indexing
 	description: "Servlets for the MSP Application"
-	author: "Neal L Lester <neal@3dsafety.com>"
+	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 deferred class
 	GOA_APPLICATION_SERVLET
