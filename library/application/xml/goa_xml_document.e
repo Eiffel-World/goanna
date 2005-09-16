@@ -15,6 +15,8 @@ inherit
 
 	KL_SHARED_FILE_SYSTEM
 	GOA_SHARED_APPLICATION_CONFIGURATION
+	KL_IMPORTED_ARRAY_ROUTINES
+	KL_IMPORTED_STRING_ROUTINES
 	
 feature -- Status
 	
@@ -191,7 +193,7 @@ feature -- Validity
 			if the_element_code = xml_text_code and then last_element_is_text then
 				Result := True
 			else
-				new_array := clone (current_element_contents)
+				new_array := INTEGER_ARRAY_.cloned_array (current_element_contents)
 				new_array.force (the_element_code, new_array.upper + 1)
 				Result := is_valid_element_content_fragment (current_element_code, new_array)
 			end
@@ -250,7 +252,7 @@ feature -- Validity
 		do
 			Result := the_tag /= Void
 			if Result then
-				local_the_tag := clone (the_tag)
+				local_the_tag := STRING_.cloned_string (the_tag)
 				local_the_tag.to_lower
 				Result := element_code_by_tag.has (local_the_tag)
 			end
@@ -263,7 +265,7 @@ feature -- Validity
 		do
 			Result := the_name /= Void
 			if Result then
-				local_the_name := clone (the_name)
+				local_the_name := STRING_.cloned_string (the_name)
 				local_the_name.to_lower
 				Result := attribute_code_by_name.has (local_the_name)
 			end
@@ -311,7 +313,7 @@ feature -- Code and Tag/Name Cross Reference
 		local
 			local_the_tag: STRING
 		do
-			local_the_tag := clone (the_tag)
+			local_the_tag := STRING_.cloned_string (the_tag)
 			local_the_tag.to_lower
 			Result := element_code_by_tag.item (local_the_tag)
 		end
@@ -323,7 +325,7 @@ feature -- Code and Tag/Name Cross Reference
 		local
 			local_the_name: STRING
 		do
-			local_the_name := clone (the_name)
+			local_the_name := STRING_.cloned_string (the_name)
 			local_the_name.to_lower
 			Result := attribute_code_by_name.item (local_the_name)
 		end

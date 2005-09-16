@@ -28,6 +28,7 @@ inherit
 	SHARED_SERVLETS
 	UT_STRING_FORMATTER
 	GOA_TRANSACTION_MANAGEMENT
+	KL_IMPORTED_STRING_ROUTINES
 
 feature -- Attributes
 
@@ -43,7 +44,7 @@ feature -- Attributes
 		local
 			period_index: INTEGER
 		do
-			Result := clone (name)
+			Result := STRING_.cloned_string (name)
 			if Result.has ('.') then
 				period_index := Result.index_of ('.', 1)
 				Result.keep_head (period_index -1)
@@ -158,7 +159,7 @@ feature -- Request Processing
 					loop
 						current_parameter_is_legal := True
 						raw_parameter_name := parameter_names.item_for_iteration
-						parameter_name := clone (raw_parameter_name)
+						parameter_name := STRING_.cloned_string (raw_parameter_name)
 --						io.put_string ("Raw Parameter_name: " + parameter_name + "%N")
 						parameter_name.to_lower
 						parameter_name := name_from_raw_parameter (parameter_name)
@@ -210,7 +211,7 @@ feature -- Request Processing
 						loop
 							temp_name := add_if_absent_parameters.item_for_iteration
 							if not processing_result.has_parameter_name (add_if_absent_parameters.item_for_iteration) then
-								create parameter_processing_result.make (clone (add_if_absent_parameters.item_for_iteration), processing_result)
+								create parameter_processing_result.make (STRING_.cloned_string (add_if_absent_parameters.item_for_iteration), processing_result)
 								processing_result.add_parameter_processing_result (parameter_processing_result,  False)
 							end
 								add_if_absent_parameters.forth

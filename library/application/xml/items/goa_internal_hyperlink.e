@@ -14,6 +14,7 @@ inherit
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	SHARED_SERVLETS
 	SHARED_GOA_REQUEST_PARAMETERS
+	KL_IMPORTED_STRING_ROUTINES
 	
 creation
 	
@@ -31,10 +32,10 @@ feature {NONE} -- Creation
 			index: INTEGER
 		do
 			initialize
-			text := clone (new_text)
-			host_and_path := clone (processing_result.session_status.virtual_domain_host.host_name)
+			text := STRING_.cloned_string (new_text)
+			host_and_path := STRING_.cloned_string (processing_result.session_status.virtual_domain_host.host_name)
 			host_and_path.append (configuration.fast_cgi_directory)
-			host_and_path.append (clone (go_to_servlet.name))
+			host_and_path.append (STRING_.cloned_string (go_to_servlet.name))
 			add_parameter (page_parameter.name, servlet.name_without_extension)
 			if processing_result.session_status.virtual_domain_host.use_ssl and servlet.receive_secure then
 				set_secure

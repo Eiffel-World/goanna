@@ -12,6 +12,7 @@ class
 inherit
 	
 	GOA_SHARED_APPLICATION_CONFIGURATION
+	KL_IMPORTED_STRING_ROUTINES
 	
 feature -- Text Manipulation
 
@@ -37,10 +38,10 @@ feature -- Text Manipulation
 		do
 			if new_raw_parameter.has (configuration.parameter_separator) then
 				separator_index := new_raw_parameter.index_of (configuration.parameter_separator, 1)
-				Result := clone (new_raw_parameter)
+				Result := STRING_.cloned_string (new_raw_parameter)
 				Result.keep_head (separator_index - 1)
 			else
-				Result := clone (new_raw_parameter)
+				Result := STRING_.cloned_string (new_raw_parameter)
 			end
 		ensure
 			new_string_created: Result /= new_raw_parameter
@@ -56,7 +57,7 @@ feature -- Text Manipulation
 		do
 			if new_raw_parameter.has (configuration.parameter_separator) then
 				separator_index := new_raw_parameter.index_of (configuration.parameter_separator, 1)
-				suffix_string := clone (new_raw_parameter)
+				suffix_string := STRING_.cloned_string (new_raw_parameter)
 				suffix_string.remove_head (separator_index)
 				if suffix_string.is_integer then
 					Result := suffix_string.to_integer
@@ -76,7 +77,7 @@ feature -- Text Manipulation
 			if suffix > 0 then
 				Result := name + configuration.parameter_separator.out + suffix.out
 			else
-				Result := clone (name)
+				Result := STRING_.cloned_string (name)
 			end
 			
 		end

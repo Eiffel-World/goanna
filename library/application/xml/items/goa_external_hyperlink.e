@@ -10,7 +10,9 @@ class
 	GOA_EXTERNAL_HYPERLINK
 
 inherit
+
 	GOA_HYPERLINK
+	KL_IMPORTED_STRING_ROUTINES
 	
 creation
 	
@@ -25,8 +27,8 @@ feature {NONE} -- Creation
 			valid_new_text: new_text /= Void
 		do
 			initialize
-			host_and_path := clone (new_host_and_path)
-			text := clone (new_text)
+			host_and_path := STRING_.cloned_string (new_host_and_path)
+			text := STRING_.cloned_string (new_text)
 		end
 		
 

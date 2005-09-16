@@ -19,6 +19,7 @@ inherit
 		redefine
 			maxlength
 		end
+	KL_IMPORTED_STRING_ROUTINES
 	
 feature
 	
@@ -37,7 +38,7 @@ feature
 				from
 					index := 1
 					zip_code := ""
-					value := clone (processing_result.value)
+					value := STRING_.cloned_string (processing_result.value)
 				until
 					index > value.count
 				loop

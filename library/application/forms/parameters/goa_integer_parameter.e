@@ -13,6 +13,7 @@ inherit
 
 	GOA_INPUT_PARAMETER
 	GOA_STRING_LABELED_PARAMETER
+	KL_IMPORTED_STRING_ROUTINES
 	
 feature
 	
@@ -24,7 +25,7 @@ feature
 			the_character: CHARACTER
 			message_catalog: MESSAGE_CATALOG
 		do
-			value := clone (processing_result.value)
+			value := STRING_.cloned_string (processing_result.value)
 			processing_result.value.wipe_out
 			from
 				index := 1

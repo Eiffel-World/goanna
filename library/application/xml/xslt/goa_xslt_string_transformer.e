@@ -12,6 +12,7 @@ class
 inherit
 	
 	XM_SHARED_CATALOG_MANAGER
+	KL_IMPORTED_STRING_ROUTINES
 
 creation
 	
@@ -32,14 +33,16 @@ feature -- Transformation
 			a_result: XM_XSLT_TRANSFORMATION_RESULT
 			document_source: XM_XSLT_URI_SOURCE
 		do
-				create a_destination
-				a_destination.set_output_to_string
-				create a_result.make (a_destination, output_uri)
-				create document_source.make (input_uri)
-				shared_catalog_manager.bootstrap_resolver.well_known_system_ids.force (clone (the_string), input_uri)
-				transformer.transform (document_source, a_result)
-				Result := a_destination.last_output
+			if always_clear_document_pool then
 				transformer.clear_document_pool
+			end		
+			create a_destination
+			a_destination.set_output_to_string
+			create a_result.make (a_destination, output_uri)
+			create document_source.make (input_uri)
+			shared_catalog_manager.bootstrap_resolver.well_known_system_ids.force (STRING_.cloned_string (the_string), input_uri)
+			transformer.transform (document_source, a_result)
+			Result := a_destination.last_output
 		end
 		
 feature -- Configuration
@@ -52,6 +55,13 @@ feature -- Configuration
 		do
 			transformer.set_string_parameter (a_parameter_value, a_parameter_name)
 		end
+		
+	set_always_clear_document_pool (true_or_false: BOOLEAN) is
+			-- Set clear_document_pool to true_or_false
+		do
+			always_clear_document_pool := true_or_false
+		end
+		
 		
 feature -- Status Report
 		
@@ -80,6 +90,11 @@ feature -- Status Report
 		do
 			Result := transformer.has_string_parameter (a_parameter_name)
 		end
+		
+	always_clear_document_pool: BOOLEAN
+			-- Should we clear the document pool before each transform
+			-- Required if transform contains doc() or document()
+			-- Otherwise, impacts performance and is probably unecessary
 		
 feature {NONE} -- Implementation
 		

@@ -16,6 +16,7 @@ inherit
 	L4E_SHARED_HIERARCHY
 	SHARED_GOA_REQUEST_PARAMETERS
 	GOA_TRANSACTION_MANAGEMENT
+	KL_IMPORTED_STRING_ROUTINES
 	
 feature
 	
@@ -155,7 +156,7 @@ feature {NONE} -- Creation
 			valid_new_raw_parameter: new_raw_parameter /= Void and then not new_raw_parameter.is_empty and then request_parameters.has (name_from_raw_parameter (new_raw_parameter.as_lower))
 			valid_new_processing_result: new_processing_result /= Void
 		do
-			raw_parameter := clone (new_raw_parameter)
+			raw_parameter := STRING_.cloned_string (new_raw_parameter)
 			raw_parameter.to_lower
 			parameter_name := name_from_raw_parameter (raw_parameter)
 			parameter_suffix := suffix_from_raw_parameter (raw_parameter)
