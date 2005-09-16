@@ -1,0 +1,70 @@
+indexing
+	description: "A parameter that has a label for display to the user"
+	author: "Neal L Lester <neal@3dsafety.com>"
+	date: "$Date$"
+	revision: "$Revision$"
+	copyright: "(c) Neal L Lester"
+
+deferred class
+	GOA_LABELED_PARAMETER
+
+inherit
+	
+	GOA_DEFERRED_PARAMETER
+	
+feature
+	
+	label (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): GOA_USER_MESSAGE is
+			-- label for this parameter (intended for presentation to the user
+		require
+			valid_processing_result: processing_result /= Void
+			ok_to_read_data (processing_result)
+			is_valid_suffix: is_suffix_valid (processing_result, suffix)
+		deferred
+		ensure
+			valid_result: Result /= Void
+		end
+
+	label_class (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
+			-- CSS  Class (if any) to use for the label (if any) associated with this parameter
+			-- Void if none (default = Void)
+		require
+			valid_processing_result: processing_result /= Void
+			ok_to_read_data: ok_to_read_data (processing_result)
+			is_suffix_valid: is_suffix_valid (processing_result, suffix)
+		once
+			Result := Void
+		ensure
+			ok_to_read_data: ok_to_read_data (processing_result)
+		end
+
+	add_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+			-- Add labeled parameter to a standard table in xml document
+		require
+			valid_xml: xml /= Void
+			ok_to_add_standard_input_row: xml.ok_to_add_element_or_text (xml.row_element_code)
+			valid_processing_result: processing_result /= Void
+			ok_to_read_data (processing_result)
+			is_valid_suffix: is_suffix_valid (processing_result, suffix)
+		local
+			the_parameter_processing_result: PARAMETER_PROCESSING_RESULT
+		do
+			the_parameter_processing_result := parameter_processing_result (processing_result, suffix)		
+
+			the_parameter_processing_result := parameter_processing_result (processing_result, suffix)
+			xml.start_row_element (Void)
+				xml.start_cell_element (Void, "1")
+		 			xml.add_item (label (processing_result, suffix))
+		 		xml.end_current_element
+		 		xml.start_cell_element (Void, "1")
+						add_to_document (xml, processing_result, suffix)
+				xml.end_current_element
+				xml.start_cell_element (Void, "1")
+					if the_parameter_processing_result /= Void then
+						xml.add_item (the_parameter_processing_result.error_message)
+					end				
+				xml.end_current_element
+			xml.end_current_element
+		end
+
+end -- class GOA_LABELED_PARAMETER

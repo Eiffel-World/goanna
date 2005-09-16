@@ -1,0 +1,106 @@
+indexing
+	description: "An XSLT Transformer that can process xml presented as strings"
+	author: "Neal L. Lester <neal@3dsafety.com"
+	date: "$Date$"
+	revision: "$Revision$"
+	copyright: "(c) 2005 Neal L. Lester"
+
+class
+	GOA_XSLT_STRING_TRANSFORMER
+
+inherit
+	
+	XM_SHARED_CATALOG_MANAGER
+
+creation
+	
+	make
+	
+feature -- Transformation
+	
+	transform_string_to_string (the_string: STRING): STRING is
+			-- transform the_string, returning the result as a string
+		require
+			-- XM_STRING_URI_RESOLVER is registered in
+			-- shared_catalog_manager.bootstrap_resolver.uri_scheme_resolver
+			-- Can't find a query to express this requirement
+			valid_executable: valid_executable
+			not_is_error: not is_error
+		local
+			a_destination: XM_OUTPUT
+			a_result: XM_XSLT_TRANSFORMATION_RESULT
+			document_source: XM_XSLT_URI_SOURCE
+		do
+				create a_destination
+				a_destination.set_output_to_string
+				create a_result.make (a_destination, output_uri)
+				create document_source.make (input_uri)
+				shared_catalog_manager.bootstrap_resolver.well_known_system_ids.force (clone (the_string), input_uri)
+				transformer.transform (document_source, a_result)
+				Result := a_destination.last_output
+				transformer.clear_document_pool
+		end
+		
+feature -- Configuration
+		
+	set_string_parameter (a_parameter_value, a_parameter_name: STRING) is
+			-- Set a global string-valued parameter on the stylesheet.
+		require
+			parameter_name_not_void: a_parameter_name /= Void and then is_valid_expanded_name (a_parameter_name)
+			parameter_value_not_void: a_parameter_value /= Void
+		do
+			transformer.set_string_parameter (a_parameter_value, a_parameter_name)
+		end
+		
+feature -- Status Report
+		
+	valid_executable: BOOLEAN is
+			-- Has the stylesheet been compiled into a valid executable?
+		do
+			Result := transformer.executable /= Void
+		end
+		
+	is_error: BOOLEAN is
+			-- Has an error occurred in the transformer?
+		do
+			Result := transformer.is_error
+		end
+		
+	is_valid_expanded_name (a_parameter_name: STRING): BOOLEAN is
+			-- Is a_parameter_name valid when expanded?
+		do
+			Result := transformer.is_valid_expanded_name (a_parameter_name)
+		end
+
+	has_string_parameter (a_parameter_name: STRING): BOOLEAN is
+			-- Has a parameter a_parameter_name been set for this transformer?
+		require
+			valid_parameter_name: a_parameter_name /= Void
+		do
+			Result := transformer.has_string_parameter (a_parameter_name)
+		end
+		
+feature {NONE} -- Implementation
+		
+	output_uri: STRING is "string:output"
+	input_uri: STRING is "string:input"
+			-- URIs for input and output strings
+			
+	transformer: XM_XSLT_TRANSFORMER
+
+feature {NONE} -- Creation
+			
+	make (new_transformer: XM_XSLT_TRANSFORMER) is
+		require
+			valid_new_transformer: new_transformer /= Void
+		do
+			transformer := new_transformer
+		ensure
+			transformer_updated: transformer = new_transformer
+		end
+		
+invariant
+	
+	valid_transformer: transformer /= Void
+
+end -- class GOA_XSLT_STRING_TRANSFORMER

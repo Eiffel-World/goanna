@@ -1,0 +1,21 @@
+# Schema for xml representing page content.  Intended for transformation to html by page.xsl
+# www.freesafetyprogram.com
+# Author:	Neal L Lester [neal@3dsafety.com]
+# date: 	$Date$
+# revision: 	$Revision$
+# copyright: 	(c) Neal L Lester
+
+namespace goa_page="http://www.sourceforge.net/projects/goanna/goa_page"
+namespace goa_common="http://www.sourceforge.net/projects/goanna/goa_common"
+namespace datatypeLibrary ="http://www.w3.org/2001/XMLSchema-datatypes"
+grammar
+{
+   start = page
+   
+   include "goa_common.rnc"
+   						
+	page = element goa_page:page { server_name, page_title, style_sheet, ( paragraph | division | text_area | submit | text | hyperlink | text_item | ordered_list | unordered_list | hidden | popup_hyperlink | table | select | input | radio | image | address )* }
+
+dummy = attribute dummy { xsd:nonNegativeInteger }
+
+}

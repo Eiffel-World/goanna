@@ -1,0 +1,320 @@
+indexing
+	description: "The results of processing a request from the user; REQUEST_PROCESSING_RESULT should inherit from this class"
+	author: "Neal L Lester <neal@3dsafety.com>"
+	date: "$Date$"
+	revision: "$Revision$"
+	copyright: "(c) Neal L Lester"
+
+deferred class
+	GOA_REQUEST_PROCESSING_RESULT
+	
+inherit
+	
+	GOA_SHARED_APPLICATION_CONFIGURATION
+	PROCESSING_ERROR_CODE_FACILITIES
+	GOA_TEXT_PROCESSING_FACILITIES
+	GOA_SHARED_GOA_REQUEST_PARAMETERS
+	
+feature -- Attributes
+
+	request: GOA_HTTP_SERVLET_REQUEST
+			-- The request that was processed
+	
+	response: GOA_HTTP_SERVLET_RESPONSE
+			-- The response that Goanna provided with the request
+	
+	session_status: SESSION_STATUS
+			-- Session status associated with the request
+			
+	message_catalog: MESSAGE_CATALOG is
+			-- Message catalog for this user
+		do
+			Result := session_status.message_catalog
+		end
+
+	processing_servlet: GOA_APPLICATION_SERVLET
+			-- The servlet that is processing the request that generated this result
+			
+	generating_servlet: GOA_DISPLAYABLE_SERVLET
+			-- The servlet that is generating the next page that will be displayed to the user
+
+	all_input_was_valid: BOOLEAN is
+			-- Was all input received during the request valid?
+		require
+			was_processed: was_processed
+		do
+			Result := all_parameters_are_valid and final_processing_was_valid
+		end
+			
+	processing_error_codes: LINKED_LIST [INTEGER]
+			-- Codes defining the processing errors (if any) that occured
+
+	was_processed: BOOLEAN
+			-- This request has been processed
+			
+	final_processing_was_valid: BOOLEAN
+			-- Post processing (performed by the servlet) indicates request is valid
+			
+	all_mandatory_parameters_are_valid: BOOLEAN
+			-- Are all mandatory parameters valid?
+			
+	is_generating_response: BOOLEAN is
+			-- Is this processing result currently being used to generate a response to the user
+			-- False during initial processing of request from user
+		do
+			Result := generating_servlet /= Void
+		end
+
+	ok_to_retry_process_parameters: BOOLEAN is
+			-- Is it ok to retry parameter processing; may be redefined by descendents if required
+			-- In general it should be OK, but if for example a parameter triggers credit card processing
+			-- We may not want to retry in event of a fault (for fear of processing a card twice)
+		once
+			Result := True
+		end
+
+	has_parameter_name (name: STRING): BOOLEAN is
+			-- Does this result include a parameter with name?
+		require
+			valid_name: name /= Void and not name.is_empty
+		do
+			Result := parameter_names.has (name)
+		end
+		
+	has_parameter_result (name: STRING; suffix: INTEGER): BOOLEAN is
+			-- Does this processing result include a result for name:suffix
+			-- Use 0 if no suffix
+		require
+			valid_name: name /= Void and not name.is_empty
+		do
+			Result := parameter_processing_results.has (full_parameter_name (name, suffix))
+		end
+		
+	parameter_processing_result (name: STRING; suffix: INTEGER): PARAMETER_PROCESSING_RESULT is
+			-- Processing result for parameter with name:suffix
+			-- Use 0 if no suffix
+		require
+			valid_name: name /= Void and not name.is_empty
+		local
+			name_and_suffix: STRING
+		do
+			if has_parameter_result (name, suffix) then
+				Result := parameter_processing_results.item (full_parameter_name (name, suffix))
+			end
+		end
+		
+	parameter_value (name: STRING; suffix: INTEGER): STRING is
+			-- Value of parameter with name:suffix
+			-- Returns empty string if no such parameter in the request
+			-- Use 0 if no suffix
+		require
+			valid_name: name /= Void and not name.is_empty
+		local
+			name_and_suffix: STRING
+			the_processing_result: PARAMETER_PROCESSING_RESULT
+		do
+			the_processing_result := parameter_processing_results.item (full_parameter_name (name, suffix))
+			if the_processing_result /= Void then
+				Result := the_processing_result.value
+			else
+				Result := ""
+			end
+		ensure
+			valid_result: Result /= Void
+		end
+		
+	was_dependency_updated: BOOLEAN is
+			-- Did the request update a value upon which subsequent pages in the wizard may depend?
+		obsolete
+			"Application specific hack"
+		deferred
+		end
+			
+feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_PARAMETER} -- Processing
+
+	process_parameters is
+			-- Process the request
+		require
+			not_was_processed: not was_processed
+		local
+			failed: BOOLEAN
+		do
+			was_processed := True
+			sorter.sort (mandatory_processing_results)
+			sorter.sort (non_mandatory_processing_results)
+			from
+				mandatory_processing_results.start
+				all_mandatory_parameters_are_valid := True
+			until
+				not all_mandatory_parameters_are_valid or mandatory_processing_results.after
+			loop
+				if not mandatory_processing_results.item_for_iteration.was_processed then
+					-- Process if it hasn't already been processed, and if it is not a pass-through parameter
+					mandatory_processing_results.item_for_iteration.process	(mandatory_processing_results.item_for_iteration)
+				end
+				all_mandatory_parameters_are_valid := all_mandatory_parameters_are_valid and mandatory_processing_results.item_for_iteration.is_value_valid
+				mandatory_processing_results.forth
+			end
+			if all_mandatory_parameters_are_valid then
+				-- Process the rest of the parameters in the form
+				processing_servlet.perform_post_mandatory_parameter_processing (Current)
+				from
+					non_mandatory_processing_results.start
+				until
+					non_mandatory_processing_results.after
+				loop
+					if not non_mandatory_processing_results.item_for_iteration.was_processed then 
+						-- Process if it hasn't already been processed, and if it is not a pass-through parameter
+						non_mandatory_processing_results.item_for_iteration.process (non_mandatory_processing_results.item_for_iteration)
+					end
+					non_mandatory_processing_results.forth						
+				end
+			end
+		ensure
+			was_processed: was_processed
+		rescue
+			if ok_to_retry_process_parameters and not failed then
+				failed := True
+				Retry
+			end
+		end
+		
+	process_submit_parameter_if_present is
+			-- Process the submit parameter, if one is present
+		local
+			submit_processing_result: PARAMETER_PROCESSING_RESULT
+		do
+			submit_processing_result := parameter_processing_result (standard_submit_parameter.name, 0)
+			if submit_processing_result /= Void then
+				submit_processing_result.process (submit_processing_result)
+			end
+			was_processed := True
+		ensure
+			was_processed: was_processed
+		end
+		
+	set_final_processing_valid is
+			-- Post processing (in the servlet) completed successfully; the request is fully validated
+		do
+			final_processing_was_valid := True
+		end
+		
+	add_processing_error_code (new_value: INTEGER) is
+			-- Set processing_error to new_value
+		require
+			valid_new_value: is_valid_processing_error_code (new_value)
+		do
+			if not processing_error_codes.has (new_value) then
+				processing_error_codes.force (new_value)
+			end
+			
+		ensure
+			processing_error_code_updated: processing_error_codes.has (new_value)
+		end
+	
+	add_parameter_processing_result (processing_result: PARAMETER_PROCESSING_RESULT; is_mandatory: BOOLEAN) is
+			-- Add processing_result to parameter_processing_results
+		require
+			valid_processing_result: processing_result/= Void
+		local
+			new_raw_parameter_name, new_name: STRING
+			new_suffix: INTEGER
+		do
+			new_name := processing_result.parameter_name
+			new_suffix := processing_result.parameter_suffix
+			parameter_names.force_last (new_name)
+			new_raw_parameter_name := full_parameter_name (new_name, new_suffix)
+			parameter_processing_results.force (processing_result, new_raw_parameter_name)
+			if is_mandatory then
+				mandatory_processing_results.force_last (processing_result)
+			else
+				non_mandatory_processing_results.force_last (processing_result)
+			end
+		end
+		
+feature {GOA_DISPLAYABLE_SERVLET} -- Generating Servlet
+		
+	set_generating_servlet (new_generating_servlet: GOA_DISPLAYABLE_SERVLET) is
+			-- Set generating_servlet to new_generating_servlet
+		do
+			generating_servlet := new_generating_servlet
+		ensure
+			generating_servlet_updated: generating_servlet = new_generating_servlet
+		end
+
+
+feature {NONE} -- Creation
+
+	make (new_request: GOA_HTTP_SERVLET_REQUEST; new_response: GOA_HTTP_SERVLET_RESPONSE; new_session_status: SESSION_STATUS; new_processing_servlet: GOA_APPLICATION_SERVLET) is
+			-- Creation
+		require
+			valid_new_request: new_request /= Void
+			valid_new_response: new_response /= Void
+			valid_new_session_status: new_session_status /= Void
+			valid_new_processing_servlet: new_processing_servlet /= Void
+			session_status_belongs_to_request: new_request.session.get_attribute (configuration.session_status_attribute_name) = new_session_status
+		do
+			all_parameters_are_valid := True
+			create processing_error_codes.make
+			request := new_request
+			response := new_response
+			session_status := new_session_status
+			processing_servlet := new_processing_servlet
+			create parameter_processing_results.make_equal (15)
+			create mandatory_processing_results.make
+			create non_mandatory_processing_results.make
+			create parameter_names.make_equal
+			create error_messages_displayed.make_equal
+		ensure
+			all_parameters_are_valid: all_parameters_are_valid
+			request_updated: request = new_request
+			response_updated: response = new_response
+			session_status_updated: session_status = new_session_status
+		end
+
+feature {GOA_PARAMETER_PROCESSING_RESULT, GOA_APPLICATION_SERVLET} -- Implementation
+		
+	all_parameters_are_valid: BOOLEAN
+			-- Are the indicated parameters all valid?
+			
+feature {NONE} -- Implementation
+
+	sorter: DS_QUICK_SORTER [PARAMETER_PROCESSING_RESULT] is
+			-- Sorter that can sort parameter processing_result containers
+		once
+			create Result.make (comparator)
+		end
+		
+	comparator: PARAMETER_PROCESSING_RESULT_COMPARATOR is
+			-- Comparator used for sorting GOA_PARAMETER_PROCESSING_RESULTS
+		once
+			create Result
+		end
+
+	parameter_processing_results: DS_HASH_TABLE [PARAMETER_PROCESSING_RESULT, STRING]
+			-- Parameter processing results for this request; indexed by raw processor
+
+	mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
+	non_mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
+			-- Mandatory and non-mandatory processing results
+			
+	parameter_names: DS_LINKED_LIST [STRING]
+			-- The names of all parameters registered in this result
+			
+	error_messages_displayed: DS_LINKED_LIST [STRING]
+			-- List of parameters for which error messages have been displayed
+
+invariant
+
+	valid_request: request /= Void
+	valid_response: response /= Void
+	valid_session_status: session_status /= Void
+	valid_servlet: processing_servlet /= Void
+	valid_processing_error_codes: processing_error_codes /= Void
+	valid_mandatory_processing_results: mandatory_processing_results /= Void
+	valid_non_mandatory_processing_results: non_mandatory_processing_results /= Void
+	valid_parameter_processing_results: parameter_processing_results /= Void
+	valid_parameter_names: parameter_names /= Void
+	valid_error_messages_displayed: error_messages_displayed /= Void		
+		
+end -- class GOA_REQUEST_PROCESSING_RESULT

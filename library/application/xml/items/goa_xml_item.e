@@ -1,0 +1,31 @@
+indexing
+	description: "Items that may be added to a GOA_XML_DOCUMENT"
+	author: "Neal L Lester <neal@3dsafety.com>"
+	date: "$Date$"
+	revision: "$Revision$"
+	copyright: "(c) Neal L Lester"
+
+deferred class
+	
+	GOA_XML_ITEM
+	
+feature {GOA_XML_DOCUMENT}
+	
+	add_to_document (the_document: GOA_XML_DOCUMENT) is
+			-- Add an xml representation of this item to the_documnet
+		require
+			valid_the_document: the_document /= Void
+			ok_to_add: ok_to_add (the_document)
+		deferred
+		end
+
+feature -- Queries
+
+	ok_to_add (the_document: GOA_XML_DOCUMENT): BOOLEAN is
+			-- Is it OK to add this item to the_document
+		require
+			valid_the_document: the_document /= Void
+		deferred
+		end
+
+end -- class GOA_XML_ITEM
