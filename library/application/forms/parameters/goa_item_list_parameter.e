@@ -29,7 +29,7 @@ feature
 	
 	is_suffix_valid (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
 		do
-			Result := item_list (processing_result).valid_index (suffix)
+			Result := 1 <= suffix and then suffix <= item_list (processing_result).count
 		end
 		
 	item_in_list (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): G is
