@@ -37,7 +37,6 @@ feature -- Transformation
 				transformer.clear_document_pool
 --			else
 --				transformer.remove_document (input_uri)
---				TODO Uncomment this when this feature becomes available in XM_XSLT_TRANSFORMER
 --			end
 			create a_destination
 			a_destination.set_output_to_string
@@ -84,14 +83,6 @@ feature -- Status Report
 			-- Is a_parameter_name valid when expanded?
 		do
 			Result := transformer.is_valid_expanded_name (a_parameter_name)
-		end
-
-	has_string_parameter (a_parameter_name: STRING): BOOLEAN is
-			-- Has a parameter a_parameter_name been set for this transformer?
-		require
-			valid_parameter_name: a_parameter_name /= Void
-		do
-			Result := transformer.has_string_parameter (a_parameter_name)
 		end
 		
 	always_clear_document_pool: BOOLEAN

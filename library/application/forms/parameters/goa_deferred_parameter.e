@@ -24,6 +24,8 @@ feature -- Attributes
 	name: STRING is
 			-- Name of this request parameter; each parameter must have a unique name
 		deferred
+		ensure
+			-- TODO Add logic that ensures that the name is valid (i.e. can legally be used as an HTML parameter name)
 		end
 
 feature -- Queries

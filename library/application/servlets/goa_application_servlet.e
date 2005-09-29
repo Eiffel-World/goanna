@@ -37,6 +37,8 @@ feature -- Attributes
 		deferred
 		ensure
 			contains_only_one_period: Result.occurrences ('.') <= 1
+			no_spaces: not Result.has (' ')
+			-- TODO Add some better validity checks
 		end
 		
 	name_without_extension: STRING is
@@ -456,6 +458,7 @@ invariant
 	valid_expected_parameters: expected_parameters /= Void
 	valid_possible_parameters: possible_parameters /= Void
 	valid_add_if_absent_parameters: add_if_absent_parameters /= Void
+	-- TODO The following may be application specific; check it out
 	possible_parameters_has_submit: possible_parameters.has (standard_submit_parameter.name)
 	has_page_parameter_implies_go_to_servlet: go_to_servlet /= Void and then expected_parameters.has (page_parameter.name) implies equal (name, go_to_servlet.name)
 	not_mandatory_parameters_has_page_parameter: not mandatory_parameters.has (page_parameter.name)

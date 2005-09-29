@@ -65,6 +65,8 @@ feature {NONE} -- Creation
 			xslt_configuration: XM_XSLT_CONFIGURATION
 		do
 				create xslt_configuration.make_with_defaults
+--				xslt_configuration.use_tiny_tree_model (True)
+--				xslt_configuration.set_tiny_tree_estimates (50, 50, 4, 5000)
 				make (xslt_configuration)
 				conformance.set_basic_xslt_processor
 				-- TODO Transition to Tiny Tree model

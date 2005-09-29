@@ -53,6 +53,7 @@ feature
 				servlet_configuration.set_document_root ("")
 				configuration.set_servlet_configuration (servlet_configuration)
 				parent_make (configuration.port, 10)
+				register_servlet (go_to_servlet)
 				register_servlets
 				session_manager.register_event_listener (Current)
 				create the_posix_signal.make (sigchld)
@@ -101,6 +102,7 @@ feature
 			-- Register servlet
 		require
 			valid_servlet: servlet /= Void
+			not_has_servlet: not servlet_manager.has_registered_servlet (servlet.name)
 		do
 			servlet_manager.register_servlet (servlet, servlet.name)
 		end
@@ -116,6 +118,10 @@ feature
 		deferred
 		ensure
 			valid_configuration: configuration /= Void
+		end
+		
+	go_to_servlet: GOA_GO_TO_SERVLET is
+		deferred
 		end
 
 end -- class GOA_APPLICATION_SERVER
