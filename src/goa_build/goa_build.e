@@ -1,0 +1,982 @@
+indexing
+	description: "Root class for goa_build; create XML authoring classes for Goana web applications"
+	author: "Neal L Lester [neal@3dsafety.com]"
+	date: "$Date$"
+	revision: "$Revision: "
+	copyright: "Copyright (c) Neal L. Lester and others"
+	license: "Eiffel Forum License v2 (see forum.txt)"
+
+class
+	GOA_BUILD
+
+inherit
+
+	KL_SHARED_ARGUMENTS
+	KL_SHARED_EXCEPTIONS
+	KL_SHARED_FILE_SYSTEM
+	KL_SHARED_OPERATING_SYSTEM
+	KL_EXECUTION_ENVIRONMENT
+	XM_SHARED_CATALOG_MANAGER
+	KL_IMPORTED_STRING_ROUTINES
+	
+create
+
+	make
+
+feature -- Initialization
+
+	make is
+		local
+			exception_occurred: BOOLEAN
+			executable_name, program_description, error_message, trang_invocation, class_attribute_declaration, class_name, class_name_upper: STRING
+			file_name, expanded_file_name, namespace_prefix, rnc_file_contents, rnc_file_contents_upper, expanded_the_stylesheet_file_name: STRING
+			local_unreadable_files, file_names, included_files, included_xsl_files: DS_LIST [STRING]
+			rnc_input_file, rng_input_file, xsl_input_file: KI_TEXT_INPUT_FILE
+			rnc_output_file, imported_output_file: KI_TEXT_OUTPUT_FILE
+			rnc_file_length, rng_file_length, xsl_file_length: INTEGER
+			class_names, all_included_rng_files, xsl_files, prefixes: DS_LINKED_LIST [STRING]
+			final_file_name, rng_file_name, expanded_stylesheet_file_name: STRING
+			trang_command: KL_SHELL_COMMAND
+			rng_file_contents, flat1, flat2, flat3, included, imported, xml, codes, attribute_values, imported_file_name, frng_file_name, xsl_file_name: STRING
+			xml_document_contents, schema_codes_contents, attribute_values_contents, xsl_file_contents, included_xsl_files_string: STRING
+			xml_document_file_name, schema_codes_file_name, attribute_values_file_name, data_directory, rnc_input_file_name: STRING
+			included_file_splitter: ST_SPLITTER
+			temporary_transformer: GOA_XSLT_STRING_TRANSFORMER
+			writer: EPX_XML_WRITER
+		do
+			if not exception_occurred then
+				create command_line_syntax.make (command_line_options)
+				create command_line_parser.make (command_line_syntax)
+				command_line_parser.parse (arguments.argument_array)
+				if command_line_parser.invalid_options_found and not command_line_includes_help_switch then
+					io.put_string ( command_line_parser.error_message + help_usage )
+				elseif command_line_includes_help_switch then
+					io.put_string ("Build XML Authoring Classes from one or more Relax NG Compact Syntax %
+									%grammar(s).%N%N" )
+					-- I suppose this should really use the switch constants defined below
+					io.put_string (	"Usage: goa_build -f|--file filename1 filename2 ...%N%
+									%                 [-v|--verbose]%N%
+									%                 [-n|--norefresh]%N%
+									%                 [-e|--eiffeldirectory directoryname]%N%
+									%                 [-d|--datadirectory directoryname]%N%
+									%                 [-a|--author %"author's name%"]%N%
+									%                 [-c|--copyright %"copyright declaration%"]%N%
+									%                 [-l|--license %"license declaration%"]%N%
+									%                 [-h|--help]%N%N%
+									%file (-f)            = Name(s) of file(s) containing Relax NG Compact Syntax%N%
+									%                       grammar(s) used to generate the XML authoring classes%N%
+									%                       Do not enclose name or space delimited list of names%N%
+									%                       in quotes (enclosing a single file name containing%N%
+									%                       spaces in quotes may work but is not recommended)%N%
+									%verbose (-v)         = Verbose mode (provides context for certain error %N%
+									%                       messages)%N%
+									%norefresh (-n)       = Do not refresh files from Goanna directories%N%
+									%eiffeldirectory (-e) = Directory in which to place generated eiffel classes%N%
+									%datadirectory (-d)   = The location of the web application's%N%
+									%                       configuration.data_directory%N%
+									%author (-a)          = Name of the application's author (for indexing clauses)%N%
+									%copyright (-c)       = Copyright declaration (for indexing clauses)%N%
+									%license (-l)         = License declaration (for indexing clauses)%N%
+									%help (-h)            = See this help message%N%N%
+									%For Example:%N%N%
+									%goa_build -f file1.rnc file2.rnc%N%
+									%          -d ../datadirectory %N%
+									%          -e ../eiffeldirectory %N%
+									%          -v%N%
+									%          -a %"Neal Lester%"%N%
+									%          -c %"(c) 2005 Neal Lester%"%N%
+									%          -l %"Eiffel Form License V2.0 (http://www.opensource.org/licenses/ver2_eiffel.php%"%N" )
+				elseif not unreadable_files (command_line_parser.valid_options.item (file_switch)).is_empty then
+					-- Some of the files specified in the -f argument are not readable
+					io.put_string ("The file(s) ")
+					local_unreadable_files := unreadable_files (command_line_parser.valid_options.item (file_switch))
+					from
+						local_unreadable_files.start
+					until
+						local_unreadable_files.after
+					loop
+						io.put_string (local_unreadable_files.item_for_iteration)
+						if not local_unreadable_files.is_last then
+							io.put_string (", ")
+						else
+							io.put_string (" ")
+						end
+						local_unreadable_files.forth
+					end
+					io.put_string ("provided in the -f (file) argument cannot be read%N" + help_usage)
+				elseif command_line_includes_eiffeldirectory_switch and then not exactly_one_eiffeldirectory_argument then
+					io.put_string ("-e (--eiffeldirectory) may contain only one argument.  Enclosing a path containing spaces may work%N" + help_usage)
+				elseif command_line_includes_eiffeldirectory_switch and then not file_system.directory_exists (interpreted_string(eiffeldirectory_argument)) then
+					io.put_string ("directory " + eiffeldirectory_argument + " specified in -e (--eiffeldirectory) argument does not exist%N" + help_usage)
+				elseif command_line_includes_datadirectory_switch and then not exactly_one_datadirectory_argument then
+					io.put_string ("-d (--datadirectory) may contain only one argument.  Enclosing a path containing spaces may work%N" + help_usage)
+				elseif command_line_includes_datadirectory_switch and then not file_system.directory_exists (interpreted_string(datadirectory_argument)) then
+					io.put_string ("directory " + datadirectory_argument + " specified in -d (--datadirectory) argument does not exist%N" + help_usage)
+				elseif command_line_includes_author_switch and then not exactly_one_author_argument then
+					io.put_string ("Please enclose the -a (--author) argument in quotes%N" + help_usage)
+				elseif command_line_includes_copyright_switch and then not exactly_one_copyright_argument then
+					io.put_string ("Please enclose the -c (--copyright) argument in quotes%N" + help_usage)
+				elseif command_line_includes_license_switch and then not exactly_one_license_argument then
+					io.put_string ("Please enclose the -l (--license) argument in quotes%N" + help_usage)
+				else
+					-- It appears we are OK to process; we only haven't verified that the output directories are
+					-- Writable (I can't find a library routine to do this)
+					if not command_line_includes_norefresh_switch then
+						if command_line_includes_verbose_switch then
+							io.put_string ("Refreshing Goanna Files%N")
+						end
+						-- TODO Refresh Goanna Files
+					end
+					-- Read value of environment variable TRANG_INVOCATION
+					trang_invocation := variable_value ("TRANG_INVOCATION")
+					if trang_invocation = Void then
+						trang_invocation := "trang"
+					end
+					if command_line_includes_verbose_switch then
+						io.put_string ("Initializing XSLT transformers%N")
+					end
+					-- Set prefixes for XSLT Transformers that generate eiffel classes
+					if command_line_includes_author_switch then
+						validating_xml_writer_transformer.set_string_parameter (author_argument, "author")
+						deferred_xml_writer_transformer.set_string_parameter (author_argument, "author")
+						schema_codes_transformer.set_string_parameter (author_argument, "author")
+						attribute_values_transformer.set_string_parameter (author_argument, "author")
+					end
+					if command_line_includes_copyright_switch then
+						validating_xml_writer_transformer.set_string_parameter (copyright_argument, "copyright")
+						deferred_xml_writer_transformer.set_string_parameter (copyright_argument, "copyright")
+						schema_codes_transformer.set_string_parameter (copyright_argument, "copyright")
+						attribute_values_transformer.set_string_parameter (copyright_argument, "copyright")
+					end
+					if command_line_includes_license_switch then
+						validating_xml_writer_transformer.set_string_parameter (license_argument, "license")
+						deferred_xml_writer_transformer.set_string_parameter (license_argument, "license")
+						schema_codes_transformer.set_string_parameter (license_argument, "license")
+						attribute_values_transformer.set_string_parameter (license_argument, "license")
+					end
+					-- Initialize String Processing Facilities
+					create included_file_splitter.make
+					included_file_splitter.set_separators ("|")
+					-- Initialize file name lists
+					file_names := command_line_parser.valid_options.item (file_switch)
+					create all_included_rng_files.make_equal
+					create prefixes.make_equal
+					create xsl_files.make_equal
+					from
+						file_names.start
+					until
+						file_names.after
+					loop
+						file_name := file_names.item_for_iteration
+						expanded_file_name := interpreted_string (file_name)
+						if command_line_includes_verbose_switch then
+							io.put_string ("Processing file " + expanded_file_name + "%N")
+						end
+						if file_name.has ('.') then
+							namespace_prefix := file_name.substring (1, file_name.index_of ('.', 1) -1)
+						else
+							namespace_prefix := file_name
+						end
+						prefixes.force_last (namespace_prefix)
+						-- Set prefix parameter for each stylesheet
+						validating_xml_writer_transformer.set_string_parameter (namespace_prefix, "prefix")
+						schema_codes_transformer.set_string_parameter (namespace_prefix, "prefix")
+						attribute_values_transformer.set_string_parameter (namespace_prefix, "prefix")
+						-- Read contents of file
+						rnc_input_file := file_system.new_input_file (interpreted_string(file_name))
+						rnc_file_length := rnc_input_file.count
+						rnc_input_file.open_read
+						rnc_input_file.read_string (rnc_file_length)
+						rnc_file_contents := rnc_input_file.last_string
+						rnc_file_contents_upper := rnc_file_contents.as_upper
+						expanded_stylesheet_file_name := stylesheet_file_name (rnc_file_contents)
+						if rnc_file_contents_upper.has_substring ("INCLUDE")
+							and then not rnc_file_contents_upper.has_substring ("NONNEGATIVEINTEGER") then
+							-- For reasons I don't understand (bug in trang or xmllint?), a grammar that includes another
+							-- grammar that uses xsd:nonNegativeInteger must contain at least one such attribute in the
+							-- top level grammar or xmllint will not properly validate the file given the 
+							-- Relax NG files created by trang.  Simply adding the datatypeLibrary namespace declaration
+							-- to the top level grammar (which I think should work) isn't enough.
+							-- Of course this test is unncessarily restrictive; it is really required only if the
+							-- Included grammar (recursively) uses xsd:nonNegativeInteger but it's too much bother to figure
+							-- that out at this point in the processing just to avoid an occasional spurious dummy attribute
+							-- in the top level gramamr.  Most of the time folks will be including the goa_common.rnc grammar
+							-- and it does use NONNEGATIVEINTEGER.
+							io.put_string (	"Unable to process file " + file_name + "; please add %"dummy = attribute dummy %
+											%{ xsd:nonNegativeInteger }%" ")
+							if not rnc_file_contents_upper.has_substring ("XMLSCHEMA-DATATYPES") then
+								io.put_string ("and%Nnamespace datatypeLibrary=%"http://www.w3.org/2001/XMLSchema-datatypes%N%"")
+							end
+							io.put_string ("to the (top level) grammar.%N")
+						elseif stylesheet_declaration_matcher.has_matched and then not rnc_file_contents_upper.has_substring (class_attribute_placeholder) then
+							-- Stylesheet declaration does have not have a matching CLASS_ATTRIBUTE_PLACEHOLDER
+							io.put_string ("Please add %"" + class_attribute_placeholder + "%" to the " + file_name + " grammar or remove it%'s css stylesheet declaration.")
+						elseif rnc_file_contents_upper.has_substring (class_attribute_placeholder) and then not stylesheet_declaration_matcher.has_matched then
+							-- CLASS_ATTRIBUTE_PLACEHOLDER does not have a matching stylesheet declaration
+							io.put_string ("Please add a css stylesheet declaration to " + file_name + " or remove it%'s " + class_attribute_placeholder + ".%N")
+						elseif 	rnc_file_contents_upper.has_substring (class_attribute_placeholder) and then 
+								rnc_file_contents_upper.substring (rnc_file_contents.substring_index (class_attribute_placeholder, 1) + class_attribute_placeholder.count, rnc_file_contents_upper.count).has_substring (class_attribute_placeholder) then
+							-- There are two CLASS_ATTRIBUTE_PLACEHOLDERs
+							io.put_string ("Please include only one CLASS_ATTRIBUTE_PLACEHOLDER in the file " + file_name + "%N")
+						elseif expanded_stylesheet_file_name /= Void and then expanded_stylesheet_file_name.has ('%"') then
+							-- I believe (after only passing analysis) that should only occur if there are multiple stylesheet declaration
+							io.put_string ("Please include only one css stylesheet declaration in file " + file_name + ".%N")
+						elseif expanded_stylesheet_file_name /= Void and then not file_system.is_file_readable (expanded_stylesheet_file_name) then
+							-- Is declared stylesheet readable?
+							io.put_string ("The css stylesheet (" + expanded_stylesheet_file_name + ") declared in file " + file_name + " is not readable.%N")
+						else
+							if expanded_stylesheet_file_name /= Void then
+								-- Read the stylesheet and build the corresponding class attribute value declaration
+								-- Replace CLASS_ATTRIBUTE_PLACEHOLDER with this attribute value declaration
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Inserting class attribute value declaration for	css stylesheet " + expanded_stylesheet_file_name + " in file " + expanded_file_name + "%N")
+								end
+								class_names := stylesheet_class_names (expanded_stylesheet_file_name)
+								class_attribute_declaration := ""
+								from
+									class_names.start
+								until
+									class_names.after
+								loop
+									if class_attribute_declaration.is_empty then
+										class_attribute_declaration.append_string ("class = attribute class { ")
+									else
+										class_attribute_declaration.append_string (" | ")
+									end
+									class_attribute_declaration.append_string ("%"" + class_names.item_for_iteration + "%"")
+									class_names.forth
+								end
+								if not class_attribute_declaration.is_empty then
+									class_attribute_declaration.extend ('}')
+									rnc_file_contents.replace_substring_all (class_attribute_placeholder, class_attribute_declaration)
+									final_file_name := "temp.rnc"
+									error_message := "Unable to write file " + final_file_name
+									put_string_to_current_directory (final_file_name, rnc_file_contents)
+									error_message := Void
+								else
+									final_file_name := file_name		
+								end
+							else
+								final_file_name := file_name										
+							end
+								
+							if command_line_includes_verbose_switch then
+								io.put_string ("  Converting " + expanded_file_name + " to Relax NG with trang%N")
+							end
+							rng_file_name := namespace_prefix + ".rng"
+							create trang_command.make (trang_invocation + " -I rnc -O rng " + final_file_name + " " + rng_file_name )
+							trang_command.execute
+							if trang_command.is_system_code or trang_command.exit_code /= 0 then
+								io.putstring ("Trang failed; unable to process file " + expanded_file_name + "%N")
+							else
+								-- XSLT Transformations
+								error_message := "Unable to open file " + final_file_name + " for reading."
+								rng_input_file := file_system.new_input_file (rng_file_name)
+								rng_file_length := rng_input_file.count
+								rng_input_file.open_read
+								rng_input_file.read_string (rng_file_length)
+								rng_file_contents := rng_input_file.last_string
+								error_message := Void
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Flatten Stage 1%N")
+								end
+								flat1 := flatten_stage_1_transformer.transform_string_to_string (rng_file_contents)
+								put_string_to_current_directory ("flat1.rng", flat1) -- temp
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Included file names%N")
+								end
+								included := include_list_transformer.transform_string_to_string (flat1)
+								put_string_to_current_directory ("included.tmp", included) -- temp
+								if included /= Void and then not included.is_empty then
+									included_files := included_file_splitter.split (included)
+									from
+										included_files.start
+									until
+										included_files.after
+									loop
+										if not all_included_rng_files.has (included_files.item_for_iteration) then
+											all_included_rng_files.force_last (included_files.item_for_iteration)
+										end
+										included_files.forth
+									end
+								end
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Flatten Stage 2%N")
+								end
+								flat2 := flatten_stage_2_transformer.transform_string_to_string (flat1)
+								put_string_to_current_directory (namespace_prefix + ".fl2", flat2)
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Imported%N")
+								end
+								imported := imported_transformer.transform_string_to_string (flat2)
+								imported_file_name := namespace_prefix + ".imp"
+								error_message := "Unable to write file " + imported_file_name
+								put_string_to_current_directory (imported_file_name, imported)
+								error_message := Void
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Flatten stage 3%N")
+								end
+								flat3 := flatten_stage_3_transformer.transform_string_to_string (flat2)
+								put_string_to_current_directory ("flat3.rng", flat3) -- Temp
+								frng_file_name := namespace_prefix + ".frng"
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Writing " + frng_file_name + "%N")
+								end
+								error_message := "Unable to write file " + frng_file_name
+								if command_line_includes_datadirectory_switch then
+									error_message.append (" in " + datadirectory_argument)
+								end
+								put_string_to_data_directory (frng_file_name, flat3)
+								error_message := Void
+								-- Generate Eiffel xml_document, schema_codes Files, and attribute_values
+								xml_document_file_name := namespace_prefix + "_xml_document.e"
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Creating " + xml_document_file_name + "%N")
+								end
+								error_message := "Unable to write " + xml_document_file_name
+								xml_document_contents := validating_xml_writer_transformer.transform_string_to_string (flat2)
+								error_message := "Unable to write " + xml_document_file_name
+								put_string_to_eiffel_directory (xml_document_file_name, xml_document_contents)
+								error_message := Void
+								schema_codes_file_name := namespace_prefix + "_schema_codes.e"
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Creating " + schema_codes_file_name + "%N")
+								end
+								schema_codes_contents := schema_codes_transformer.transform_string_to_string (flat2)
+								error_message := "Unable to write " + schema_codes_file_name
+								put_string_to_eiffel_directory (schema_codes_file_name, schema_codes_contents)
+								error_message := Void
+								attribute_values_file_name := namespace_prefix + "_attribute_values.e"
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Creating " + attribute_values_file_name + "%N")
+								end
+								attribute_values_contents := attribute_values_transformer.transform_string_to_string (rng_file_contents)
+								error_message := "Unable to write " + attribute_values_file_name
+								put_string_to_eiffel_directory (attribute_values_file_name, attribute_values_contents)
+								error_message := Void
+							end
+							-- Test associated XSLT file to verify it compiles correctly
+							xsl_file_name := namespace_prefix + ".xsl"
+							if not file_system.file_exists (xsl_file_name) then
+								io.put_string ("Warning, no xsl file corresponding to " + file_name + "%N")
+							else
+								if command_line_includes_verbose_switch then
+									io.put_string ("  Compiling " + xsl_file_name + "%N")
+								end
+								temporary_transformer := transformer_factory.new_string_transformer_from_file_name (xsl_file_name)
+								-- Add XSLT file name to xsl_files to copy to data directory later
+								xsl_files.force_last (xsl_file_name)
+							end
+						end
+						file_name := namespace_prefix + ".imp"
+						if file_system.file_exists (file_name) then
+--							file_system.delete_file (file_name)
+						end
+						file_name := namespace_prefix + ".fl2"
+						if file_system.file_exists (file_name) then
+--							file_system.delete_file (file_name)
+						end
+						
+						file_names.forth
+					end
+					-- create deferred xml_document.e and attribute_values.e for each included rng file
+					if command_line_includes_verbose_switch and not all_included_rng_files.is_empty then
+						io.put_string ("Generating deferred classes and attribute_values for included rnc files%N")
+					end
+					from
+						all_included_rng_files.start
+					until
+						all_included_rng_files.after
+					loop
+						rng_file_name := all_included_rng_files.item_for_iteration
+						namespace_prefix := rng_file_name.substring (1, rng_file_name.index_of ('.', 1) -1)
+						prefixes.force_last (namespace_prefix)
+						-- First check associated rnc file for a stylesheet declaration.
+						-- If it is present, build an xml file containing the attribute values declaration
+						-- for each class in the stylesheet.  Write this to the document "temp.rng"
+						rnc_input_file_name := namespace_prefix + ".rnc"
+						rnc_input_file := file_system.new_input_file (rnc_input_file_name)
+						error_message := "Unable to open file " + rnc_input_file_name + "%N"
+						rnc_file_length := rnc_input_file.count
+						rnc_input_file.open_read
+						rnc_input_file.read_string (rnc_file_length)
+						rnc_file_contents := rnc_input_file.last_string
+						error_message := Void
+						expanded_stylesheet_file_name := stylesheet_file_name (rnc_file_contents)
+						if expanded_stylesheet_file_name /= Void and then not (file_system.file_exists (expanded_stylesheet_file_name) and then file_system.is_file_readable (expanded_stylesheet_file_name)) then
+							io.put_string ("The stylesheet " + expanded_stylesheet_file_name + " declared in " + rnc_input_file_name + " is not readable%N")
+						else
+							if expanded_stylesheet_file_name = Void then
+								create class_names.make_equal
+							else
+								class_names := stylesheet_class_names (expanded_stylesheet_file_name)
+							end
+							if expanded_stylesheet_file_name /= Void and class_names.is_empty then
+								io.put_string ("Warning: stylesheet " + expanded_stylesheet_file_name + " contains no CSS classes%N")
+							end
+							create writer.make
+							writer.add_header_iso_8859_1_encoding
+							writer.start_ns_tag ("", "grammar")
+							writer.set_a_name_space ("rng", "http://relaxng.org/ns/structure/1.0")
+							writer.start_ns_tag ("", "define")
+							writer.set_attribute ("name", "class")
+							writer.start_ns_tag ("", "choice")
+							from
+								class_names.start
+							until
+								class_names.after
+							loop
+								writer.add_ns_tag ("", "value", class_names.item_for_iteration)
+								class_names.forth
+							end
+							writer.stop_tag
+							writer.stop_tag
+							writer.stop_tag
+							put_string_to_current_directory ("temp.rng", writer.as_string)
+						end
+						deferred_xml_writer_transformer.set_string_parameter (namespace_prefix, "prefix")
+						attribute_values_transformer.set_string_parameter (namespace_prefix, "prefix")
+						error_message := "Unable to open file " + rng_file_name + " for reading."
+						rng_input_file := file_system.new_input_file (rng_file_name)
+						rng_file_length := rng_input_file.count
+						rng_input_file.open_read
+						rng_input_file.read_string (rng_file_length)
+						rng_file_contents := rng_input_file.last_string
+						error_message := Void						
+						xml_document_file_name := namespace_prefix + "_xml_document.e"
+						if command_line_includes_verbose_switch then
+							io.put_string ("  Creating " + xml_document_file_name + "%N")
+						end
+						xml_document_contents := deferred_xml_writer_transformer.transform_string_to_string (rng_file_contents)
+						error_message := "Unable to write " + xml_document_file_name
+						put_string_to_eiffel_directory (xml_document_file_name, xml_document_contents)
+						error_message := Void
+						attribute_values_file_name := namespace_prefix + "_attribute_values.e"
+						if command_line_includes_verbose_switch then
+							io.put_string ("  Creating " + attribute_values_file_name + "%N")
+						end
+						attribute_values_contents := attribute_values_transformer.transform_string_to_string (rng_file_contents)
+						error_message := "Unable to write " + attribute_values_file_name
+						put_string_to_eiffel_directory (attribute_values_file_name, attribute_values_contents)
+						error_message := Void
+						all_included_rng_files.forth	
+					end
+					if command_line_includes_datadirectory_switch then
+						-- Recrusively examine XSLT files to find all included transforms
+						if command_line_includes_verbose_switch then
+							io.put_string ("Recursively examining XSLT transformations for included transforms%N")
+						end
+						from
+							xsl_files.start
+						until
+							xsl_files.after
+						loop
+							xsl_file_name := xsl_files.item_for_iteration
+							if command_line_includes_verbose_switch then
+								io.put_string ("  " + xsl_file_name + "%N")
+							end
+							error_message := "Unable to open file " + xsl_file_name + " for reading."
+							xsl_input_file := file_system.new_input_file (xsl_file_name)
+							xsl_file_length := xsl_input_file.count
+							xsl_input_file.open_read
+							xsl_input_file.read_string (xsl_file_length)
+							xsl_file_contents := xsl_input_file.last_string
+							error_message := Void						
+							included_xsl_files_string := xsl_included_files_transformer.transform_string_to_string (xsl_file_contents)
+							included_xsl_files := included_file_splitter.split (included_xsl_files_string)
+							from
+								included_xsl_files.start
+							until
+								included_xsl_files.after
+							loop
+								if not xsl_files.has (included_xsl_files.item_for_iteration) then
+									xsl_files.force_last (included_xsl_files.item_for_iteration)
+								end
+								included_xsl_files.forth
+							end
+							xsl_files.forth
+						end
+						-- Copy all xsl files to the data directory
+						if command_line_includes_verbose_switch then
+							io.put_string ("Copying XSLT transformation files to data directory%N")
+						end
+						data_directory := datadirectory_argument
+						from
+							xsl_files.start
+						until
+							xsl_files.after
+						loop
+							xsl_file_name := xsl_files.item_for_iteration
+							if command_line_includes_verbose_switch then
+								io.put_string ("  " + xsl_file_name + "%N")
+							end
+							error_message := "Unable to copy " + xsl_file_name + " to data directory"
+							file_system.copy_file (xsl_file_name, file_system.pathname (data_directory, xsl_file_name))
+							error_message := Void
+							xsl_files.forth
+						end
+					end
+					-- Delete all temporary files we just created
+					if command_line_includes_verbose_switch then
+						io.put_string ("Cleaning Up%N")
+					end
+					from
+						prefixes.start
+					until
+						prefixes.after
+					loop
+						file_name := prefixes.item_for_iteration + ".rng"
+						if file_system.file_exists (file_name) then
+							file_system.delete_file (file_name)
+						end
+						prefixes.forth
+					end
+					if file_system.file_exists ("temp.rnc") then
+						file_system.delete_file ("temp.rnc")
+					end
+					if file_system.file_exists ("temp.rng") then
+						file_system.delete_file ("temp.rng")
+					end
+					if command_line_includes_verbose_switch then
+						io.put_string ("Finished.%N")
+					end
+				end
+			end
+		rescue
+			if error_message /= Void and not exception_occurred then
+				exception_occurred := True
+				io.put_string (error_message + "%N" + help_usage)
+				retry
+			end
+		end
+
+feature {NONE} -- Implementation
+
+	stylesheet_class_names (the_stylesheet_file_name: STRING): DS_LINKED_LIST [STRING] is
+			-- CSS Class names in file given by the_stylesheet_file_name
+		require
+			valid_the_stylesheet_file_name: the_stylesheet_file_name /= Void
+			stylesheet_file_is_readable: file_system.file_exists (the_stylesheet_file_name) and then file_system.is_file_readable (the_stylesheet_file_name)
+		local
+			stylesheet_input_file: KI_TEXT_INPUT_FILE
+			class_name, class_name_upper: STRING
+			class_names_upper: DS_LINKED_LIST [STRING]
+		do
+			stylesheet_input_file := file_system.new_input_file (the_stylesheet_file_name)
+			create Result.make_equal
+			create class_names_upper.make_equal
+			from
+				stylesheet_input_file.open_read
+			until
+				stylesheet_input_file.end_of_file
+			loop
+				stylesheet_input_file.read_line
+				class_name_matcher.match (stylesheet_input_file.last_string)
+				if class_name_matcher.has_matched then
+					class_name := STRING_.cloned_string( (class_name_matcher.captured_substring (0)))
+					class_name.keep_tail (class_name.count -1)
+					class_name_upper := class_name.as_upper
+					if not class_names_upper.has ( class_name_upper) then
+						Result.force_last (class_name)
+						class_names_upper.force_last (class_name_upper)
+					end
+				end
+			end
+		end
+
+	stylesheet_file_name (rnc_file_contents: STRING): STRING is
+			-- Name of stylesheet declared in rnc_file_contents
+			-- Void if none
+		require
+			valid_rnc_file_contents: rnc_file_contents /= Void
+		do
+			stylesheet_declaration_matcher.match (rnc_file_contents)
+			if stylesheet_declaration_matcher.has_matched then
+				Result := STRING_.cloned_string(stylesheet_declaration_matcher.captured_substring (0))
+				Result.keep_tail (Result.count - Result.index_of ('%"', 1))
+				Result.keep_head (Result.count - 1)
+				Result := interpreted_string (Result)
+			end
+		end
+		
+	stylesheet_declaration_matcher: RX_PCRE_MATCHER is
+			-- Pattern matcher used to find stylesheet declarations in rnc files
+		once
+			create Result.make
+			Result.compile ("#\s*stylesheet\s*=\s*%"[a-zA-Z0-9./\_-]+%"")
+		end
+		
+	class_name_matcher: RX_PCRE_MATCHER is
+			-- Pattern matcher used to find class names in a CSS stylesheet
+		once
+			create Result.make
+			Result.compile ("\.[a-zA-Z0-9_-]+")
+		end
+		
+	
+
+		
+
+feature {NONE} -- Command Line Parsing
+
+	class_attribute_placeholder: STRING is "CLASS_ATTRIBUTE_PLACEHOLDER"	
+
+	command_line_options: ARRAY [STRING] is
+			-- Options to create COMMAND_LINE_SYNTAX object
+		once
+			Result := 	<<	file_switch + ",--file!=!file# The names of files containing Relax NG Compact Syntax Grammar(s)", 
+							verbose_switch + ",--verbose# Verbose mode",
+							norefresh_switch + ",--norefresh# Do not refresh Goanna files",
+							eiffeldirectory_switch + ",--eiffeldirectory=!eiffeldirectory# Eiffel directory name",
+							datadirectory_switch + ",--datadirectory=!datadirectory!# The location of the web applications configuration.data_directory.",
+							author_switch + ",--author=!author# The name of the author",
+							copyright_switch + ",--copyright=!copyright# Copyright declaration",
+							license_switch + ",--license=!license# Licesnse declaration",
+							help_switch + ",--help# Information about program usage.">>
+		end
+
+	command_line_syntax: COMMAND_LINE_SYNTAX
+	command_line_parser: COMMAND_LINE_PARSER
+			-- ECLOP syntax and parser
+
+feature {NONE} -- Command Line Arguments
+
+	command_line_includes_help_switch: BOOLEAN is
+			-- Did user include the help_switch on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (help_switch) 	
+		end
+
+	command_line_includes_eiffeldirectory_switch: BOOLEAN is
+			-- Did user include --eiffeldirectory argument on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (eiffeldirectory_switch) 	
+		end
+
+	exactly_one_eiffeldirectory_argument: BOOLEAN is
+			-- Does the list of arguments given by user for the -e argument contain exactly one item?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_eiffeldirectory_switch
+		once
+			Result := command_line_parser.valid_options.item (eiffeldirectory_switch).count = 1
+		end
+
+	eiffeldirectory_argument: STRING is
+			-- The --eiffeldirectory argument given by the user
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_eiffeldirectory_switch
+			exactly_one_eiffeldirectory_argument: exactly_one_eiffeldirectory_argument
+		once
+			Result := interpreted_string (command_line_parser.valid_options.item (eiffeldirectory_switch).item (1))
+		end
+
+	command_line_includes_datadirectory_switch: BOOLEAN is
+			-- Did user include --eiffeldirectory argument on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (datadirectory_switch) 	
+		end
+
+	exactly_one_datadirectory_argument: BOOLEAN is
+			-- Does the list of arguments given by user for the --eiffeldirectory argument contain exactly one item?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_datadirectory_switch
+		once
+			Result := command_line_parser.valid_options.item (datadirectory_switch).count = 1
+		end
+
+	datadirectory_argument: STRING is
+			-- The -e argument given by the user
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_datadirectory_switch
+			exactly_one_datadirectory_argument: exactly_one_datadirectory_argument
+		once
+			Result := interpreted_string (command_line_parser.valid_options.item (datadirectory_switch).item (1))
+		end
+
+	command_line_includes_author_switch: BOOLEAN is
+			-- Did user include --author argument on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (author_switch) 	
+		end
+
+	exactly_one_author_argument: BOOLEAN is
+			-- Does the list of arguments given by user for the -e argument contain exactly one item?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_author_switch
+		once
+			Result := command_line_parser.valid_options.item (author_switch).count = 1
+		end
+
+	author_argument: STRING is
+			-- The --author argument given by the user
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_author_switch
+			exactly_one_author_argument: exactly_one_author_argument
+		once
+			Result := command_line_parser.valid_options.item (author_switch).item (1)
+		end
+
+	command_line_includes_copyright_switch: BOOLEAN is
+			-- Did user include --copyright argument on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (copyright_switch) 	
+		end
+
+	exactly_one_copyright_argument: BOOLEAN is
+			-- Does the list of arguments given by user for the -e argument contain exactly one item?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_copyright_switch
+		once
+			Result := command_line_parser.valid_options.item (copyright_switch).count = 1
+		end
+
+	copyright_argument: STRING is
+			-- The --copyright argument given by the user
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_copyright_switch
+			exactly_one_copyright_argument: exactly_one_copyright_argument
+		once
+			Result := command_line_parser.valid_options.item (copyright_switch).item (1)
+		end
+
+	command_line_includes_license_switch: BOOLEAN is
+			-- Did user include --license argument on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (license_switch) 	
+		end
+
+	exactly_one_license_argument: BOOLEAN is
+			-- Does the list of arguments given by user for the -e argument contain exactly one item?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_license_switch
+		once
+			Result := command_line_parser.valid_options.item (license_switch).count = 1
+		end
+
+	license_argument: STRING is
+			-- The --license argument given by the user
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+			command_line_includes_database_argument: command_line_includes_license_switch
+			exactly_one_license_argument: exactly_one_license_argument
+		once
+			Result := command_line_parser.valid_options.item (license_switch).item (1)
+		end
+		
+	command_line_includes_verbose_switch: BOOLEAN is
+			-- Did user include the verbose_switch on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (verbose_switch) 	
+		end
+
+	command_line_includes_norefresh_switch: BOOLEAN is
+			-- Did user include the norefresh_switch on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (norefresh_switch) 	
+		end
+
+
+	file_switch: STRING is "-f"
+	verbose_switch: STRING is "-v"
+	norefresh_switch: STRING is "-n"
+	eiffeldirectory_switch: STRING is "-e"
+	datadirectory_switch: STRING is "-d"
+	author_switch: STRING is "-a"
+	copyright_switch: STRING is "-c"
+	license_switch: STRING is "-l"
+	help_switch: STRING is "-h"
+
+feature {NONE} -- Implementation
+
+	help_usage: STRING is "Use goa_build -h for help%N"
+	
+	directory_separator: STRING is
+			-- Directory separator used on current operating system
+		do
+			if operating_system.is_windows then
+				Result := "\"
+			else
+				Result := "/"
+			end
+		end
+		
+	unreadable_files (file_names: DS_LIST [STRING]): DS_LINKED_LIST [STRING] is
+			-- Which files given by file names are not readable
+			-- Will return empty list if all are readable
+		require
+			valid_file_names: file_names /= Void
+		local
+			file_name: STRING
+		do
+			create Result.make
+			from
+				file_names.start
+			until
+				file_names.after
+			loop
+				file_name := file_names.item_for_iteration
+				if not file_system.is_file_readable (interpreted_string(file_name)) then
+					Result.force_last (file_name)
+				end
+				file_names.forth
+			end
+		end
+		
+	transformer_factory: GOA_XSLT_TRANSFORMER_FACTORY is
+			-- Where XSLT Transformers come from
+		once
+			create Result.make_without_configuration
+		end
+		
+	flatten_stage_1_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to perform stage 1 of combining included schemas into a single file
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("flatten_1.xsl")
+		end
+
+	flatten_stage_2_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to perform stage 2 of combining included schemas into a single file
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("flatten_2.xsl")
+		end	
+
+	flatten_stage_3_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to perform stage 3 of combining included schemas into a single file
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("flatten_3.xsl")
+		end	
+
+	imported_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to generate the import schema file
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("imported.xsl")
+		end
+
+	include_list_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to generate the list of included files specified in a grammar
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("include_list.xsl")
+		end
+
+	xsl_included_files_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to generate the list of included files specified in a grammar
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("xsl_include_list.xsl")
+		end
+
+	validating_xml_writer_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to generate eiffel fully effective class {FILE_NAME}_XML_DOCUMENT
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("validating_xml_writer.xsl")
+		end
+		
+	deferred_xml_writer_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to generate deferred eiffel class {FILE_NAME}_XML_DOCUMENT
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("deferred_xml_writer.xsl")
+		end
+
+	schema_codes_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to generate eiffel class {FILE_NAME}_SCHEMA_CODES
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("schema_codes.xsl")
+		end
+
+	attribute_values_transformer: GOA_XSLT_STRING_TRANSFORMER is
+			-- XSLT Transformer used to generate eiffel class {FILE_NAME}_ATTRIBUTE_VALUES
+		once
+			Result := transformer_factory.new_string_transformer_from_file_name ("attribute_values.xsl")
+		end
+
+	put_string_to_current_directory (file_name, content: STRING) is
+			-- Write content to a file named file_name in the current working directory
+		require
+			valid_file_name: file_name /= Void and then not file_name.is_empty
+			valid_content: content /= Void
+			-- Current Directory is writable
+		do
+			put_string_to_file ("", file_name, content)
+		end
+		
+	put_string_to_data_directory (file_name, content: STRING) is
+			-- Write content to a file named file_name in the data_directory
+		require
+			valid_file_name: file_name /= Void and then not file_name.is_empty
+			valid_content: content /= Void
+			valid_data_directory: command_line_includes_datadirectory_switch implies file_system.directory_exists (datadirectory_argument)
+			-- Data Directory is writable
+		do
+			if command_line_includes_datadirectory_switch then
+				put_string_to_file (datadirectory_argument, file_name, content)
+			else
+				put_string_to_file ("", file_name, content)
+			end
+			
+		end
+		
+	put_string_to_eiffel_directory (file_name, content: STRING) is
+			-- Write content to a file named file_name in the eiffel_directory
+		require
+			valid_file_name: file_name /= Void and then not file_name.is_empty
+			valid_content: content /= Void
+			valid_data_directory: command_line_includes_eiffeldirectory_switch implies file_system.directory_exists (eiffeldirectory_argument)
+			-- Data Directory is writable
+		do
+			if command_line_includes_eiffeldirectory_switch then
+				put_string_to_file (eiffeldirectory_argument, file_name, content)
+			else
+				put_string_to_file ("", file_name, content)
+			end
+		end
+
+
+	put_string_to_file (directory, file_name, content: STRING) is
+			-- Write file containing content in directory
+		require
+			valid_file_name: file_name /= Void and then not file_name.is_empty
+			valid_content: content /= Void
+			valid_directory: directory /= Void and then not directory.is_empty implies file_system.directory_exists (directory)
+			-- Directory is writable
+		local
+			local_directory, local_file_name: STRING
+			the_file: KI_TEXT_OUTPUT_FILE
+		do
+			if not directory.is_empty then
+				local_file_name := file_system.pathname (directory, file_name)
+			else
+				local_file_name := file_name
+			end
+			the_file := file_system.new_output_file (local_file_name)
+			the_file.open_write
+			the_file.put_string (content)
+			the_file.close
+		end
+			
+		
+
+end -- class GOA_BUILD
