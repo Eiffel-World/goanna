@@ -146,6 +146,91 @@ taking care to set the <envar>GOANNA</envar> environment variable.
       <listitem>
 	<para>
 
+Install <ulink url="http://www.fastcgi.com/">FastCgi</ulink> on the webserver
+that will be hosting the application.  This step is not necessary if
+you will be configuring the application as a stand alone web server,
+but Goanna's stand alone web application facility is not recommended
+for production use.
+	  
+	</para>
+	<para>
+
+For Apache, add something like the following to the configuration file:
+
+	</para>
+	<para>
+
+FastCgiExternalServer "/var/www/html/fast-cgi" -host localhost:4444
+
+	</para>
+	<para>
+
+Each Goanna Application running on the webserver must have it's own FastCgiExternalServer with a unique (developer selected) path and it's own port.  The port number must match <classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>  
+
+	</para>
+	<para>
+
+Then add (typically within a VirtualHost):
+	  
+	</para>
+	<para>
+
+Alias /alias "/var/www/html/fast-cgi"
+
+	<para>
+
+TODO The following lines should not have spaces between them.
+
+	</para>
+	<para>
+&lt;Directory "/var/www/html/fast-cgi"
+	</para>
+	<para>
+  SetHandler fastcgi-script
+	</para>
+	<para>
+  Options ExecCGI
+	</para>
+	<para>
+&lt;/Directory&gt;	  
+	</para>
+	<para>
+
+The /alias path may be selected the developer; the path in quotes must match the path given in the FastCgiExternalServer declaration. You may then access the application at the following URL:
+	  
+	</para>
+	<para>
+
+http://hostname/alias/subdirectory/servlet.htm
+	  
+	</para>
+	<para>
+
+Where 'subdirectory' is any developer selected name.  The name is not configured within the application as it will respond to requests for any subdirectory under 'alias'.
+	  
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+
+The following steps are required only if you will be using <ulink
+url="#custom_html_generation">custom HTML generation</ulink>.
+	  
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+
+Install <ulink
+url="http://prdownloads.sourceforge.net/swete/unofficial-eclop.zip?download">Unofficial
+ECLOP</ulink> and set the environment variable ECLOP to the directory
+containing the library.xace file.
+	  
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+
 Compile the goa_build tool:
 	</para>
 	<para>
@@ -173,18 +258,6 @@ name.
 
 	</para>
       </listitem>
-      <listitem>
-	<para>
-
-Install <ulink url="http://www.fastcgi.com/">FastCgi</ulink> on the webserver
-that will be hosting the application.  This step is not necessary if
-you will be configuring the application as a stand alone web server,
-but Goanna's stand alone web application facility is not recommended
-for production use.
-	  
-	</para>
-      </listitem>
-
     </orderedlist>
   </section>
   <section id="starting_an_application">
