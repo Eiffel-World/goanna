@@ -1,6 +1,6 @@
 <?xml version="1.0"?> 
 <!--
-     	description: "Create list of included files; one file name (only) per line"
+     	description: "Create a pipe separated list of included files"
 	author: "Neal L Lester <neal@3dsafety.com>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -12,6 +12,7 @@
    xmlns:rng="http://relaxng.org/ns/structure/1.0"
    exclude-result-prefixes="rng">
 <xsl:output method="text" />
+
 <xsl:template match="/rng:grammar">
 <xsl:for-each select="rng:include">
 <xsl:value-of select="@href" />

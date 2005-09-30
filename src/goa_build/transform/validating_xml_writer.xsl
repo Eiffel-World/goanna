@@ -62,28 +62,32 @@ KNOWN LIMITATIONS
    syntax notation) is supported.  The element in the included file
    must be a choice element.  Note that there are no automated checks to ensure
    the input files comform with this requirement.
+7) Does not (currently) support mixing namespaces that contain elements
+   with the same name.
 	
 -->
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
   xmlns:rng="http://relaxng.org/ns/structure/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:imp="http://www.sourceforge.net/projects/goanna/imported_grammars"
   exclude-result-prefixes="rng"
 >
-
-	<xsl:variable name="transform_file_name" select="concat ($prefix, '.xsl')" />
-	<xsl:variable name="schema_file_name" select="concat ($prefix, '.frng')" />
+	<xsl:variable name="transform_file_name" as="xs:string" select="concat ($prefix, '.xsl')" />
+	<xsl:variable name="schema_file_name" as="xs:string" select="concat ($prefix, '.frng')" />
 	<xsl:include href="common.xsl" />
 	<xsl:output method="text" />
 
 <xsl:template match="/rng:grammar">
+<!-- I don't think these are needed anymore
 
-	<xsl:variable name="name" select="@name"/>
- 	<xsl:variable name="element" select="key ('elements', $name)" />
- 	<xsl:variable name="last_ref" select="$element/descendant::rng:ref[position () = last()]" />
- 	<xsl:variable name="includes_elements" select="$element/descendant::rng:ref[key ('elements', @name)]" />
- 	<xsl:variable name="open_ended" select="$last_ref[ancestor::rng:oneOrMore or ancestor::rng:zeroOrMore]" />
-	<xsl:variable name="include_names" select ="//rng:include/@href" />
-	
+	xsl:variable name="name" as="xs:string" select="@name"/
+ 	xsl:variable name="element" as="xs:node()*" select="key ('elements', $name)" /
+ 	xsl:variable name="last_ref" select="$element/descendant::rng:ref[position () = last()]" /
+ 	xsl:variable name="includes_elements" select="$element/descendant::rng:ref[key ('elements', @name)]" /
+ 	xsl:variable name="open_ended" select="$last_ref[ancestor::rng:oneOrMore or ancestor::rng:zeroOrMore]" /
+	xsl:variable name="include_names" select ="//rng:include/@href" />
+
+-->
 indexing
 
 	description: "An XML Document conforming with the xmlns:<xsl:value-of select="$prefix_lower"/> schema"
@@ -116,7 +120,7 @@ feature -- Adding Elements
 	<xsl:apply-templates select="." mode="element_features">
 		<xsl:with-param name="is_deferred" select="'no'" />
 		<xsl:with-param name="include_dbc">
-			<xsl:variable name="current_name" select="@name" />
+			<xsl:variable name="current_name" as="xs:string" select="@name" />
 			<xsl:choose>
 				<xsl:when test="document ($imported_file_name)//imp:ref[@name=$current_name]">no</xsl:when>
 				<xsl:otherwise>yes</xsl:otherwise>
@@ -191,10 +195,10 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 
 	<!-- The feature parameters for a feature that adds an element to the document -->
 
-	<xsl:variable name="attribute" select="key ('attributes', @name)" />
+	<xsl:variable name="attribute" as="node()?" select="key ('attributes', @name)" />
 	<xsl:if test="$attribute">
-		<xsl:variable name="includes_elements" select="key ('elements', @name)/descendant::rng:ref[key ('elements', @name)]" />
-		<xsl:variable name="current_ref" select="@name" />
+		<xsl:variable name="includes_elements" as="xs:boolean" select="count (key ('elements', @name)/descendant::rng:ref[key ('elements', @name)]) > 0" />
+		<xsl:variable name="current_ref" as="node()?" select="@name" />
 		<xsl:choose>
 			<xsl:when test="ancestor::rng:choice/rng:ref[1]/@name = $current_ref">
 				<xsl:apply-templates select="." mode="choice_name" />
@@ -223,7 +227,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 	<!-- 	Create a when statement that identifies call {GOA_XML_CONTENT_SCHEMA}.is_valid_fragment
 		by element_code -->
 		
-	<xsl:variable name="element_name" select="../@name" />
+	<xsl:variable name="element_name" as="xs:string" select="../@name" />
 	<xsl:text>				when </xsl:text><xsl:value-of select="$element_name" /><xsl:text>_element_code then&#xA;</xsl:text>
 	<xsl:text>					Result := </xsl:text><xsl:value-of select="$element_name" /><xsl:text>_content_validity.is_valid_content_fragment (the_fragment)&#xA;</xsl:text>
 </xsl:template>
@@ -233,7 +237,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 	<!-- 	Create a when statement that identifies call {GOA_XML_CONTENT_SCHEMA}.is_valid_content
 		by element_code -->
 		
-	<xsl:variable name="element_name" select="../@name" />
+	<xsl:variable name="element_name" as="xs:string" select="../@name" />
 	<xsl:text>				when </xsl:text><xsl:value-of select="$element_name" /><xsl:text>_element_code then&#xA;</xsl:text>
 	<xsl:text>					Result := </xsl:text><xsl:value-of select="$element_name" /><xsl:text>_content_validity.is_valid_content (the_content)&#xA;</xsl:text>
 </xsl:template>
@@ -242,7 +246,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 
 	<!-- Not Used; Will I need the test later? -->
 	
-	<xsl:variable name="current_ref_name" select="@name"/>
+	<xsl:variable name="current_ref_name" as="xs:string" select="@name"/>
 	<xsl:choose>
 		<xsl:when test="preceding-sibling::rng:ref[@name = $current_ref_name]" />
 		<xsl:otherwise>
@@ -258,21 +262,21 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 		defining valid elements and-or text that may be contained within
 		the element -->
 		
-	<xsl:variable name="element_name" select="../@name" />
+	<xsl:variable name="element_name" as="xs:string" select="../@name" />
 	<xsl:value-of select="$element_name" />
 	<xsl:text>_content_validity: GOA_XML_ELEMENT_SCHEMA is&#xA;</xsl:text>
 	<xsl:text>&#x9;&#x9;&#x9;-- Schema representing valid contents of a(n) </xsl:text><xsl:value-of select="$element_name" /><xsl:text> element&#xA;</xsl:text>
 	<xsl:text>&#x9;&#x9;once&#xA;</xsl:text>
 	<xsl:text>&#x9;&#x9;&#x9;create Result.make&#xA;</xsl:text>
 	<xsl:for-each select="descendant::*">
-		<xsl:if test="key ('elements', @name) or translate(local-name (), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'text' or (translate(local-name (), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'choice' and descendant::rng:ref[key ('elements', @name)])">
-			<xsl:variable name="this_node" select="." />
-			<xsl:variable name="is_text" select="translate(local-name (), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'text'" />
-			<xsl:variable name="is_in_a_choice" select="ancestor::rng:choice" />
-			<xsl:variable name="is_a_choice" select="translate(local-name (), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'choice'" />
-			<xsl:variable name="is_multiple" select="ancestor::rng:zeroOrMore or ancestor::rng:oneOrMore" />
-			<xsl:variable name="is_required" select="not (ancestor::rng:optional or ancestor::rng:zeroOrMore)" />
-			<xsl:variable name="elements_argument">
+		<xsl:if test="count (key ('elements', @name)) > 0 or local-name () eq 'text' or (local-name () eq 'choice') and count (descendant::rng:ref[key ('elements', @name)]) > 0">
+			<xsl:variable name="this_node" as="node()" select="." />
+			<xsl:variable name="is_text" as="xs:boolean" select="local-name () eq 'text'" />
+			<xsl:variable name="is_in_a_choice" as="xs:boolean" select="count (ancestor::rng:choice) > 0" />
+			<xsl:variable name="is_a_choice" as="xs:boolean" select="local-name () eq 'choice'" />
+			<xsl:variable name="is_multiple" as="xs:boolean" select="count (ancestor::rng:zeroOrMore) > 0 or count (ancestor::rng:oneOrMore) > 0" />
+			<xsl:variable name="is_required" as="xs:boolean" select="not ((count (ancestor::rng:optional) > 0) or (count(ancestor::rng:zeroOrMore)) > 0)" />
+			<xsl:variable name="elements_argument_components" as="xs:string*">
 				<xsl:choose>
 					<xsl:when test="$is_a_choice">
 						<xsl:apply-templates select="." mode="contents_as_element_code_array" />
@@ -287,7 +291,8 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 					<xsl:otherwise></xsl:otherwise>
 				</xsl:choose>
 			</xsl:variable>
-			<xsl:if test="string-length ($elements_argument)" >
+			<xsl:variable name="elements_argument" as="xs:string?" select="string-join ($elements_argument_components, '')" />
+			<xsl:if test="string-length ($elements_argument) > 0" >
 				<xsl:choose>
 					<xsl:when test="ancestor::rng:zeroOrMore">
 						<xsl:text>&#x9;&#x9;&#x9;Result.add_zero_or_more_element (</xsl:text><xsl:value-of select="$elements_argument" /><xsl:text>)&#xA;</xsl:text>

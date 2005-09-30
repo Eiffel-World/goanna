@@ -1,6 +1,7 @@
 <?xml version="1.0"?> 
 <!--
-     	description: "Flatten a Relax NG grammer to inline referenced Include statements; combine files"
+     	description: "Flatten a Relax NG grammer to inline referenced Include statements"
+	             "Step three, remove include statements once they are no longer needed"
 	author: "Neal L Lester <neal@3dsafety.com>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,12 +14,16 @@
    exclude-result-prefixes="rng">
 
 <xsl:template match="*|@*|comment()|processing-instruction()|text()">
+
+  <!-- Copy all elements except those matching template below to output -->
+
   <xsl:copy>
     <xsl:apply-templates select="*|@*|comment()|processing-instruction()|text()" />
   </xsl:copy>
 </xsl:template>
 
-<xsl:template match="rng:include">
-</xsl:template>
+<!-- Swallow include elements; they are no longer needed -->
+
+<xsl:template match="rng:include" />
 
 </xsl:transform>

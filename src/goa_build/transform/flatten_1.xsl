@@ -1,6 +1,6 @@
 <?xml version="1.0"?> 
 <!--
-     	description: "Flatten a Relax NG grammer to inline referenced Include statements; combine files"
+     	description: "Flatten a Relax NG grammer to inline referenced Include statements; Stage 1: combine files"	             
 	author: "Neal L Lester <neal@3dsafety.com>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,19 +13,27 @@
    exclude-result-prefixes="rng">
 
 <xsl:template match="*|@*|comment()|processing-instruction()|text()">
+
+  <!-- Copy all elements (except those matching other templates) to output -->
+
   <xsl:copy>
     <xsl:apply-templates select="*|@*|comment()|processing-instruction()|text()" />
   </xsl:copy>
 </xsl:template>
 
 <xsl:template match="rng:include">
-	<xsl:apply-templates select="doc(@href)/rng:grammar/*" />
-	<xsl:element namespace="http://relaxng.org/ns/structure/1.0" name="include">
-		<xsl:attribute name="href">
-			<xsl:value-of select="@href" />
-		</xsl:attribute>
-	</xsl:element>
-</xsl:template>
 
+  <!-- Process contents of files referenced by include statements and then
+       recreate the include statement in output.  The include statements
+       are still needed for other processing.  They will be removed at 
+       flatten stage 3 -->
+
+  <xsl:apply-templates select="doc(@href)/rng:grammar/*" />
+  <xsl:element namespace="http://relaxng.org/ns/structure/1.0" name="include">
+    <xsl:attribute name="href">
+      <xsl:value-of select="@href" />
+    </xsl:attribute>
+  </xsl:element>
+</xsl:template>
 
 </xsl:transform>

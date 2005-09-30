@@ -1,6 +1,6 @@
 <?xml version="1.0"?> 
 <!--
-     	description: "Create list of included files; one file name (only) per line"
+     	description: "Create list of pipe separated included file names"
 	author: "Neal L Lester <neal@3dsafety.com>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +10,6 @@
 -->
 <xsl:transform
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
-
 <xsl:output method="text" />
 <xsl:template match="/xsl:transform">
 <xsl:for-each select="xsl:include">

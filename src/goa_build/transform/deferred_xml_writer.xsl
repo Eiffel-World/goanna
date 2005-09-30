@@ -22,6 +22,7 @@ type.
 
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
   xmlns:rng="http://relaxng.org/ns/structure/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
   exclude-result-prefixes="rng">
 
 	<xsl:include href="common.xsl" />
@@ -30,11 +31,6 @@ type.
 	<xsl:key name="refs" match="//rng:ref" use="@name" />
 
 <xsl:template match="/rng:grammar">
-	<xsl:variable name="name" select="@name"/>
- 	<xsl:variable name="element" select="key ('elements', $name)" />
- 	<xsl:variable name="last_ref" select="$element/descendant::rng:ref[position () = last()]" />
- 	<xsl:variable name="includes_elements" select="$element/descendant::rng:ref[key ('elements', @name)]" />
- 	<xsl:variable name="open_ended" select="$last_ref[ancestor::rng:oneOrMore or ancestor::rng:zeroOrMore]" />
 indexing
 
 	description: "An XML Document conforming with the xmlns:<xsl:value-of select="$prefix_lower"/> schema"
@@ -76,7 +72,7 @@ feature -- Element Tags
 feature -- Attribute Names
 
 	<xsl:for-each select="//rng:attribute" >
-		<xsl:variable name="fixed_tag" select="translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:-', 'abcdefghijklmnopqrstuvwxyz__')" />
+		<xsl:variable name="fixed_tag" as="xs:string" select="lower-case (translate(@name, ':-', '__'))" />
 		<xsl:text>&#x9;</xsl:text><xsl:apply-templates select="." mode="attribute_name_constant" />
 		<xsl:text>: STRING is&#xA;</xsl:text>
 		<xsl:text>&#x9;&#x9;deferred&#xA;</xsl:text>
@@ -122,10 +118,10 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 
 	<!-- The feature parameters for a feature that adds an element to the document -->
 
-	<xsl:variable name="attribute" select="key ('attributes', @name)" />
-	<xsl:if test="$attribute">
-		<xsl:variable name="includes_elements" select="key ('elements', @name)/descendant::rng:ref[key ('elements', @name)]" />
-		<xsl:variable name="current_ref" select="@name" />
+	<xsl:variable name="attribute" as="node()?" select="key ('attributes', @name)" />
+	<xsl:if test="count ($attribute) > 0 ">
+		<xsl:variable name="includes_elements" as="xs:boolean" select="count (key ('elements', @name)/descendant::rng:ref[key ('elements', @name)]) > 0" />
+		<xsl:variable name="current_ref" as="xs:string" select="@name" />
 		<xsl:choose>
 			<xsl:when test="ancestor::rng:choice/rng:ref[1]/@name = $current_ref">
 				<xsl:apply-templates select="." mode="choice_name" />
@@ -143,7 +139,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 				<xsl:apply-templates select="." mode="value_type"/>
 			</xsl:otherwise>
 		</xsl:choose>
-		<xsl:if test="(not (ancestor::rng:choice)) or (ancestor::rng:choice/rng:ref[1]/@name = $current_ref)">
+		<xsl:if test="(not (ancestor::rng:choice)) or (ancestor::rng:choice/rng:ref[1]/@name eq $current_ref)">
 			<xsl:text>; </xsl:text>
 		</xsl:if>
 	</xsl:if>
@@ -156,7 +152,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 	<!-- 	Create a when statement that identifies call {XML_CONTENT_SCHEMA}.is_valid_fragment
 		by element_code -->
 		
-	<xsl:variable name="element_name" select="../@name" />
+	<xsl:variable name="element_name" as="xs:string" select="../@name" />
 	<xsl:text>				when </xsl:text><xsl:value-of select="$element_name" /><xsl:text>_element_code then&#xA;</xsl:text>
 	<xsl:text>					Result := </xsl:text><xsl:value-of select="$element_name" /><xsl:text>_content_validity.is_valid_content_fragment (the_fragment)&#xA;</xsl:text>
 </xsl:template>

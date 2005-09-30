@@ -1,6 +1,6 @@
 <?xml version="1.0"?> 
 <!--
-     	description: "Output An Eiffel File with constants for each attribute value in a Relax NG Schema"
+     	description: "Output An Eiffel Class with constants for each attribute value in a Relax NG Schema"
 	author: "Neal L Lester <neal@3dsafety.com>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,10 +10,13 @@
 -->
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
   xmlns:rng="http://relaxng.org/ns/structure/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:imp="http://www.sourceforge.net/projects/goanna/imported_grammars"
   exclude-result-prefixes="rng"
   >
   <xsl:include href="common.xsl" />
+
+  <xsl:output method="text" />
 
 <xsl:template match="/rng:grammar">
 
@@ -44,9 +47,9 @@ inherit
 feature -- Attribute Values
 
 <xsl:for-each select="//rng:value">
-  <xsl:variable name="current_value" select="." />
+  <xsl:variable name="current_value" as="xs:string" select="." />
   <xsl:if test="not (doc('temp.rng')//value [. eq $current_value])" >
-    <xsl:variable name="feature_name" select="translate (concat (ancestor::rng:attribute/@name, '_', .), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:-.().', 'abcdefghijklmnopqrstuvwxyz___')" />
+    <xsl:variable name="feature_name" as="xs:string" select="lower-case (translate (concat (ancestor::rng:attribute/@name, '_', .), ':-.().', '___'))" />
     <xsl:text>&#x9;</xsl:text><xsl:value-of select="$feature_name" />: STRING is "<xsl:value-of select="." />"&#xA;
   </xsl:if>
 </xsl:for-each>
@@ -54,7 +57,5 @@ feature -- Attribute Values
 end -- <xsl:value-of select="$prefix_upper" />_ATTRIBUTE_VALUES
 
 </xsl:template>
-
-<xsl:output method="text" />
  
 </xsl:transform>

@@ -10,10 +10,11 @@
 -->
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
   xmlns:rng="http://relaxng.org/ns/structure/1.0"
-  exclude-result-prefixes="rng"
-  >
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  exclude-result-prefixes="rng">
   <xsl:include href="common.xsl" />
-  <xsl:template match="/rng:grammar">
+  <xsl:output method="text" />
+<xsl:template match="/rng:grammar">
 indexing
 
 	description: "Codes and constants representing elements/attributes of the xmlns:<xsl:value-of select="$prefix_lower"/> schema"
@@ -43,7 +44,7 @@ feature -- Element Tags
 feature -- Attribute Names
 
 	<xsl:for-each select="//rng:attribute" >
-		<xsl:variable name="fixed_tag" select="translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:-', 'abcdefghijklmnopqrstuvwxyz__')" />
+		<xsl:variable name="fixed_tag" as="xs:string" select="lower-case (translate (@name, ':-', '__'))" />
 		<xsl:apply-templates select="." mode="attribute_name_constant" />
 		<xsl:text>: STRING is "</xsl:text>
 		<xsl:value-of select="$fixed_tag" />
@@ -85,7 +86,7 @@ feature -- Valid Attribute Values
 	is_valid_attribute_value (attribute_name_code: INTEGER; attribute_value: STRING): BOOLEAN is
 			-- is attribute_value valid for athe attribute given by attribute_name_code
 		do
-<xsl:variable name="attributes_requiring_validation" select="//rng:attribute[descendant::rng:value or descendant::rng:data]" />
+<xsl:variable name="attributes_requiring_validation" as="node()*" select="//rng:attribute[descendant::rng:value or descendant::rng:data]" />
 	<xsl:choose>
 		<xsl:when test="$attributes_requiring_validation">
 			<xsl:text>			Result :=  True&#xA;</xsl:text>
@@ -230,7 +231,5 @@ end -- <xsl:value-of select="$prefix_upper"/>_SCHEMA_CODES
  	<xsl:apply-templates select="." mode="attribute_code" />
  	<xsl:text>)&#xA;</xsl:text>
 </xsl:template>
-
-<xsl:output method="text" />
  
 </xsl:transform>

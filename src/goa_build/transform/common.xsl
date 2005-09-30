@@ -1,6 +1,6 @@
 <?xml version="1.0"?> 
 <!--
-     	description: "Common elements for XML Writing and Parsing Classes specified by a Relax NG Schema "
+     	description: "Common elements for XML Writing Classes specified by a Relax NG Schema "
 	author: "Neal L Lester <neal@3dsafety.com>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,6 +10,7 @@
 -->
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
    xmlns:rng="http://relaxng.org/ns/structure/1.0"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
    xmlns:imp="http://www.sourceforge.net/projects/goanna/imported_grammars"
    exclude-result-prefixes="rng">
    
@@ -17,11 +18,11 @@
   	<xsl:param name="author" select="''" />
   	<xsl:param name="copyright" select="''" />
   	<xsl:param name="license" select="''" />
-  	<xsl:variable name="prefix_upper" select="upper-case($prefix)" />
-  	<xsl:variable name="prefix_lower" select="lower-case($prefix)" />
-	<xsl:variable name="namespace" select="namespace-uri-for-prefix ($prefix, /rng:grammar)" />
-	<xsl:variable name="imported_file_name" select="concat ($prefix_lower, '.imp')" />
-	<xsl:variable name="imported_elements" select="document ($imported_file_name)" />
+  	<xsl:variable name="prefix_upper" as="xs:string" select="upper-case($prefix)" />
+  	<xsl:variable name="prefix_lower" as="xs:string" select="lower-case($prefix)" />
+	<xsl:variable name="namespace" as="xs:string" select="namespace-uri-for-prefix ($prefix, /rng:grammar)" />
+	<xsl:variable name="imported_file_name" as="xs:string" select="concat ($prefix_lower, '.imp')" />
+	<xsl:variable name="imported_elements" as="document-node()" select="document ($imported_file_name)" />
 	<xsl:key name="attributes" match="//rng:attribute" use="@name" />
 	<xsl:key name="elements" match="//rng:element" use="../@name" />
 	<xsl:key name="refs" match="//rng:ref" use="@name" />
@@ -32,7 +33,7 @@
 
 	<!-- Name of string contstant for an element tag -->
 
-	<xsl:value-of select="translate(../@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:-', 'abcdefghijklmnopqrstuvwxyz__')" />
+	<xsl:value-of select="lower-case (translate(../@name, ':-', '__'))" />
 	<xsl:text>_element_tag</xsl:text>
 </xsl:template>
 
@@ -40,7 +41,7 @@
 
 	<!-- Name of string constant for an attribute name -->
 
-	<xsl:variable name="fixed_tag" select="translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:-', 'abcdefghijklmnopqrstuvwxyz__')" />
+	<xsl:variable name="fixed_tag" as="xs:string" select="lower-case (translate(@name, ':-', '__'))" />
 	<xsl:value-of select="$fixed_tag" />
 	<xsl:text>_attribute_name</xsl:text>
 </xsl:template>
@@ -49,7 +50,7 @@
 
 	<!-- Name of constant defining code for an attribute -->
 
-	<xsl:value-of select="translate(@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:-', 'abcdefghijklmnopqrstuvwxyz__')" />
+	<xsl:value-of select="lower-case (translate(@name, ':-', '__'))" />
 	<xsl:text>_attribute_code</xsl:text>
 </xsl:template>
 
@@ -57,7 +58,7 @@
 
 	<!-- Name of constant defining code for an element -->
 
-	<xsl:value-of select="translate(../@name, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:-', 'abcdefghijklmnopqrstuvwxyz__')" />
+	<xsl:value-of select="lower-case (translate(../@name, ':-', '__'))" />
 	<xsl:text>_element_code</xsl:text>
 </xsl:template>
 
@@ -72,29 +73,23 @@
 
 	<!-- Features that add an elements to the document -->
 
-	<xsl:variable name="name" select="../@name"/>
-	<xsl:variable name="element_code">
-		<xsl:value-of select="$name" />
-		<xsl:text>_element_code</xsl:text>	
-	</xsl:variable>
-	<xsl:variable name="last_ref" select="descendant::rng:ref[position () = last()]" />
- 	<xsl:variable name="includes_elements" select="descendant::rng:ref[key ('elements', @name)]" />
- 	<xsl:variable name="open_ended" select="$last_ref[ancestor::rng:oneOrMore or ancestor::rng:zeroOrMore]" />
- 	<xsl:variable name="has_attributes" select="descendant::rng:ref[key ('attributes', @name)]" />
- 	<xsl:variable name="has_elements" select="descendant::rng:ref[key ('elements', @name)]" />
- 	<xsl:variable name="element_and_text_list">
- 		<xsl:for-each select ="descendant::*">
- 			<xsl:if test="name () = 'ref' or name() = 'text'">
- 				<xsl:value-of select="name()"/>
- 			</xsl:if>
- 		</xsl:for-each>
- 	</xsl:variable>
- 	<xsl:variable name="text_element_is_last" select="substring ($element_and_text_list, string-length ($element_and_text_list) - 3) = 'text'"/>
- 	<xsl:variable name="only_one_text_element" select="count (descendant::rng:text) = 1 and not (descendant::rng:text/ancestor::zeroOrMore) and not (descendant::rng:text/ancestor::oneOrMore)" />
- 	<xsl:variable name="text_not_in_choice" select="not (descendant::rng:text/ancestor::rng:choice)" />
- 	<xsl:variable name="add_text_parameter" select="$text_element_is_last and $only_one_text_element and $text_not_in_choice and not ($has_elements)" />
- 	<xsl:variable name="text_is_mandatory" select="not (descendant::rng:text/ancestor::rng:optional or descendant::rng:text/ancestor::rng:zeroOrMore)" />
- 	<xsl:variable name="is_a_root_element" select="//rng:ref[@name = $name]/ancestor::rng:start" />
+	<xsl:variable name="name" as="xs:string" select="../@name"/>
+	<xsl:variable name="element_code" as="xs:string" select="concat ($name, '_element_code')" />
+	<xsl:variable name="last_ref" as="node()?" select="descendant::rng:ref[position () = last()]" />
+ 	<xsl:variable name="includes_elements" as="xs:boolean" select="count (descendant::rng:ref[key ('elements', @name)]) > 0" />
+ 	<xsl:variable name="open_ended" as="xs:boolean" select="$last_ref[ancestor::rng:oneOrMore or ancestor::rng:zeroOrMore]" />
+ 	<xsl:variable name="has_attributes" as="xs:boolean" select="count (descendant::rng:ref[key ('attributes', @name)]) > 0" />
+ 	<xsl:variable name="has_elements" as="xs:boolean" select="count (descendant::rng:ref[key ('elements', @name)]) > 0" />
+ 	<xsl:variable name="text_element_is_last" as="xs:boolean" select="name (descendant::*[last()]) eq 'text'" />
+ 	<xsl:variable name="only_one_text_element" as="xs:boolean" select="count (descendant::rng:text) = 1 and not (descendant::rng:text/ancestor::zeroOrMore) and not (descendant::rng:text/ancestor::oneOrMore)" />
+ 	<xsl:variable name="text_not_in_choice" as="xs:boolean" select="not (descendant::rng:text/ancestor::rng:choice)" />
+ 	<xsl:variable name="add_text_parameter" as="xs:boolean" select="$text_element_is_last and $only_one_text_element and $text_not_in_choice and not ($has_elements)" />
+<!-- Removed $text_element_is_last  -->
+<!-- xsl:variable name="add_text_parameter" as="xs:boolean" select="$text_element_is_last and $only_one_text_element and $text_not_in_choice and not ($has_elements)" / -->
+
+ 	<xsl:variable name="text_is_mandatory" as="xs:boolean" select="not (descendant::rng:text/ancestor::rng:optional or descendant::rng:text/ancestor::rng:zeroOrMore)" />
+
+ 	<xsl:variable name="is_a_root_element" as="xs:boolean" select="count(//rng:ref[@name = $name]/ancestor::rng:start) > 0" />
 	<xsl:text>&#x9;</xsl:text>
 	<xsl:apply-templates select="." mode="element_name" />
 	<xsl:if test="$has_attributes or $add_text_parameter">
@@ -210,18 +205,16 @@
 	<!-- The preconditions and do for a feature that adds an element to the document -->
 
 	<xsl:param name="mode" select="'require'" />
-	<xsl:variable name="attribute" select="key ('attributes', @name)" />
-	<xsl:if test="$attribute">
-		<xsl:variable name="current_name" select="$attribute/@name" />
-		<xsl:variable name="attribute_code">
-			<xsl:value-of select="$current_name"/>
-			<xsl:text>_attribute_code</xsl:text>
-		</xsl:variable>
-		<xsl:variable name="is_a_choice" select="ancestor::rng:choice" />
-		<xsl:variable name="first_of_a_choice" select="$is_a_choice and ancestor::rng:choice/rng:ref[1]/@name = $current_name" />
-		<xsl:variable name="has_values" select="$attribute/descendant::rng:value" />
-		<xsl:variable name="multiple_attributes" select="ancestor::rng:zeroOrMore or ancestor::rng:oneOrMore and ancestor::rng:choice" />
-		<xsl:variable name="mandatory" select="not (ancestor::rng:optional or ancestor::rng:zeroOrMore)" />
+	<xsl:variable name="attribute" as="node()?" select="key ('attributes', @name)" />
+	<xsl:if test="count ($attribute) > 0">
+		<xsl:variable name="current_name" as="xs:string" select="$attribute/@name" />
+		<xsl:variable name="attribute_code" as="xs:string" select="concat($current_name, '_attribute_code')" />
+		<xsl:variable name="current_choice" as="node ()?" select="ancestor::rng:choice" />
+		<xsl:variable name="is_a_choice" as="xs:boolean"  select="count ($current_choice) > 0" />
+		<xsl:variable name="first_of_a_choice" as="xs:boolean" select="$is_a_choice and ancestor::rng:choice/rng:ref[1]/@name = $current_name" />
+		<xsl:variable name="has_values" as="xs:boolean" select="$attribute/descendant::rng:value" />
+		<xsl:variable name="multiple_attributes" as="xs:boolean" select="ancestor::rng:zeroOrMore or ancestor::rng:oneOrMore and ancestor::rng:choice" />
+		<xsl:variable name="mandatory" as="xs:boolean" select="not (ancestor::rng:optional or ancestor::rng:zeroOrMore)" />
 		<xsl:if test="$mode = 'require'">
 			<xsl:if test="$first_of_a_choice">
 
@@ -296,7 +289,7 @@
 					<xsl:text>: </xsl:text>
 					<xsl:apply-templates select="." mode="choice_name" />
 					<xsl:text> /= xml_null_code implies (create {ARRAY[INTEGER]}.make_from_array (</xsl:text>
-					<xsl:apply-templates select="$is_a_choice" mode="contents_as_attribute_code_array"/>
+					<xsl:apply-templates select="$current_choice" mode="contents_as_attribute_code_array"/>
 					<xsl:text>)).has (</xsl:text>
 					<xsl:apply-templates select="." mode="choice_name" />
 					<xsl:text>)&#xA;</xsl:text>
@@ -529,7 +522,7 @@
 </xsl:template>
 
 <xsl:template match="rng:include">
-	<xsl:variable name="class_prefix" select="upper-case(substring-before (@href, '.'))" />
+	<xsl:variable name="class_prefix" as="xs:string" select="upper-case(substring-before (@href, '.'))" />
 	<!-- 	Build class name for any included schemas for use
 		in the inheritance clause -->
 	EXTENDED_<xsl:value-of select="$class_prefix" />_XML_DOCUMENT
