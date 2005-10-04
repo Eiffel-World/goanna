@@ -5,12 +5,12 @@
 # revision: 	$Revision$
 # copyright: 	(c) Neal L Lester
 
+# stylesheet="goa_common.css"
+
 namespace goa_common="http://www.sourceforge.net/projects/goanna/goa_common"
 
 paragraph = element goa_common:paragraph { class?, ( text_item | popup_hyperlink | hyperlink | submit | input | radio | select | text_area | image )+ }
 	text_item = element goa_common:text_item { ( class | span)?, text? }
-		class = attribute class { 	"upper_right" | "centered_submit_area" | "error_message" | "required" | "popup_title" | "popup_text" | "popup_submit" | "readonly" | "bold" | "disabled" | "active" | "navigation_bar" | "left_justify" | "right_justify" | "faq_answer_title" | "faq_answer" | "bullet_list" | "payment_options_title" | "payment_options_row_top" | "payment_options_row_middle" | "payment_options_row_bottom" | "new_paragraph_after_image" | "waiting_message" | "logo" | "second_level_title" | "table_heading" | "right_justified" |
-						"page_title" | "inline_title" | "heading_level_1" | "heading_level_2" | "checklist" | "checkbox" | "inspection_frequency_table" | "code_of_safe_practices" | "appendix" | "first_appendix" | "appendix_title" | "page_break_after" | "clear_gif" }
 		span = attribute span { "bold" }
 	division = element goa_common:division { class?, ( paragraph | submit | division | hyperlink | text_item | input | radio | select | text_area | table | image )+ }
 	ordered_list = element goa_common:ordered_list { class?, list_item+ }
@@ -62,4 +62,3 @@ image = element goa_common:image { class?, url, alternate_text, height, width }
 
 page_title = attribute page_title { text }
 style_sheet = attribute style_sheet { text }
-

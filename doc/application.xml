@@ -669,6 +669,11 @@ template generating the HTML "HEAD" portion of the document:
       </para>
       <para>
 
+The selections for elements and attributes in included schemas that are defined as a choice (.e.g. elem1 = element ns:elem1 { elem2 | elem3 }) may be expanded by using the rnc combine operator |=.
+	
+      </para>
+      <para>
+
 When the new document schema is ready, invoke
 <projectname>goa_build</projectname> from the directory containing the
 schema and all supporting files.  Type:

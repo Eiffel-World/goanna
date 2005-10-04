@@ -5,6 +5,8 @@
 # revision: 	$Revision$
 # copyright: 	(c) Neal L Lester
 
+# stylesheet="goa_redirect.css"
+
 namespace goa_redirect = "http://www.sourceforge.net/projects/goanna/goa_redirect"
 namespace goa_common="http://www.sourceforge.net/projects/goanna/goa_common"
 namespace datatypeLibrary ="http://www.w3.org/2001/XMLSchema-datatypes"
@@ -18,5 +20,7 @@ grammar
 			delay = attribute delay { xsd:nonNegativeInteger }
 			
 dummy = attribute dummy { xsd:nonNegativeInteger }
+
+CLASS_ATTRIBUTE_PLACEHOLDER
 
 }

@@ -48,7 +48,7 @@ feature -- Attribute Values
 
 <xsl:for-each select="//rng:value">
   <xsl:variable name="current_value" as="xs:string" select="." />
-  <xsl:if test="not (doc('temp.rng')//value [. eq $current_value])" >
+  <xsl:if test="not (doc('imported_class_values.xml')//value [. eq $current_value])" >
     <xsl:variable name="feature_name" as="xs:string" select="lower-case (translate (concat (ancestor::rng:attribute/@name, '_', .), ':-.().', '___'))" />
     <xsl:text>&#x9;</xsl:text><xsl:value-of select="$feature_name" />: STRING is "<xsl:value-of select="." />"&#xA;
   </xsl:if>

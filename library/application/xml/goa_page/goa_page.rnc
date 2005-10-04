@@ -5,17 +5,23 @@
 # revision: 	$Revision$
 # copyright: 	(c) Neal L Lester
 
-namespace goa_page="http://www.sourceforge.net/projects/goanna/goa_page"
+# stylesheet="page.css"
+
+namespace page="http://www.mysafetyprogram.com/page"
 namespace goa_common="http://www.sourceforge.net/projects/goanna/goa_common"
+namespace msp_common="http://www.mysafetyprogram.com/msp_common"
 namespace datatypeLibrary ="http://www.w3.org/2001/XMLSchema-datatypes"
-grammar
-{
+
+grammar {
+
    start = page
    
-   include "goa_common.rnc"
+   include "msp_common.rnc"
    						
-	page = element goa_page:page { server_name, page_title, style_sheet, ( paragraph | division | text_area | submit | text | hyperlink | text_item | ordered_list | unordered_list | hidden | popup_hyperlink | table | select | input | radio | image | address )* }
+	page = element page:page { server_name, page_title, style_sheet, ( paragraph | division | text_area | submit | text | hyperlink | text_item | ordered_list | unordered_list | hidden | popup_hyperlink | table | select | input | radio | image | address )* }
 
 dummy = attribute dummy { xsd:nonNegativeInteger }
+
+CLASS_ATTRIBUTE_PLACEHOLDER
 
 }

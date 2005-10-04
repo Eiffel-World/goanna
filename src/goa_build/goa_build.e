@@ -3,8 +3,7 @@ indexing
 	author: "Neal L Lester [neal@3dsafety.com]"
 	date: "$Date$"
 	revision: "$Revision: "
-	copyright: "Copyright (c) Neal L. Lester and others"
-	license: "Eiffel Forum License v2 (see forum.txt)"
+	copyright: "Copyright (c) Neal L. Lester"
 
 class
 	GOA_BUILD
@@ -25,24 +24,84 @@ create
 
 feature -- Initialization
 
+-- OVERVIEW
+
+-- This class builds Eiffel Classes that are used to author XML for Goanna Applications
+-- from an RNC schema. Features for creating each element of the schema are created.
+-- Schema validity rules are written as preconditions for these features.
+-- The eiffel classes generated are:
+-- NAMESPACE_PREFIX_XML_DOCUMENT
+--   This is the primary class representing the schema.  For included schemas, this
+--   is a deferred class including deferred features for the schema codes and 
+--   attribute and element tags used in the schema.
+-- NAMESPACE_PREFIX_SCHEMA_CODES
+--   Generated only for document schemas.  Contains integer codes representing 
+--   elements and attributes in the schema and string constants for the
+--   element and attribute names
+-- NAMESPACE_ATTRIBUTE_VALUES
+--   Contains string constants for all attribute values declared as a choice of constants
+--   e.g. att1 = attribute att1 = { "value1" | "value2" }
+--   The "class" attribute is a special case.  These value constants are generated
+--   by inspecting the css stylesheet associated with the schema (through a stylesheet
+--   declaration included in a comment) and generating a string constant for
+--   each class found in the css stylesheet.
+--   e.g. class_error_message: STRING is "error_message"
+
+
+-- The steps are:
+
+-- validate command line options from user
+-- Unless user specified the --norefresh option
+--   copy XSL transforms used by goa_build to current directory
+--   copy goa provided rnc schemas, xsl transforms, and css files to current directory
+--   copy goa provided xsl transforms to data directory
+--   copy goa provided extended_xml_documents to eiffel directory
+-- For each document schema file specifed in the --file argument
+--   expand CLASS_ATTRIBUTE_PLACEHOLDER with class attribute value declaration (if needed)
+--   use trang to convert rnc file to rng
+--   combine included schemas into a single file using flatten_1.xsl
+--   add any included files to a list (for future processing)
+--   merge any elements/attributes duplicated because they are
+--   Identify included files; add them to master list and write
+--   them to namespace_prefix.imp which is used by subsequent
+--   transforms to avoid generating features for features
+--   inherited from included schemas
+--   Merge duplicated elements combined from two schemas
+--   (rnc |= operator) using flatten_2.xsl
+--   Remove included file declarations using flatten_3.xsl
+--   and write results to data directory as namespace_prefix.frng
+--   generate NAMESPACE_PREFIX_XML_DOCUMENT using validating_xml_writer.xsl
+--   generate NAMESPACE_PREFIX_SCHEMA_CODES using schema_codes.xsl
+--   generate NAMESPACE_PREFIX_ATTRIBUTE_VALUES using attribute_values.xsl
+--   attempt to compile the XSL file namespace_prefix.xsl and inform
+--   user of any problems with the transform
+-- For each included schema file
+--   build list of included stylesheet declarations to exlude
+--   those included class names from the class name declaration
+--   and write to file
+--   append class value declaration to rnc file
+--   generate NAMSAPCE_PREFIX_XML_DOCUMENT using deferred_xml_writer.xsl
+--   generate NAMESPACE_PREFIX_ATTRIBUTE_VALUES using attribute_values.xsl
+-- Copy all document and included schema xsl files to the data directory
+-- Clean up
+
+
 	make is
 		local
 			exception_occurred: BOOLEAN
 			executable_name, program_description, error_message, trang_invocation, class_attribute_declaration, class_name, class_name_upper: STRING
 			file_name, expanded_file_name, namespace_prefix, rnc_file_contents, rnc_file_contents_upper, expanded_the_stylesheet_file_name: STRING
-			local_unreadable_files, file_names, included_files, included_xsl_files: DS_LIST [STRING]
-			rnc_input_file, rng_input_file, xsl_input_file: KI_TEXT_INPUT_FILE
-			rnc_output_file, imported_output_file: KI_TEXT_OUTPUT_FILE
-			rnc_file_length, rng_file_length, xsl_file_length: INTEGER
-			class_names, all_included_rng_files, xsl_files, prefixes: DS_LINKED_LIST [STRING]
-			final_file_name, rng_file_name, expanded_stylesheet_file_name: STRING
+			local_unreadable_files, file_names, included_files, included_xsl_files, local_included_rng_files: DS_LIST [STRING]
+			rnc_input_file, rng_input_file, xsl_input_file, included_rng_file: KI_TEXT_INPUT_FILE
+			rnc_output_file, imported_output_file, temp_output_file: KI_TEXT_OUTPUT_FILE
+			rnc_file_length, rng_file_length, xsl_file_length, included_rng_file_length: INTEGER
+			class_names, all_included_rng_files, xsl_files, prefixes, included_rng_files: DS_LINKED_LIST [STRING]
+			final_file_name, rng_file_name, expanded_stylesheet_file_name, target_eiffel_directory_name, target_data_directory_name: STRING
 			trang_command: KL_SHELL_COMMAND
 			rng_file_contents, flat1, flat2, flat3, included, imported, xml, codes, attribute_values, imported_file_name, frng_file_name, xsl_file_name: STRING
-			xml_document_contents, schema_codes_contents, attribute_values_contents, xsl_file_contents, included_xsl_files_string: STRING
+			xml_document_contents, schema_codes_contents, attribute_values_contents, xsl_file_contents, included_xsl_files_string, included_rng_file_contents: STRING
 			xml_document_file_name, schema_codes_file_name, attribute_values_file_name, data_directory, rnc_input_file_name: STRING
-			included_file_splitter: ST_SPLITTER
 			temporary_transformer: GOA_XSLT_STRING_TRANSFORMER
-			writer: EPX_XML_WRITER
 		do
 			if not exception_occurred then
 				create command_line_syntax.make (command_line_options)
@@ -125,7 +184,39 @@ feature -- Initialization
 						if command_line_includes_verbose_switch then
 							io.put_string ("Refreshing Goanna Files%N")
 						end
-						-- TODO Refresh Goanna Files
+						-- TODO Copy list should be read from an XML file.  This would allow us to
+						-- Change the copy list without recompiling this application
+						if command_line_includes_eiffeldirectory_switch then
+							target_eiffel_directory_name := eiffeldirectory_argument
+						else
+							target_eiffel_directory_name := ""
+						end
+						if command_line_includes_datadirectory_switch then
+							target_data_directory_name := datadirectory_argument
+						else
+							target_data_directory_name := ""
+						end						
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/common.xsl"), "common.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/attribute_values.xsl"), "attribute_values.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/schema_codes.xsl"), "schema_codes.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/validating_xml_writer.xsl"), "validating_xml_writer.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/deferred_xml_writer.xsl"), "deferred_xml_writer.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_1.xsl"), "flatten_1.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_2.xsl"), "flatten_2.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_3.xsl"), "flatten_3.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/include_list.xsl"), "include_list.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/xsl_include_list.xsl"), "xsl_include_list.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/imported.xsl"), "imported.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/goa_common.rnc"), "goa_common.rnc")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/goa_common.xsl"), "goa_common.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/goa_common.xsl"), file_system.pathname (target_data_directory_name, "goa_common.xsl"))
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/goa_common.css"), "goa_common.css")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/extended_goa_common_xml_document.e"), file_system.pathname (target_eiffel_directory_name, "extended_goa_common_xml_document.e"))
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_redirect/goa_redirect.rnc"), "goa_redirect.rnc")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_redirect/goa_redirect.xsl"), "goa_redirect.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_redirect/goa_redirect.xsl"), file_system.pathname (target_data_directory_name, "goa_redirect.xsl"))
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_redirect/goa_redirect.css"), "goa_redirect.css")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/extended_goa_redirect_xml_document.e"), file_system.pathname (target_eiffel_directory_name, "extended_goa_redirect_xml_document.e"))
 					end
 					-- Read value of environment variable TRANG_INVOCATION
 					trang_invocation := variable_value ("TRANG_INVOCATION")
@@ -154,9 +245,6 @@ feature -- Initialization
 						schema_codes_transformer.set_string_parameter (license_argument, "license")
 						attribute_values_transformer.set_string_parameter (license_argument, "license")
 					end
-					-- Initialize String Processing Facilities
-					create included_file_splitter.make
-					included_file_splitter.set_separators ("|")
 					-- Initialize file name lists
 					file_names := command_line_parser.valid_options.item (file_switch)
 					create all_included_rng_files.make_equal
@@ -281,14 +369,13 @@ feature -- Initialization
 									io.put_string ("  Flatten Stage 1%N")
 								end
 								flat1 := flatten_stage_1_transformer.transform_string_to_string (rng_file_contents)
-								put_string_to_current_directory ("flat1.rng", flat1) -- temp
 								if command_line_includes_verbose_switch then
 									io.put_string ("  Included file names%N")
 								end
+								-- Identify included files; add them to all_included_rng_file list
 								included := include_list_transformer.transform_string_to_string (flat1)
-								put_string_to_current_directory ("included.tmp", included) -- temp
 								if included /= Void and then not included.is_empty then
-									included_files := included_file_splitter.split (included)
+									included_files := pipe_separated_splitter.split (included)
 									from
 										included_files.start
 									until
@@ -308,6 +395,7 @@ feature -- Initialization
 								if command_line_includes_verbose_switch then
 									io.put_string ("  Imported%N")
 								end
+								-- Write imported information to imp file; to be used by subsequent transformations
 								imported := imported_transformer.transform_string_to_string (flat2)
 								imported_file_name := namespace_prefix + ".imp"
 								error_message := "Unable to write file " + imported_file_name
@@ -328,6 +416,9 @@ feature -- Initialization
 								end
 								put_string_to_data_directory (frng_file_name, flat3)
 								error_message := Void
+								-- Write included class values declarations to file
+								-- for use by subsequent transformations
+								write_included_class_values (included_files)
 								-- Generate Eiffel xml_document, schema_codes Files, and attribute_values
 								xml_document_file_name := namespace_prefix + "_xml_document.e"
 								if command_line_includes_verbose_switch then
@@ -376,7 +467,9 @@ feature -- Initialization
 						if file_system.file_exists (file_name) then
 --							file_system.delete_file (file_name)
 						end
-						
+						if file_system.file_exists (imported_class_values_file_name) then
+							file_system.delete_file (imported_class_values_file_name)
+						end						
 						file_names.forth
 					end
 					-- create deferred xml_document.e and attribute_values.e for each included rng file
@@ -393,7 +486,7 @@ feature -- Initialization
 						prefixes.force_last (namespace_prefix)
 						-- First check associated rnc file for a stylesheet declaration.
 						-- If it is present, build an xml file containing the attribute values declaration
-						-- for each class in the stylesheet.  Write this to the document "temp.rng"
+						-- for each class in the stylesheet.  Write this to the document imported_class_values_file_name
 						rnc_input_file_name := namespace_prefix + ".rnc"
 						rnc_input_file := file_system.new_input_file (rnc_input_file_name)
 						error_message := "Unable to open file " + rnc_input_file_name + "%N"
@@ -403,62 +496,111 @@ feature -- Initialization
 						rnc_file_contents := rnc_input_file.last_string
 						error_message := Void
 						expanded_stylesheet_file_name := stylesheet_file_name (rnc_file_contents)
-						if expanded_stylesheet_file_name /= Void and then not (file_system.file_exists (expanded_stylesheet_file_name) and then file_system.is_file_readable (expanded_stylesheet_file_name)) then
+						if expanded_stylesheet_file_name = Void then
+							final_file_name := namespace_prefix + ".rng"
+						elseif expanded_stylesheet_file_name /= Void and then not (file_system.file_exists (expanded_stylesheet_file_name) and then file_system.is_file_readable (expanded_stylesheet_file_name)) then
 							io.put_string ("The stylesheet " + expanded_stylesheet_file_name + " declared in " + rnc_input_file_name + " is not readable%N")
 						else
-							if expanded_stylesheet_file_name = Void then
-								create class_names.make_equal
-							else
-								class_names := stylesheet_class_names (expanded_stylesheet_file_name)
-							end
-							if expanded_stylesheet_file_name /= Void and class_names.is_empty then
+							class_names := stylesheet_class_names (expanded_stylesheet_file_name)
+							if class_names.is_empty then
 								io.put_string ("Warning: stylesheet " + expanded_stylesheet_file_name + " contains no CSS classes%N")
+								final_file_name := namespace_prefix + ".rng"
+							else
+								temp_output_file := file_system.new_output_file ("temp.rnc")
+								temp_output_file.open_write
+								temp_output_file.put_string (rnc_file_contents)
+								temp_output_file.put_new_line
+								temp_output_file.put_string ("class = attribute class { ")
+								from
+									class_names.start
+								until
+									class_names.after
+								loop
+									temp_output_file.put_string ("%"" + class_names.item_for_iteration + "%"")
+									if not class_names.is_last then
+										temp_output_file.put_string (" | ")
+									end
+									class_names.forth
+								end
+								temp_output_file.put_string (" }")
+								temp_output_file.put_new_line
+								temp_output_file.close
+								create trang_command.make (trang_invocation + " -I rnc -O rng " + " temp.rnc " + "temp.rng" )
+								trang_command.execute
+								if trang_command.is_system_code or trang_command.exit_code /= 0 then
+									io.putstring ("Trang failed; unable to process included file file " + namespace_prefix + ".rnc%N")
+									final_file_name := Void
+								else
+									final_file_name := "temp.rng"
+								end
 							end
-							create writer.make
-							writer.add_header_iso_8859_1_encoding
-							writer.start_ns_tag ("", "grammar")
-							writer.set_a_name_space ("rng", "http://relaxng.org/ns/structure/1.0")
-							writer.start_ns_tag ("", "define")
-							writer.set_attribute ("name", "class")
-							writer.start_ns_tag ("", "choice")
-							from
-								class_names.start
-							until
-								class_names.after
-							loop
-								writer.add_ns_tag ("", "value", class_names.item_for_iteration)
-								class_names.forth
+						end				
+						if final_file_name /= Void then
+							error_message := "Unable to open file " + rng_file_name + " for reading."
+							rng_input_file := file_system.new_input_file (final_file_name)
+							rng_file_length := rng_input_file.count
+							rng_input_file.open_read
+							rng_input_file.read_string (rng_file_length)
+							rng_file_contents := rng_input_file.last_string
+							error_message := Void						
+							-- Find (recursively) all included files; write included class values
+							-- declarations to file
+							create included_rng_files.make_equal
+							included := include_list_transformer.transform_string_to_string (rng_file_contents)
+							if included /= Void and then not included.is_empty then
+								included_rng_files.append_last (pipe_separated_splitter.split (included))
+								from
+									included_rng_files.start
+									until
+									included_rng_files.after
+								loop
+									included_rng_file := file_system.new_input_file (included_rng_files.item_for_iteration)
+									included_rng_file_length := included_rng_file.count
+									included_rng_file.open_read
+									included_rng_file.read_string (included_rng_file_length)
+									included_rng_file_contents := included_rng_file.last_string
+									included := include_list_transformer.transform_string_to_string (included_rng_file_contents)
+									if included /= Void and not included.is_empty then
+										local_included_rng_files := pipe_separated_splitter.split (included)
+										from
+											local_included_rng_files.start
+										until
+											local_included_rng_files.after
+										loop
+											if not included_rng_files.has (local_included_rng_files.item_for_iteration)	then
+												included_rng_files.force_last (local_included_rng_files.item_for_iteration)
+											end
+											local_included_rng_files.forth
+										end
+									end
+									included_rng_files.forth
+								end
+								write_included_class_values (included_rng_files)
 							end
-							writer.stop_tag
-							writer.stop_tag
-							writer.stop_tag
-							put_string_to_current_directory ("temp.rng", writer.as_string)
+							-- XSLT transformations
+							write_included_class_values (included_rng_files)
+							deferred_xml_writer_transformer.set_string_parameter (namespace_prefix, "prefix")
+							attribute_values_transformer.set_string_parameter (namespace_prefix, "prefix")
+							xml_document_file_name := namespace_prefix + "_xml_document.e"
+							if command_line_includes_verbose_switch then
+								io.put_string ("  Creating " + xml_document_file_name + "%N")
+							end
+							xml_document_contents := deferred_xml_writer_transformer.transform_string_to_string (rng_file_contents)
+							error_message := "Unable to write " + xml_document_file_name
+							put_string_to_eiffel_directory (xml_document_file_name, xml_document_contents)
+							error_message := Void
+							attribute_values_file_name := namespace_prefix + "_attribute_values.e"
+							if command_line_includes_verbose_switch then
+								io.put_string ("  Creating " + attribute_values_file_name + "%N")
+							end
+							attribute_values_contents := attribute_values_transformer.transform_string_to_string (rng_file_contents)
+							error_message := "Unable to write " + attribute_values_file_name
+							put_string_to_eiffel_directory (attribute_values_file_name, attribute_values_contents)
+							error_message := Void
 						end
-						deferred_xml_writer_transformer.set_string_parameter (namespace_prefix, "prefix")
-						attribute_values_transformer.set_string_parameter (namespace_prefix, "prefix")
-						error_message := "Unable to open file " + rng_file_name + " for reading."
-						rng_input_file := file_system.new_input_file (rng_file_name)
-						rng_file_length := rng_input_file.count
-						rng_input_file.open_read
-						rng_input_file.read_string (rng_file_length)
-						rng_file_contents := rng_input_file.last_string
-						error_message := Void						
-						xml_document_file_name := namespace_prefix + "_xml_document.e"
-						if command_line_includes_verbose_switch then
-							io.put_string ("  Creating " + xml_document_file_name + "%N")
+						if file_system.file_exists (imported_class_values_file_name) then
+							file_system.delete_file (imported_class_values_file_name)
 						end
-						xml_document_contents := deferred_xml_writer_transformer.transform_string_to_string (rng_file_contents)
-						error_message := "Unable to write " + xml_document_file_name
-						put_string_to_eiffel_directory (xml_document_file_name, xml_document_contents)
-						error_message := Void
-						attribute_values_file_name := namespace_prefix + "_attribute_values.e"
-						if command_line_includes_verbose_switch then
-							io.put_string ("  Creating " + attribute_values_file_name + "%N")
-						end
-						attribute_values_contents := attribute_values_transformer.transform_string_to_string (rng_file_contents)
-						error_message := "Unable to write " + attribute_values_file_name
-						put_string_to_eiffel_directory (attribute_values_file_name, attribute_values_contents)
-						error_message := Void
 						all_included_rng_files.forth	
 					end
 					if command_line_includes_datadirectory_switch then
@@ -483,7 +625,7 @@ feature -- Initialization
 							xsl_file_contents := xsl_input_file.last_string
 							error_message := Void						
 							included_xsl_files_string := xsl_included_files_transformer.transform_string_to_string (xsl_file_contents)
-							included_xsl_files := included_file_splitter.split (included_xsl_files_string)
+							included_xsl_files := pipe_separated_splitter.split (included_xsl_files_string)
 							from
 								included_xsl_files.start
 							until
@@ -534,8 +676,8 @@ feature -- Initialization
 					if file_system.file_exists ("temp.rnc") then
 						file_system.delete_file ("temp.rnc")
 					end
-					if file_system.file_exists ("temp.rng") then
-						file_system.delete_file ("temp.rng")
+					if file_system.file_exists (imported_class_values_file_name) then
+						file_system.delete_file (imported_class_values_file_name)
 					end
 					if command_line_includes_verbose_switch then
 						io.put_string ("Finished.%N")
@@ -552,6 +694,73 @@ feature -- Initialization
 
 feature {NONE} -- Implementation
 
+	write_included_class_values (included_file_names: DS_LIST [STRING]) is
+			-- Examine all included_file_names for stylesheet declarations
+			-- When found, write the imported value declarations for the 
+			-- "class" attribute to the file imported_class_values.xml
+		local
+			writer: EPX_XML_WRITER
+			included_file: KI_TEXT_INPUT_FILE
+			file_length: INTEGER
+			file_contents, values: STRING
+			values_list: DS_LIST [STRING]
+			rnc_file_name, the_stylesheet_file_name: STRING
+			base_name_length: INTEGER
+		do
+			create writer.make
+			writer.add_header_iso_8859_1_encoding
+			writer.start_ns_tag ("", "grammar")
+			writer.set_a_name_space ("rng", "http://relaxng.org/ns/structure/1.0")		
+			writer.start_ns_tag ("", "define")
+			writer.set_attribute ("name", "class")
+			writer.start_ns_tag ("", "choice")
+			if included_file_names /= Void then
+				from
+					included_file_names.start
+				until
+					included_file_names.after
+				loop
+					rnc_file_name := STRING_.cloned_string (included_file_names.item_for_iteration)
+					base_name_length := rnc_file_name.index_of ('.', 1) - 1
+					rnc_file_name.keep_head (base_name_length)
+					rnc_file_name.append (".rnc")
+					included_file := file_system.new_input_file (rnc_file_name)
+					file_length := included_file.count
+					included_file.open_read
+					included_file.read_string (file_length)
+					file_contents := included_file.last_string
+					the_stylesheet_file_name := stylesheet_file_name (file_contents)
+					if the_stylesheet_file_name /= Void then
+						values_list := stylesheet_class_names (the_stylesheet_file_name)
+						from
+							values_list.start
+						until
+							values_list.after
+						loop
+							writer.add_ns_tag ("", "value", values_list.item_for_iteration)					
+							values_list.forth
+						end
+					end
+					included_file_names.forth					
+				end
+	
+			end
+			writer.stop_tag
+			writer.stop_tag
+			writer.stop_tag
+			put_string_to_current_directory (imported_class_values_file_name, writer.as_string)
+		end
+		
+	imported_class_values_file_name: STRING is "imported_class_values.xml"
+			-- File name to which imported class values are written			
+
+	pipe_separated_splitter: ST_SPLITTER is
+			-- Used to Separate strings separated by pipe character
+		once
+			create Result.make
+			Result.set_separators ("|")
+		end
+		
 	stylesheet_class_names (the_stylesheet_file_name: STRING): DS_LINKED_LIST [STRING] is
 			-- CSS Class names in file given by the_stylesheet_file_name
 		require
@@ -562,8 +771,8 @@ feature {NONE} -- Implementation
 			class_name, class_name_upper: STRING
 			class_names_upper: DS_LINKED_LIST [STRING]
 		do
-			stylesheet_input_file := file_system.new_input_file (the_stylesheet_file_name)
 			create Result.make_equal
+			stylesheet_input_file := file_system.new_input_file (the_stylesheet_file_name)
 			create class_names_upper.make_equal
 			from
 				stylesheet_input_file.open_read
@@ -582,6 +791,8 @@ feature {NONE} -- Implementation
 					end
 				end
 			end
+		ensure
+			valid_result: Result /= Void
 		end
 
 	stylesheet_file_name (rnc_file_contents: STRING): STRING is
@@ -612,11 +823,29 @@ feature {NONE} -- Implementation
 			create Result.make
 			Result.compile ("\.[a-zA-Z0-9_-]+")
 		end
-		
-	
 
+	unreadable_files (file_names: DS_LIST [STRING]): DS_LINKED_LIST [STRING] is
+			-- Which files given by file names are not readable
+			-- Will return empty list if all are readable
+		require
+			valid_file_names: file_names /= Void
+		local
+			file_name: STRING
+		do
+			create Result.make
+			from
+				file_names.start
+			until
+				file_names.after
+			loop
+				file_name := file_names.item_for_iteration
+				if not file_system.is_file_readable (interpreted_string(file_name)) then
+					Result.force_last (file_name)
+				end
+				file_names.forth
+			end
+		end
 		
-
 feature {NONE} -- Command Line Parsing
 
 	class_attribute_placeholder: STRING is "CLASS_ATTRIBUTE_PLACEHOLDER"	
@@ -638,6 +867,8 @@ feature {NONE} -- Command Line Parsing
 	command_line_syntax: COMMAND_LINE_SYNTAX
 	command_line_parser: COMMAND_LINE_PARSER
 			-- ECLOP syntax and parser
+
+	help_usage: STRING is "Use goa_build -h for help%N"
 
 feature {NONE} -- Command Line Arguments
 
@@ -811,41 +1042,7 @@ feature {NONE} -- Command Line Arguments
 	license_switch: STRING is "-l"
 	help_switch: STRING is "-h"
 
-feature {NONE} -- Implementation
-
-	help_usage: STRING is "Use goa_build -h for help%N"
-	
-	directory_separator: STRING is
-			-- Directory separator used on current operating system
-		do
-			if operating_system.is_windows then
-				Result := "\"
-			else
-				Result := "/"
-			end
-		end
-		
-	unreadable_files (file_names: DS_LIST [STRING]): DS_LINKED_LIST [STRING] is
-			-- Which files given by file names are not readable
-			-- Will return empty list if all are readable
-		require
-			valid_file_names: file_names /= Void
-		local
-			file_name: STRING
-		do
-			create Result.make
-			from
-				file_names.start
-			until
-				file_names.after
-			loop
-				file_name := file_names.item_for_iteration
-				if not file_system.is_file_readable (interpreted_string(file_name)) then
-					Result.force_last (file_name)
-				end
-				file_names.forth
-			end
-		end
+feature {NONE} -- XSLT Transformations
 		
 	transformer_factory: GOA_XSLT_TRANSFORMER_FACTORY is
 			-- Where XSLT Transformers come from
@@ -913,6 +1110,8 @@ feature {NONE} -- Implementation
 			Result := transformer_factory.new_string_transformer_from_file_name ("attribute_values.xsl")
 		end
 
+feature {NONE} -- Output Facilities
+
 	put_string_to_current_directory (file_name, content: STRING) is
 			-- Write content to a file named file_name in the current working directory
 		require
@@ -954,7 +1153,6 @@ feature {NONE} -- Implementation
 			end
 		end
 
-
 	put_string_to_file (directory, file_name, content: STRING) is
 			-- Write file containing content in directory
 		require
@@ -977,6 +1175,4 @@ feature {NONE} -- Implementation
 			the_file.close
 		end
 			
-		
-
 end -- class GOA_BUILD
