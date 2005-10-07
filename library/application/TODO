@@ -1,0 +1,38 @@
+TODO Items for the Goanna Web Application Framework
+
+author: "Neal L Lester <neallester@users.sourceforge.net>"
+date: "$Date$"
+revision: "$Revision$"
+copyright: "(c) Neal L Lester, and others"
+
+
+Documentation (including doc/application.xml) should have a build.eant file, with a target of install, and this should be called from the install target of the build.eant
+file in the parent directory.
+
+Convert goa_build from eclop to Gobo command line parsing.
+
+Remove generated files from xml/goa_common, xml/goa_page, and xml/goa_redirect directories and instead create a geant install task to create them.
+
+Use a gelex program rather than trang to convert Relax-NG Compact Syntax files to Relax-NG.
+
+The instructions for starting a project include stages where you copy
+files, delete CVS directories, and choose an application name. This
+should all be done by a command, which should prompt the user for an
+application name, target directory names, etc. (command line prompts,
+for portability).
+
+Split application.xml up into 
+multiple files (each a <chapter>, see the build.eant file in
+$GOBO/doc/xml/xslt to see how these are combined without an
+over-arching <book>
+
+I read through the rest of the documentation, but felt lost most of
+the time. I shall have some further suggestions to make later, but
+first it seems clear to me that we shall need an overview picture.
+Take a look at
+http://cocoon.apache.org/2.1/userdocs/concepts/index.html 
+to see if it gives you some ideas.
+Actually, we also need a similar overview for servlets, and especially
+FastCGI servlets, in $GOANNA/doc/servlets, I think, and you should
+include a broken link to this hypothetical documentation as something
+to be read before reading further with your own overview.
