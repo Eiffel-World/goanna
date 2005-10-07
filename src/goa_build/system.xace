@@ -13,9 +13,7 @@
 	<root class="GOA_BUILD" creation="make"/>
 
 	<cluster name="goa_build" location=".">
-		<cluster name="goa_xslt" location="$GOANNA/library/application/xml/xslt">
-			<cluster name="xslt" />
-		</cluster>
+		<cluster name="goa_xslt" location="$GOANNA/library/application/xml/xslt" />
 	</cluster>
 
 	<mount location="${GOBO}/library/library.xace"/>

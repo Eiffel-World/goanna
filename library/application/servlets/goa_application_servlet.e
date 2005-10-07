@@ -110,7 +110,7 @@ feature -- Request Processing
 			-- Perform any post GOA_REQUEST_PARAMETER processing
 			-- Determine next page and send response to browser
 		local
-			page: EXTENDED_GOA_PAGE_XML_DOCUMENT
+--			page: EXTENDED_GOA_PAGE_XML_DOCUMENT
 			servlet: GOA_DISPLAYABLE_SERVLET
 			parameter_names: DS_LINEAR [STRING]
 			parameter_name, raw_parameter_name, parameter_value: STRING
@@ -120,7 +120,7 @@ feature -- Request Processing
 			current_parameter_is_legal, all_parameters_are_legal, all_mandatory_parameters_are_present, all_expected_parameters_are_present, all_parameters_are_present: BOOLEAN
 			mandatory_parameters_in_request, expected_parameters_in_request: DS_LINKED_LIST [STRING]
 			mandatory_processing_results, non_mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
-			page_agent: FUNCTION [ANY, TUPLE [REQUEST_PROCESSING_RESULT], EXTENDED_GOA_PAGE_XML_DOCUMENT]
+--			page_agent: FUNCTION [ANY, TUPLE [REQUEST_PROCESSING_RESULT], EXTENDED_GOA_PAGE_XML_DOCUMENT]
 			temp_name: STRING
 			failed_once, failed_twice: BOOLEAN
 			

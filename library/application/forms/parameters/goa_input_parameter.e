@@ -33,12 +33,12 @@ feature
 			Result := text_input_type
 		end
 		
-	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		do
 			xml.add_input_element (input_class (processing_result, suffix), full_parameter_name (name, suffix), type, yes_no_string_for_boolean (is_disabled (processing_result, suffix)), maxlength_string_for_integer (maxlength), size.out, display_value (processing_result, suffix))
 		end
 		
-	ok_to_add (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 		do
 			Result := xml.ok_to_add_element_or_text (xml.input_element_code)
 		end

@@ -139,7 +139,7 @@ feature
 			Result := ""
 		end
 
-	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		local
 			local_option_list: DS_LINKED_LIST [G]
 		do
@@ -156,7 +156,7 @@ feature
 			xml.end_current_element
 		end
 		
-	ok_to_add (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 		do
 			Result := xml.ok_to_add_element_or_text (xml.select_element_code)
 		end

@@ -19,7 +19,7 @@ creation
 	
 feature {GOA_XML_DOCUMENT, GOA_DEFERRED_PARAMETER} -- Services
 
-	add_to_document (the_document: EXTENDED_GOA_COMMON_XML_DOCUMENT) is
+	add_to_document (the_document: GOA_COMMON_XML_DOCUMENT_EXTENDED) is
 			-- Add the message for this parameter to the_document
 		do
 			from
@@ -37,7 +37,7 @@ feature {GOA_XML_DOCUMENT, GOA_DEFERRED_PARAMETER} -- Services
 		
 feature -- Queries
 		
-	ok_to_add (the_document: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (the_document: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 			-- Is it OK to add this message to the_document
 		do
 			if is_empty then

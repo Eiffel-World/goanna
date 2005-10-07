@@ -7,7 +7,7 @@ indexing
 	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 deferred class
-	EXTENDED_GOA_COMMON_XML_DOCUMENT
+	GOA_COMMON_XML_DOCUMENT_EXTENDED
 	
 inherit
 	
@@ -128,4 +128,4 @@ feature -- Document Writing
 			add_text_item_element (xml_null_code, Void, " ")
 		end
 				
-end -- class EXTENDED_GOA_COMMON_XML_DOCUMENT
+end -- class GOA_COMMON_XML_DOCUMENT_EXTENDED

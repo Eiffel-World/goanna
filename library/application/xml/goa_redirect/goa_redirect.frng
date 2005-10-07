@@ -5,6 +5,7 @@
   date: 	$Date$
   revision: 	$Revision$
   copyright: 	(c) Neal L Lester
+  License: "Eiffel Forum License Version 2 (see forum.txt)"
 --><!-- stylesheet="goa_redirect.css" --><grammar xmlns:goa_redirect="http://www.sourceforge.net/projects/goanna/goa_redirect" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <ref name="redirect"/>

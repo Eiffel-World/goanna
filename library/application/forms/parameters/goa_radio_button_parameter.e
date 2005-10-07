@@ -165,7 +165,7 @@ feature
 			Result := item_in_list /= item_in_database
 		end
 		
-	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		local
 			the_list: DS_LINKED_LIST [G]
 			the_parameter_processing_result: PARAMETER_PROCESSING_RESULT
@@ -192,7 +192,7 @@ feature
 			end
 		end
 		
-	ok_to_add (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 		do
 			Result := xml.ok_to_add_element_or_text (xml.row_element_code)
 		end

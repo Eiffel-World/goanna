@@ -16,7 +16,7 @@ inherit
 
 feature
 
-	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		do
 			if include_suffix_in_xml then
 				xml.add_submit_element (css_class (processing_result, suffix), full_parameter_name (name, suffix), current_value (processing_result, suffix), on_click_script(processing_result, suffix))
@@ -25,7 +25,7 @@ feature
 			end
 		end
 
-	ok_to_add (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 		do
 			Result := xml.ok_to_add_element_or_text (xml.submit_element_code)
 		end

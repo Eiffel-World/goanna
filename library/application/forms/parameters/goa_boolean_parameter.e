@@ -91,7 +91,7 @@ feature -- Processing
 
 feature -- As XML
 		
-	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		do
 			xml.add_checkbox_element (input_class (processing_result, suffix), full_parameter_name (name, suffix), display_value (processing_result, suffix), xml.yes_no_string_for_boolean (is_disabled (processing_result, suffix)), script_name (processing_result, suffix))
 		end

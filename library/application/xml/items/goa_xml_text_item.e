@@ -17,10 +17,10 @@ creation
 	
 	make, make_with_css_class
 	
-feature {EXTENDED_PAGE_XML_DOCUMENT}
+feature {GOA_COMMON_XML_DOCUMENT_EXTENDED}
 
 	
-	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT) is
+	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED) is
 			-- Add an xml representation of this hyperlink to the_documnet
 		do
 			if not text.is_empty then
@@ -34,7 +34,7 @@ feature {EXTENDED_PAGE_XML_DOCUMENT}
 
 feature -- Queries
 		
-	ok_to_add (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 			-- Is it OK to add this hyperlink to xml
 		do
 			Result := xml.ok_to_add_element_or_text (xml.text_item_element_code)

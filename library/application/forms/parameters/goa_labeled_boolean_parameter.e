@@ -19,7 +19,7 @@ inherit
 
 feature
 	
-	add_to_standard_data_input_table (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		local
 			the_parameter_processing_result: PARAMETER_PROCESSING_RESULT
 			raw_parameter_name: STRING

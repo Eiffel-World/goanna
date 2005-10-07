@@ -525,7 +525,7 @@
 	<xsl:variable name="class_prefix" as="xs:string" select="upper-case(substring-before (@href, '.'))" />
 	<!-- 	Build class name for any included schemas for use
 		in the inheritance clause -->
-	EXTENDED_<xsl:value-of select="$class_prefix" />_XML_DOCUMENT
+	<xsl:value-of select="$class_prefix" />_XML_DOCUMENT_EXTENDED
 </xsl:template>
 
 </xsl:transform>

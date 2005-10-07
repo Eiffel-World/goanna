@@ -7,7 +7,7 @@ indexing
 	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 class
-	EXTENDED_GOA_PAGE_XML_DOCUMENT
+	GOA_PAGE_XML_DOCUMENT_EXTENDED
 
 inherit
 
@@ -21,4 +21,4 @@ creation
 feature
 		
 
-end -- class EXTENDED_GOA_PAGE_XML_DOCUMENT
+end -- class GOA_PAGE_XML_DOCUMENT_EXTENDED

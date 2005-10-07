@@ -19,9 +19,9 @@ inherit
 	GOA_SHARED_APPLICATION_CONFIGURATION
 
 
-feature {EXTENDED_PAGE_XML_DOCUMENT} -- Services
+feature {GOA_COMMON_XML_DOCUMENT_EXTENDED} -- Services
 	
-	add_to_document (the_document: EXTENDED_GOA_COMMON_XML_DOCUMENT) is
+	add_to_document (the_document: GOA_COMMON_XML_DOCUMENT_EXTENDED) is
 			-- Add an xml representation of this hyperlink to the_documnet
 		do
 			the_document.add_hyperlink_element (css_class, url, text)
@@ -29,7 +29,7 @@ feature {EXTENDED_PAGE_XML_DOCUMENT} -- Services
 
 feature -- Queries
 
-	ok_to_add (the_document: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (the_document: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 			-- Is it OK to add this hyperlink to the_document
 		do
 			Result := the_document.ok_to_add_element_or_text (the_document.hyperlink_element_code)

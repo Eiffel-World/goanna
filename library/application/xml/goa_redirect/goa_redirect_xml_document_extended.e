@@ -7,7 +7,7 @@ indexing
 	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 class
-	EXTENDED_GOA_REDIRECT_XML_DOCUMENT
+	GOA_REDIRECT_XML_DOCUMENT_EXTENDED
 	
 inherit
 	
@@ -17,4 +17,4 @@ creation
 
 	make_iso_8859_1_encoded, make_utf8_encoded
 
-end -- class EXTENDED_GOA_REDIRECT_XML_DOCUMENT
+end -- class GOA_REDIRECT_XML_DOCUMENT_EXTENDED
