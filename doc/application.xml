@@ -155,66 +155,30 @@ for production use.
 	</para>
 	<para>
 
-For Apache, add something like the following to the configuration file:
-
-	</para>
-	<para>
-
-FastCgiExternalServer "/var/www/html/fast-cgi" -host localhost:4444
-
-	</para>
-	<para>
-
-Each Goanna Application running on the webserver must have it's own FastCgiExternalServer with a unique (developer selected) path and it's own port.  The port number must match <classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>  
-
-	</para>
-	<para>
-
-Then add (typically within a VirtualHost):
+A sample httpd.conf file is provided in <ulink
+class="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/httpd.conf.sample?view=markup">$GOANNA/examples/application</ulink>.
+Each Goanna Application running on the webserver must have it's own
+FastCgiExternalServer with a unique (developer selected) path and it's
+own port.  The port number must match
+<classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>. The
+In each alias declaration, the alias path may be selected the
+developer and the path in quotes must match the path given in the
+FastCgiExternalServer declaration. You may then access the application
+at the following URL:
 	  
 	</para>
 	<para>
 
-Alias /alias "/var/www/html/fast-cgi"
-
-	<para>
-
-TODO The following lines should not have spaces between them.
-
-	</para>
-	<para>
-&lt;Directory "/var/www/html/fast-cgi"
-	</para>
-	<para>
-  SetHandler fastcgi-script
-	</para>
-	<para>
-  Options ExecCGI
-	</para>
-	<para>
-&lt;/Directory&gt;	  
-	</para>
-	<para>
-
-The /alias path may be selected the developer; the path in quotes must match the path given in the FastCgiExternalServer declaration. You may then access the application at the following URL:
+http://hostname/alias/subdirectory/go_to.htm?page=servlet (without the extension)
 	  
 	</para>
 	<para>
 
-http://hostname/alias/subdirectory/servlet.htm
-	  
-	</para>
-	<para>
-
-Where 'subdirectory' is any developer selected name.  The name is not configured within the application as it will respond to requests for any subdirectory under 'alias'.
-	  
-	</para>
-      </listitem>
-      <listitem>
-	<para>
-
-The following steps are required only if you will be using <ulink
-url="#custom_html_generation">custom HTML generation</ulink>.
+Where 'alias' is the developer specified alias in <filename
+class="unknown">httpd.conf</filename> and 'subdirectory' is any
+developer selected string.  The 'subdirectory' is not configured
+within the application as it will respond to requests for any
+subdirectory under 'alias'.
 	  
 	</para>
       </listitem>
@@ -267,11 +231,99 @@ name.
       <title>Creating an Application</title>
       <para>
 
-TODO Add steps for creating an application.
-
+An example application is available in:
+	
       </para>
+      <para>
 
+<filename class="unknown">$GOANNA/examples/application</filename>
+	
+      </para>
+      <orderedlist>
 
+	<listitem>
+	  <para>
+
+Copy all of the files (and subdirectories) in
+$GOANNA/library/application/templates to your project directory and
+then delete the CVS subdirectories (recursively).
+	    
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+
+If desired, search and replace "web_application" with your project
+name in <filename class="unknown">build.eant</filename> and make any necessary
+additions to <filename class="unknown">system.xace</filename>.
+
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+
+<classname>APPLICATION_SERVER</classname> must inherit from
+<classname>GOA_CGI_SERVLET_APP</classname>,
+<classname>GOA_FAST_CGI_SERVLET_APP</classname> (recommended),
+<classname>GOA_HTTPD_SERVLET_APP</classname> (stand alone), or another
+connector.  If you use the FastCGI connector, you must undefine
+<classname>GOA_FAST_CGI_SERVLET_APP</classname>.<featurename>initialise_logger</featurename>. If
+you use the stand alone connector you must undefine
+<featurename>log_hierarchy</featurename>.
+	    
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+
+<classname>PARAMETER_PROCESSING_RESULT</classname>, <classname>APPLICATION_CONFIGURATION</classname>, and all servlets  must inherit from
+<classname>GOA_NON_DATABASE_ACCESS_TRANSACTION_MANAGEMENT</classname>
+or another class implementing
+<classname>GOA_TRANSACTION_MANAGEMENT</classname>.
+	    
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    
+Implement deferred features.  <classname>APPLICATION_SERVER</classname>.<featurename>command_line_ok</featurename> must:
+	    
+	  </para>
+	  <para>
+	    <itemizedlist>
+	      <listitem>
+		<para>
+
+First create (or assign an existing object to) <classname>APPLICATION_SERVER</classname>.<featurename>active_configuration</featurename> and then call <classname>APPLICATION_SERVER</classname>.<featurename>touch_configuration</featurename>
+		  
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>
+
+Create at least one <classname>VIRTUAL_DOMAIN_HOST</classname> and
+then call
+<classname>APPLICATION_SERVER</classname>.<featurename>register_virtual_domain_host</featurename>
+to register the host under the name given in
+<classname>APPLICATION_CONFIGURATION</classname>.<featurename>default_virtual_domain_host_lookup_string</featurename>.
+
+		</para>
+	      </listitem>
+	    </itemizedlist>
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+
+Switch to the data directory (as defined in
+<classname>APPLICATION_CONFIGURATION</classname> and type:
+	    
+	  </para>
+	  <para>
+<filename class="unknown">goa_build</filename>	    
+	  </para>
+	</listitem>
+      </orderedlist>
     </section>
     <section id="servlets">
       <title>Application Servlets</title>
@@ -531,7 +583,7 @@ Referring to the servlet's URL directly will cause the servlet to try
 and process incoming content.  Because no content is included with the
 URL, this will generally not produce the desired results.  If the
 developer does want the servlet to process the incoming request, use
-<featurename>direct_hyperlink</featurename> instead (taking care to
+<featurename>post_url</featurename> instead (taking care to
 add the appropriate parameter values to the hyperlink before adding it
 to the XML document).
 
@@ -572,19 +624,21 @@ the same file name. A document schema and all supporting files
 (included schemas and XSLT transforms) must be in a single
 subdirectory. When designing a schema please keep in mind that the
 full RNC is not currently supported.  An (incomplete) list of known
-limitations may be found <ulink url="TODO Add link to
-xsl_validating_writer.xsl">here</ulink>.
+limitations may be found <ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/src/goa_build/transform/validating_xml_writer.xsl?view=markup">here</ulink>.
       
     </para>
     <section id="creating_document_schemas">
       <title>Creating Document Schemas</title>
       <para>
 	
-<ulink url="TODO Insert URL to goa_page.rnc">goa_page.rnc</ulink>
-and the corresponding XSLT transform <ulink url="TODO Insert URL to
-goa_page.xsl">goa_page.xsl</ulink> provide an example of how to specify
-a document schema.  The document schema must include the namespace
-declaration for every included schema (recursively), and (generally):
+<ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_page/goa_page.rnc?view=markup">goa_page.rnc</ulink>
+and the corresponding XSLT transform <ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_page/goa_page.xsl?view=markup">goa_page.xsl</ulink>
+provide an example of how to specify a document schema.  The document
+schema must include the namespace declaration for every included
+schema (recursively), and (generally):
 
       </para>
       <para>
@@ -795,19 +849,21 @@ XML document within the application.
       <title>Creating Included Schemas</title>
       <para>
 
-<ulink url="TODO Insert URL to goa_page.rnc">goa_common.rnc</ulink>
-and the corresponding XSLT transform <ulink url="TODO Insert URL to
-goa_page.xsl">goa_common.xsl</ulink> provide an example of how to specify
-an included schema.  Included schemas must include a namespace declaration (with the
-namespace prefix matching the file name) and the namespace declaration
-for each included schema.  Included schemas must NOT include the RNC
-grammar and start element declarations. Included schemas should
-include a stylsheet declaration if the developers require access to
+<ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_common/goa_common.rnc?view=markup">goa_common.rnc</ulink>
+and the corresponding XSLT transform <ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_common/goa_common.xsl?view=markup">goa_common.xsl</ulink>
+provide an example of how to specify an included schema.  Included
+schemas must include a namespace declaration (with the namespace
+prefix matching the file name) and the namespace declaration for each
+included schema.  Included schemas must NOT include the RNC grammar
+and start element declarations. Included schemas should include a
+stylsheet declaration if the developers require access to
 <featurename>class_attribute_value</featurename> constants. The
 stylesheet should contain only those classes which are unique to the
-schema and not those that are inherited from other included
-schemas.  Included schemas should NOT include a
-CLASS_ATTRIBUTE_PLACEHOLDER. The developer must also create a file
+schema and not those that are inherited from other included schemas.
+Included schemas should NOT include a CLASS_ATTRIBUTE_PLACEHOLDER. The
+developer must also create a file
 <classname>EXTENDED_NAMESPACE_PREFIX_XML_DOCUMENT</classname> which
 inherits from <classname>NAMESPACE_PREFIX_XML_DOCUMENT</classname> for
 included schemas.
@@ -828,19 +884,5 @@ to the class <classname>NAMESPACE_PREFIX_XML_DOCUMENT.</classname>
 	
       </para>
     </section>
-  </section>
-  <section id="TODO">
-    <title>TODO - Delete from final document</title>
-    <para>
-
-Move GOTO_SERVLET and PAGE_PARAMETER to Goa; removing validity logic
-from PAGE_PARAMETER.  Add goto_servlet to SHARED_SERVLETS and
-PAGE_PARAMETER to SHARED_REQUEST_PARAMETERS.  TODO Add discussion of
-not direct linking to form but using internal hyperlink. Add
-submit_location attribute to PAGE and modify XSL so that if it is
-present a form is added. Implement
-GOA_APPLICATION_SERVLET.direct_hyperlink
-
-    </para>
   </section>
 </chapter>
