@@ -27,7 +27,7 @@ applications in Eiffel.  The major features of the library include:
 
 XSLT based HTML generation.  A web application using the framework
 generates XML that conforms to a specified schema.  <ulink
-url="http://www.w3/TR/xslt">XSLT</ulink> is then used to generate
+url="http://www.w3.org/TR/xslt20/">XSLT</ulink> is then used to generate
 HTML. With a well defined schema, content and presentation are nicely
 separated.  Extendible Eiffel classes with features for creating each
 element of the schema and preconditions specifying the schema
@@ -46,7 +46,7 @@ XML using a custom defined schema.
       <para>
 
 A standardized approch to form processing. The semantics of each form
-(mandatory, expected, and possible parameters etc.) are easily by the
+(mandatory, expected, and possible parameters etc.) are easily specified by the
 developer.  The content of incoming requests is verified by the
 framework to ensure it conforms with the expected semantics before
 form processing occurs.  Forms may include hidden fields that the
@@ -113,15 +113,15 @@ has undergone much less usage.  In particular,
       <listitem>
 	<para>
 
-Install the
-<ulink url="http://sourceforge.net/cvs/?group_id=24591">CVS
-version</ulink> of 
-<ulink url="http://www.gobosoft.com">the GOBO library</ulink> 
-as described 
-<ulink
-    url="http://cvs.sourceforge.net/viewcvs.py/gobo-eiffel/gobo/Readme.txt?view=markup">here</ulink> 
+Install the <ulink
+url="http://sourceforge.net/cvs/?group_id=24591">CVS version</ulink>
+of <ulink url="http://www.gobosoft.com">the GOBO library</ulink> as
+described <ulink
+url="http://cvs.sourceforge.net/viewcvs.py/gobo-eiffel/gobo/Readme.txt?view=markup">here</ulink>
 taking care to set all of the required environment variables and
-<ulink url="http://cvs.sourceforge.net/viewcvs.py/gobo-eiffel/gobo/work/bootstrap/Readme.txt?view=markup">bootstrap</ulink> the library.
+<ulink
+url="http://cvs.sourceforge.net/viewcvs.py/gobo-eiffel/gobo/work/bootstrap/Readme.txt?view=markup">bootstrap</ulink>
+the library.
 
 	</para>
       </listitem>
@@ -155,14 +155,15 @@ for production use.
 	</para>
 	<para>
 
-A sample httpd.conf file is provided in <ulink
-class="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/httpd.conf.sample?view=markup">$GOANNA/examples/application</ulink>.
-Each Goanna Application running on the webserver must have it's own
-FastCgiExternalServer with a unique (developer selected) path and it's
-own port.  The port number must match
-<classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>. The
-In each alias declaration, the alias path may be selected the
-developer and the path in quotes must match the path given in the
+A sample Apache httpd.conf file is provided in <ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/httpd.conf.sample?view=markup">$GOANNA/examples/application</ulink>.
+A list of other webservers supported is available <ulink url="TODO
+fill in this link" /> Each Goanna Application running on the webserver
+must have it's own FastCgiExternalServer with a unique (developer
+selected) path and it's own port.  The port number must match
+<classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>.
+In each alias declaration, the alias path is selected by the developer
+and the path in quotes must match the path given in the
 FastCgiExternalServer declaration. You may then access the application
 at the following URL:
 	  
@@ -179,16 +180,6 @@ class="unknown">httpd.conf</filename> and 'subdirectory' is any
 developer selected string.  The 'subdirectory' is not configured
 within the application as it will respond to requests for any
 subdirectory under 'alias'.
-	  
-	</para>
-      </listitem>
-      <listitem>
-	<para>
-
-Install <ulink
-url="http://prdownloads.sourceforge.net/swete/unofficial-eclop.zip?download">Unofficial
-ECLOP</ulink> and set the environment variable ECLOP to the directory
-containing the library.xace file.
 	  
 	</para>
       </listitem>
@@ -213,13 +204,18 @@ class="unknown">goa_build</filename> in your system's execution path.
       <listitem>
 	<para>
 
-Install <ulink
+If you will be doing <ulink url="#custom_html_generation">custom HTML generation</ulink>, install <ulink
 url="http://www.thaiopensource.com/relaxng/trang.html">trang</ulink>
 and ensure the trang executable is in your system's execution path or
 set the environment variable <envar>TRANG_INVOCATION</envar> with the
 complete path to the trang executable including the executable file
-name.
+name. For example:
 
+	</para>
+	<para>
+	
+TRANG_INVOCATION=$JAVA_HOME/bin/java -jar /usr/local/share/trang/trang.jar
+	
 	</para>
       </listitem>
     </orderedlist>
@@ -244,7 +240,7 @@ An example application is available in:
 	<listitem>
 	  <para>
 
-Copy all of the files (and subdirectories) in
+Create a new project directory and copy all of the files (and subdirectories) in
 $GOANNA/library/application/templates to your project directory and
 then delete the CVS subdirectories (recursively).
 	    
@@ -276,7 +272,9 @@ you use the stand alone connector you must undefine
 	<listitem>
 	  <para>
 
-<classname>PARAMETER_PROCESSING_RESULT</classname>, <classname>APPLICATION_CONFIGURATION</classname>, and all servlets  must inherit from
+<classname>PARAMETER_PROCESSING_RESULT</classname>,
+<classname>APPLICATION_CONFIGURATION</classname>, and all servlets
+must inherit from
 <classname>GOA_NON_DATABASE_ACCESS_TRANSACTION_MANAGEMENT</classname>
 or another class implementing
 <classname>GOA_TRANSACTION_MANAGEMENT</classname>.
@@ -286,7 +284,9 @@ or another class implementing
 	<listitem>
 	  <para>
 	    
-Implement deferred features.  <classname>APPLICATION_SERVER</classname>.<featurename>command_line_ok</featurename> must:
+Implement deferred features.
+<classname>APPLICATION_SERVER</classname>.<featurename>command_line_ok</featurename>
+must:
 	    
 	  </para>
 	  <para>
@@ -294,7 +294,10 @@ Implement deferred features.  <classname>APPLICATION_SERVER</classname>.<feature
 	      <listitem>
 		<para>
 
-First create (or assign an existing object to) <classname>APPLICATION_SERVER</classname>.<featurename>active_configuration</featurename> and then call <classname>APPLICATION_SERVER</classname>.<featurename>touch_configuration</featurename>
+First create (or assign an existing object to)
+<classname>APPLICATION_SERVER</classname>.<featurename>active_configuration</featurename>
+and then call
+<classname>APPLICATION_SERVER</classname>.<featurename>touch_configuration</featurename>
 		  
 		</para>
 	      </listitem>
@@ -339,13 +342,13 @@ inherit directly from
 implement the deferred feature <featurename>name</featurename> which
 generally should include an extension (e.g. .htm) and is used as the
 file name portion of the url refering to the servlet.  Servlet names
-must be unique within the system.  Servlets must be
-instantiated (and accessed) as once functions in
-<classname>SHARED_SERVLETS</classname>.  Additionally, each servlet
-must be registered by adding a call to
+must be unique within the system.  Servlets must be instantiated (and
+accessed) as once functions in <classname>SHARED_SERVLETS</classname>.
+Additionally, each servlet must be registered by adding a call to
 <classname>GOA_APPLICATION_SERVER</classname>.<featurename>register_servlet</featurename>
-(<argument>servlet_feature_name_from_SHARED_SERVLETS</argument>) within the developer implemented
-feature <classname>APPLICATION_SERVER</classname>.<featurename>register_servlets</featurename>.
+(<argument>servlet_feature_name_from_SHARED_SERVLETS</argument>)
+within the developer implemented feature
+<classname>APPLICATION_SERVER</classname>.<featurename>register_servlets</featurename>.
       </para>
       <para>
 
@@ -501,8 +504,9 @@ query
 
 Features to store intermediate processing results which are not part
 of the persistent object model may be added to classes
-<classname>PARAMETER_PROCESSING_RESULT</classname>, <classname>REQUEST_PROCESSING_RESULT</classname> or
-<classname>SESSION_STATUS</classname> as appropriate. 
+<classname>PARAMETER_PROCESSING_RESULT</classname>,
+<classname>REQUEST_PROCESSING_RESULT</classname> or
+<classname>SESSION_STATUS</classname> as appropriate.
       </para>
       <para>
 
@@ -550,11 +554,81 @@ processing.
     <title>HTML Generation</title>
     <para>
 
+Content intended for display to the user is first generated in XML and
+subsequently transformed to HTML using XSLT.  Four kinds of classes
+are involved in XML generation.  XML generation classes are provided
+with the framework or developers may create a <ulink
+url="#custom_html_generation">custom document schema</ulink>. The XML
+generation class names are prefixed by the name (namespace prefix) of
+the schema that describes their XML content.
+    </para>
+    <para>
+      <itemizedlist>
+	<listitem>
+	  <para>
+        
+<classname>_XML_DOCUMENT</classname>. These 
+classes include features to add all of the elements
+specified in the schema to an XML document with pre conditions
+describing the schema validity rules.
+	    
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+
+<classname>_PREFIX_ATTRIBUTE_VALUES</classname> classes contain
+string constants for all attribute values specified using a choice of
+literal strings (e.g. { "value1" | "value2" }).  The naming convention
+for each feature is
+<featurename>attribute_name_attribute_value</featurename>.
+	    
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+
+<classname>_SCHEMA_CODES</classname> classes
+contain integer constants representing each element and
+attribute used within the schema.
+	    
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	  
+<classname>_XML_DOCUMENT_EXTENDED</classname> classes
+contain any developer provided extensions to the functionality
+included in the corresponding <classname>_XML_DOCUMENT</classname> 
+class.
+	  
+	  </para>
+	</listitem>
+	
+      </itemizedlist>
+      
+    </para>
+    <para>
+
+<classname>_XML_DOCUMENT</classname>,
+<classname>_PREFIX_ATTRIBUTE_VALUES</classname>, and
+<classname>_SCHEMA_CODES</classname> classes are all generated by the
+<filename class="unknown">goa_build</filename> application from an XML
+schema.  Developers should avoid creating their own classes with these
+names.  The <classname>_XML_DOCUMENT_EXTENDED</classname> classes are
+necessary to allow developers to add functionality to a
+<classname>_XML_DOCUMENT</classname> without having that code
+overwritten upon subsequent invocations of the <filename
+class="unknown">goa_build</filename> application.
+
+    </para>
+    <para>
+
 Generating HTML output for the user may be performed using an
-<classname>EXTENDED_GOA_PAGE_XML_DOCUMENT</classname> object or by
-using a <ulink url="#custom_html_generation">custom document
-schema</ulink> (described
-below). <classname>EXTENDED_GOA_PAGE_XML_DOCUMENT</classname> includes
+<classname>GOA_PAGE_XML_DOCUMENT_EXTENDED</classname> object. 
+<classname>GOA_REDIRECT_XML_DOCUMENT_EXTENDED</classname>
+may be used to redirect the user to another page.
+<classname>GOA_PAGE_XML_DOCUMENT_EXTENDED</classname> includes
 primitives for generating most HTML constructs and a number of
 convenience features.  Additionally, form parameters may be easily
 added to the document by first calling
@@ -574,7 +648,7 @@ When adding a hyperlink to a servlet to an XML page, use:
       
     </para>
     <para>
-<classname>EXTENDED_GOA_PAGE_XML_DOCUMENT</classname>.<featurename>add_item</featurename>
+<classname>GOA_PAGE_XML_DOCUMENT_EXTENDED</classname>.<featurename>add_item</featurename>
 (servlet.hyperlink (processing_result, text)
     </para>
     <para>
@@ -723,7 +797,9 @@ template generating the HTML "HEAD" portion of the document:
       </para>
       <para>
 
-The selections for elements and attributes in included schemas that are defined as a choice (.e.g. elem1 = element ns:elem1 { elem2 | elem3 }) may be expanded by using the rnc combine operator |=.
+The selections for elements and attributes in included schemas that
+are defined as a choice (.e.g. elem1 = element ns:elem1 { elem2 |
+elem3 }) may be expanded by using the rnc combine operator |=.
 	
       </para>
       <para>
@@ -762,45 +838,22 @@ class="unknown">namespace_prefix.frng</filename> to the data directory
 (specified using the -d (--datadirectory) switch or the current
 directory if none is specified).  This file contains a "flattened"
 schema (all included files merged into a single file) in <ulink
-url="http://www.relaxng.org/">Relax NG syntax</ulink>. This is
-necessary to support validation of the generated XML documents using
-xmllint lint which doesn't seem to play well with included schemas.
+url="http://www.relaxng.org/">Relax NG syntax</ulink>. 
 	    
 	  </para>
 	</listitem>
 	<listitem>
 	  <para>
-
-Create the class
-<classname>NAMESPACE_PREFIX_XML_DOCUMENT</classname>in the Eiffel
-directory (or the current directory if none is specified). This
-effective class includes features to add all of the elements
-specified in the schema to an XML document with pre conditions
-describing the schema validity rules.
-	    
-	  </para>
-	</listitem>
-	<listitem>
-	  <para>
-
-Create the class
-<classname>NAMESPACE_PREFIX_ATTRIBUTE_VALUES</classname> containing
-string constants for all attribute values specified using a choice of
-literal strings (e.g. { "value1" | "value2" }).  The naming convention
-for each feature is
-<featurename>attribute_name_attribute_value</featurename>.  If a
-stylesheet declaration was included in the schema, then this class
-will include constants for each class contained in the specified
+	  
+Create the classes
+<classname>NAMESPACE_PREFIX_XML_DOCUMENT</classname>,
+<classname>NAMESPACE_PREFIX_ATTRIBUTE_VALUES</classname>, and (for
+document schemas) <classname>NAMESPACE_PREFIX_SCHEMA_CODES</classname>
+in the Eiffel directory (or the current directory if none is
+specified).  If a stylesheet declaration was included in the schema,
+then <classname>NAMESPACE_PREFIX_ATTRIBUTE_VALUES</classname> this
+class will include constants for each class contained in the specified
 stylesheet (e.g. <featurename>class_error_message</featurename>).
-	    
-	  </para>
-	</listitem>
-	<listitem>
-	  <para>
-
-Create the class <classname>NAMESPACE_PREFIX_SCHEMA_CODES</classname>
-which contains integer constants representing each element and
-attribute used within the schema.
 	    
 	  </para>
 	</listitem>
@@ -836,7 +889,7 @@ was specified).
       <para>
 	
 The developer must create a class
-<classname>EXTENDED_NAMESPACE_PREFIX_XML_DOCUMENT</classname> which
+<classname>NAMESPACE_PREFIX_XML_DOCUMENT_EXTENDED</classname> which
 inherits from
 <classname>NAMESPACE_PREFIX_XML_DOCUMENT</classname>. The developer
 may add any additional XML generation features to this class and
@@ -864,7 +917,7 @@ stylesheet should contain only those classes which are unique to the
 schema and not those that are inherited from other included schemas.
 Included schemas should NOT include a CLASS_ATTRIBUTE_PLACEHOLDER. The
 developer must also create a file
-<classname>EXTENDED_NAMESPACE_PREFIX_XML_DOCUMENT</classname> which
+<classname>NAMESPACE_PREFIX_XML_DOCUMENT_EXTENDED</classname> which
 inherits from <classname>NAMESPACE_PREFIX_XML_DOCUMENT</classname> for
 included schemas.
 	
