@@ -136,6 +136,16 @@ variables.
       <listitem>
 	<para>
 
+Install <ulink
+url="http://prdownloads.sourceforge.net/swete/unofficial-eclop.zip?download">Unofficial
+ECLOP</ulink> and set the environment variable ECLOP to the directory
+containing the library.xace file.
+	  
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+
 Install the
 <ulink url="http://sourceforge.net/cvs/?group_id=14711">CVS version of Goanna</ulink>
 as described
@@ -158,7 +168,7 @@ for production use.
 A sample Apache httpd.conf file is provided in <ulink
 url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/httpd.conf.sample?view=markup">$GOANNA/examples/application</ulink>.
 A list of other webservers supported is available <ulink url="TODO
-fill in this link" /> Each Goanna Application running on the webserver
+fill in this link">here</ulink>.  Each Goanna Application running on the webserver
 must have it's own FastCgiExternalServer with a unique (developer
 selected) path and it's own port.  The port number must match
 <classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>.
@@ -338,13 +348,17 @@ user should inherit from
 <classname>GOA_DISPLAYABLE_SERVLET</classname>.  Servlets that process
 incoming requests but never generate a response to the user may
 inherit directly from
-<classname>GOA_APPLICATION_SERVLET</classname>. Developers must
-implement the deferred feature <featurename>name</featurename> which
-generally should include an extension (e.g. .htm) and is used as the
-file name portion of the url refering to the servlet.  Servlet names
-must be unique within the system.  Servlets must be instantiated (and
-accessed) as once functions in <classname>SHARED_SERVLETS</classname>.
-Additionally, each servlet must be registered by adding a call to
+<classname>GOA_APPLICATION_SERVLET</classname>. Class <ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/servlets/question_servlet.e?view=markup">QUESTION_SERVLET</ulink>
+provides an example of a simple servlet that displays an input form to
+the user and processes the request when the user submits the form to
+the server. Developers must implement the deferred feature
+<featurename>name</featurename> which generally should include an
+extension (e.g. .htm) and is used as the file name portion of the url
+refering to the servlet.  Servlet names must be unique within the
+system.  Servlets must be instantiated (and accessed) as once
+functions in <classname>SHARED_SERVLETS</classname>.  Additionally,
+each servlet must be registered by adding a call to
 <classname>GOA_APPLICATION_SERVER</classname>.<featurename>register_servlet</featurename>
 (<argument>servlet_feature_name_from_SHARED_SERVLETS</argument>)
 within the developer implemented feature
@@ -454,7 +468,7 @@ Each parameter submitted in an HTML form is processed by an object of
 type <classname>GOA_DEFERRED_PARAMETER</classname>.  These objects
 must be instantiated (and accessed) as once functions in
 <classname>SHARED_REQUEST_PARAMETERS</classname>. The same parameter
-may be used by multiple servlets.
+may be used by multiple servlets. In the sample application, <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/parameters/name_parameter.e?view=markup">NAME_PARAMETER</ulink> provides an example of a parameter that allows the user to enter their name and stores their input in the sample application's <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/session_status.e?view=markup">SESSION_STATUS</ulink> object.  It will display an error message to the user if the user attemps to enter an empty name.  If the user attempts to replace a previously valid name with an empty name, it will not do the update and will so inform the user.  These behaviors are inherited from <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/forms/parameters/goa_non_empty_update_input_parameter.e?view=markup">NON_EMPTY_UPDATE_INPUT_PARAMETER</ulink>.
 
       </para>
       <para>
