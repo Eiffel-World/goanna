@@ -41,7 +41,7 @@ feature -- Attributes
 feature -- Page Building
 
 	new_xml_document (processing_result: REQUEST_PROCESSING_RESULT): GOA_XML_DOCUMENT is
-			-- A new XML document
+			-- Create a new XML document and open the documents root element
 		require
 			valid_processing_result: processing_result /= Void
 			processing_result_was_processed: processing_result.was_processed

@@ -129,11 +129,11 @@ feature -- Attributes
 			valid_result: Result /= Void
 		end
 		
-	not_all_parameters_are_valid: BOOLEAN
-			-- True if at least one parameter in the request is not valid (i.e. contains an error message)
-	
 	page_selected_servlet: GOA_DISPLAYABLE_SERVLET
 			-- Servlet set by the GOA_PAGE_PARAMETER, if any
+
+	all_parameters_are_valid: BOOLEAN
+			-- Are the indicated parameters all valid?
 			
 feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_PARAMETER} -- Processing
 
@@ -241,9 +241,9 @@ feature {GOA_USER_ERROR_MESSAGE} -- Parameter Validity
 		
 	set_not_all_parameters_are_valid is
 		do
-			not_all_parameters_are_valid := True
+			all_parameters_are_valid := False
 		ensure
-			not_all_parameters_are_valid: not_all_parameters_are_valid
+			not_all_parameters_are_valid: not all_parameters_are_valid
 		end
 		
 feature {GOA_DISPLAYABLE_SERVLET} -- Generating Servlet
@@ -287,9 +287,6 @@ feature {NONE} -- Creation
 
 feature {GOA_PARAMETER_PROCESSING_RESULT, GOA_APPLICATION_SERVLET} -- Implementation
 		
-	all_parameters_are_valid: BOOLEAN
-			-- Are the indicated parameters all valid?
-			
 feature {NONE} -- Implementation
 
 	sorter: DS_QUICK_SORTER [GOA_PARAMETER_PROCESSING_RESULT] is

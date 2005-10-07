@@ -18,7 +18,9 @@ grammar {
    
    include "goa_common.rnc"
    						
-	page = element goa_page:page { server_name, page_title, style_sheet, submit_url?, ( paragraph | division | text_area | submit | text | hyperlink | text_item | ordered_list | unordered_list | hidden | popup_hyperlink | table | select | input | radio | image | address )* }
+	page = element goa_page:page { host_name, page_title, style_sheet, submit_url?, ( paragraph | division | text_area | submit | text | hyperlink | text_item | ordered_list | unordered_list | hidden | popup_hyperlink | table | select | input | radio | image | address )* }
+
+   host_name = attribute host_name { text }
 
    submit_url = attribute submit_url { text }
 

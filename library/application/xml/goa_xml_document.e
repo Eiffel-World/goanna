@@ -115,7 +115,7 @@ feature -- Output
 		do
 			Result := writer.as_string
 		ensure
-			is_valid_xml: is_valid_xml (Result)
+			is_valid_xml: configuration.validate_xml implies is_valid_xml (Result)
 		end
 		
 	as_html: STRING is
@@ -426,28 +426,17 @@ feature {NONE} -- Transformation
 			valid_xml: xml /= Void
 		local
 			file: PLAIN_TEXT_FILE
-			xml_file_name, lint_output_file_name, lint_output, expected_lint_output, lint_execution_string: STRING
+			xml_file_name, jing_execution_string: STRING
 			shell_command: KL_SHELL_COMMAND
 		do
 			xml_file_name := configuration.data_directory + "temp.xml"
-			lint_output_file_name := configuration.data_directory + "lint_output"
 			create file.make_open_write (xml_file_name)
 			file.put_string (xml + "%N")
 			file.close
-			expected_lint_output := xml_file_name + " validates"
-			lint_execution_string := "xmllint --relaxng " + schema_file_name + " " + xml_file_name + " | grep %"" + expected_lint_output + "%" > " + lint_output_file_name
---			io.put_string (lint_execution_string + "%N")
-			create shell_command.make (lint_execution_string)
+			jing_execution_string := configuration.jing_invocation + " " + schema_file_name + " temp.xml >> /dev/null"
+			create shell_command.make (jing_execution_string)
 			shell_command.execute
-			create file.make_open_read (lint_output_file_name)
-			file.read_line
-			lint_output := file.last_string
-			file.close
---			io.put_string ("Actual: " + lint_output + "#%N")
---			io.put_string ("Expected: " + expected_lint_output + "#%N")
-			Result := equal (lint_output, expected_lint_output)
---			execution_environment.system ("rm -f " + xml_file_name)
---			execution_environment.system ("rm -f " + lint_output_file_name)
+			Result := shell_command.exit_code = 0
 		end		
 
 feature {NONE} -- Creation

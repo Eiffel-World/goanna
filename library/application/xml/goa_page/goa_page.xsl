@@ -32,7 +32,7 @@
 
       <xsl:attribute name="rel">stylesheet</xsl:attribute>
       <xsl:attribute name="type">text/css</xsl:attribute>
-      <xsl:attribute name="href">http://<xsl:value-of select="/goa_page:page/@server_name" />/<xsl:value-of select="/goa_page:page/@style_sheet" /></xsl:attribute>
+      <xsl:attribute name="href">http://<xsl:value-of select="/goa_page:page/@host_name" />/<xsl:value-of select="/goa_page:page/@style_sheet" /></xsl:attribute>
     </xsl:element>
   </xsl:element>
   <xsl:element name="BODY">

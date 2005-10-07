@@ -5,6 +5,7 @@
   date: 	$Date$
   revision: 	$Revision$
   copyright: 	(c) Neal L Lester
+  License: "Eiffel Forum License Version 2 (see forum.txt)"
 --><!-- stylesheet="goa_common.css" --><grammar xmlns:goa_page="http://www.sourceforge.net/projects/goanna/goa_page" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <ref name="page"/>
@@ -379,7 +380,7 @@
   </define>
   <define name="page">
     <element name="goa_page:page">
-      <ref name="server_name"/>
+      <ref name="host_name"/>
       <ref name="page_title"/>
       <ref name="style_sheet"/>
       <optional>
@@ -404,6 +405,9 @@
 </choice>
       </zeroOrMore>
     </element>
+  </define>
+  <define name="host_name">
+    <attribute name="host_name"/>
   </define>
   <define name="submit_url">
     <attribute name="submit_url"/>
