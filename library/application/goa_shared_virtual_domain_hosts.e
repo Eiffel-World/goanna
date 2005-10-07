@@ -13,7 +13,7 @@ inherit
 	
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	
-feature {NONE}
+feature
 	
 	virtual_domain_for_host_name (host_name: STRING): VIRTUAL_DOMAIN_HOST is
 			-- Return virtual domain assigned to the host name
@@ -26,11 +26,26 @@ feature {NONE}
 		ensure
 			valid_result: Result /= Void
 		end
+		
+feature
 	
-	virtual_domain_hosts: HASH_TABLE [VIRTUAL_DOMAIN_HOST, STRING] is
+	register_virtual_domain_host (host: VIRTUAL_DOMAIN_HOST; host_name: STRING) is
+			-- Register host under host_name
+		require
+			valid_host: host /= Void
+			valid_host_name: host_name /= Void and then not host_name.is_empty
+		do
+			if virtual_domain_hosts.has (host_name) then
+				virtual_domain_hosts.put (host, host_name)
+			else
+				virtual_domain_hosts.force (host, host_name)
+			end
+		end
+		
+	virtual_domain_hosts: DS_HASH_TABLE [VIRTUAL_DOMAIN_HOST, STRING] is
 			-- Table containing all virtual domain hosts
 		once
-			create Result.make (25)
+			create Result.make_equal (5)
 		end
 	
 invariant

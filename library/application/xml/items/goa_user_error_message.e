@@ -51,6 +51,8 @@ feature -- Queries
 			Precursor (new_message)
 			processing_result.set_not_all_parameters_are_valid
 			log_hierarchy.logger (configuration.application_log_category).info ("User Error: " + new_message)
+		ensure then
+			not_all_parameters_are_valid: processing_result.not_all_parameters_are_valid
 		end
 		
 	add_message_item (new_item: GOA_XML_ITEM) is
@@ -58,6 +60,8 @@ feature -- Queries
 		do
 			Precursor (new_item)
 			processing_result.set_not_all_parameters_are_valid
+		ensure then
+			not_all_parameters_are_valid: processing_result.not_all_parameters_are_valid
 		end
 
 feature {NONE} -- Creation

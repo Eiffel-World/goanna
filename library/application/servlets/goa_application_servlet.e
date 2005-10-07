@@ -1,5 +1,5 @@
 indexing
-	description: "Servlets for the MSP Application"
+	description: "Servlets for a Goanna Application"
 	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -19,16 +19,14 @@ inherit
 	GOA_TEXT_PROCESSING_FACILITIES
 	EXCEPTIONS
 	GOA_AUTHENTICATION_STATUS_CODE_FACILITIES
-	PROCESSING_ERROR_CODE_FACILITIES
-	GOA_HYPERLINK_FACTORY
 	L4E_SHARED_HIERARCHY
 	GOA_SHARED_VIRTUAL_DOMAIN_HOSTS
 	GOA_SHARED_SERVLET_MANAGER
-	SHARED_GOA_REQUEST_PARAMETERS
-	SHARED_SERVLETS
 	UT_STRING_FORMATTER
 	GOA_TRANSACTION_MANAGEMENT
 	KL_IMPORTED_STRING_ROUTINES
+	SHARED_REQUEST_PARAMETERS
+	SHARED_SERVLETS
 
 feature -- Attributes
 
@@ -112,7 +110,7 @@ feature -- Request Processing
 			-- Perform any post GOA_REQUEST_PARAMETER processing
 			-- Determine next page and send response to browser
 		local
-			page: EXTENDED_PAGE_XML_DOCUMENT
+			page: EXTENDED_GOA_PAGE_XML_DOCUMENT
 			servlet: GOA_DISPLAYABLE_SERVLET
 			parameter_names: DS_LINEAR [STRING]
 			parameter_name, raw_parameter_name, parameter_value: STRING
@@ -122,7 +120,7 @@ feature -- Request Processing
 			current_parameter_is_legal, all_parameters_are_legal, all_mandatory_parameters_are_present, all_expected_parameters_are_present, all_parameters_are_present: BOOLEAN
 			mandatory_parameters_in_request, expected_parameters_in_request: DS_LINKED_LIST [STRING]
 			mandatory_processing_results, non_mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
-			page_agent: FUNCTION [ANY, TUPLE [REQUEST_PROCESSING_RESULT], EXTENDED_PAGE_XML_DOCUMENT]
+			page_agent: FUNCTION [ANY, TUPLE [REQUEST_PROCESSING_RESULT], EXTENDED_GOA_PAGE_XML_DOCUMENT]
 			temp_name: STRING
 			failed_once, failed_twice: BOOLEAN
 			
@@ -130,19 +128,17 @@ feature -- Request Processing
 --			io.put_string (generator + "%N")
 			if not failed_once then
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
---				io.put_string ("Request: " + name + client_info (request) + "%N")
+				io.put_string ("Request: " + name + client_info (request) + "%N")
 				-- Obtain session status and initialize if necessary
 				session_status ?= request.session.get_attribute ("SESSION_STATUS")
 				check
 					valid_session_status: session_status /= Void
 				end
-				if session_status.authentication_status_is_undefined then
+				if not session_status.initialized then
 					session_status.initialize (request)
 				end
 				create processing_result.make (request, response, session_status, Current)
-				if not ok_to_process_servlet (processing_result) then
-					processing_result.add_processing_error_code (processing_permission_denied_code)
-				else
+				if ok_to_process_servlet (processing_result) then
 					create mandatory_parameters_in_request.make_equal
 					create expected_parameters_in_request.make_equal
 					create mandatory_processing_results.make
@@ -297,6 +293,18 @@ feature -- Linking
 			create Result.make (processing_result, Current, text)
 		end
 		
+	post_url (processing_result: REQUEST_PROCESSING_RESULT): STRING is
+			-- URL to which data should be posted for this servlet
+		require
+			valid_processing_result: processing_result /= Void
+		do
+			Result := "http"
+			if receive_secure and processing_result.virtual_domain_host.use_ssl then
+				Result.extend ('s')
+			end
+			Result.append ("://")
+			Result.append (processing_result.virtual_domain_host.host_name + configuration.fast_cgi_directory + name)
+		end
 
 feature -- Suplementary Processing
 
@@ -323,8 +331,7 @@ feature -- Suplementary Processing
 			all_mandatory_parameters_are_valid: processing_result.all_mandatory_parameters_are_valid
 			not_ok_to_read_write_data: implements_transaction_and_version_access implies not (ok_to_read_data (processing_result) or ok_to_write_data (processing_result))
 		do
-			processing_result.set_final_processing_valid
-			-- TODO This should be Nothing by default; move to MSP_SERVLET
+-- Nothing
 		ensure
 			not_ok_to_read_write_data: implements_transaction_and_version_access implies not (ok_to_read_data (processing_result) or ok_to_write_data (processing_result))
 		end
@@ -440,14 +447,13 @@ feature {NONE} -- Creation
 	make is
 			-- Creation
 		do
+			servlet_by_name.force (Current, name_without_extension)
 			create mandatory_parameters.make_equal
 			create expected_parameters.make_equal
 			create possible_parameters.make_equal
 			create add_if_absent_parameters.make_equal
 			create pass_through_parameters.make_equal
 			possible_parameters.force_last (standard_submit_parameter.name)
-			possible_parameters.force_last (navigation_bar_submit_parameter.name)
-			possible_parameters.force_last (first_navigation_bar_submit_parameter.name)
 			init (configuration.servlet_configuration)
 		end
 
@@ -458,10 +464,7 @@ invariant
 	valid_expected_parameters: expected_parameters /= Void
 	valid_possible_parameters: possible_parameters /= Void
 	valid_add_if_absent_parameters: add_if_absent_parameters /= Void
-	-- TODO The following may be application specific; check it out
 	possible_parameters_has_submit: possible_parameters.has (standard_submit_parameter.name)
-	has_page_parameter_implies_go_to_servlet: go_to_servlet /= Void and then expected_parameters.has (page_parameter.name) implies equal (name, go_to_servlet.name)
-	not_mandatory_parameters_has_page_parameter: not mandatory_parameters.has (page_parameter.name)
-	not_possible_parameters_has_page_parameter: not possible_parameters.has (page_parameter.name)
+	is_registered: servlet_by_name.has (name_without_extension)
 	
-end -- class MSP_SERVLET
+end -- class GOA_APPLICATION_SERVLET

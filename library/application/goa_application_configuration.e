@@ -12,7 +12,9 @@ deferred class
 inherit
 	
 	GOA_TRANSACTION_MANAGEMENT
+	KL_SHARED_EXECUTION_ENVIRONMENT
 	KL_SHARED_FILE_SYSTEM
+	SHARED_SERVLETS
 
 feature -- Page Sequencing
 	
@@ -27,21 +29,47 @@ feature -- Page Sequencing
 			not_ok_to_read_write_data: implements_transaction_and_version_access implies not (ok_to_read_data (processing_result) or ok_to_write_data (processing_result))
 		end
 		
+	data_directory: STRING is
+			-- Interpreted version of internal_data_directory
+		once
+			Result := execution_environment.interpreted_string (internal_data_directory)
+		end
+		
+	document_root: STRING is
+			-- Interpreted version of internal_document_root
+		once
+			Result := execution_environment.interpreted_string (internal_document_root)
+		end
+		
 feature -- Deferred Features
 
-	data_directory: STRING is
-			-- Directory containing directory data files; must exist and be writable
+	internal_data_directory: STRING is
+			-- Directory containing application data files; e.g. must exist and be writable
 			-- Include trailing directory separator
+		deferred
+		end
+		
+	internal_document_root: STRING is
+			-- The document root directory where stand alone server looks for documents
+			-- Not sure what this is used for in a fastcgi application (use an arbitrary string).
 		deferred
 		end
 
 	internal_test_mode: BOOLEAN is
 			-- This configuration should run in "test mode"
+			-- In test mode, page xml data is written to file
+			-- In test mode, the application does not run as a daemon
 		deferred
 		end
 		
 	port: INTEGER is
 			-- Server connection port
+		deferred
+		end
+		
+	default_virtual_host_lookup_string: STRING is
+			-- The default virtual host name to use, if the actual host name
+			-- does not correspond to an existing VIRTUAL_DOMAIN_HOST
 		deferred
 		end
 
@@ -53,8 +81,13 @@ feature -- Attributes
 	use_saxon: BOOLEAN
 			-- Use Saxon as the XSLT processor
 			
-	servlet_configuration: GOA_SERVLET_CONFIG
+	servlet_configuration: GOA_SERVLET_CONFIG is
 			-- Goanna configuration
+		once
+			create Result
+			Result.set_server_port (port)
+			Result.set_document_root (document_root)
+		end
 			
 	test_mode: BOOLEAN is
 			-- Run in test mode
@@ -73,18 +106,16 @@ feature -- Attributes
 			-- Program 'dig' must be available in the execution path of the system
 		deferred
 		end
-			
-feature -- Configuration Setting
 		
-	set_servlet_configuration (new_servlet_configuration: like servlet_configuration) is
-			-- Set servlet_configuration to new_servlet_configuration
-		require
-			valid_new_servlet_configuration: new_servlet_configuration /= Void
-		do
-			servlet_configuration := new_servlet_configuration
-		ensure
-			servlet_configuration_updated: equal (servlet_configuration, new_servlet_configuration)
+	install_snoop_servlet: BOOLEAN is
+			-- Should we install snoop_servlet?  This servlet echos the contents of
+			-- A web request back to the user.  Sometimes useful in debugging.
+			-- Descendents may redefine to True
+		once
+			Result := False
 		end
+		
+feature -- Configuration Setting
 		
 	set_use_saxon is
 			-- Set configuration to use saxon as the XSLT processor
@@ -161,6 +192,11 @@ feature -- Servlet Names
 
 	fast_cgi_directory: STRING is 
 			-- The directory configured to serve fast_cgi requests
+			-- Must include two directory names with leading and
+			-- Trailing slashes, e.g.
+			-- /dir1/dir2/
+			-- for Apache, dir1 must match the alias
+			-- for the fast-cgi directory
 		deferred
 		end
 		
@@ -168,20 +204,8 @@ feature -- Logging
 		
 	application_log_category: STRING is "app"
 	
-	application_security_log_category: STRING is "app_security"
+	application_security_log_category: STRING is "security"
 	
-feature -- Application Environment
-
-	directory_separator: STRING is
-			-- The character used to separate directories
-		once
-			if operating_system.is_windows then
-				Result := "\"
-			else
-				Result := "/"
-			end			
-		end
-
 invariant
 	
 	data_directory_is_readable: file_system.directory_exists (data_directory) and then file_system.is_directory_readable (data_directory)

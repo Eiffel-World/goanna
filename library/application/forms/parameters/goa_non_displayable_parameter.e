@@ -16,14 +16,14 @@ inherit
 	
 feature
 	
-	ok_to_add (the_document: EXTENDED_PAGE_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (the_document: GOA_XML_DOCUMENT): BOOLEAN is
 		do
 			Result := False
 		ensure then
 			not_result: not Result
 		end
 		
-	add_to_document (the_document: EXTENDED_PAGE_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_document (the_document: GOA_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		do
 			-- Nothing
 		end

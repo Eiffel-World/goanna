@@ -5,7 +5,7 @@
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "Copyright (c) 2004 Neal L Lester"
-
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 -->
 
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"

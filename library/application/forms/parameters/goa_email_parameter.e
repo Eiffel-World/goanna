@@ -95,5 +95,4 @@ feature {NONE} -- Implementation
 			Result := True
 		end
 		
-
 end -- class GOA_EMAIL_PARAMETER

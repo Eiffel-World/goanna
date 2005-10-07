@@ -12,9 +12,8 @@ deferred class
 inherit
 	
 	GOA_SHARED_APPLICATION_CONFIGURATION
-	PROCESSING_ERROR_CODE_FACILITIES
 	GOA_TEXT_PROCESSING_FACILITIES
-	GOA_SHARED_GOA_REQUEST_PARAMETERS
+	SHARED_REQUEST_PARAMETERS
 	
 feature -- Attributes
 
@@ -38,6 +37,12 @@ feature -- Attributes
 			
 	generating_servlet: GOA_DISPLAYABLE_SERVLET
 			-- The servlet that is generating the next page that will be displayed to the user
+			
+	virtual_domain_host: VIRTUAL_DOMAIN_HOST is
+		do
+			Result := session_status.virtual_domain_host
+		end
+		
 
 	all_input_was_valid: BOOLEAN is
 			-- Was all input received during the request valid?
@@ -47,11 +52,11 @@ feature -- Attributes
 			Result := all_parameters_are_valid and final_processing_was_valid
 		end
 			
-	processing_error_codes: LINKED_LIST [INTEGER]
-			-- Codes defining the processing errors (if any) that occured
-
 	was_processed: BOOLEAN
 			-- This request has been processed
+			
+	was_updated: BOOLEAN
+			-- Did any of the parameters update the data model?
 			
 	final_processing_was_valid: BOOLEAN
 			-- Post processing (performed by the servlet) indicates request is valid
@@ -124,12 +129,11 @@ feature -- Attributes
 			valid_result: Result /= Void
 		end
 		
-	was_dependency_updated: BOOLEAN is
-			-- Did the request update a value upon which subsequent pages in the wizard may depend?
-		obsolete
-			"Application specific hack"
-		deferred
-		end
+	not_all_parameters_are_valid: BOOLEAN
+			-- True if at least one parameter in the request is not valid (i.e. contains an error message)
+	
+	page_selected_servlet: GOA_DISPLAYABLE_SERVLET
+			-- Servlet set by the GOA_PAGE_PARAMETER, if any
 			
 feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_PARAMETER} -- Processing
 
@@ -200,19 +204,6 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 			final_processing_was_valid := True
 		end
 		
-	add_processing_error_code (new_value: INTEGER) is
-			-- Set processing_error to new_value
-		require
-			valid_new_value: is_valid_processing_error_code (new_value)
-		do
-			if not processing_error_codes.has (new_value) then
-				processing_error_codes.force (new_value)
-			end
-			
-		ensure
-			processing_error_code_updated: processing_error_codes.has (new_value)
-		end
-	
 	add_parameter_processing_result (processing_result: PARAMETER_PROCESSING_RESULT; is_mandatory: BOOLEAN) is
 			-- Add processing_result to parameter_processing_results
 		require
@@ -231,6 +222,28 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 			else
 				non_mandatory_processing_results.force_last (processing_result)
 			end
+		end
+		
+	set_page_selected_servlet (the_servlet: GOA_DISPLAYABLE_SERVLET) is
+		do
+			page_selected_servlet := the_servlet
+		end
+		
+	set_was_updated is
+		do
+			was_updated := True
+		ensure
+			was_updated: was_updated
+		end
+		
+
+feature {GOA_USER_ERROR_MESSAGE} -- Parameter Validity
+		
+	set_not_all_parameters_are_valid is
+		do
+			not_all_parameters_are_valid := True
+		ensure
+			not_all_parameters_are_valid: not_all_parameters_are_valid
 		end
 		
 feature {GOA_DISPLAYABLE_SERVLET} -- Generating Servlet
@@ -256,7 +269,6 @@ feature {NONE} -- Creation
 			session_status_belongs_to_request: new_request.session.get_attribute (configuration.session_status_attribute_name) = new_session_status
 		do
 			all_parameters_are_valid := True
-			create processing_error_codes.make
 			request := new_request
 			response := new_response
 			session_status := new_session_status
@@ -280,13 +292,13 @@ feature {GOA_PARAMETER_PROCESSING_RESULT, GOA_APPLICATION_SERVLET} -- Implementa
 			
 feature {NONE} -- Implementation
 
-	sorter: DS_QUICK_SORTER [PARAMETER_PROCESSING_RESULT] is
+	sorter: DS_QUICK_SORTER [GOA_PARAMETER_PROCESSING_RESULT] is
 			-- Sorter that can sort parameter processing_result containers
 		once
 			create Result.make (comparator)
 		end
 		
-	comparator: PARAMETER_PROCESSING_RESULT_COMPARATOR is
+	comparator: GOA_PARAMETER_PROCESSING_RESULT_COMPARATOR is
 			-- Comparator used for sorting GOA_PARAMETER_PROCESSING_RESULTS
 		once
 			create Result
@@ -305,13 +317,26 @@ feature {NONE} -- Implementation
 	error_messages_displayed: DS_LINKED_LIST [STRING]
 			-- List of parameters for which error messages have been displayed
 
+feature -- Obsolete
+
+	was_dependency_updated: BOOLEAN
+			-- Did the request update a value upon which subsequent pages in the wizard may depend?
+
+	set_was_dependency_updated is
+			-- Set updated_dependency to True
+		obsolete
+			"Application specific hack"
+		do
+			was_dependency_updated := True
+		end
+
+
 invariant
 
 	valid_request: request /= Void
 	valid_response: response /= Void
 	valid_session_status: session_status /= Void
 	valid_servlet: processing_servlet /= Void
-	valid_processing_error_codes: processing_error_codes /= Void
 	valid_mandatory_processing_results: mandatory_processing_results /= Void
 	valid_non_mandatory_processing_results: non_mandatory_processing_results /= Void
 	valid_parameter_processing_results: parameter_processing_results /= Void

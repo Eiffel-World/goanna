@@ -16,6 +16,7 @@ inherit
 		export
 			{NONE} all
 		end
+	GOA_SHARED_APPLICATION_CONFIGURATION
 
 
 feature {EXTENDED_PAGE_XML_DOCUMENT} -- Services
@@ -70,7 +71,8 @@ feature -- Queries
 		end
 
 	url: STRING is
-			-- The hyperlink as a URL
+			-- The URL for this hyperlink
+		
 		do
 			Result := "http"
 			if is_secure then

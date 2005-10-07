@@ -65,7 +65,7 @@ feature
 			ok_to_read_data: ok_to_read_data (processing_result.request_processing_result)
 			valid_index: value_is_valid_index (processing_result)
 		do
-			Result := item_list (processing_result.request_processing_result).i_th (processing_result.value.to_integer)
+			Result := item_list (processing_result.request_processing_result).item (processing_result.value.to_integer)
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result.request_processing_result)
 		end
@@ -126,7 +126,7 @@ feature
 			ok_to_write_data: ok_to_write_data (processing_result.request_processing_result)
 		end
 		
-	item_list (processing_result: REQUEST_PROCESSING_RESULT): LINKED_LIST [G] is
+	item_list (processing_result: REQUEST_PROCESSING_RESULT): DS_LINKED_LIST [G] is
 			-- List upon which this radio button acts
 		require
 			valid_processing_result: processing_result /= Void
@@ -166,13 +166,35 @@ feature
 		end
 		
 	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+		local
+			the_list: DS_LINKED_LIST [G]
+			the_parameter_processing_result: PARAMETER_PROCESSING_RESULT
 		do
-			xml.add_radio_element (input_class (processing_result, suffix), name, suffix.out, yes_no_string_for_boolean (is_currently_selected_object (processing_result, item_list (processing_result).i_th (suffix))))
+			the_list := item_list (processing_result)
+			the_parameter_processing_result := parameter_processing_result (processing_result, suffix)
+			from
+				the_list.start
+			until
+				the_list.after
+			loop
+				xml.start_row_element (Void)
+					xml.start_cell_element (Void, "2")
+						xml.add_radio_element (Void, name, the_list.index.out, yes_no_string_for_boolean (is_currently_selected_object (processing_result, the_list.item_for_iteration)))
+						item_label (processing_result, the_list.item_for_iteration).add_to_document (xml)
+					xml.end_current_element
+					xml.start_cell_element (Void, "1")
+						if the_list.is_first and then the_parameter_processing_result /= Void then
+							the_parameter_processing_result.error_message.add_to_document (xml)
+						end
+					xml.end_current_element
+				xml.end_current_element
+				the_list.forth
+			end
 		end
 		
 	ok_to_add (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
 		do
-			Result := xml.ok_to_add_element_or_text (xml.radio_element_code)
+			Result := xml.ok_to_add_element_or_text (xml.row_element_code)
 		end
 		
 	is_suffix_valid (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
@@ -180,5 +202,12 @@ feature
 			Result := 	True
 		end
 		
+	item_label (processing_result: REQUEST_PROCESSING_RESULT; the_item: G): GOA_USER_MESSAGE is
+			-- The label to display for the_item
+		require
+			valid_processing_result: processing_result /= Void
+			valid_the_item: the_item /= Void
+		deferred
+		end
 		
 end -- class GOA_RADIO_BUTTON_PARAMETER

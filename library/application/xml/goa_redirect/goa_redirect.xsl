@@ -5,9 +5,10 @@
 	date: "$Date$"
 	revision: "$Revision$"
 	copyright: "Copyright (c) 2004 Neal L Lester"
+	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 -->
-<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
   xmlns:goa_redirect="http://www.sourceforge.net/projects/goanna/goa_redirect"
   xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common"
   exclude-result-prefixes="goa_redirect goa_common"
@@ -20,27 +21,25 @@
   
 <xsl:template match="goa_redirect:redirect">
 
-	<HTML>
-	<HEAD>
-	<xsl:element name="TITLE">
-		<xsl:value-of select="@title" />
-	</xsl:element>
-	<xsl:element name="LINK">
-		<xsl:attribute name="rel">stylesheet</xsl:attribute>
-		<xsl:attribute name="type">text/css</xsl:attribute>
-		<xsl:attribute name="href"><xsl:value-of select="@style_sheet" /></xsl:attribute>
-	</xsl:element>
-	<xsl:element name="META">
-		<xsl:attribute name="http-equiv">refresh</xsl:attribute>
-		<xsl:attribute name="content"><xsl:value-of select="@delay"/>; <xsl:value-of select="@url"/></xsl:attribute>
-	</xsl:element>
-</HEAD>
-<BODY>
-
-	<xsl:apply-templates />
-
-</BODY>
-</HTML>
+<xsl:element name="HTML">
+  <xsl:element name="HEAD">
+    <xsl:element name="TITLE">
+      <xsl:value-of select="@title" />
+    </xsl:element>
+    <xsl:element name="LINK">
+      <xsl:attribute name="rel">stylesheet</xsl:attribute>
+      <xsl:attribute name="type">text/css</xsl:attribute>
+      <xsl:attribute name="href"><xsl:value-of select="@style_sheet" /></xsl:attribute>
+    </xsl:element>
+    <xsl:element name="META">
+      <xsl:attribute name="http-equiv">refresh</xsl:attribute>
+      <xsl:attribute name="content"><xsl:value-of select="@delay"/>; <xsl:value-of select="@url"/></xsl:attribute>
+    </xsl:element>
+  </xsl:element>
+  <xsl:element name="BODY">
+    <xsl:apply-templates />
+  </xsl:element>
+</xsl:element>
 
 </xsl:template>
 

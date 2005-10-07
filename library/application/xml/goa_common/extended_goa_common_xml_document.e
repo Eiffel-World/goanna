@@ -119,7 +119,7 @@ feature -- Document Writing
 		do
 			start_plain_table_element (Void, message_catalog.data_entry_form_summary)
 		end	
-		
+
 	add_a_space is
 			-- Add a space to the current document
 		require
@@ -127,45 +127,5 @@ feature -- Document Writing
 		do
 			add_text_item_element (xml_null_code, Void, " ")
 		end
-		
-	add_city_state_zip_row (city: GOA_LABELED_PARAMETER; state: STATE_PARAMETER; zip: GOA_US_ZIP_CODE_PARAMETER; processing_result: REQUEST_PROCESSING_RESULT) is
-			-- Add a row to the table: Label | City State Zip | Error Message
-		require
-			valid_city: city /= Void
-			valid_state: state /= Void
-			valid_zip: zip /= Void
-			ok_to_add_row: ok_to_add_element_or_text (row_element_code)
-			valid_processing_result: processing_result /= Void
---			transaction_or_version_access_open: db_session.is_version_access_open or db_session.is_transaction_open
-		local
-			city_processing_result: PARAMETER_PROCESSING_RESULT
-			state_processing_result: PARAMETER_PROCESSING_RESULT
-			zip_processing_result: PARAMETER_PROCESSING_RESULT
-		do
-			city_processing_result := processing_result.parameter_processing_result (city.name, 0)
-			state_processing_result := processing_result.parameter_processing_result (state.name, 0)
-			zip_processing_result := processing_result.parameter_processing_result (zip.name, 0)
-			start_row_element (Void)
-				start_cell_element (city.label_class (processing_result, 0), "1")
-					add_text_item_element (xml_null_code, Void, processing_result.session_status.message_catalog.city_state_and_zip_code_label)
-				end_current_element
-				start_cell_element (Void, "1")
-					add_parameter (0, city, processing_result)
-					add_parameter (0, state, processing_result)
-					add_parameter (0, zip, processing_result)
-				end_current_element
-				start_cell_element ("error_message", "1")
-					if city_processing_result /= Void then
-						city_processing_result.error_message.add_to_document (Current)
-					end
-					if state_processing_result /= Void then
-						state_processing_result.error_message.add_to_document (Current)
-					end
-					if zip_processing_result /= Void then
-						zip_processing_result.error_message.add_to_document (Current)
-					end
-				end_current_element
-			end_current_element
-		end
-		
+				
 end -- class EXTENDED_GOA_COMMON_XML_DOCUMENT

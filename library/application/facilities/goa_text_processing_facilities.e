@@ -92,6 +92,4 @@ feature -- Text Manipulation
 			end
 		end
 		
-
-
 end -- class GOA_TEXT_PROCESSING_FACILITIES

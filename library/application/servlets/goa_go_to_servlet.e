@@ -31,7 +31,6 @@ feature {NONE} -- Creation
 		do
 			Precursor
 			expected_parameters.force_last (page_parameter.name)
-			possible_parameters.force_last (login_user_name_parameter.name)
 		end
 		
 end -- class GOA_GO_TO_SERVLET

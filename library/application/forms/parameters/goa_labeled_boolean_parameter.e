@@ -32,9 +32,8 @@ feature
 						xml.add_item (label (processing_result, suffix))
 				xml.end_current_element
 				xml.start_cell_element (Void, "1")
-					if not processing_result.parameter_error_message_was_displayed (raw_parameter_name) and the_parameter_processing_result /= Void then
+					if the_parameter_processing_result /= Void then
 						the_parameter_processing_result.error_message.add_to_document (xml)
-						processing_result.set_parameter_error_message_was_displayed (raw_parameter_name)
 					end
 				xml.end_current_element
 			xml.end_current_element

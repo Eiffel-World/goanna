@@ -14,25 +14,21 @@ feature
 	
 	configuration: APPLICATION_CONFIGURATION is
 			-- Application configuration
+		once
+			Result := active_configuration
+		end
+		
+	active_configuration: APPLICATION_CONFIGURATION
+			-- Configuration to use for this run
+			
+	touch_configuration is
+			-- Touch the configuration object to instantiate the once function
 		require
-			database_name_set_with_legal_name: configuration_table.has (shared_configuration_name)
-		once
-			Result := configuration_table.item (shared_configuration_name)
-		end
-		
-	configuration_table: DS_HASH_TABLE [APPLICATION_CONFIGURATION, STRING] is
-			-- Legal configurations indexed by database name
+			valid_active_configuration: active_configuration /= Void
 		local
-			development_configuration: DEVELOPMENT_CONFIGURATION
-			production_configuration: PRODUCTION_CONFIGURATION
-		once
-			create Result.make_equal (2)
+			a_string: STRING
+		do
+			a_string := configuration.data_directory
 		end
 		
-	shared_configuration_name: STRING is
-			-- Shared access to database name set by COMMAND_LINE_PROCESSING
-		once
-			Result := ""
-		end
-
 end -- class GOA_SHARED_APPLICATION_CONFIG

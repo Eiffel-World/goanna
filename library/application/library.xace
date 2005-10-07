@@ -11,17 +11,17 @@
 	</description>
 
 	<cluster name="application" location="${GOANNA}/library/application">
-		<cluster name="forms" prefix="goa_">
-			<cluster name="parameters" prefix="goa_" />
+		<cluster name="goa_forms" location="$/forms" >
+			<cluster name="goa_parameters"  location="$/parameters" />
 		</cluster>
-		<cluster name="servlets" prefix="goa_" />
-		<cluster name="facilities" prefix="goa_"/>
-		<cluster name="xml" prefix="goa_">
+		<cluster name="goa_servlets"  location="$/servlets" />
+		<cluster name="goa_facilities" location="$/facilities"/>
+		<cluster name="xml" >
 			<cluster name="goa_page" />
 			<cluster name="goa_redirect" />
 			<cluster name="goa_common" />
-			<cluster name="xslt" prefix="goa_" />
-			<cluster name="items" prefix="goa_" />
+			<cluster name="goa_xslt" location="$/xslt" />
+			<cluster name="goa_items" location="$/items" />
 		</cluster>
 	</cluster>
 		

@@ -1,5 +1,5 @@
 indexing
-	description: "A PAGE_XML_DOCUMENT with Manually extended features"
+	description: "A GOA_PAGE_XML_DOCUMENT with Manually extended features"
 	author: "Neal L Lester <neallester@users.sourceforge.net>"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -7,16 +7,11 @@ indexing
 	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 class
-	EXTENDED_PAGE_XML_DOCUMENT
+	EXTENDED_GOA_PAGE_XML_DOCUMENT
 
 inherit
-	PAGE_XML_DOCUMENT
-	XML_FACILITIES
-	GOA_SHARED_APPLICATION_CONFIGURATION
-	GOA_TEXT_PROCESSING_FACILITIES
-	SHARED_GOA_REQUEST_PARAMETERS
-	SHARED_DATABASE_SESSION
-	GOA_HYPERLINK_FACTORY
+
+	GOA_PAGE_XML_DOCUMENT
 	
 creation
 
@@ -26,4 +21,4 @@ creation
 feature
 		
 
-end -- class EXTENDED_PAGE_XML_DOCUMENT
+end -- class EXTENDED_GOA_PAGE_XML_DOCUMENT

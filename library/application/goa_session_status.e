@@ -73,7 +73,7 @@ feature -- Status Setting
 			virtual_domain_host := new_virtual_domain_host
 		end
 		
-feature {GOA_APPLICATION_SERVER} -- Initialization
+feature {GOA_APPLICATION_SERVLET} -- Initialization
 
 	initialize (req: GOA_HTTP_SERVLET_REQUEST) is
 			-- Extract session status from req; initializing if necessary
@@ -93,5 +93,14 @@ feature {GOA_APPLICATION_SERVER} -- Initialization
 			valid_server_name: server_name /= Void
 			valid_virtual_domain_host: virtual_domain_host /= Void
 		end
+
+feature {NONE} 
+
+	make is
+			-- Creation
+		do
+			
+		end
+		
 
 end -- class GOA_SESSION_STATUS

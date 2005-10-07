@@ -11,9 +11,6 @@ class
 	
 feature -- Attributes
 
-	style_sheet: STRING
-			-- The style sheet to use with this host
-			
 	host_name: STRING
 	
 	base_url: STRING is
@@ -22,18 +19,10 @@ feature -- Attributes
 			Result := "http://" + host_name + "/"
 		end
 
-			
-feature -- Attribute Setting
+	use_ssl: BOOLEAN
+			-- Does this site use SSL to protect traffic?
 
-	set_style_sheet (new_style_sheet: STRING) is
-			-- Set style_sheet to new_style_sheet
-		require
-			valid_new_style_sheet: new_style_sheet /= Void and then not new_style_sheet.is_empty
-		do
-			style_sheet := new_style_sheet
-		ensure
-			style_sheet_updated: style_sheet = new_style_sheet
-		end
+feature -- Attribute Setting
 
 	set_host_name (new_host_name: STRING) is
 			-- Set host_name to new_host_name
@@ -51,7 +40,4 @@ feature -- Attribute Setting
 			use_ssl := True
 		end
 		
-	use_ssl: BOOLEAN
-			-- Does this site use SSL to protect traffic?
-
 end -- class GOA_VIRTUAL_DOMAIN_HOST

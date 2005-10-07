@@ -15,9 +15,9 @@ inherit
 	
 creation
 	
-	make
+	make, make_from_string
 	
-feature {GOA_XML_DOCUMENT} -- Services
+feature {GOA_XML_DOCUMENT, GOA_DEFERRED_PARAMETER} -- Services
 
 	add_to_document (the_document: EXTENDED_GOA_COMMON_XML_DOCUMENT) is
 			-- Add the message for this parameter to the_document
@@ -108,6 +108,16 @@ feature {NONE} -- Creation
 		do
 			create messages.make
 		end
+		
+	make_from_string (the_string: STRING) is
+			-- Creation
+		require
+			valid_the_string: the_string /= Void
+		do
+			make
+			add_message (the_string)
+		end
+		
 		
 invariant
 	
