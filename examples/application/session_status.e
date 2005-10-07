@@ -76,13 +76,13 @@ feature {GOA_APPLICATION_SERVLET} -- Initialization
 
 	initialize (req: GOA_HTTP_SERVLET_REQUEST) is
 		do
-			Precursor (req)
 			set_is_male
 			set_name ("")
+			Precursor (req)
 		end
 
 invariant
 	
-	valid_name: name /= Void
+	valid_name: initialized implies name /= Void
 
 end -- class SESSION_STATUS

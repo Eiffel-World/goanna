@@ -27,6 +27,7 @@ feature
 	new_xml_document (processing_result: REQUEST_PROCESSING_RESULT): GOA_PAGE_XML_DOCUMENT is
 		do
 			create Result.make_utf8_encoded
+			Result.start_page_element (processing_result.virtual_domain_host.host_name, processing_result.message_catalog.answer_title, configuration.stylesheet, Void)
 		end
 		
 	add_body (processing_result: REQUEST_PROCESSING_RESULT; xml: GOA_PAGE_XML_DOCUMENT) is
@@ -43,7 +44,6 @@ feature
 			language := session_status.programming_language.name
 			language_comment := session_status.programming_language.comment
 			thinks_goanna_is_cool := session_status.thinks_goanna_is_cool
-			xml.start_page_element (message_catalog.answer_title, configuration.stylesheet, Void)
 			xml.add_text_paragraph (Void, message_catalog.comment (user_name, is_male, language, language_comment, thinks_goanna_is_cool))
 			xml.start_paragraph_element (Void)
 				xml.add_item (question_servlet.hyperlink (processing_result, message_catalog.link_to_question_servlet_text))

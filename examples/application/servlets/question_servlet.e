@@ -28,11 +28,11 @@ feature
 	new_xml_document (processing_result: REQUEST_PROCESSING_RESULT): GOA_PAGE_XML_DOCUMENT is
 		do
 			create Result.make_utf8_encoded
+			Result.start_page_element (processing_result.virtual_domain_host.host_name, processing_result.message_catalog.question_title, configuration.stylesheet, post_url (processing_result))			
 		end
 		
 	add_body (processing_result: REQUEST_PROCESSING_RESULT; xml: GOA_PAGE_XML_DOCUMENT) is
 		do
-			xml.start_page_element (processing_result.message_catalog.question_title, configuration.stylesheet, post_url (processing_result))
 			xml.add_text_paragraph (Void, processing_result.message_catalog.question_title)
 			xml.start_data_entry_table_element (processing_result.message_catalog)
 					-- Indent twice because this command opens up two XML elements

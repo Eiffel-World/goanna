@@ -21,7 +21,7 @@ feature -- Page Sequencing
 		do
 			if processing_result.page_selected_servlet /= Void and then processing_result.page_selected_servlet.ok_to_display (processing_result) then
 				Result := processing_result.page_selected_servlet
-			elseif processing_result.not_all_parameters_are_valid then
+			elseif not processing_result.all_parameters_are_valid then
 				Result ?= processing_result.processing_servlet
 			end
 			if Result /= Void then
