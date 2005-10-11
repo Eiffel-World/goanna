@@ -11,9 +11,9 @@
       <surname>Lester</surname>
     </author>
     <email>neallester@users.sourceforge.net</email>
-    <date>September 20, 2005</date>
+    <date>October 11, 2005</date>
   </chapterinfo>
-  <title>Goanna Web Application Framework</title>
+  <title>Goanna HTML Web Application Framework</title>
   <para>
 
 The Goanna Web Application Framework provides a complete open source
@@ -242,7 +242,12 @@ An example application is available in:
       </para>
       <para>
 
-<filename class="unknown">$GOANNA/examples/application</filename>
+<ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/">$GOANNA/examples/application</ulink>
+	
+      </para>
+      <para>
+
+<ulink url="http://www.mysafetyprogram.com/fastcgi/demo/go_to.htm?page=questions">Click here to see the demo in action</ulink>.
 	
       </para>
       <orderedlist>
@@ -273,7 +278,9 @@ additions to <filename class="unknown">system.xace</filename>.
 <classname>GOA_FAST_CGI_SERVLET_APP</classname> (recommended),
 <classname>GOA_HTTPD_SERVLET_APP</classname> (stand alone), or another
 connector.  If you use the FastCGI connector, you must undefine
-<classname>GOA_FAST_CGI_SERVLET_APP</classname>.<featurename>initialise_logger</featurename>. If
+<classname>GOA_FAST_CGI_SERVLET_APP</classname>.<featurename>initialise_logger</featurename>,
+and
+<classname>GOA_FAST_CGI_SERVLET_APP</classname>.<featurename>all_servlets_registered</featurename>. If
 you use the stand alone connector you must undefine
 <featurename>log_hierarchy</featurename>.
 	    
