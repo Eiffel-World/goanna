@@ -88,7 +88,7 @@ feature -- Initialization
 
 	make is
 		local
-			exception_occurred: BOOLEAN
+			exception_occurred, current_directory_has_goa_common_xsl: BOOLEAN
 			executable_name, program_description, error_message, trang_invocation, class_attribute_declaration, class_name, class_name_upper: STRING
 			file_name, expanded_file_name, namespace_prefix, rnc_file_contents, rnc_file_contents_upper, expanded_the_stylesheet_file_name: STRING
 			local_unreadable_files, file_names, included_files, included_xsl_files, local_included_rng_files: DS_LIST [STRING]
@@ -128,6 +128,7 @@ feature -- Initialization
 									%                       Do not enclose name or space delimited list of names%N%
 									%                       in quotes (enclosing a single file name containing%N%
 									%                       spaces in quotes may work but is not recommended)%N%
+									%                       Can't be used with the --goa switch.%N%
 									%verbose (-v)         = Verbose mode (provides context for certain error %N%
 									%                       messages)%N%
 									%norefresh (-n)       = Do not refresh files from Goanna directories%N%
@@ -136,6 +137,7 @@ feature -- Initialization
 									%                       configuration.data_directory%N%
 									%goa (-g)             = Rebuild goa_common and other supplied files%N%
 									%                       Prebuilt versions are mounted automatically%N%
+									%                       Can't be used with the --file switch.%N%
 									%                       for use by Goanna developers only%N%
 									%author (-a)          = Name of the application's author (for indexing clauses)%N%
 									%copyright (-c)       = Copyright declaration (for indexing clauses)%N%
@@ -184,46 +186,46 @@ feature -- Initialization
 				else
 					-- It appears we are OK to process; we only haven't verified that the output directories are
 					-- Writable (I can't find a library routine to do this)
+						-- TODO Copy list should be read from an XML file.  This would allow us to
+						-- Change the copy list without recompiling this application
+					if command_line_includes_eiffeldirectory_switch then
+						target_eiffel_directory_name := eiffeldirectory_argument
+					else
+						target_eiffel_directory_name := file_system.current_working_directory
+					end
+					if command_line_includes_datadirectory_switch then
+						target_data_directory_name := datadirectory_argument
+					else
+						target_data_directory_name := file_system.current_working_directory
+					end
+					if command_line_includes_file_switch or command_line_includes_goa_switch then					
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/common.xsl"), "common.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/attribute_values.xsl"), "attribute_values.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/schema_codes.xsl"), "schema_codes.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/validating_xml_writer.xsl"), "validating_xml_writer.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/deferred_xml_writer.xsl"), "deferred_xml_writer.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_1.xsl"), "flatten_1.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_2.xsl"), "flatten_2.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_3.xsl"), "flatten_3.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/include_list.xsl"), "include_list.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/xsl_include_list.xsl"), "xsl_include_list.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/imported.xsl"), "imported.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.rnc"), "goa_common.rnc")
+						current_directory_has_goa_common_xsl := file_system.file_exists ("goa_common.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.xsl"), "goa_common.xsl")
+						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.css"), "goa_common.css")
+					end
 					if not command_line_includes_norefresh_switch then
 						if command_line_includes_verbose_switch then
 							io.put_string ("Refreshing Goanna Files%N")
 						end
-						-- TODO Copy list should be read from an XML file.  This would allow us to
-						-- Change the copy list without recompiling this application
-						if command_line_includes_eiffeldirectory_switch then
-							target_eiffel_directory_name := eiffeldirectory_argument
-						else
-							target_eiffel_directory_name := file_system.current_working_directory
-						end
-						if command_line_includes_datadirectory_switch then
-							target_data_directory_name := datadirectory_argument
-						else
-							target_data_directory_name := file_system.current_working_directory
-						end
-						if command_line_includes_file_switch then							
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/common.xsl"), "common.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/attribute_values.xsl"), "attribute_values.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/schema_codes.xsl"), "schema_codes.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/validating_xml_writer.xsl"), "validating_xml_writer.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/deferred_xml_writer.xsl"), "deferred_xml_writer.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_1.xsl"), "flatten_1.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_2.xsl"), "flatten_2.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_3.xsl"), "flatten_3.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/include_list.xsl"), "include_list.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/xsl_include_list.xsl"), "xsl_include_list.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/imported.xsl"), "imported.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/goa_common.rnc"), "goa_common.rnc")
-							file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/goa_common.xsl"), "goa_common.xsl")
-							file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/goa_common.css"), "goa_common.css")
-						end
-						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_common/goa_common.xsl"), file_system.pathname (target_data_directory_name, "goa_common.xsl"))
-						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_redirect/goa_redirect.xsl"), file_system.pathname (target_data_directory_name, "goa_redirect.xsl"))
-						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_page/goa_page.xsl"), file_system.pathname (target_data_directory_name, "goa_page.xsl"))
-						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_redirect/goa_redirect.frng"), file_system.pathname (target_data_directory_name, "goa_redirect.frng"))
-						file_system.copy_file (interpreted_string ("$GOANNA/library/xml/goa_common/xml/goa_page/goa_page.frng"), file_system.pathname (target_data_directory_name, "goa_page.frng"))
-
+						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.xsl"), file_system.pathname (target_data_directory_name, "goa_common.xsl"))
+						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_redirect/goa_redirect.xsl"), file_system.pathname (target_data_directory_name, "goa_redirect.xsl"))
+						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_page/goa_page.xsl"), file_system.pathname (target_data_directory_name, "goa_page.xsl"))
+						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_redirect/goa_redirect.frng"), file_system.pathname (target_data_directory_name, "goa_redirect.frng"))
+						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_page/goa_page.frng"), file_system.pathname (target_data_directory_name, "goa_page.frng"))
 					end
-					if command_line_includes_file_switch then
+					if command_line_includes_file_switch or command_line_includes_goa_switch then
 						-- Read value of environment variable TRANG_INVOCATION
 						trang_invocation := variable_value ("TRANG_INVOCATION")
 						if trang_invocation = Void then
@@ -252,7 +254,11 @@ feature -- Initialization
 							attribute_values_transformer.set_string_parameter (license_argument, "license")
 						end
 						-- Initialize file name lists
-						file_names := command_line_parser.valid_options.item (file_switch)
+						if command_line_includes_file_switch then
+							file_names := command_line_parser.valid_options.item (file_switch)
+						else
+							file_names := create {DS_LINKED_LIST [STRING]}.make_equal
+						end
 						create all_included_rng_files.make_equal
 						create prefixes.make_equal
 						create xsl_files.make_equal
@@ -481,6 +487,9 @@ feature -- Initialization
 						if command_line_includes_verbose_switch and not all_included_rng_files.is_empty then
 							io.put_string ("Generating deferred classes and attribute_values for included rnc files%N")
 						end
+						if command_line_includes_goa_switch then
+							all_included_rng_files.force_last ("goa_common.rng")
+						end
 						from
 							all_included_rng_files.start
 						until
@@ -690,9 +699,27 @@ feature -- Initialization
 						if file_system.file_exists (imported_class_values_file_name) then
 							file_system.delete_file (imported_class_values_file_name)
 						end
-						if command_line_includes_verbose_switch then
-							io.put_string ("Finished.%N")
+					end						
+					if command_line_includes_file_switch or command_line_includes_goa_switch then					
+						file_system.delete_file ("common.xsl")
+						file_system.delete_file ("attribute_values.xsl")
+						file_system.delete_file ("schema_codes.xsl")
+						file_system.delete_file ("validating_xml_writer.xsl")
+						file_system.delete_file ("deferred_xml_writer.xsl")
+						file_system.delete_file ("flatten_1.xsl")
+						file_system.delete_file ("flatten_2.xsl")
+						file_system.delete_file ("flatten_3.xsl")
+						file_system.delete_file ("include_list.xsl")
+						file_system.delete_file ("xsl_include_list.xsl")
+						file_system.delete_file ("imported.xsl")
+						file_system.delete_file ("goa_common.rnc")
+						if not current_directory_has_goa_common_xsl and not (not command_line_includes_norefresh_switch and not command_line_includes_datadirectory_switch) then
+							file_system.delete_file ("goa_common.xsl")
 						end
+						file_system.delete_file ("goa_common.css")
+					end
+					if command_line_includes_verbose_switch then
+						io.put_string ("Finished.%N")
 					end
 				end
 			end
@@ -874,7 +901,8 @@ feature {NONE} -- Command Line Parsing
 							author_switch + ",--author=!author# The name of the author",
 							copyright_switch + ",--copyright=!copyright# Copyright declaration",
 							license_switch + ",--license=!license# Licesnse declaration",
-							help_switch + ",--help# Information about program usage.">>
+							help_switch + ",--help# Information about program usage.",
+							"(-f|-g)">>
 		end
 
 	command_line_syntax: COMMAND_LINE_SYNTAX
