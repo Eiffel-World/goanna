@@ -15,7 +15,7 @@ inherit
 	
 feature
 
-	new_xml_document (processing_result: REQUEST_PROCESSING_RESULT): EXTENDED_GOA_REDIRECT_XML_DOCUMENT is
+	new_xml_document (processing_result: REQUEST_PROCESSING_RESULT): GOA_REDIRECT_XML_DOCUMENT_EXTENDED is
 		local
 			virtual_domain_host: VIRTUAL_DOMAIN_HOST
 		do
@@ -26,7 +26,7 @@ feature
 			end_version_access (processing_result)
 		end
 	
-	add_footer (processing_result: REQUEST_PROCESSING_RESULT; xml: EXTENDED_GOA_REDIRECT_XML_DOCUMENT) is
+	add_footer (processing_result: REQUEST_PROCESSING_RESULT; xml: GOA_REDIRECT_XML_DOCUMENT_EXTENDED) is
 		do
 		
 		end

@@ -94,7 +94,6 @@ feature
 			response := processing_result.response
 			processing_result.set_generating_servlet (Current)
 			log_hierarchy.logger (configuration.application_log_category).info ("Generating servlet: " + name)
---			io.put_string ("Generating servlet: " + name + "%N")
 			response.send (new_page (processing_result).as_html)
 		end
 		

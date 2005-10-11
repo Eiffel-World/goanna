@@ -23,6 +23,12 @@ feature -- Servlets
 			create Result.make
 		end
 		
+	shut_down_server_servlet: GOA_SHUT_DOWN_SERVER_SERVLET is
+			-- Servlet used to shut down the server
+		once
+			create Result.make
+		end
+		
 feature {NONE} -- Registration
 
 	servlet_by_name: DS_HASH_TABLE [GOA_APPLICATION_SERVLET, STRING] is

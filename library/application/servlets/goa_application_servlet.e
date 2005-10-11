@@ -128,7 +128,7 @@ feature -- Request Processing
 --			io.put_string (generator + "%N")
 			if not failed_once then
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
-				io.put_string ("Request: " + name + client_info (request) + "%N")
+--				io.put_string ("Request: " + name + client_info (request) + "%N")
 				-- Obtain session status and initialize if necessary
 				session_status ?= request.session.get_attribute ("SESSION_STATUS")
 				check
@@ -291,6 +291,15 @@ feature -- Linking
 			valid_text: text /= Void
 		do
 			create Result.make (processing_result, Current, text)
+		end
+		
+	post_hyperlink (processing_result: REQUEST_PROCESSING_RESULT; text: STRING): GOA_EXTERNAL_HYPERLINK is
+			-- A hyperlink to the this servlet
+		require
+			valid_processing_result: processing_result /= Void
+			valid_text: text /= Void
+		do
+			create Result.make (post_url (processing_result), text)
 		end
 		
 	post_url (processing_result: REQUEST_PROCESSING_RESULT): STRING is
