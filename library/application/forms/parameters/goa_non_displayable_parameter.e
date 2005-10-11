@@ -28,6 +28,12 @@ feature
 			-- Nothing
 		end
 		
+	add_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+		do
+			-- Nothing
+		end
+		
+		
 	current_value (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 		do
 			Result := ""

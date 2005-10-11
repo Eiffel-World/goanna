@@ -73,6 +73,15 @@ feature -- Deferred Features
 		deferred
 		end
 
+	bring_down_server_servlet_name: STRING is
+			-- Name of the servlet that will shut down the application server
+			-- Make it long and random for security purposes
+			-- I was having trouble getting Interupt handling to work reliably
+			-- This is a clean way of getting the application shut down
+			-- with the (small) risk of a DOS attack
+		deferred
+		end
+
 feature -- Attributes
 
 	over_ride_test_mode: BOOLEAN

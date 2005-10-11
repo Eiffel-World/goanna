@@ -10,7 +10,7 @@ deferred class
 	
 	GOA_XML_ITEM
 	
-feature {GOA_XML_DOCUMENT}
+feature
 	
 	add_to_document (the_document: GOA_XML_DOCUMENT) is
 			-- Add an xml representation of this item to the_documnet

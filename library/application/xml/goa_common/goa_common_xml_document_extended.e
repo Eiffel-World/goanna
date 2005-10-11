@@ -53,7 +53,7 @@ feature -- Document Writing
 			the_parameter.add_to_document (Current, processing_result, suffix)
 		end
 
-	add_standard_input_row (suffix: INTEGER; the_parameter: GOA_LABELED_PARAMETER; processing_result: REQUEST_PROCESSING_RESULT) is
+	add_standard_input_row (suffix: INTEGER; the_parameter: GOA_STANDARD_TABLE_PARAMETER; processing_result: REQUEST_PROCESSING_RESULT) is
 			-- Add a row to the table with three cells: Label | Input | Error Message
 		require
 			valid_the_parameter: the_parameter /= Void

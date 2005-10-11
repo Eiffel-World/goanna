@@ -16,6 +16,7 @@ inherit
 			process, is_suffix_valid
 		end
 	GOA_SCHEMA_FACILITIES
+	GOA_STANDARD_TABLE_PARAMETER
 	
 feature
 
@@ -139,8 +140,9 @@ feature
 			valid_processing_result: processing_result /= Void
 			ok_to_read_data: ok_to_read_data (processing_result)
 		deferred
-		ensure
+		ensure then
 			ok_to_read_data: ok_to_read_data (processing_result)
+			no_side_effects: item_list (processing_result).index = old item_list (processing_result).index
 		end
 		
 	is_currently_selected_object (processing_result: REQUEST_PROCESSING_RESULT; the_object: G): BOOLEAN is
@@ -148,10 +150,15 @@ feature
 		require
 			valid_processing_result: processing_result /= Void
 			ok_to_read_data: ok_to_read_data (processing_result)
+		local
+			list_index: INTEGER
 		do
+			list_index := item_list (processing_result).index
 			Result := the_object = currently_selected_object (processing_result)
-		ensure
+			item_list (processing_result).go_i_th (list_index)
+		ensure then
 			ok_to_read_data: ok_to_read_data (processing_result)
+			no_side_effects: item_list (processing_result).index = old item_list (processing_result).index
 		end		
 		
 	current_value (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
@@ -166,6 +173,33 @@ feature
 		end
 		
 	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+		do
+-- Nothing			
+		end
+		
+	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
+		do
+			Result := False
+			-- Because this is a multi-row parameter, we cannot it to the document using
+			-- add_to_document.  It's parameters do not include the necessary information
+			-- (i.e. which row we are adding)
+			-- Use GOA_LABELED_RADIO_BUTTON_PARAMETER.add_to_standard_input_row instead
+		end
+		
+	is_suffix_valid (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
+		do
+			Result := 	True
+		end
+		
+	item_label (processing_result: REQUEST_PROCESSING_RESULT; the_item: G): GOA_XML_ITEM is
+			-- The label to display for the_item
+		require
+			valid_processing_result: processing_result /= Void
+			valid_the_item: the_item /= Void
+		deferred
+		end
+
+	add_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		local
 			the_list: DS_LINKED_LIST [G]
 			the_parameter_processing_result: PARAMETER_PROCESSING_RESULT
@@ -191,23 +225,5 @@ feature
 				the_list.forth
 			end
 		end
-		
-	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
-		do
-			Result := xml.ok_to_add_element_or_text (xml.row_element_code)
-		end
-		
-	is_suffix_valid (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
-		do
-			Result := 	True
-		end
-		
-	item_label (processing_result: REQUEST_PROCESSING_RESULT; the_item: G): GOA_USER_MESSAGE is
-			-- The label to display for the_item
-		require
-			valid_processing_result: processing_result /= Void
-			valid_the_item: the_item /= Void
-		deferred
-		end
-		
+	
 end -- class GOA_RADIO_BUTTON_PARAMETER

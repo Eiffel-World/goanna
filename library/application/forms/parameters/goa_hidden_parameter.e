@@ -23,14 +23,14 @@ feature
 			Result := current_value (processing_result, suffix)
 		end
 		
-	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		do
 			xml.add_hidden_element (name, display_value (processing_result, suffix))
 		end
 
-	ok_to_add (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 		do
 			Result := xml.ok_to_add_element_or_text (xml.hidden_element_code)
 		end
-
+		
 end -- class GOA_HIDDEN_PARAMETER

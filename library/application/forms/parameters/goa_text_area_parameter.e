@@ -15,12 +15,12 @@ inherit
 	
 feature
 	
-	add_to_document (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		do
 			xml.add_text_area_element (input_class (processing_result, suffix), name, rows (processing_result, suffix).out, columns (processing_result, suffix).out, display_value (processing_result, suffix))
 		end
 
-	ok_to_add (xml: EXTENDED_GOA_COMMON_XML_DOCUMENT): BOOLEAN is
+	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 		do
 			Result := xml.ok_to_add_element_or_text (xml.text_area_element_code)
 		end

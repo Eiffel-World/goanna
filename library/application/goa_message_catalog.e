@@ -53,7 +53,7 @@ feature
 		
 	submit_label: STRING is "Submit"
 
-	data_entry_form_summary: STRING is "A table used to format the inputs of a data entry form."
+	data_entry_form_summary: STRING is "A table used to format a data entry form."
 
 	system_error_message: STRING is "System Error (server side bug); please re-enter your information"
 

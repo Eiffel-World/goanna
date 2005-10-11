@@ -12,6 +12,9 @@ deferred class
 inherit
 	
 	GOA_SERVLET_APPLICATION
+		redefine
+			all_servlets_registered
+		end
 	GOA_SHARED_SERVLET_MANAGER
 	GOA_SHARED_HTTP_SESSION_MANAGER
 	GOA_HTTP_SESSION_EVENT_LISTENER
@@ -28,6 +31,7 @@ inherit
 			warn as log_warn
 		end
 	L4E_SYSLOG_APPENDER_CONSTANTS
+	SHARED_SERVLETS
 
 feature
 
@@ -50,7 +54,10 @@ feature
 		do
 			if command_line_ok then
 				make (configuration.port, 10)
+				-- Register built in servlets
 				register_servlet (go_to_servlet)
+				register_servlet (shut_down_server_servlet)
+				register_servlet (secure_redirection_servlet)
 				register_servlets
 				if configuration.install_snoop_servlet then
 					create snoop_servlet.init (configuration.servlet_configuration)
@@ -123,10 +130,6 @@ feature
 			valid_configuration: configuration /= Void
 		end
 		
-	go_to_servlet: GOA_GO_TO_SERVLET is
-		deferred
-		end
-
 	field_exception: BOOLEAN is
 			-- Should we attempt to retry?
 		local
@@ -177,6 +180,18 @@ feature
 		once
 			create Result.make (1000000, "NONE")
 		end
+		
+	all_servlets_registered: BOOLEAN is
+		do
+			Result := 	servlet_by_name.has (go_to_servlet.name) and then
+						servlet_manager.has_registered_servlet (go_to_servlet.name) and then
+						servlet_by_name.has (secure_redirection_servlet.name) and then
+						servlet_manager.has_registered_servlet (secure_redirection_servlet.name) and then
+						servlet_by_name.has (shut_down_server_servlet.name) and then
+						servlet_manager.has_registered_servlet (shut_down_server_servlet.name)
+		end
+		
+		
 		
 
 end -- class GOA_APPLICATION_SERVER

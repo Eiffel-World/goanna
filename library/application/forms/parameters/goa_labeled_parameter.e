@@ -12,6 +12,7 @@ deferred class
 inherit
 	
 	GOA_DEFERRED_PARAMETER
+	GOA_STANDARD_TABLE_PARAMETER
 	
 feature
 	
@@ -39,14 +40,8 @@ feature
 			ok_to_read_data: ok_to_read_data (processing_result)
 		end
 
-	add_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+	add_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 			-- Add labeled parameter to a standard table in xml document
-		require
-			valid_xml: xml /= Void
-			ok_to_add_standard_input_row: xml.ok_to_add_element_or_text (xml.row_element_code)
-			valid_processing_result: processing_result /= Void
-			ok_to_read_data (processing_result)
-			is_valid_suffix: is_suffix_valid (processing_result, suffix)
 		local
 			the_parameter_processing_result: PARAMETER_PROCESSING_RESULT
 		do

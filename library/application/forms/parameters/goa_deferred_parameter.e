@@ -149,7 +149,7 @@ feature -- As XML
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result)
 		end
-
+		
 feature -- To Be Removed
 
 	is_a_dependency: BOOLEAN is

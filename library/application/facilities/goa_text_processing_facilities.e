@@ -75,7 +75,7 @@ feature -- Text Manipulation
 			valid_name: name /= Void and not name.is_empty
 		do
 			if suffix > 0 then
-				Result := name + configuration.parameter_separator.out + suffix.out
+				Result := STRING_.cloned_string (name + configuration.parameter_separator.out + suffix.out)
 			else
 				Result := STRING_.cloned_string (name)
 			end

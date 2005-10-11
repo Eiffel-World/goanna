@@ -13,16 +13,11 @@ deferred class
 inherit
 	
 	GOA_ITEM_LIST_PARAMETER [G]
-	GOA_LABELED_PARAMETER
+	GOA_STANDARD_TABLE_PARAMETER
 	
 feature
 	
-	add_list_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT; processing_result: REQUEST_PROCESSING_RESULT) is	
-		require
-			valid_xml: xml /= Void
-			ok_to_add_standard_input_row: xml.ok_to_add_element_or_text (xml.row_element_code)
-			valid_processing_result: processing_result /= Void
-			ok_to_read_data (processing_result)
+	add_list_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT) is	
 		local
 			local_item_list: DS_LINKED_LIST [G]
 		do
