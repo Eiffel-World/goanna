@@ -27,7 +27,7 @@
 		<set name="xslt_processor" value="gexslt" unless="$GOBO_XSLT_PROCESSOR"/>
 		<set name="xslt_processor" value="${GOBO_XSLT_PROCESSOR}" if="$GOBO_XSLT_PROCESSOR"/>
 
-		<xslt processor="${xslt_processor}" input="application.xml" output="application.htm" stylesheet="${GOBO}/doc/misc/gobo2html2.xsl" />
+		<xslt processor="${xslt_processor}" input="application.xml" output="application.htm" stylesheet="misc/goa2html.xsl" />
 	</target>
 
 	<target name="clean">
@@ -69,7 +69,7 @@
 		<argument name="a_file"/>
 		<argument name="a_next"/>
 
-		<xslt processor="${xslt_processor}" input="${a_file}.xml" output="${a_file}.html" stylesheet="${GOBO}/doc/misc/gobo2html2.xsl">
+		<xslt processor="${xslt_processor}" input="${a_file}.xml" output="${a_file}.html" stylesheet="misc/goa2html.xsl">
 			<parameter name="previous" value="&quot;'${a_previous}.html'&quot;"/>
 			<parameter name="next" value="&quot;'${a_next}.html'&quot;"/>
 			<parameter name="toc" value="&quot;'index.html'&quot;"/>
