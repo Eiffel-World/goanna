@@ -37,7 +37,7 @@ feature
 			xml.start_data_entry_table_element (processing_result.message_catalog)
 					-- Indent twice because this command opens up two XML elements
 					xml.add_standard_input_row (0, name_parameter, processing_result)
-					xml.add_parameter (0, gender_parameter, processing_result)
+					xml.add_standard_input_row (0, gender_parameter, processing_result)
 					xml.add_standard_input_row (0, programming_language_parameter, processing_result)
 					xml.add_standard_input_row (0, thinks_goanna_is_cool_parameter, processing_result)
 				xml.end_current_element

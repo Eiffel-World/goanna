@@ -21,7 +21,7 @@ feature -- Page Sequencing
 		do
 			if processing_result.page_selected_servlet /= Void and then processing_result.page_selected_servlet.ok_to_display (processing_result) then
 				Result := processing_result.page_selected_servlet
-			elseif not processing_result.all_parameters_are_valid then
+			elseif processing_result.not_all_parameters_are_valid then
 				Result ?= processing_result.processing_servlet
 			end
 			if Result /= Void then
@@ -53,5 +53,7 @@ feature
 	default_virtual_host_lookup_string: STRING is "localhost"
 	
 	stylesheet: STRING is "goa_common.css"
+
+	bring_down_server_servlet_name: STRING is "uo98344noqpfjslak8392nowpg.htm"
 	
 end -- class APPLICATION_CONFIGURATION
