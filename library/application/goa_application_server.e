@@ -135,8 +135,8 @@ feature
 		local
 			developer_exception_name: STRING
 		do
-			developer_exception_name := exceptions.meaning (exceptions.developer_exception)
-			if equal (configuration.bring_down_server_exception_description, developer_exception_name) then
+			
+			if exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) then
 				Result := False
 			else
 				-- The framework should catch and retry any exceptions before they reach here
@@ -149,7 +149,7 @@ feature
 				log_hierarchy.logger (configuration.application_log_category).info ("Application Ending...")
 			end
 		ensure
-			bring_down_implies_false: equal (configuration.bring_down_server_exception_description, exceptions.meaning (exceptions.developer_exception)) implies not Result
+			bring_down_implies_false: exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) implies not Result
 		end
 
 	initialise_logger is
