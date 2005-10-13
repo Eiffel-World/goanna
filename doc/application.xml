@@ -45,7 +45,7 @@ XML using a custom defined schema.
     <listitem>
       <para>
 
-A standardized approch to form processing. The semantics of each form
+A standardized approach to form processing. The semantics of each form
 (mandatory, expected, and possible parameters etc.) are easily specified by the
 developer.  The content of incoming requests is verified by the
 framework to ensure it conforms with the expected semantics before
@@ -55,7 +55,7 @@ time remains consistent with the state at form generation time.  This
 allows management of the problematic "Back Button". Every form
 parameter is processed by it's own object (of type
 <classname>DEFERRED_PARAMETER</classname>) making reuse of processing
-logic easy via inheritence.
+logic easy via inheritance.
 
       </para>
     </listitem>
@@ -100,7 +100,7 @@ based virtual domain hosting</ulink>.
       
 The Goanna Web Application Framework is considered Beta software.  As
 of mid September, 2005, it
-has been in production use at a low volume internet facing website for
+has been in production use at a low volume Internet facing website for
 over one year.  The <projectname>goa_build</projectname> application
 has undergone much less usage.  In particular,
 <projectname>goa_build</projectname> error handling is largely untested.
@@ -156,7 +156,7 @@ taking care to set the <envar>GOANNA</envar> environment variable.
       <listitem>
 	<para>
 
-Install <ulink url="http://www.fastcgi.com/">FastCgi</ulink> on the webserver
+Install <ulink url="http://www.fastcgi.com/">FastCgi</ulink> on the web server
 that will be hosting the application.  This step is not necessary if
 you will be configuring the application as a stand alone web server,
 but Goanna's stand alone web application facility is not recommended
@@ -167,8 +167,8 @@ for production use.
 
 A sample Apache httpd.conf file is provided in <ulink
 url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/httpd.conf.sample?view=markup">$GOANNA/examples/application</ulink>.
-A list of other webservers supported is available <ulink url="TODO
-fill in this link">here</ulink>.  Each Goanna Application running on the webserver
+A list of other web servers supported is available <ulink url="TODO
+fill in this link">here</ulink>.  Each Goanna Application running on the web server
 must have it's own FastCgiExternalServer with a unique (developer
 selected) path and it's own port.  The port number must match
 <classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>.
@@ -362,7 +362,7 @@ the user and processes the request when the user submits the form to
 the server. Developers must implement the deferred feature
 <featurename>name</featurename> which generally should include an
 extension (e.g. .htm) and is used as the file name portion of the url
-refering to the servlet.  Servlet names must be unique within the
+referring to the servlet.  Servlet names must be unique within the
 system.  Servlets must be instantiated (and accessed) as once
 functions in <classname>SHARED_SERVLETS</classname>.  Additionally,
 each servlet must be registered by adding a call to
@@ -394,7 +394,7 @@ with the state when the form was created.  The unique user ID for a
 logged in user is a good candidate for a mandatory_parameter.  This
 prevents a user from requesting a form as user A, submitting it, logging out,
 logging in as user B, using the back button to navigate to
-the initial form, and then resubmiting the user A form while logged in
+the initial form, and then resubmitting the user A form while logged in
 as user B. OK, it doesn't actually prevent the user from doing that,
 but it does prevent the application from mistakenly processing that form.
 
@@ -463,7 +463,7 @@ in). <featurename>ok_to_display</featurename> is intended to prevent
 sending a particular response unless the application is in an
 acceptable state, but it is the developer's responsibility to check
 ok_to_display when implementing
-<classname>APPLICATION_CONFIGURAITON</classname>.<featurename>next_page</featurename>.
+<classname>APPLICATION_CONFIGURATION</classname>.<featurename>next_page</featurename>.
 
       </para>
     </section>
@@ -475,15 +475,15 @@ Each parameter submitted in an HTML form is processed by an object of
 type <classname>GOA_DEFERRED_PARAMETER</classname>.  These objects
 must be instantiated (and accessed) as once functions in
 <classname>SHARED_REQUEST_PARAMETERS</classname>. The same parameter
-may be used by multiple servlets. In the sample application, <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/parameters/name_parameter.e?view=markup">NAME_PARAMETER</ulink> provides an example of a parameter that allows the user to enter their name and stores their input in the sample application's <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/session_status.e?view=markup">SESSION_STATUS</ulink> object.  It will display an error message to the user if the user attemps to enter an empty name.  If the user attempts to replace a previously valid name with an empty name, it will not do the update and will so inform the user.  These behaviors are inherited from <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/forms/parameters/goa_non_empty_update_input_parameter.e?view=markup">NON_EMPTY_UPDATE_INPUT_PARAMETER</ulink>.
+may be used by multiple servlets. In the sample application, <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/parameters/name_parameter.e?view=markup">NAME_PARAMETER</ulink> provides an example of a parameter that allows the user to enter their name and stores their input in the sample application's <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/session_status.e?view=markup">SESSION_STATUS</ulink> object.  It will display an error message to the user if the user attempts to enter an empty name.  If the user attempts to replace a previously valid name with an empty name, it will not do the update and will so inform the user.  These behaviors are inherited from <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/forms/parameters/goa_non_empty_update_input_parameter.e?view=markup">NON_EMPTY_UPDATE_INPUT_PARAMETER</ulink>.
 
       </para>
       <para>
 
 The built in parameter classes provided in Goanna are intended as
-mixin classes.  In general, simply inherit from the class or classes
+mix-in classes.  In general, simply inherit from the class or classes
 that provide(s) the functionality required and then implement the
-deferred features.  Each paramater must be given a unique name.  Each
+deferred features.  Each parameter must be given a unique name.  Each
 parameter should inherit from
 <classname>GOA_NON_DATABASE_ACCESS_TRANSACTION_MANAGEMENT</classname>
 or a developer provided class that implements the features of
@@ -590,7 +590,7 @@ the schema that describes their XML content.
         
 <classname>_XML_DOCUMENT</classname>. These 
 classes include features to add all of the elements
-specified in the schema to an XML document with pre conditions
+specified in the schema to an XML document with preconditions
 describing the schema validity rules.
 	    
 	  </para>
@@ -687,7 +687,7 @@ to the XML document).
 
 The class <classname>MESSAGE_CATALOG</classname> is intended to
 contain all text displayed to the user.  This design is intended
-facilitate adding support for multiple langagues in the future.  It is
+facilitate adding support for multiple languages in the future.  It is
 not strictly necessary for the developer to use
 <classname>MESSAGE_CATALOG</classname> but some
 <classname>GOA_REQUEST_PARAMETER</classname> classes do generate
@@ -701,7 +701,7 @@ messages contained in <classname>GOA_MESSAGE_CATALOG</classname>.
  
 Goanna Framework Applications generate XML which is then transformed
 to HTML using XSLT.  Developers can extend or replace the support
-classes used for this purpose.  Document schemas produce eiffel
+classes used for this purpose.  Document schemas produce Eiffel
 objects that may be instantiated and used within an application.
 Included schemas produce deferred classes and are intended to be
 incorporated into document schemas or other included schemas.
@@ -752,8 +752,8 @@ class="unknown">goa_common.rnc</filename> schema.
 
 The <projectname>goa_build</projectname> program can automatically
 create an attribute value declaration for the attribute named "class"
-from a CSS stylesheet and insert it into a document schema. To use
-this facility, add a stylesheet declaration as a comment to the
+from a CSS style-sheet and insert it into a document schema. To use
+this facility, add a style-sheet declaration as a comment to the
 schema, using the syntax:
 
       </para>
@@ -765,7 +765,7 @@ schema, using the syntax:
 The stylesheet does not need to be in the same directory as the
 schema, and it is the developers responsibility to ensure that the
 stylesheet is also placed in a directory where it can be served by the
-webserver.  The stylesheet must include at least one style declaration
+web server.  The stylesheet must include at least one style declaration
 for every CSS class used in the schema and all included schemas
 (recursively).  If more than one stylesheet are associated with a
 schema in practice, only one stylesheet is specified in the schema and
@@ -932,9 +932,9 @@ schemas must include a namespace declaration (with the namespace
 prefix matching the file name) and the namespace declaration for each
 included schema.  Included schemas must NOT include the RNC grammar
 and start element declarations. Included schemas should include a
-stylsheet declaration if the developers require access to
+style-sheet declaration if the developers require access to
 <featurename>class_attribute_value</featurename> constants. The
-stylesheet should contain only those classes which are unique to the
+style-sheet should contain only those classes which are unique to the
 schema and not those that are inherited from other included schemas.
 Included schemas should NOT include a CLASS_ATTRIBUTE_PLACEHOLDER. The
 developer must also create a file
