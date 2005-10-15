@@ -101,8 +101,6 @@ feature -- Attributes
 			-- Use 0 if no suffix
 		require
 			valid_name: name /= Void and not name.is_empty
-		local
-			name_and_suffix: STRING
 		do
 			if has_parameter_result (name, suffix) then
 				Result := parameter_processing_results.item (full_parameter_name (name, suffix))
@@ -116,7 +114,6 @@ feature -- Attributes
 		require
 			valid_name: name /= Void and not name.is_empty
 		local
-			name_and_suffix: STRING
 			the_processing_result: PARAMETER_PROCESSING_RESULT
 		do
 			the_processing_result := parameter_processing_results.item (full_parameter_name (name, suffix))

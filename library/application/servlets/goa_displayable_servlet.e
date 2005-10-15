@@ -89,7 +89,6 @@ feature
 			processing_result_was_processed: processing_result.was_processed
 		local
 			response: GOA_HTTP_SERVLET_RESPONSE
-			xml: GOA_XML_DOCUMENT
 		do
 			response := processing_result.response
 			processing_result.set_generating_servlet (Current)

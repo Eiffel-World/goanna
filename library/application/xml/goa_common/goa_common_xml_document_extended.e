@@ -59,9 +59,6 @@ feature -- Document Writing
 			valid_the_parameter: the_parameter /= Void
 			ok_to_add_row: ok_to_add_element_or_text (row_element_code)
 			valid_processing_result: processing_result /= Void
-		local
-			parameter_processing_result: GOA_PARAMETER_PROCESSING_RESULT
-			raw_parameter_name: STRING
 		do
 			the_parameter.add_to_standard_data_input_table (Current, processing_result, suffix)
 		end

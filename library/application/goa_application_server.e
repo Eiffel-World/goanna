@@ -132,8 +132,6 @@ feature
 		
 	field_exception: BOOLEAN is
 			-- Should we attempt to retry?
-		local
-			developer_exception_name: STRING
 		do
 			
 			if exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) then

@@ -47,8 +47,6 @@ feature -- Adding Elements
 	add_text_item_element (choice_N1_name_code: INTEGER; choice_N1_value: STRING; text_to_add: STRING) is
 			--Add a new goa_common:text_item element to the xml document
 			-- Use the attribute name code xml_null_code to indicate a null attribute for the choice
-		local
-			name_index, value_index: INTEGER
 		do
 			writer.start_ns_tag ("", element_tag_for_code (text_item_element_code))
 			if choice_N1_name_code /= xml_null_code then

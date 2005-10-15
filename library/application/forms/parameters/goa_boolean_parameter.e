@@ -35,7 +35,6 @@ feature -- Processing
 		
 	display_value (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 		local
-			full_name: STRING
 			parameter_result: PARAMETER_PROCESSING_RESULT
 		do
 			parameter_result := processing_result.parameter_processing_result (name, suffix)

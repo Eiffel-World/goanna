@@ -27,9 +27,6 @@ feature {NONE} -- Creation
 			valid_processing_result: processing_result /= Void
 			valid_servlet: servlet /= Void
 			valid_new_text: new_text /= Void
-		local
-			virtual_host_name: STRING
-			index: INTEGER
 		do
 			initialize
 			text := STRING_.cloned_string (new_text)

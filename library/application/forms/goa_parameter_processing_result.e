@@ -120,7 +120,6 @@ feature {GOA_REQUEST_PROCESSING_RESULT} -- Processing
 			not_was_processed: not was_processed
 			registered: request_processing_result.has_parameter_result (parameter_name, parameter_suffix)
 		local
-			field_label: STRING
 			is_suffix_valid: BOOLEAN
 		do
 			was_processed := True

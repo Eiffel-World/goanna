@@ -36,3 +36,11 @@ Actually, we also need a similar overview for servlets, and especially
 FastCGI servlets, in $GOANNA/doc/servlets, I think, and you should
 include a broken link to this hypothetical documentation as something
 to be read before reading further with your own overview.
+
+Under some circumstances, common.xsl creates unused local variables
+name_index and value_index.  The template should be smart enough to
+add those variables to feature only when they are actually needed.
+The offending template is:
+
+  <xsl:template match="rng:ref" mode="adding_elements">
+
