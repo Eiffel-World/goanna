@@ -168,9 +168,10 @@ for production use.
 A sample Apache httpd.conf file is provided in <ulink
 url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/httpd.conf.sample?view=markup">$GOANNA/examples/application</ulink>.
 A list of other web servers supported is available <ulink url="TODO
-fill in this link">here</ulink>.  Each Goanna Application running on the web server
-must have it's own FastCgiExternalServer with a unique (developer
-selected) path and it's own port.  The port number must match
+fill in this link">here</ulink>.  Each Goanna Application running on
+the web server must have it's own FastCgiExternalServer with a unique
+(developer selected) path and it's own port.  The port number must
+match
 <classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>.
 In each alias declaration, the alias path is selected by the developer
 and the path in quotes must match the path given in the
@@ -214,7 +215,8 @@ class="unknown">goa_build</filename> in your system's execution path.
       <listitem>
 	<para>
 
-If you will be doing <ulink url="#custom_html_generation">custom HTML generation</ulink>, install <ulink
+If you will be doing <ulink url="#custom_html_generation">custom HTML
+generation</ulink>, install <ulink
 url="http://www.thaiopensource.com/relaxng/trang.html">trang</ulink>
 and ensure the trang executable is in your system's execution path or
 set the environment variable <envar>TRANG_INVOCATION</envar> with the
@@ -260,6 +262,12 @@ $GOANNA/library/application/templates to your project directory and
 then delete the CVS subdirectories (recursively).
 	    
 	  </para>
+	  <para>
+
+In our example, we will create the directory "application".
+	    
+	  </para>
+
 	</listitem>
 	<listitem>
 	  <para>
@@ -273,18 +281,29 @@ additions to <filename class="unknown">system.xace</filename>.
 	<listitem>
 	  <para>
 
-<classname>APPLICATION_SERVER</classname> must inherit from
-<classname>GOA_CGI_SERVLET_APP</classname>,
-<classname>GOA_FAST_CGI_SERVLET_APP</classname> (recommended),
-<classname>GOA_HTTPD_SERVLET_APP</classname> (stand alone), or another
-connector.  If you use the FastCGI connector, you must undefine
+APPLICATION_SERVER must inherit from exactly one servlet connector.
+We recommend using <classname>GOA_FAST_CGI_SERVLET_APP</classname>,
+but his requires that FastCGI has been installed on the web server.
+If this is not available, then
+<classname>GOA_CGI_SERVLET_APP</classname> can be used.
+Alternatively, <classname>GOA_HTTPD_SERVLET_APP</classname> can be
+used, thus avoiding the need for a web server altogether. But this is
+only recommended for testing. You might also consider writing your own
+servlet connector, if you have a special environment. If you use the
+FastCGI connector, you must undefine
 <classname>GOA_FAST_CGI_SERVLET_APP</classname>.<featurename>initialise_logger</featurename>,
 and
 <classname>GOA_FAST_CGI_SERVLET_APP</classname>.<featurename>all_servlets_registered</featurename>. If
 you use the stand alone connector you must undefine
 <featurename>log_hierarchy</featurename>.
+
+	  </para>
+	  <para>
+
+In our example, we have used <classname>GOA_FAST_CGI_SERVLET_APP</classname>.
 	    
 	  </para>
+
 	</listitem>
 	<listitem>
 	  <para>
@@ -293,8 +312,14 @@ you use the stand alone connector you must undefine
 <classname>APPLICATION_CONFIGURATION</classname>, and all servlets
 must inherit from
 <classname>GOA_NON_DATABASE_ACCESS_TRANSACTION_MANAGEMENT</classname>
-or another class implementing
+or another (developer provided) class implementing
 <classname>GOA_TRANSACTION_MANAGEMENT</classname>.
+	    
+	  </para>
+	  <para>
+
+In our example, these classes all inherit from
+<classname>GOA_NON_DATABASE_ACCESS_TRANSACTION_MANAGEMENT</classname>.
 	    
 	  </para>
 	</listitem>
@@ -329,7 +354,27 @@ to register the host under the name given in
 
 		</para>
 	      </listitem>
+	      <listitem>
+		<para>
+Return a result of <featurename>True</featurename>.
+		</para>
+	      </listitem>
 	    </itemizedlist>
+	  </para>
+	  <para>
+
+In our example, this is done in <ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/application_server.e?view=markup">APPLICATION_SERVER</ulink>.
+
+	  </para>
+	  <para>
+
+The feature
+<classname>APPLICATION_CONFIGURATION</classname>.<featurename>next_page</featurename>
+returns the next page to display to the user.  In our example, it is
+<ulink
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/application_configuration.e?view=markup">APPLICATION_CONFIGURATION</ulink>.
+
 	  </para>
 	</listitem>
 	<listitem>
@@ -342,6 +387,14 @@ Switch to the data directory (as defined in
 	  <para>
 <filename class="unknown">goa_build</filename>	    
 	  </para>
+	  <para>
+
+This will copy Goanna provided rnc (schema) and xsl (transformation)
+files to the data directory where they can accessed by the
+application.
+	  
+	  </para>
+
 	</listitem>
       </orderedlist>
     </section>
@@ -481,7 +534,7 @@ may be used by multiple servlets. In the sample application, <ulink url="http://
       <para>
 
 The built in parameter classes provided in Goanna are intended as
-mix-in classes.  In general, simply inherit from the class or classes
+mixin classes.  In general, simply inherit from the class or classes
 that provide(s) the functionality required and then implement the
 deferred features.  Each parameter must be given a unique name.  Each
 parameter should inherit from
@@ -527,7 +580,8 @@ Features to store intermediate processing results which are not part
 of the persistent object model may be added to classes
 <classname>PARAMETER_PROCESSING_RESULT</classname>,
 <classname>REQUEST_PROCESSING_RESULT</classname> or
-<classname>SESSION_STATUS</classname> as appropriate.
+<classname>SESSION_STATUS</classname> as appropriate. Hooks to the persistent object model and non persistent information that must live between requests should be placed in <classname>SESSION_STATUS</classname>. Non-persistent information that must be passed between parameters during processing of a single request may be stored in <classname>REQUEST_PROCESSING_RESULT</classname>.  It is also convenient to place hooks to commonly accessed portions of the persistent object model in <classname>REQUEST_PROCESSING_RESULT</classname>.
+
       </para>
       <para>
 
@@ -752,8 +806,8 @@ class="unknown">goa_common.rnc</filename> schema.
 
 The <projectname>goa_build</projectname> program can automatically
 create an attribute value declaration for the attribute named "class"
-from a CSS style-sheet and insert it into a document schema. To use
-this facility, add a style-sheet declaration as a comment to the
+from a CSS stylesheet and insert it into a document schema. To use
+this facility, add a stylesheet declaration as a comment to the
 schema, using the syntax:
 
       </para>
@@ -932,9 +986,9 @@ schemas must include a namespace declaration (with the namespace
 prefix matching the file name) and the namespace declaration for each
 included schema.  Included schemas must NOT include the RNC grammar
 and start element declarations. Included schemas should include a
-style-sheet declaration if the developers require access to
+stylesheet declaration if the developers require access to
 <featurename>class_attribute_value</featurename> constants. The
-style-sheet should contain only those classes which are unique to the
+stylesheet should contain only those classes which are unique to the
 schema and not those that are inherited from other included schemas.
 Included schemas should NOT include a CLASS_ATTRIBUTE_PLACEHOLDER. The
 developer must also create a file
