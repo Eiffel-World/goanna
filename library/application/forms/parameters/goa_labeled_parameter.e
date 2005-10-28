@@ -42,12 +42,7 @@ feature
 
 	add_to_standard_data_input_table (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 			-- Add labeled parameter to a standard table in xml document
-		local
-			the_parameter_processing_result: PARAMETER_PROCESSING_RESULT
 		do
-			the_parameter_processing_result := parameter_processing_result (processing_result, suffix)		
-
-			the_parameter_processing_result := parameter_processing_result (processing_result, suffix)
 			xml.start_row_element (Void)
 				xml.start_cell_element (Void, "1")
 		 			xml.add_item (label (processing_result, suffix))
@@ -56,11 +51,24 @@ feature
 						add_to_document (xml, processing_result, suffix)
 				xml.end_current_element
 				xml.start_cell_element (Void, "1")
-					if the_parameter_processing_result /= Void then
-						xml.add_item (the_parameter_processing_result.error_message)
-					end				
+					add_messages (xml, processing_result, suffix)
 				xml.end_current_element
 			xml.end_current_element
+		end
+		
+	add_messages (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
+			-- Add dependency messages for this parameter (if any) to document
+		require
+			valid_xml: xml /= Void
+			ok_to_add_item: xml.current_element_code = xml.cell_element_code
+			valid_processing_result: processing_result /= Void
+		local
+			the_parameter_processing_result: PARAMETER_PROCESSING_RESULT
+		do
+			the_parameter_processing_result := parameter_processing_result (processing_result, suffix)
+			if the_parameter_processing_result /= Void then
+				xml.add_item (the_parameter_processing_result.error_message)
+			end
 		end
 
 end -- class GOA_LABELED_PARAMETER

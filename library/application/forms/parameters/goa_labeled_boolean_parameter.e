@@ -32,9 +32,7 @@ feature
 						xml.add_item (label (processing_result, suffix))
 				xml.end_current_element
 				xml.start_cell_element (Void, "1")
-					if the_parameter_processing_result /= Void then
-						the_parameter_processing_result.error_message.add_to_document (xml)
-					end
+					add_messages (xml, processing_result, suffix)
 				xml.end_current_element
 			xml.end_current_element
 		end

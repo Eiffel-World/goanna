@@ -24,6 +24,23 @@ feature -- Parameters
 			create Result.make
 		end
 		
+	request_parameter_for_name (the_name: STRING): GOA_DEFERRED_PARAMETER is
+			-- The request parameter with the_name
+		require
+			valid_name: the_name /= Void and then not the_name.is_empty
+			name_exists: parameter_name_is_registered (the_name)
+		do
+			Result := request_parameters.item (the_name)
+		end
+		
+	parameter_name_is_registered (the_name: STRING): BOOLEAN is
+			-- Does the_name belong to a registered request parameter?
+		require
+			valid_name: the_name /= Void and then not the_name.is_empty
+		do
+			Result := request_parameters.has (the_name)
+		end
+		
 
 feature {NONE} -- Implementation
 	
