@@ -24,6 +24,7 @@ feature -- Processing
 			start_transaction (processing_result.request_processing_result)
 				validate (processing_result)
 				if processing_result.is_value_valid and then boolean_updated (processing_result) then
+					processing_result.request_processing_result.set_was_updated
 					if processing_result.value.is_empty then
 						process_not_checked (processing_result)
 					else

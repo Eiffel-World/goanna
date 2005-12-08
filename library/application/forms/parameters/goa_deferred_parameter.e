@@ -47,6 +47,38 @@ feature -- Queries
 			ok_to_read_data: ok_to_read_data (processing_result)
 		deferred
 		end
+		
+	minimum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
+			-- The minimum valid suffix value
+		require
+			valid_processing_result: processing_result /= Void
+			ok_to_read_data: ok_to_read_data (processing_result)
+		deferred
+		end
+
+	maximum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
+			-- The maximum valid suffix value
+		require
+			valid_processing_result: processing_result /= Void
+			ok_to_read_data: ok_to_read_data (processing_result)
+		deferred
+		ensure
+--			Don't have greater_or_equal_to_minimum_suffix: Result >= minimum_suffix (processing_result)
+--			This is unnecessarily restrictive; it is sometimes convenient to have maximum suffix < minimum suffix
+--			e.g. GOA_ITEM_LIST_PARAMETER whose list happens to be empty
+		end
+		
+	suffix_list (processing_result: REQUEST_PROCESSING_RESULT): DS_LINKED_LIST [INTEGER] is
+			-- A list of all suffix values used for this parameter
+		require
+			valid_processing_result: processing_result /= Void
+			ok_to_read_data: ok_to_read_data (processing_result)
+		deferred
+		ensure
+			valid_result: Result /= Void
+--			Do not have result_not_empty: not Result.is_empty
+--			See commont for maximum suffix
+		end
 
 feature {GOA_PARAMETER_PROCESSING_RESULT, GOA_PARAMETER_PROCESSING_RESULT_COMPARATOR}-- Processing
 

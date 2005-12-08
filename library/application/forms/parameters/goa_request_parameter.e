@@ -47,8 +47,40 @@ feature -- Queries
 	is_suffix_valid (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
 			-- Is suffix a valid value.  Default is suffix = 0 (no suffix allowed)
 		do
-			Result := suffix = 0
+			Result := minimum_suffix (processing_result) <= suffix and suffix <= maximum_suffix (processing_result)
 		end
+		
+	minimum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
+			-- The minimum valid suffix value
+		once
+			Result := 0
+		end
+
+	maximum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
+			-- The maximum valid suffix value
+		once
+			Result := 0
+		end
+		
+	suffix_list (processing_result: REQUEST_PROCESSING_RESULT): DS_LINKED_LIST [INTEGER] is
+			-- A list of all suffix values used for this parameter
+		local
+			index: INTEGER
+			minimum_index, maximum_index: INTEGER
+		do
+			create Result.make_equal
+			from
+				minimum_index := minimum_suffix (processing_result)
+				maximum_index := maximum_suffix (processing_result)
+				index := minimum_index
+			until
+				index > maximum_index
+			loop
+				Result.force_last (index)
+				index := index + 1
+			end
+		end
+
 		
 feature -- As XML
 		

@@ -37,7 +37,7 @@ feature -- Attributes
 		do
 			Result := processing_result.message_catalog.submit_label
 		end
-
+		
 feature -- Page Building
 
 	new_xml_document (processing_result: REQUEST_PROCESSING_RESULT): GOA_XML_DOCUMENT is

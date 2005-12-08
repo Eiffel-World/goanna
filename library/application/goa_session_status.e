@@ -75,12 +75,15 @@ feature -- Status Setting
 		
 feature {GOA_APPLICATION_SERVLET} -- Initialization
 
-	initialize (req: GOA_HTTP_SERVLET_REQUEST) is
+	initialize (processing_result: REQUEST_PROCESSING_RESULT) is
 			-- Extract session status from req; initializing if necessary
 		require
-			valid_req: req /= Void
+			valid_processing_result: processing_result /= Void
 			not_initialized: not initialized
+		local
+			req: GOA_HTTP_SERVLET_REQUEST
 		do
+			req := processing_result.request
 			if req.has_header ("SERVER_NAME") then
 				server_name := req.get_header ("SERVER_NAME")
 			else

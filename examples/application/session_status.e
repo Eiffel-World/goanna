@@ -74,11 +74,11 @@ feature -- Setting Attributes
 
 feature {GOA_APPLICATION_SERVLET} -- Initialization
 
-	initialize (req: GOA_HTTP_SERVLET_REQUEST) is
+	initialize (processing_result: REQUEST_PROCESSING_RESULT) is
 		do
 			set_is_male
 			set_name ("")
-			Precursor (req)
+			Precursor (processing_result)
 		end
 
 invariant

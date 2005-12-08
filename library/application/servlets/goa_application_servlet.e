@@ -121,11 +121,12 @@ feature -- Request Processing
 			mandatory_parameters_in_request, expected_parameters_in_request: DS_LINKED_LIST [STRING]
 			mandatory_processing_results, non_mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
 --			page_agent: FUNCTION [ANY, TUPLE [REQUEST_PROCESSING_RESULT], EXTENDED_GOA_PAGE_XML_DOCUMENT]
-			temp_name: STRING
+			temp_name, raw_add_if_absent_parameter_name: STRING
 			failed_once, failed_twice: BOOLEAN
+			suffix_list: DS_LINKED_LIST [INTEGER]
 			
 		do
---			io.put_string (generator + "%N")
+			io.put_string ("========" + generator + "%N")
 			if not failed_once then
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
 --				io.put_string ("Request: " + name + client_info (request) + "%N")
@@ -134,10 +135,10 @@ feature -- Request Processing
 				check
 					valid_session_status: session_status /= Void
 				end
-				if not session_status.initialized then
-					session_status.initialize (request)
-				end
 				create processing_result.make (request, response, session_status, Current)
+				if not session_status.initialized then
+					session_status.initialize (processing_result)
+				end
 				if ok_to_process_servlet (processing_result) then
 					create mandatory_parameters_in_request.make_equal
 					create expected_parameters_in_request.make_equal
@@ -208,11 +209,21 @@ feature -- Request Processing
 							add_if_absent_parameters.after
 						loop
 							temp_name := add_if_absent_parameters.item_for_iteration
-							if not processing_result.has_parameter_name (add_if_absent_parameters.item_for_iteration) then
-								create parameter_processing_result.make (STRING_.cloned_string (add_if_absent_parameters.item_for_iteration), processing_result)
-								processing_result.add_parameter_processing_result (parameter_processing_result,  False)
+							start_version_access (processing_result)
+								suffix_list := request_parameter_for_name (temp_name).suffix_list (processing_result)
+							end_version_access (processing_result)
+							from
+								suffix_list.start
+							until
+								suffix_list.after
+							loop
+								if not processing_result.has_parameter_result (add_if_absent_parameters.item_for_iteration, suffix_list.item_for_iteration) then
+									create parameter_processing_result.make (full_parameter_name (add_if_absent_parameters.item_for_iteration, suffix_list.item_for_iteration), processing_result)
+									processing_result.add_parameter_processing_result (parameter_processing_result,  False)
+								end
+								suffix_list.forth
 							end
-								add_if_absent_parameters.forth
+							add_if_absent_parameters.forth
 						end
 						processing_result.process_parameters
 						-- Perform additional processing
@@ -253,7 +264,7 @@ feature -- Request Processing
 				servlet.send_response (processing_result)
 			end			
 			session_status.set_has_served_a_page
---			io.put_string ("Response Sent...%N")
+			io.put_string ("======== Response Sent...%N")
 		rescue
 			if ok_to_write_data (processing_result) then
 				commit (processing_result)
@@ -299,7 +310,10 @@ feature -- Linking
 			valid_processing_result: processing_result /= Void
 			valid_text: text /= Void
 		do
-			create Result.make (post_url (processing_result), text)
+			create Result.make (processing_result.virtual_domain_host.host_name + configuration.fast_cgi_directory + name, text)
+			if receive_secure then
+				Result.set_secure
+			end
 		end
 		
 	post_url (processing_result: REQUEST_PROCESSING_RESULT): STRING is

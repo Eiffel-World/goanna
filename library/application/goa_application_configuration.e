@@ -26,6 +26,7 @@ feature -- Page Sequencing
 		deferred
 		ensure
 			valid_result: Result /= Void
+			result_ok_to_display: Result.ok_to_display (processing_result)
 			not_ok_to_read_write_data: implements_transaction_and_version_access implies not (ok_to_read_data (processing_result) or ok_to_write_data (processing_result))
 		end
 		

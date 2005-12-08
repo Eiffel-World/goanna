@@ -212,8 +212,10 @@ feature
 				the_list.after
 			loop
 				xml.start_row_element (Void)
-					xml.start_cell_element (Void, "2")
+					xml.start_cell_element (Void, "1")
 						xml.add_radio_element (Void, name, the_list.index.out, yes_no_string_for_boolean (is_currently_selected_object (processing_result, the_list.item_for_iteration)))
+					xml.end_current_element
+					xml.start_cell_element (Void, "1")
 						item_label (processing_result, the_list.item_for_iteration).add_to_document (xml)
 					xml.end_current_element
 					xml.start_cell_element (Void, "1")

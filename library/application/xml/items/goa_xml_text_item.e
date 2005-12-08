@@ -27,7 +27,7 @@ feature {GOA_COMMON_XML_DOCUMENT_EXTENDED}
 				if css_class = Void then
 					xml.add_text_item_element (xml.xml_null_code, Void, text)
 				else
-					xml.add_text_item_element (xml.class_attribute_code, css_class, text)
+					xml.add_text_item_element (xml.span_attribute_code, css_class, text)
 				end
 			end
 		end

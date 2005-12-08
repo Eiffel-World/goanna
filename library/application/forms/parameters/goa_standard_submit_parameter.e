@@ -22,7 +22,7 @@ creation
 	
 feature
 	
-	name: STRING is "submit"
+	name: STRING is "standard_submit"
 	
 	process (processing_result: PARAMETER_PROCESSING_RESULT)is
 		do

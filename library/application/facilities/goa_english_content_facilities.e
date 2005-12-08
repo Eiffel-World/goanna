@@ -25,7 +25,8 @@ feature
 				Result.append ("n ")
 			else
 				Result.append (" ")
-			end			
+			end
+			Result.append (next_string)
 		end
 
 	vowels: STRING is "aeiouAEIOU"

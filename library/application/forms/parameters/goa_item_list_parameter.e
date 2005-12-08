@@ -10,14 +10,14 @@ deferred class
 	GOA_ITEM_LIST_PARAMETER [G]
 
 inherit
-	
+
 	GOA_DEFERRED_PARAMETER
 		redefine
-			is_suffix_valid
+			minimum_suffix, maximum_suffix
 		end
 
 feature
-		
+
 	item_list (processing_result: REQUEST_PROCESSING_RESULT): DS_LINKED_LIST [G] is
 		require
 			valid_processing_result: processing_result /= Void
@@ -27,11 +27,16 @@ feature
 			ok_to_read_data: ok_to_read_data (processing_result)
 		end
 	
-	is_suffix_valid (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
+	minimum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
 		do
-			Result := 1 <= suffix and then suffix <= item_list (processing_result).count
+			Result := 1
 		end
 		
+	maximum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
+		do
+			Result := item_list (processing_result).count
+		end
+
 	item_in_list (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): G is
 		require
 			ok_to_read_data: ok_to_read_data (processing_result)

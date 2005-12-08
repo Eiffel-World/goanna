@@ -12,7 +12,7 @@ namespace goa_common="http://www.sourceforge.net/projects/goanna/goa_common"
 
 paragraph = element goa_common:paragraph { class?, ( text_item | popup_hyperlink | hyperlink | submit | input | radio | select | text_area | image )+ }
 	text_item = element goa_common:text_item { ( class | span)?, text? }
-		span = attribute span { "bold" }
+		span = attribute span { text }
 	division = element goa_common:division { class?, ( paragraph | submit | division | hyperlink | text_item | input | radio | select | text_area | table | image )+ }
 	ordered_list = element goa_common:ordered_list { class?, list_item+ }
 		list_item = element goa_common:list_item { class?, ( text_item | hyperlink | popup_hyperlink )+ }
