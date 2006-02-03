@@ -37,7 +37,7 @@ feature
 					processing_result.error_message.add_message ("Bad " + name + " Value")
 					if session_status.has_served_a_page and then not bad_value_message (processing_result.request_processing_result).is_empty then
 						session_status.user_message.add_message (bad_value_message (processing_result.request_processing_result))
-						log_hierarchy.logger (configuration.application_security_log_category).info ("Bad " + name + " Value: " + processing_result.processing_servlet.client_info (processing_result.request))
+						log_hierarchy.logger (configuration.application_security_log_category).info ("Bad " + name + " Value: " + processing_result.value + "; " + processing_result.processing_servlet.client_info (processing_result.request))
 					end
 				end
 			end_version_access (processing_result.request_processing_result)

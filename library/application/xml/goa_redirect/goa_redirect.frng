@@ -41,9 +41,7 @@
       </optional>
     </element>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="span">
-    <attribute name="span">
-      <value>bold</value>
-    </attribute>
+    <attribute name="span"/>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="division">
     <element name="goa_common:division">
       <optional>
@@ -56,6 +54,7 @@
 <ref name="hyperlink"/>
 <ref name="text_item"/>
 <ref name="input"/>
+<ref name="hidden"/>
 <ref name="radio"/>
 <ref name="select"/>
 <ref name="text_area"/>
@@ -100,6 +99,9 @@
         <ref name="class"/>
       </optional>
       <ref name="url"/>
+      <optional>
+        <ref name="tool_tip"/>
+      </optional>
       <text/>
     </element>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="popup_hyperlink">
@@ -373,6 +375,11 @@
     <attribute name="width">
       <data type="nonNegativeInteger"/>
     </attribute>
+  </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="tool_tip">
+    <element name="goa_common:tool_tip">
+      <ref name="class"/>
+      <text/>
+    </element>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="page_title">
     <attribute name="page_title"/>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="style_sheet">

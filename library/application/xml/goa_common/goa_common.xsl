@@ -302,18 +302,19 @@
 	
 <xsl:template match="goa_common:hyperlink">
 
-	<!-- Template for a hyperlink -->
-
-	<xsl:call-template name="goa_common:class" />
-	<xsl:element name="a">
-		<xsl:attribute name="href"><xsl:value-of select="@url" /></xsl:attribute>
-		<xsl:value-of select="." />
-	</xsl:element>
+  <!-- Template for a hyperlink -->
+  
+  <xsl:element name="a">
+    <xsl:call-template name="goa_common:class" />
+    <xsl:apply-templates select="goa_common:tool_tip" mode="attributes"/>
+    <xsl:attribute name="href"><xsl:value-of select="@url" /></xsl:attribute>
+    <xsl:value-of select="text ()" />
+  </xsl:element>
 </xsl:template>
 
 <xsl:template match="goa_common:image">
 
-	  	<!--  "Image" template -->
+ 	  	<!--  "Image" template -->
 	  	
 	<xsl:element name="IMG" >
 		<xsl:call-template name="goa_common:class" />
@@ -344,6 +345,123 @@
 		</xsl:element>
 	</xsl:if>
 
+	<xsl:if test="boolean (//goa_common:tool_tip)">
+
+	  <!-- Scripts that display/hide tool tips -->
+
+		<xsl:element name="script">
+			<xsl:attribute name="LANGUAGE">JavaScript</xsl:attribute>
+			<xsl:attribute name="TYPE">text/javascript</xsl:attribute>
+
+var xOffset = 5;
+var yOffset = -5;
+
+function showToolTipPopup (objectId, ToolTipId, eventObj) {
+  // Show the ToolTip associated with ToolTipId
+  // Above the element given by objectId; below if it won't fit above
+
+  // stop event from bubbling up any farther
+  eventObj.cancelBubble = true;
+
+  // Get some
+  var baseObject = document.getElementById (objectId) ;
+  var toolTipObject = getStyleObject (ToolTipId) ;
+  var Positions = cumulativeOffset (baseObject) ;
+  var leftPosition = (eventObj.pageX)?eventObj.pageX + xOffset:eventObj.x + xOffset + ((document.body.scrollLeft)?document.body.scrollLeft:0);
+  var theScreenSize = windowSize () ;
+  var windowWidth = theScreenSize [0] ;
+  var windowHeight = theScreenSize [1] ;
+  var windowScroll = getScrollXY() ;
+
+  // Width is 25% of window or 250 pixels; whichever is greater
+
+  toolTipWidth = Math.round (windowWidth / 4) ;
+  if (toolTipWidth &lt; 250) {
+    toolTipWidth = 250 ;
+  }
+  if (toolTipWidth &gt; windowWidth) {
+
+    toolTipWidth = windowWidth - 5 ;
+
+  }
+
+  toolTipObject.width = toolTipWidth + "px"
+
+  // Bottom Position is 5 pixels above the object containing the tool tip
+
+  bottomPosition = Positions [1] - objHeight (ToolTipId) - 5 ;
+
+  // If tool tip won't fit above object, make it wider
+  // Until it is 5 pixels less then the window width
+
+  maxToolTipWidth = windowWidth - 5
+  toolTipIncrement = Math.round (windowWidth / 5) ;
+
+  while ((bottomPosition &lt; windowScroll [1] + 1) &amp;&amp; (toolTipWidth &lt; maxToolTipWidth)) {
+     if (toolTipWidth &gt; maxToolTipWidth) {
+        toolTipWidth = maxToolTipWidth ;
+     } ;
+     toolTipWidth = toolTipWidth + toolTipIncrement ;
+     toolTipObject.width = toolTipWidth + "px";
+     bottomPosition = Positions [1] - objHeight (ToolTipId) - 5 ;
+  };
+
+  // If tool tip still won't fit above the object
+  // resize it and display it below the object
+
+  if (bottomPosition &lt; windowScroll [1] + 3) {
+    toolTipWidth = Math.round (windowWidth / 4) ;
+    if (toolTipWidth &lt; 250) {
+      toolTipWidth = 250 ;
+    }
+    toolTipObject.width = toolTipWidth + "px";
+    bottomPosition = Positions [1] + objHeight (objectId) + 5 ;
+    leftPosition = leftPosition + 10 ;
+  }
+  if (leftPosition + toolTipWidth &gt; windowWidth) {
+    leftPosition = windowWidth - toolTipWidth - 5 ;
+  }
+
+  // Move and display the tool tip
+
+  moveObject (ToolTipId, leftPosition, bottomPosition) ;
+  changeObjectVisibility (ToolTipId, 'visible') ;
+
+}
+
+function hideToolTip (ToolTipId) {
+
+  changeObjectVisibility (ToolTipId, 'hidden') ;
+  var theScreenSize = windowSize () ;
+  moveObject (ToolTipId, 0, theScreenSize [1]) ;
+
+
+}
+
+function getScrollXY() {
+	// Get Scroll Offset of current window and return as an array of
+	// [Scroll X, Scroll Y]
+  var scrOfX = 0, scrOfY = 0;
+  if( typeof( window.pageYOffset ) == 'number' ) {
+    //Netscape compliant
+    scrOfY = window.pageYOffset;
+    scrOfX = window.pageXOffset;
+  } else if( document.body &amp;&amp; ( document.body.scrollLeft || document.body.scrollTop ) ) {
+    //DOM compliant
+    scrOfY = document.body.scrollTop;
+    scrOfX = document.body.scrollLeft;
+  } else if( document.documentElement &amp;&amp;
+      ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
+    //IE6 standards compliant mode
+    scrOfY = document.documentElement.scrollTop;
+    scrOfX = document.documentElement.scrollLeft;
+  }
+  return [ scrOfX, scrOfY ];
+}
+
+
+		</xsl:element>
+	</xsl:if>
 
 </xsl:template>
 
@@ -352,10 +470,33 @@
 	<!-- A hyperlink that opens a small pop-up window -->
 
 	<xsl:element name="a">
+	        <xsl:apply-templates select="goa_common:tool_tip" />
 		<xsl:call-template name="goa_common:class" />
 		<xsl:attribute name="href">javascript:popUp('<xsl:value-of select="@url" />')</xsl:attribute>
 		<xsl:value-of select="." />
 	</xsl:element>
+</xsl:template>
+
+<xsl:template match="goa_common:tool_tip" mode="attributes">
+  <!-- Add attributes to create a tool tip for an element; the element must support onmouseover and onmouseout javascript -->
+  <!-- May be called by any template for an element that may contain a tool tip element -->
+  <!-- Must be called while element may still accept attributes -->
+
+   <xsl:attribute name="onmouseover">showToolTipPopup ('<xsl:value-of select="generate-id(..)" />', '<xsl:value-of select="generate-id()" />', event);</xsl:attribute>
+   <xsl:attribute name="onmouseout">hideToolTip ('<xsl:value-of select="generate-id ()" />');</xsl:attribute>
+   <xsl:attribute name="id"><xsl:value-of select="generate-id(..)" /></xsl:attribute>
+
+</xsl:template>
+
+<xsl:template match="goa_common:tool_tip">
+  <!-- A small popup that displays some text to the user via Javascript -->
+
+  <xsl:element name="div">
+    <xsl:attribute name="style">position: absolute ; visibility: hidden</xsl:attribute>
+    <xsl:attribute name="class"><xsl:value-of select="@class" /></xsl:attribute>
+    <xsl:attribute name="id"><xsl:value-of select="generate-id ()" /></xsl:attribute>
+    <xsl:value-of select="." />
+  </xsl:element>
 </xsl:template>
 
 </xsl:transform>

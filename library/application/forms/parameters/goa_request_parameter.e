@@ -76,7 +76,9 @@ feature -- Queries
 			until
 				index > maximum_index
 			loop
-				Result.force_last (index)
+				if is_suffix_valid (processing_result, index) then
+					Result.force_last (index)
+				end
 				index := index + 1
 			end
 		end

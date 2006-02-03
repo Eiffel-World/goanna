@@ -109,6 +109,29 @@ feature -- Document Writing
 				start_body_element (Void)
 		end
 
+	start_formatted_table_element (new_class: STRING; new_summary: STRING; new_cellspacing, new_cellpadding: STRING) is
+			-- Start a plain table element (empty header and footer)
+			-- leaves body open to add rows;  use end_current_element twice
+			-- to close the body element and then the table element
+		require
+			ok_to_add_table: ok_to_add_element_or_text (table_element_code)
+			is_valid_value_new_class: new_class /= Void implies is_valid_attribute_value (class_attribute_code, new_class)
+			is_valid_value_new_summary: new_summary /= Void implies is_valid_attribute_value (summary_attribute_code, new_summary)
+			is_valid_value_new_cellspacing: new_cellspacing /= Void implies is_valid_attribute_value (cellspacing_attribute_code, new_cellspacing)
+			is_valid_value_new_cellpadding: new_cellpadding /= Void implies is_valid_attribute_value (cellpadding_attribute_code, new_cellpadding)
+
+			valid_new_summary: new_summary /= Void
+		do
+			start_table_element (new_class, new_cellspacing, new_cellpadding, new_summary)
+				start_header_element (Void)
+				end_current_element
+				start_footer_element (Void)
+				end_current_element
+				start_body_element (Void)
+		end
+	
+	
+
 	start_data_entry_table_element (message_catalog: MESSAGE_CATALOG) is
 			-- STart a plain table element used for data entry
 		require

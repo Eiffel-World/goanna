@@ -13,12 +13,12 @@ namespace goa_common="http://www.sourceforge.net/projects/goanna/goa_common"
 paragraph = element goa_common:paragraph { class?, ( text_item | popup_hyperlink | hyperlink | submit | input | radio | select | text_area | image )+ }
 	text_item = element goa_common:text_item { ( class | span)?, text? }
 		span = attribute span { text }
-	division = element goa_common:division { class?, ( paragraph | submit | division | hyperlink | text_item | input | radio | select | text_area | table | image )+ }
+	division = element goa_common:division { class?, ( paragraph | submit | division | hyperlink | text_item | input | hidden | radio | select | text_area | table | image )+ }
 	ordered_list = element goa_common:ordered_list { class?, list_item+ }
 		list_item = element goa_common:list_item { class?, ( text_item | hyperlink | popup_hyperlink )+ }
 	unordered_list = element goa_common:unordered_list { class?, list_item+ }
-	hyperlink = element goa_common:hyperlink { class?, url, text }
-	popup_hyperlink = element goa_common:popup_hyperlink { class?, ( url), text }
+	hyperlink = element goa_common:hyperlink { class?, url, tool_tip?, text }
+	popup_hyperlink = element goa_common:popup_hyperlink { class?, url, text }
 		palette = attribute palette { text }
 table = element goa_common:table { class?, cellspacing?, cellpadding?, summary, header, footer, body }
 	summary = attribute summary { text }
@@ -60,6 +60,8 @@ image = element goa_common:image { class?, url, alternate_text, height, width }
 	alternate_text = attribute alternate_text { text }
 	height = attribute height { xsd:nonNegativeInteger }
 	width = attribute width { xsd:nonNegativeInteger }
+
+tool_tip = element goa_common:tool_tip { class, text }
 
 page_title = attribute page_title { text }
 style_sheet = attribute style_sheet { text }

@@ -18,15 +18,21 @@ inherit
 		end
 	GOA_SHARED_APPLICATION_CONFIGURATION
 
-
+feature  
+	
 feature {GOA_COMMON_XML_DOCUMENT_EXTENDED} -- Services
 	
 	add_to_document (the_document: GOA_COMMON_XML_DOCUMENT_EXTENDED) is
 			-- Add an xml representation of this hyperlink to the_documnet
 		do
-			the_document.add_hyperlink_element (css_class, url, text)
+			the_document.start_hyperlink_element (css_class, url)
+				if tool_tip /= Void then
+					the_document.add_tool_tip_element (tool_tip_class, tool_tip)
+				end
+				the_document.add_text (text)
+			the_document.end_current_element
 		end
-
+		
 feature -- Queries
 
 	ok_to_add (the_document: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
@@ -34,6 +40,24 @@ feature -- Queries
 		do
 			Result := the_document.ok_to_add_element_or_text (the_document.hyperlink_element_code)
 		end
+
+	url: STRING is
+			-- The URL for this hyperlink
+		
+		do
+			Result := "http"
+			if is_secure then
+				Result.extend ('s')
+			end
+			Result.append ("://")
+			Result.append (host_and_path)
+			Result.append (query_string)
+			if anchor /= Void then
+				Result.append ("#" + anchor)
+			end
+		end
+		
+feature -- Status Setting
 		
 	add_parameter (name, value: STRING) is
 			-- Add a parameter to the hyperlink
@@ -70,20 +94,19 @@ feature -- Queries
 			equal (css_class, new_class)
 		end
 
-	url: STRING is
-			-- The URL for this hyperlink
-		
+	set_tool_tip (new_tool_tip_class, new_tool_tip: STRING) is
+			-- Add a tool_tip to this hyperlink
+		require
+			valid_tool_tip_class_implies_valid_new_tool_tip: new_tool_tip_class /= Void implies new_tool_tip /= Void
+			void_tool_tip_class_implies_void_new_tool_tip: new_tool_tip_class = Void implies new_tool_tip = Void
+			non_empty_new_tool_tip_class: new_tool_tip_class /= Void implies not new_tool_tip_class.is_empty
+			non_empty_new_tool_tip: new_tool_tip /= Void implies not new_tool_tip.is_empty
 		do
-			Result := "http"
-			if is_secure then
-				Result.extend ('s')
-			end
-			Result.append ("://")
-			Result.append (host_and_path)
-			Result.append (query_string)
-			if anchor /= Void then
-				Result.append ("#" + anchor)
-			end
+			tool_tip_class := new_tool_tip_class
+			tool_tip := new_tool_tip
+		ensure
+			tool_tip_class_updated: equal (new_tool_tip_class, tool_tip_class)
+			tool_tip_updated: equal (tool_tip, new_tool_tip)
 		end
 
 feature {NONE} -- Implementation
@@ -99,6 +122,12 @@ feature {NONE} -- Implementation
 			
 	css_class: STRING
 			-- CSS class associated with the hyperlink
+			
+	tool_tip_class: STRING
+			-- Class of the tool tip associated with this URL
+			
+	tool_tip: STRING
+			-- Text of the tool tip associated with this URL
 
 	is_secure: BOOLEAN
 			-- Use https?

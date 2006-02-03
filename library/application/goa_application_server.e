@@ -187,6 +187,14 @@ feature
 						servlet_manager.has_registered_servlet (secure_redirection_servlet.name) and then
 						servlet_by_name.has (shut_down_server_servlet.name) and then
 						servlet_manager.has_registered_servlet (shut_down_server_servlet.name)
+			from
+				servlet_by_name.start
+			until
+				servlet_by_name.after or not Result
+			loop
+				Result := servlet_manager.has_registered_servlet (servlet_by_name.key_for_iteration)
+				servlet_by_name.forth
+			end
 		end
 		
 		

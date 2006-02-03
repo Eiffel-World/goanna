@@ -126,7 +126,9 @@ feature -- Request Processing
 			suffix_list: DS_LINKED_LIST [INTEGER]
 			
 		do
-			io.put_string ("========" + generator + "%N")
+			debug ("goa_application_servlet")
+				io.put_string ("========" + generator + "%N")
+			end		
 			if not failed_once then
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
 --				io.put_string ("Request: " + name + client_info (request) + "%N")
@@ -227,6 +229,11 @@ feature -- Request Processing
 						end
 						processing_result.process_parameters
 						-- Perform additional processing
+						if processing_result.was_updated then
+							start_version_access (processing_result)
+								add_database_updated_message (processing_result)
+							end_version_access (processing_result)
+						end
 						if processing_result.all_mandatory_parameters_are_valid then
 							perform_final_processing (processing_result)
 						else
@@ -237,11 +244,6 @@ feature -- Request Processing
 						-- Neal
 						processing_result.process_submit_parameter_if_present
 					end
-				end
-				if processing_result.was_updated then
-					start_version_access (processing_result)
-						add_database_updated_message (processing_result)
-					end_version_access (processing_result)
 				end
 				servlet := configuration.next_page (processing_result)
 			elseif not failed_twice then
@@ -254,6 +256,9 @@ feature -- Request Processing
 					raise ("servlet_manager.default_servlet must conform to " + generating_type)
 				end
 			end
+			debug ("goa_application_servlet")
+				io.put_string ("Generating Servlet: " + servlet.name + "%N")
+			end
 			if session_status.virtual_domain_host.use_ssl and servlet.send_secure and not request.is_secure then
 				-- We received an insecure request, but response must be sent via SSL
 				-- Redirect client to an SSL page so they may obtain the response securely
@@ -264,7 +269,9 @@ feature -- Request Processing
 				servlet.send_response (processing_result)
 			end			
 			session_status.set_has_served_a_page
-			io.put_string ("======== Response Sent...%N")
+			debug ("goa_application_servlet")
+				io.put_string ("========" + generator + " response sent%N")
+			end		
 		rescue
 			if ok_to_write_data (processing_result) then
 				commit (processing_result)
@@ -302,6 +309,9 @@ feature -- Linking
 			valid_text: text /= Void
 		do
 			create Result.make (processing_result, Current, text)
+			if tool_tip (processing_result) /= Void	then
+				Result.set_tool_tip (tool_tip_class (processing_result), tool_tip (processing_result))
+			end
 		end
 		
 	post_hyperlink (processing_result: REQUEST_PROCESSING_RESULT; text: STRING): GOA_EXTERNAL_HYPERLINK is
@@ -327,6 +337,22 @@ feature -- Linking
 			end
 			Result.append ("://")
 			Result.append (processing_result.virtual_domain_host.host_name + configuration.fast_cgi_directory + name)
+		end
+
+	tool_tip_class (processing_result: REQUEST_PROCESSING_RESULT): STRING is
+			-- Class of the tool tip associated with this URL
+		require
+			valid_processing_result: processing_result /= Void
+		do
+			Result := Void
+		end
+		
+	tool_tip (processing_result: REQUEST_PROCESSING_RESULT): STRING is
+			-- Text of the tool tip associated with this URL
+		do
+			Result := Void
+		ensure
+			valid_result_implies_valid_tool_tip_class: Result /= Void implies tool_tip_class (processing_result) /= Void
 		end
 
 feature -- Suplementary Processing
@@ -489,5 +515,6 @@ invariant
 	valid_add_if_absent_parameters: add_if_absent_parameters /= Void
 	possible_parameters_has_submit: possible_parameters.has (standard_submit_parameter.name)
 	is_registered: servlet_by_name.has (name_without_extension)
+	
 	
 end -- class GOA_APPLICATION_SERVLET

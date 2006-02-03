@@ -48,6 +48,7 @@
 	<xsl:apply-templates />
       </xsl:otherwise>
     </xsl:choose>
+    <xsl:apply-templates select="//goa_common:tool_tip" />
   </xsl:element>
 </xsl:element>
 
