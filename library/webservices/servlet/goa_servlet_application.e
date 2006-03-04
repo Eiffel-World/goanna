@@ -49,7 +49,8 @@ feature -- Basic operations
 	all_servlets_registered: BOOLEAN is
 			-- Have all required servlets been registered
 			-- May be redefined by descendents as necessary
-		deferred
+		do
+			Result := True
 		end
 
 end -- class GOA_SERVLET_APPLICATION
