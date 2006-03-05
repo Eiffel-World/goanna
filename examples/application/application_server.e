@@ -14,7 +14,7 @@ inherit
 	GOA_APPLICATION_SERVER
 	GOA_FAST_CGI_SERVLET_APP
 		undefine
-			initialise_logger
+			initialise_logger, all_servlets_registered
 		end
 	SHARED_SERVLETS
 		
