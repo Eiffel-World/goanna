@@ -6,3 +6,5 @@
 TESTGEN
 EIFGEN
 *.epr
+*ve.xace
+test.exe

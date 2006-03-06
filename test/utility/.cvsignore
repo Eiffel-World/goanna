@@ -1,7 +1,14 @@
 *.rc
+
 TESTGEN
+
 *.exe
+
 *.epr
+
 *.melted
 *.ace
 *.log
+*ve.xace
+*.se
+EIFGEN
