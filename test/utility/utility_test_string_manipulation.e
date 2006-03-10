@@ -54,27 +54,27 @@ feature -- Test
 
 			str := "test.one.two"
 
-			assert_equal ("two_positions", last_index_of (str, '.', str.count), 9)
+			assert_integers_equal ("two_positions", last_index_of (str, '.', str.count), 9)
 
 			str := "test.one"
 
-			assert_equal ("one_position", last_index_of (str, '.', str.count), 5)
+			assert_integers_equal ("one_position", last_index_of (str, '.', str.count), 5)
 
 			str := "test"
 
-			assert_equal ("no_positions", last_index_of (str, '.', str.count), 0)
+			assert_integers_equal ("no_positions", last_index_of (str, '.', str.count), 0)
 
 			str := "test."
 
-			assert_equal ("at_end", last_index_of (str, '.', str.count), 5)
+			assert_integers_equal ("at_end", last_index_of (str, '.', str.count), 5)
 
 			str := "test.one.two"
 
-			assert_equal ("start_before_end", last_index_of (str, '.', 8), 5)
+			assert_integers_equal ("start_before_end", last_index_of (str, '.', 8), 5)
 
 			str := "."
 
-			assert_equal ("one_char", last_index_of (str, '.', str.count), 1)
+			assert_integers_equal ("one_char", last_index_of (str, '.', str.count), 1)
 
 		end	
 
