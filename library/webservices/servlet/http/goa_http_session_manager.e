@@ -314,8 +314,18 @@ feature {NONE} -- Listener implementation
 			-- Is the supplied event code valid?
 		do
 			inspect arg_event_code
-				when Expiring_code..Attribute_unbound_code then Result := True
-				else Result := False
+				when Expiring_code then
+					Result := True
+				when Expired_code then
+					Result := True
+				when Created_code then
+					Result := True
+				when Attribute_bound_code then
+					Result := True
+				when Attribute_unbound_code then
+					Result := True	
+				else 
+					Result := False
 			end
 		end
 
