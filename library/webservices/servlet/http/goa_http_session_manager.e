@@ -299,14 +299,31 @@ feature {NONE} -- Listener implementation
 	listener_list: DS_LINKED_LIST [GOA_HTTP_SESSION_EVENT_LISTENER]
 			-- List of registered event listeners
 
-	Expiring_code, Expired_code, Created_code, Attribute_bound_code, Attribute_unbound_code: INTEGER is unique
-			-- Event codes
+	Expiring_code: 			INTEGER is 1
+			-- Event code
+	Expired_code: 			INTEGER is 2
+			-- Event code
+	Created_code: 			INTEGER is 3
+			-- Event code
+	Attribute_bound_code: 	INTEGER is 4
+			-- Event code
+	Attribute_unbound_code: INTEGER is 5
+			-- Event code
+		
+	valid_event_code (arg_event_code: INTEGER): BOOLEAN is
+			-- Is the supplied event code valid?
+		do
+			inspect arg_event_code
+				when Expiring_code..Attribute_unbound_code then Result := True
+				else Result := False
+			end
+		end
 
 	notify_listeners (session: like session_anchor; event_code: INTEGER) is
 			-- notify listeners that an event (signified by event_code) has occurerd for session
 		require
 			session_exists: session /= Void
-			event_code_exists: event_code /= Void
+			event_code_valid: valid_event_code(event_code)
 			event_attribute_name_set: (equal (event_code, Attribute_bound_code) or equal (event_code, Attribute_unbound_code)) implies event_attribute_name /= Void
 			event_attribute_set: (equal (event_code, Attribute_bound_code) or equal (event_code, Attribute_unbound_code)) implies event_attribute /= Void
 		local
