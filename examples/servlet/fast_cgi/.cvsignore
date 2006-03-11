@@ -5,3 +5,8 @@ TESTGEN
 *ve.xace
 *.se
 EIFGEN
+cecil.h
+fast_cgi_server.c
+fast_cgi_server.h
+fast_cgi_server.id
+fast_cgi_server.obj
