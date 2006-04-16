@@ -208,7 +208,7 @@ feature -- Access
 					if Result.valid_index (i) then
 						an_object := c.item.value.as_object
 						if Result.valid_type_for_index (an_object, i) then
-							Result.put (c.item.value.as_object, i)
+							Result.put (an_object, i)
 						else
 							are_parameters_valid := False
 						end

@@ -412,6 +412,9 @@ feature {NONE} -- Implementation
 				if bad_media_type then
 					a_resp.send_error (Sc_unsupported_media_type)
 				else
+
+					-- TODO: This is nonsense, as get request won't have any content!
+					
 					if a_req.content /= Void then
 						current_response := a_resp
 						process (a_req.content, base_uri)

@@ -49,7 +49,7 @@ feature -- Basic Operations
 					if registry.has (a_service_name) then
 						a_service_agent := registry.get (a_service_name)
 						if a_service_agent.has (a_method_name) then
-							extract_parameters (a_request, a_method_name)
+							extract_parameters (a_request, a_service_agent, a_method_name)
 							if is_valid_parameters then
 								a_service_agent.call (a_method_name, extracted_parameters)
 								send_rpc_response (rpc_response (a_service_name, a_method_name, a_service_agent.last_result, extracted_parameters, a_node_identity, a_role))
@@ -148,5 +148,45 @@ feature {NONE} -- Implementation
 			end
 			send_rpc_response (a_fault.envelope)
 		end
-	
+
+	extract_parameters (a_request: GOA_SOAP_ELEMENT; a_service: GOA_SERVICE_PROXY; an_action: STRING) is
+			-- Convert params to a tuple suitable for passing to an agent.
+		require
+			service_exists: a_service /= Void
+			action_exists: an_action /= Void and then a_service.has (an_action)
+			request_exists: a_request /= Void
+		local
+			c: DS_LINKED_LIST_CURSOR [GOA_XRPC_PARAM]
+			i: INTEGER
+			an_object: ANY
+		do
+			are_parameters_valid := True
+			Result := a_service.new_tuple (an_action)
+			if not params.is_empty then				
+				from
+					c := params.new_cursor
+					c.start
+					i := 1
+				until
+					not are_parameters_valid or else c.off
+				loop
+					if Result.valid_index (i) then
+						an_object := c.item.value.as_object
+						if Result.valid_type_for_index (an_object, i) then
+							Result.put (an_object, i)
+						else
+							are_parameters_valid := False
+						end
+						c.forth
+						i := i + 1
+					else
+						are_parameters_valid := False
+					end
+				end
+			end
+		ensure
+			param_tuple_exists: Result /= Void
+			valid_number_of_params: Result.count = params.count
+		end
+
 end -- class GOA_SOAP_RPC
