@@ -180,19 +180,28 @@ feature
 		end
 		
 	all_servlets_registered: BOOLEAN is
+		local
+			has_this_servlet: BOOLEAN
 		do
-			Result := 	servlet_by_name.has (go_to_servlet.name) and then
+			Result := 	servlet_by_name.has (go_to_servlet.name_without_extension) and then
 						servlet_manager.has_registered_servlet (go_to_servlet.name) and then
-						servlet_by_name.has (secure_redirection_servlet.name) and then
+						servlet_by_name.has (secure_redirection_servlet.name_without_extension) and then
 						servlet_manager.has_registered_servlet (secure_redirection_servlet.name) and then
-						servlet_by_name.has (shut_down_server_servlet.name) and then
+						servlet_by_name.has (shut_down_server_servlet.name_without_extension) and then
 						servlet_manager.has_registered_servlet (shut_down_server_servlet.name)
+			if not Result then
+				io.put_string ("Missing A Standard Goanna Application Servlet (See GOA_APPLICATION_SERVER.all_servlets_registered)%N")
+			end
 			from
 				servlet_by_name.start
 			until
-				servlet_by_name.after or not Result
+				servlet_by_name.after
 			loop
-				Result := servlet_manager.has_registered_servlet (servlet_by_name.key_for_iteration)
+				has_this_servlet := servlet_manager.has_registered_servlet (servlet_by_name.item_for_iteration.name)
+				Result := Result and has_this_servlet
+				if not has_this_servlet then
+					io.put_string ("Servlet " + servlet_by_name.key_for_iteration + " is not registered with GOA_APPLICATION_SERVER.servlet_manager%N")
+				end
 				servlet_by_name.forth
 			end
 		end

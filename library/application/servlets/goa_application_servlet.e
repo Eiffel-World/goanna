@@ -309,9 +309,12 @@ feature -- Linking
 			valid_text: text /= Void
 		do
 			create Result.make (processing_result, Current, text)
-			if tool_tip (processing_result) /= Void	then
-				Result.set_tool_tip (tool_tip_class (processing_result), tool_tip (processing_result))
-			end
+
+-- I'm having trouble with compatibility with my Wizard Code; I'll have to rethink this later
+-- Neal
+--			if tool_tip (processing_result) /= Void	then
+--				Result.set_tool_tip (tool_tip_class (processing_result), tool_tip (processing_result))
+--			end
 		end
 		
 	post_hyperlink (processing_result: REQUEST_PROCESSING_RESULT; text: STRING): GOA_EXTERNAL_HYPERLINK is
@@ -339,22 +342,6 @@ feature -- Linking
 			Result.append (processing_result.virtual_domain_host.host_name + configuration.fast_cgi_directory + name)
 		end
 
-	tool_tip_class (processing_result: REQUEST_PROCESSING_RESULT): STRING is
-			-- Class of the tool tip associated with this URL
-		require
-			valid_processing_result: processing_result /= Void
-		do
-			Result := Void
-		end
-		
-	tool_tip (processing_result: REQUEST_PROCESSING_RESULT): STRING is
-			-- Text of the tool tip associated with this URL
-		do
-			Result := Void
-		ensure
-			valid_result_implies_valid_tool_tip_class: Result /= Void implies tool_tip_class (processing_result) /= Void
-		end
-
 feature -- Suplementary Processing
 
 	perform_post_mandatory_parameter_processing (processing_result: GOA_REQUEST_PROCESSING_RESULT) is
@@ -370,6 +357,25 @@ feature -- Suplementary Processing
 		ensure
 			not_ok_to_read_write_data: implements_transaction_and_version_access implies not (ok_to_read_data (processing_result) or ok_to_write_data (processing_result))
 		end
+
+-- I'm having trouble with compatibility with my Wizard Code; I'll have to rethink this later
+		
+--	tool_tip_class (the_topic: PAGE_SEQUENCE_ELEMENT_TOPIC; processing_result: REQUEST_PROCESSING_RESULT): STRING is
+			-- Class of the tool tip associated with this URL
+--		require
+--			valid_processing_result: processing_result /= Void
+--		do
+--			Result := Void
+--		end
+		
+--	tool_tip (the_topic: PAGE_SEQUENCE_ELEMENT_TOPIC; processing_result: REQUEST_PROCESSING_RESULT): STRING is
+--			-- Text of the tool tip associated with this URL
+--		do
+--			Result := Void
+--		ensure
+--			valid_result_implies_valid_tool_tip_class: Result /= Void implies tool_tip_class (processing_result) /= Void
+--		end
+
 
 	perform_final_processing (processing_result: GOA_REQUEST_PROCESSING_RESULT) is
 			-- Called after all parameters in servlet form have completed their processing
@@ -497,6 +503,9 @@ feature {NONE} -- Creation
 			-- Creation
 		do
 			servlet_by_name.force (Current, name_without_extension)
+			check
+				registered: servlet_by_name.has (name_without_extension)
+			end
 			create mandatory_parameters.make_equal
 			create expected_parameters.make_equal
 			create possible_parameters.make_equal

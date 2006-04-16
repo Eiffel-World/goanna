@@ -144,7 +144,7 @@ feature
 			local_option_list: DS_LINKED_LIST [G]
 		do
 			local_option_list := option_list (processing_result, suffix)
-			xml.start_select_element (input_class (processing_result, suffix), full_parameter_name (name, suffix), yes_no_string_for_boolean (is_disabled (processing_result, suffix)), Void, Void)
+			xml.start_select_element (input_class (processing_result, suffix), full_parameter_name (name, suffix), yes_no_string_for_boolean (is_disabled (processing_result, suffix)), Void, Void, script_name (processing_result, suffix))
 				from
 					local_option_list.start
 				until

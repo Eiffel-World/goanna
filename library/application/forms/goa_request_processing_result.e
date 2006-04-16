@@ -143,7 +143,29 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 		do
 			was_processed := True
 			sorter.sort (mandatory_processing_results)
+			debug ("goa_request_processing_result")
+				io.put_string ("Non Mandatory Parameters Before Sorting:%N")
+				from 
+					non_mandatory_processing_results.start
+				until
+					non_mandatory_processing_results.after
+				loop
+					io.put_string (non_mandatory_processing_results.item_for_iteration.raw_parameter + "%N")
+					non_mandatory_processing_results.forth
+				end
+			end
 			sorter.sort (non_mandatory_processing_results)
+			debug ("goa_request_processing_result")
+				io.put_string ("Non Mandatory Parameters After Sorting:%N")
+				from 
+					non_mandatory_processing_results.start
+				until
+					non_mandatory_processing_results.after
+				loop
+					io.put_string (non_mandatory_processing_results.item_for_iteration.raw_parameter + "%N")
+					non_mandatory_processing_results.forth
+				end
+			end
 			from
 				mandatory_processing_results.start
 				all_mandatory_parameters_are_valid := True

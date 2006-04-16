@@ -7,6 +7,8 @@ copyright: "(c) Neal L Lester, and others"
 
 goa_build -g option seems to erase the goa_common.rnc and goa_common.css files.  It's shouldn't, and it's quite annoying.
 
+Using the |= operator seems to grash goa_build; this is why my script names are currently listed in goa_common.rnc
+
 Need a script to re-build the included xslt directories.
 
 goa_build should build a select of valid values for the span element which should be exactly the same as the values for the class element.

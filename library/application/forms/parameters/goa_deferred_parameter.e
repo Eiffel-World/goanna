@@ -99,6 +99,8 @@ feature {GOA_PARAMETER_PROCESSING_RESULT, GOA_PARAMETER_PROCESSING_RESULT_COMPAR
 			valid_processing_result: processing_result /= Void
 		deferred
 		end
+		
+feature -- Processing Order
 
 	processing_order: INTEGER is
 			-- Integer that gives the order in which to process this parameter relative to others in the request
@@ -197,11 +199,12 @@ feature {NONE} -- Processing Order Constants
 	process_third: INTEGER is 3
 	process_fourth: INTEGER is 4
 	process_fifth: INTEGER is 5
-		
+
 invariant
 	
 	valid_name: name /= Void and then not name.is_empty and then not (name.has (configuration.parameter_separator))
 	is_registered: request_parameters.item (name) = Current
-	valid_processing_order: process_first <= processing_order and processing_order <= process_fifth
+--	valid_processing_order: process_first <= processing_order and processing_order <= process_fifth
+-- I think this is unnecessarily restrictive; and I now need more then five processing orders
 
 end -- class GOA_DEFERRED_PARAMETER

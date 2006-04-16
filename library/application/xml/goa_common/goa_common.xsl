@@ -285,17 +285,17 @@
 		<xsl:when test="@class">
 			<xsl:element name="div">
 				<xsl:call-template name="goa_common:class" />
-				<xsl:value-of select="." />
+				<xsl:text/><xsl:value-of select="." /><xsl:text/>
 			</xsl:element>
 		</xsl:when>
 		<xsl:when test="@span">
 			<xsl:element name="span">
 				<xsl:attribute name="class"><xsl:value-of select="@span" /></xsl:attribute>
-				<xsl:value-of select="." />
+				<xsl:text/><xsl:value-of select="." /><xsl:text/>
 			</xsl:element>
 		</xsl:when>
 		<xsl:otherwise>
-			<xsl:value-of select="." />
+			<xsl:text/><xsl:value-of select="." /><xsl:text/>
 		</xsl:otherwise>
 	</xsl:choose>
 </xsl:template>

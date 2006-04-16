@@ -307,6 +307,9 @@
       <optional>
         <ref name="size"/>
       </optional>
+      <optional>
+        <ref name="on_click_script"/>
+      </optional>
       <oneOrMore>
         <ref name="option"/>
       </oneOrMore>

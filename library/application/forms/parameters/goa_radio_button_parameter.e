@@ -154,7 +154,11 @@ feature
 			list_index: INTEGER
 		do
 			list_index := item_list (processing_result).index
-			Result := the_object = currently_selected_object (processing_result)
+			if use_equal then
+				Result := equal (the_object, currently_selected_object (processing_result))
+			else
+				Result := the_object = currently_selected_object (processing_result)
+			end
 			item_list (processing_result).go_i_th (list_index)
 		ensure then
 			ok_to_read_data: ok_to_read_data (processing_result)
@@ -227,5 +231,12 @@ feature
 				the_list.forth
 			end
 		end
+		
+	use_equal: BOOLEAN is
+			-- Use equal (rather than =) to determine if selected object matches current object
+		once
+			Result := False
+		end
+		
 	
 end -- class GOA_RADIO_BUTTON_PARAMETER
