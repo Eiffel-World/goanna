@@ -119,6 +119,7 @@ feature -- Initialization
 									%                 [-e|--eiffeldirectory directoryname]%N%
 									%                 [-d|--datadirectory directoryname]%N%
 									%                 [-g|--goa%N%
+									%				  [-t|--trash%N%
 									%                 [-a|--author %"author's name%"]%N%
 									%                 [-c|--copyright %"copyright declaration%"]%N%
 									%                 [-l|--license %"license declaration%"]%N%
@@ -140,6 +141,7 @@ feature -- Initialization
 									%                       Can't be used with the --file switch.%N%
 									%                       for use by Goanna developers only%N%
 									%author (-a)          = Name of the application's author (for indexing clauses)%N%
+									%trash (-t)           = Leave trash files in directory (for debugging goa_build)%N%
 									%copyright (-c)       = Copyright declaration (for indexing clauses)%N%
 									%license (-l)         = License declaration (for indexing clauses)%N%
 									%help (-h)            = See this help message%N%N%
@@ -700,7 +702,7 @@ feature -- Initialization
 							file_system.delete_file (imported_class_values_file_name)
 						end
 					end						
-					if command_line_includes_file_switch or command_line_includes_goa_switch then					
+					if not command_line_includes_trash_switch and (command_line_includes_file_switch or command_line_includes_goa_switch) then					
 						file_system.delete_file ("common.xsl")
 						file_system.delete_file ("attribute_values.xsl")
 						file_system.delete_file ("schema_codes.xsl")
@@ -898,6 +900,7 @@ feature {NONE} -- Command Line Parsing
 							eiffeldirectory_switch + ",--eiffeldirectory=!eiffeldirectory# Eiffel directory name",
 							datadirectory_switch + ",--datadirectory=!datadirectory# The location of the web applications configuration.data_directory.",
 							goa_switch + ",--goa# Rebuild goa_common and other supplied files",
+							trash_switch + ",--trash# Leave trash files for debugging goa_build",
 							author_switch + ",--author=!author# The name of the author",
 							copyright_switch + ",--copyright=!copyright# Copyright declaration",
 							license_switch + ",--license=!license# Licesnse declaration",
@@ -992,7 +995,14 @@ feature {NONE} -- Command Line Arguments
 			Result := command_line_parser.valid_options.has (goa_switch) 	
 		end
 
-
+	command_line_includes_trash_switch: BOOLEAN is
+			-- Did user include --trash argument on the command line?
+		require
+			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+		once
+			Result := command_line_parser.valid_options.has (trash_switch) 	
+		end
+		
 	command_line_includes_author_switch: BOOLEAN is
 			-- Did user include --author argument on the command line?
 		require
@@ -1099,6 +1109,7 @@ feature {NONE} -- Command Line Arguments
 	goa_switch: STRING is "-g"
 	author_switch: STRING is "-a"
 	copyright_switch: STRING is "-c"
+	trash_switch: STRING is "-t"
 	license_switch: STRING is "-l"
 	help_switch: STRING is "-h"
 
