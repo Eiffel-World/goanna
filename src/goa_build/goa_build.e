@@ -89,16 +89,16 @@ feature -- Initialization
 	make is
 		local
 			exception_occurred, current_directory_has_goa_common_xsl: BOOLEAN
-			executable_name, program_description, error_message, trang_invocation, class_attribute_declaration, class_name, class_name_upper: STRING
-			file_name, expanded_file_name, namespace_prefix, rnc_file_contents, rnc_file_contents_upper, expanded_the_stylesheet_file_name: STRING
+			error_message, trang_invocation, class_attribute_declaration: STRING
+			file_name, expanded_file_name, namespace_prefix, rnc_file_contents, rnc_file_contents_upper: STRING
 			local_unreadable_files, file_names, included_files, included_xsl_files, local_included_rng_files: DS_LIST [STRING]
 			rnc_input_file, rng_input_file, xsl_input_file, included_rng_file: KI_TEXT_INPUT_FILE
-			rnc_output_file, imported_output_file, temp_output_file: KI_TEXT_OUTPUT_FILE
+			temp_output_file: KI_TEXT_OUTPUT_FILE
 			rnc_file_length, rng_file_length, xsl_file_length, included_rng_file_length: INTEGER
 			class_names, all_included_rng_files, xsl_files, prefixes, included_rng_files: DS_LINKED_LIST [STRING]
 			final_file_name, rng_file_name, expanded_stylesheet_file_name, target_eiffel_directory_name, target_data_directory_name: STRING
 			trang_command: KL_SHELL_COMMAND
-			rng_file_contents, flat1, flat2, flat3, included, imported, xml, codes, attribute_values, imported_file_name, frng_file_name, xsl_file_name: STRING
+			rng_file_contents, flat1, flat2, flat3, included, imported, imported_file_name, frng_file_name, xsl_file_name: STRING
 			xml_document_contents, schema_codes_contents, attribute_values_contents, xsl_file_contents, included_xsl_files_string, included_rng_file_contents: STRING
 			xml_document_file_name, schema_codes_file_name, attribute_values_file_name, data_directory, rnc_input_file_name: STRING
 			temporary_transformer: GOA_XSLT_STRING_TRANSFORMER
@@ -712,9 +712,9 @@ feature -- Initialization
 						file_system.delete_file ("include_list.xsl")
 						file_system.delete_file ("xsl_include_list.xsl")
 						file_system.delete_file ("imported.xsl")
-						file_system.delete_file ("goa_common.rnc")
-						if not current_directory_has_goa_common_xsl and not (not command_line_includes_norefresh_switch and not command_line_includes_datadirectory_switch) then
+						if not command_line_includes_goa_switch then
 							file_system.delete_file ("goa_common.xsl")
+							file_system.delete_file ("goa_common.rnc")
 						end
 						file_system.delete_file ("goa_common.css")
 					end
