@@ -49,9 +49,10 @@
 			To be redefined in descendant if additional options are
 			necessary.
 		</description>
-
+		<argument name="a_compiler"/>
+		<argument name="a_output"/>
 		<set name="gexace_output" value="" unless="${gexace_output}"/>
-		<gexace system="${eiffel}" output="${gexace_output}" xace="${system_dir}/system.xace">
+		<gexace system="${a_compiler}" output="${a_output}" xace="${system_dir}/system.xace">
 			<define name="DEBUG" value="${debug}" if="${debug}"/>
 			<define name="GOANNA_WITHOUT_DOM" value="true"/>
 			<define name="BOOTSTRAP" value="${bootstrap}" if="${bootstrap}"/>

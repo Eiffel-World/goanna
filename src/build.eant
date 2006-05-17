@@ -28,6 +28,7 @@
 		</description>
 
 		<set name="target" value="install"/>
+		<geant file="build.eant" target="compile" dir="goa_build"/>
 		<geant target="do_all"/>
 	</target>
 

@@ -34,9 +34,9 @@
 		<cluster name="bdv" location="${GOANNA}/src/bdv">
 		</cluster>
 
-		<mount location="${GOBO}/library/cluster.xace"/>
+		<mount location="${GOBO}/library/library.xace"/>
 		<mount location="${GOBO}/library/kernel.xace"/>
-		<mount location="${GOANNA}/library/cluster.xace"/>
+		<mount location="${GOANNA}/library/library.xace"/>
 
 	</cluster>
 </system>

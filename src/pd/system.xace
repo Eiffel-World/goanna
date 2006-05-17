@@ -34,8 +34,8 @@
 		<cluster name="root_cluster" location="${GOANNA}/src/pd">
 		</cluster>
 		
-		<mount location="${GOBO}/library/cluster.xace"/>
+		<mount location="${GOBO}/library/library.xace"/>
 		<mount location="${GOBO}/library/kernel.xace"/>
-		<mount location="${GOANNA}/library/cluster.xace"/>
+		<mount location="${GOANNA}/library/library.xace"/>
 	</cluster>
 </system>

@@ -29,13 +29,14 @@
 			Install the Goanna Kernel Library.
 			Generate Eiffel files from .ge files.
 		</description>
-		
-		<set name="gepp_dir" value="."/>
-		<set name="spec_dir" value="spec"/>
-		<set name="gepp_file" value="goa_string_manipulation"/>
-		<geant target="ge2e"/>
-		<set name="gepp_file" value="integer_formatter"/>
-		<geant target="ge2e"/>
+		<set name="gepp_file" value="integer_formatter"/>		
+		<geant target="ge2e">
+			<argument name="spec_dir" value="spec"/>
+			<argument name="gepp_dir" value="."/>
+			<argument name="gepp_file" value="goa_string_manipulation"/>		  
+		  
+
+		</geant>
 
 	</target>
 
