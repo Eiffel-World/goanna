@@ -53,7 +53,7 @@ feature
 			snoop_servlet: GOA_SNOOP_SERVLET
 		do
 			if command_line_ok then
-				make (configuration.port, 10)
+				make (configuration.host, configuration.port, 10)
 				-- Register built in servlets
 				register_servlet (go_to_servlet)
 				register_servlet (shut_down_server_servlet)
