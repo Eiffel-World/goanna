@@ -36,13 +36,18 @@ inherit
 				
 feature -- Initialisation
 
-	make (port, backlog: INTEGER) is
+	make (new_host: STRING; port, backlog: INTEGER) is
 			-- Initialise this FCGI application to listen on 'port' with room for 'backlog'
 			-- outstanding requests.
 		require
+			valid_host: new_host /= Void and then new_host /= Void
+				-- Host should be "localhost" (to listen only to domain sockets)
+				-- or IP address of local host to listen for network requests for that IP address
+				-- Don't know if host name will work or not
 			positive_port: port >= 0
 			positive_backlog: backlog >= 0
 		do
+			create host.make_from_name (new_host)
 			svr_port := port
 			initialise_logger
 			server_backlog := backlog
@@ -57,7 +62,6 @@ feature -- FGCI interface
 			-- Returns zero for a successful call, -1 for error.
 		local
 			failed: BOOLEAN
-			host: EPX_HOST
 			service: EPX_SERVICE
 			host_port: EPX_HOST_PORT
 		do
@@ -68,7 +72,6 @@ feature -- FGCI interface
 				-- if first call mark it and create server socket
 				if not accept_called then
 					accept_called := True
-					create host.make_from_name ("localhost")
 					create service.make_from_port (svr_port, "tcp")
 					create host_port.make (host, service)
 					create srv_socket.listen_by_address (host_port) 
@@ -187,6 +190,10 @@ feature -- Access
 		-- Current request being processed. Void if none.
 	
 feature {NONE} -- Implementation
+
+	host: EPX_HOST
+		-- Host that is listening for requests
+
 	
 	accept_called: BOOLEAN
 		-- Has accept been called?

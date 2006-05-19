@@ -33,10 +33,10 @@ inherit
 	
 feature -- Initialisation
 
-	make (port, backlog: INTEGER) is
+	make (new_host: STRING; port, backlog: INTEGER) is
 			-- Create a new fast cgi servlet application
 		do
-			fast_cgi_app_make (port, backlog)
+			fast_cgi_app_make (new_host, port, backlog)
 		end
 	
 feature -- Basic operations
