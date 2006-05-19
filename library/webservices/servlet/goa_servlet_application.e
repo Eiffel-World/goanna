@@ -12,10 +12,14 @@ deferred class GOA_SERVLET_APPLICATION
 
 feature {NONE} -- Initialization
 
-	make (port, backlog: INTEGER) is
+	make (new_host: STRING; port, backlog: INTEGER) is
 			-- Initialise the server to listen on 'port' with 
 			-- room for 'backlog' waiting requests. 	
 		require
+			valid_host: new_host /= Void and then new_host /= Void
+				-- Host should be "localhost" (to listen only to domain sockets)
+				-- or IP address of local host to listen for network requests for that IP address
+				-- Don't know if host name will work or not
 			valid_port: port >= 0
 			valid_backlog: backlog >= 0
 		deferred
