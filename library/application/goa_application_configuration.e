@@ -63,6 +63,15 @@ feature -- Deferred Features
 		deferred
 		end
 		
+	host: STRING is
+			-- Host name for server to listen on
+			-- Use 'localhost' to listen only to requests from local machine (domain socket)
+			-- Use IP Address of host running the MSP_SERVER if server should accept requests from other machines
+		once
+			Result := "localhost"
+		end
+		
+		
 	port: INTEGER is
 			-- Server connection port
 		deferred
