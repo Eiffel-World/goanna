@@ -233,6 +233,7 @@ feature -- Basic operations
 			create record_body.make (Fcgi_request_complete, 0)
 			record_header.write (socket)
 			record_body.write (socket)
+			socket.close
 			debug ("fcgi_protocol")
 				print (generator + ".end_request - finished%R%N")
 			end
