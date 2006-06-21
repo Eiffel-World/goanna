@@ -45,7 +45,6 @@ feature {NONE} -- Implementation
 			-- Write 'data' to the output stream for this response
 		do
 			internal_request.write_stdout (data)
-			-- TODO: check internal_request.write_ok and handle errors
 		end
-	
+			
 end -- class GOA_FAST_CGI_SERVLET_RESPONSE

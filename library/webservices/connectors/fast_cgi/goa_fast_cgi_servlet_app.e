@@ -30,6 +30,7 @@ inherit
 		export
 			{NONE} all
 		end
+	KL_EXCEPTIONS
 	
 feature -- Initialisation
 
@@ -47,100 +48,113 @@ feature -- Basic operations
 			req: GOA_FAST_CGI_SERVLET_REQUEST
 			resp: GOA_FAST_CGI_SERVLET_RESPONSE
 			path, servlet_name: STRING
-			servlet_found: BOOLEAN
+			servlet_found, failed: BOOLEAN
 			slash_index, an_index: INTEGER
 		do
-			debug ("Fast CGI servlet app")
-						info (Servlet_app_log_category, "Process request")
-			end
-			create resp.make (request)
-			debug ("Fast CGI servlet app")
-						info (Servlet_app_log_category, "Response created")
-			end			
-			create req.make (request, resp)	
-			-- dispatch to the registered servlet using the path info as the registration 
-			-- name.
-			debug ("Fast CGI servlet app")
-						info (Servlet_app_log_category, "About to check for path info...")
-			end			
-			if req.has_header (Path_info_var) then
+			if not failed then
 				debug ("Fast CGI servlet app")
-						info (Servlet_app_log_category, "About to check for path info...Got it!")
-				end			
-				path := req.get_header (Path_info_var)
-				if path /= Void then
-					-- remove leading slash from path
-					path.keep_tail (path.count - 1)
+							info (Servlet_app_log_category, "Process request")
 				end
-			end
-			debug ("Fast CGI servlet app")
-				info (Servlet_app_log_category, "About to check for non-void path...")
-			end			
-			if path /= Void then
+				create resp.make (request)
 				debug ("Fast CGI servlet app")
-					info (Servlet_app_log_category, "About to check for non-void path...Got it!")
+							info (Servlet_app_log_category, "Response created")
 				end			
-				-- Search upwards through a hierarchy of servlet names.
-				from
-					servlet_name := path
-					slash_index := -1
-				until
-					servlet_found or slash_index = 0
-				loop
+				create req.make (request, resp)	
+				-- dispatch to the registered servlet using the path info as the registration 
+				-- name.
+				debug ("Fast CGI servlet app")
+							info (Servlet_app_log_category, "About to check for path info...")
+				end			
+				if req.has_header (Path_info_var) then
 					debug ("Fast CGI servlet app")
-						info (Servlet_app_log_category, "Trying servlet: " + servlet_name)
+							info (Servlet_app_log_category, "About to check for path info...Got it!")
+					end			
+					path := req.get_header (Path_info_var)
+					if path /= Void then
+						-- remove leading slash from path
+						path.keep_tail (path.count - 1)
 					end
-					if
-						servlet_manager.has_registered_servlet (servlet_name)
-					 then
-						servlet_found := True
-					else
-						if servlet_name.count >0 then
-							from
-								slash_index := 0; an_index := 1
-							until
-								an_index = 0
-							loop
-								an_index := servlet_name.index_of ('/', slash_index + 1)
-								if an_index > slash_index then slash_index := an_index end
-							end
-							debug ("Fast CGI servlet app")
-								info (Servlet_app_log_category, "Slash index is " + slash_index.out)
-							end
-						else
-							slash_index := 0
+				end
+				debug ("Fast CGI servlet app")
+					info (Servlet_app_log_category, "About to check for non-void path...")
+				end			
+				if path /= Void then
+					debug ("Fast CGI servlet app")
+						info (Servlet_app_log_category, "About to check for non-void path...Got it!")
+					end			
+					-- Search upwards through a hierarchy of servlet names.
+					from
+						servlet_name := path
+						slash_index := -1
+					until
+						servlet_found or slash_index = 0
+					loop
+						debug ("Fast CGI servlet app")
+							info (Servlet_app_log_category, "Trying servlet: " + servlet_name)
 						end
-						if slash_index > 0 then
-							servlet_name := servlet_name.substring (1, slash_index - 1)
+						if
+							servlet_manager.has_registered_servlet (servlet_name)
+						 then
+							servlet_found := True
 						else
-							debug ("Fast CGI servlet app")
-								info (Servlet_app_log_category, "Servlet name is " + servlet_name)
+							if servlet_name.count >0 then
+								from
+									slash_index := 0; an_index := 1
+								until
+									an_index = 0
+								loop
+									an_index := servlet_name.index_of ('/', slash_index + 1)
+									if an_index > slash_index then slash_index := an_index end
+								end
+								debug ("Fast CGI servlet app")
+									info (Servlet_app_log_category, "Slash index is " + slash_index.out)
+								end
+							else
+								slash_index := 0
+							end
+							if slash_index > 0 then
+								servlet_name := servlet_name.substring (1, slash_index - 1)
+							else
+								debug ("Fast CGI servlet app")
+									info (Servlet_app_log_category, "Servlet name is " + servlet_name)
+								end
 							end
 						end
 					end
 				end
-			end
-			if servlet_found then
-				info (Servlet_app_log_category, "Servicing request: " + path)
-				info (Servlet_app_log_category, "Using servlet named: " + servlet_name)
-				servlet_manager.servlet (servlet_name).service (req, resp)
-			else
-				if
-					servlet_manager.has_default_servlet
-				 then
-					info (Servlet_app_log_category, "Using default servlet.")
-					servlet_manager.default_servlet.service (req, resp)
+				if servlet_found then
+					info (Servlet_app_log_category, "Servicing request: " + path)
+					info (Servlet_app_log_category, "Using servlet named: " + servlet_name)
+					servlet_manager.servlet (servlet_name).service (req, resp)
 				else
-					handle_missing_servlet (resp)
 					if
-						path /= Void
+						servlet_manager.has_default_servlet
 					 then
-						error (Servlet_app_log_category, "Servlet not found: " + path)
+						info (Servlet_app_log_category, "Using default servlet.")
+						servlet_manager.default_servlet.service (req, resp)
 					else
-						error (Servlet_app_log_category, "Servlet not found: path was Void")
+						handle_missing_servlet (resp)
+						if
+							path /= Void
+						 then
+							error (Servlet_app_log_category, "Servlet not found: " + path)
+						else
+							error (Servlet_app_log_category, "Servlet not found: path was Void")
+						end
 					end
 				end
 			end
+		rescue
+			if is_developer_exception_of_name (broken_pipe_exception_message) then
+			-- See TODO for broken_pipe_error
+			-- Once STDC_BASE.raise_posix_error is implemented correctly
+			-- The above line may be replaced with the following line
+--			if srv_socket.errno.first_value = broken_pipe_error then
+				srv_socket.errno.clear_first
+				initialize_listening
+				failed := True
+				retry
+			end		
 		end
 		
 feature {NONE} -- Implementation

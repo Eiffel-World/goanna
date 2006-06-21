@@ -33,6 +33,8 @@ inherit
 		export
 			{NONE} all
 		end
+	POSIX_CONSTANTS
+	KL_EXCEPTIONS
 				
 feature -- Initialisation
 
@@ -49,6 +51,7 @@ feature -- Initialisation
 		do
 			create host.make_from_name (new_host)
 			svr_port := port
+			host_name := new_host
 			initialise_logger
 			server_backlog := backlog
 			set_valid_peer_addresses
@@ -62,8 +65,6 @@ feature -- FGCI interface
 			-- Returns zero for a successful call, -1 for error.
 		local
 			failed: BOOLEAN
-			service: EPX_SERVICE
-			host_port: EPX_HOST_PORT
 		do
 			debug ("fcgi_interface")
 				print (generator + ".accept%R%N")
@@ -72,9 +73,7 @@ feature -- FGCI interface
 				-- if first call mark it and create server socket
 				if not accept_called then
 					accept_called := True
-					create service.make_from_port (svr_port, "tcp")
-					create host_port.make (host, service)
-					create srv_socket.listen_by_address (host_port) 
+					initialize_listening
 				end
 				-- finish the previous request
 				finish
@@ -85,14 +84,63 @@ feature -- FGCI interface
 				print (generator + ".accept - finished%R%N")
 			end			
 		rescue
-			srv_socket := Void
-			request := Void
-			Result := -1 
-			failed := True
-			debug ("fcgi_interface")
-				print (generator + ".accept - exception%R%N")
+			if is_developer_exception_of_name (broken_pipe_exception_message) and then srv_socket /= Void then
+			-- See TODO for broken_pipe_error
+			-- Once STDC_BASE.raise_posix_error is implemented correctly
+			-- The above line may be replaced with the following line
+--			if srv_socket /= Void and then srv_socket.errno.first_value = broken_pipe_error then
+				srv_socket.errno.clear_first
+				initialize_listening
+				failed := True
+				retry
+			else
+				srv_socket := Void
+				request := Void
+				Result := -1 
+				failed := True
+				debug ("fcgi_interface")
+					print (generator + ".accept - exception%R%N")
+				end
 			end
 		end
+		
+	broken_pipe_exception_message: STRING is "Broken pipe"
+		-- Possibly Linux only; Not known if this is the same on Windows
+		-- See TODO for broken_pipe_error
+
+	broken_pipe_error: INTEGER is 32
+		-- Linux Only; probably 10054 on Windows
+		-- TODO Change this to refer to the platform
+		-- independent EPOSIX constant, once one is added to
+		-- EPOSIX.  At that time, verify that
+		-- STDC_BASE.raise_posix_error correctly sets
+		-- STDC_BASE.errno.first_value
+		-- Also see fixes required (then) for rescue
+		-- clauses of accept and process_request
+		-- I have one lingering question about using
+		-- broken pipe error instead of the exception message
+		-- If errno.first_value is not 0 when the broken pipe
+		-- exception occurs then the rescue clause will not
+		-- catch and retry, and the program will crash.
+		-- However, relying on the text of the message seems
+		-- less reliable then using the error codes
+				
+	initialize_listening is
+		local
+			service: EPX_SERVICE
+			host_port: EPX_HOST_PORT
+		do
+			create service.make_from_port (svr_port, "tcp")
+			create host_port.make (host, service)
+			if srv_socket /= Void then
+				srv_socket.close
+			end
+			create srv_socket.listen_by_address (host_port)
+			request := Void
+			srv_socket.errno.clear_first
+			srv_socket.errno.clear			
+		end
+		
 
 	finish is 
 			-- Finish the current request from the HTTP server. The
@@ -164,7 +212,7 @@ feature -- FGCI interface
 			request_exists: request /= Void
 		do
 			if request.parameters.has (name) then
-				Result := clone(request.parameters.item (name))
+				Result := request.parameters.item (name).twin
 			end
 		end
 
@@ -203,6 +251,9 @@ feature {NONE} -- Implementation
 	
 	svr_port: INTEGER
 		-- The port to listen on.
+		
+	host_name: STRING
+		-- Name of the host
 			
 	server_backlog: INTEGER
 		-- The number of requests that can remain outstanding.
@@ -242,71 +293,81 @@ feature {NONE} -- Implementation
 	accept_request: INTEGER is
 			-- Wait for a request to be received
 		local
-			is_new_connection, request_read: BOOLEAN
+			is_new_connection, request_read, failed: BOOLEAN
 		do			
 			-- setup the request and its connection. Use the current request if keep_connection is
 			-- specified. Otherwise create a new one.
-			if request /= Void then
-				-- complete the previous request
-				request.end_request
-				if request.failed or not request.keep_connection then
-					request.socket.close
-					request.make -- reset the request
-				end
-				if request.failed then
-					request := Void
-					Result := -1	
-				end
-			else
-				create request.make
-			end
-			-- setup request connection and read request. Attempt to reconnect if the server
-			-- closed the connection.
-			from
-				is_new_connection := False
-			until
-				request_read or Result = -1		
-			loop
-				if request.socket = Void then
-					-- accept new connection (blocking)
-					request.set_socket(srv_socket.accept)
-					is_new_connection := True
-				end
-				-- check peer address for allowed server addresses
---				peer := request.socket.remote_address
---				debug ("yaesockets")
---					print("Yaesockets Error :")
---					print(last_socket_error_code)
---					print(',')
---					print(last_extended_socket_error_code)
---					print ("%R%N")
---					print ("peer_address: " + peer + "%R%N")
---				end
---				if peer_address_ok (peer) then
-					-- attempt to read the request. If this fails and it was an old
-					-- connection then the server probably closed it; try making a new connection
-					-- before giving up.
-					request.read
-					if not request.read_ok then
+			if not failed then
+				if request /= Void then
+					-- complete the previous request
+					request.end_request
+					if request.failed or not request.keep_connection then
 						request.socket.close
-						request.set_socket (Void)
-						-- if this was a new connection then we failed, otherwise try again
-						if is_new_connection then
-							Result := -1
-						end
-					else
-						request_read := True
+						request.make -- reset the request
 					end
---					debug ("yaesockets")
---						print ("Yaesockets - request readOK? " + request_read.out + "%N")
---					end
---				else
-					-- reset and attempt a new connection
---					error (Servlet_app_log_category, "Connection from address " + peer + " rejected.")				
---					request.socket.close
---					request.set_socket (Void)
---					is_new_connection := False
---				end
+					if request.failed then
+						request := Void
+						Result := -1	
+					end
+				else
+					create request.make
+				end
+				-- setup request connection and read request. Attempt to reconnect if the server
+				-- closed the connection.
+				from
+					is_new_connection := False
+				until
+					request_read or Result = -1		
+				loop
+					if request.socket = Void then
+						-- accept new connection (blocking)
+						request.set_socket(srv_socket.accept)
+						is_new_connection := True
+					end
+					-- check peer address for allowed server addresses
+	--				peer := request.socket.remote_address
+	--				debug ("yaesockets")
+	--					print("Yaesockets Error :")
+	--					print(last_socket_error_code)
+	--					print(',')
+	--					print(last_extended_socket_error_code)
+	--					print ("%R%N")
+	--					print ("peer_address: " + peer + "%R%N")
+	--				end
+	--				if peer_address_ok (peer) then
+						-- attempt to read the request. If this fails and it was an old
+						-- connection then the server probably closed it; try making a new connection
+						-- before giving up.
+						request.read
+						if not request.read_ok then
+							request.socket.close
+							request.set_socket (Void)
+							-- if this was a new connection then we failed, otherwise try again
+							if is_new_connection then
+								Result := -1
+							end
+						else
+							request_read := True
+						end
+	--					debug ("yaesockets")
+	--						print ("Yaesockets - request readOK? " + request_read.out + "%N")
+	--					end
+	--				else
+						-- reset and attempt a new connection
+	--					error (Servlet_app_log_category, "Connection from address " + peer + " rejected.")				
+	--					request.socket.close
+	--					request.set_socket (Void)
+	--					is_new_connection := False
+	--				end
+				end
+			end
+		rescue
+			io.put_string ("Is broken pipe: " + is_developer_exception_of_name ("Broken pipe%N").out)
+			io.put_string ("Value: " + srv_socket.errno.value.out + "%N")
+			io.put_string ("First Value: " + srv_socket.errno.first_value.out + "%N")
+			if srv_socket.errno.value = signal_pipe then
+				failed := True
+				retry
 			end
 		end
 		

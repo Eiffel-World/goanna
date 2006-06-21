@@ -23,6 +23,8 @@ inherit
 		end
 
 	KL_IMPORTED_INTEGER_ROUTINES
+	
+	POSIX_CONSTANTS
 
 creation
 	make
@@ -83,7 +85,13 @@ feature -- Access
 			-- Table of parameters passed to this request.
 	
 	raw_stdin_content: STRING
-					
+	
+	broken_pipe: BOOLEAN is
+			-- Was the last error for the serving socket a broken pipe?
+		do
+			Result := socket.errno.value = signal_pipe
+		end
+
 feature -- Status setting
 
 	set_socket (new_socket: like socket) is
