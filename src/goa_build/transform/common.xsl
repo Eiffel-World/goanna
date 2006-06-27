@@ -311,8 +311,6 @@
 				<xsl:value-of select="$attribute/@name"/>
 				<xsl:text>: </xsl:text>
 				<xsl:apply-templates select="." mode="choice_name" />
-				<xsl:text> /= Void and then </xsl:text>
-				<xsl:apply-templates select="." mode="choice_name" />
 				<xsl:text> = </xsl:text>
 				<xsl:apply-templates select="." mode="attribute_code" />
 				<xsl:text> implies is_valid_attribute_value (</xsl:text>

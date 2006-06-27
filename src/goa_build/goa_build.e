@@ -472,17 +472,19 @@ feature -- Initialization
 									xsl_files.force_last (xsl_file_name)
 								end
 							end
-							file_name := namespace_prefix + ".imp"
-							if file_system.file_exists (file_name) then
-								file_system.delete_file (file_name)
+							if not command_line_includes_trash_switch then
+								file_name := namespace_prefix + ".imp"
+								if file_system.file_exists (file_name) then
+									file_system.delete_file (file_name)
+								end
+								file_name := namespace_prefix + ".fl2"
+								if file_system.file_exists (file_name) then
+									file_system.delete_file (file_name)
+								end
+								if file_system.file_exists (imported_class_values_file_name) then
+									file_system.delete_file (imported_class_values_file_name)
+								end
 							end
-							file_name := namespace_prefix + ".fl2"
-							if file_system.file_exists (file_name) then
-								file_system.delete_file (file_name)
-							end
-							if file_system.file_exists (imported_class_values_file_name) then
-								file_system.delete_file (imported_class_values_file_name)
-							end						
 							file_names.forth
 						end
 						-- create deferred xml_document.e and attribute_values.e for each included rng file
@@ -616,12 +618,14 @@ feature -- Initialization
 									put_string_to_eiffel_directory (attribute_values_file_name, attribute_values_contents)
 									error_message := Void
 								end
-								if file_system.file_exists ("temp.rng") then
-									file_system.delete_file ("temp.rng")
+								if not command_line_includes_trash_switch then
+									if file_system.file_exists ("temp.rng") then
+										file_system.delete_file ("temp.rng")
+									end
+									if file_system.file_exists (imported_class_values_file_name) then
+										file_system.delete_file (imported_class_values_file_name)
+									end	
 								end
-								if file_system.file_exists (imported_class_values_file_name) then
-									file_system.delete_file (imported_class_values_file_name)
-								end	
 							end
 							all_included_rng_files.forth	
 						end
@@ -681,25 +685,27 @@ feature -- Initialization
 							end
 						end
 						-- Delete all temporary files we just created
-						if command_line_includes_verbose_switch then
-							io.put_string ("Cleaning Up%N")
-						end
-						from
-							prefixes.start
-						until
-							prefixes.after
-						loop
-							file_name := prefixes.item_for_iteration + ".rng"
-							if file_system.file_exists (file_name) then
-								file_system.delete_file (file_name)
+						if not command_line_includes_trash_switch then
+							if command_line_includes_verbose_switch then
+								io.put_string ("Cleaning Up%N")
 							end
-							prefixes.forth
-						end
-						if file_system.file_exists ("temp.rnc") then
-							file_system.delete_file ("temp.rnc")
-						end
-						if file_system.file_exists (imported_class_values_file_name) then
-							file_system.delete_file (imported_class_values_file_name)
+							from
+								prefixes.start
+							until
+								prefixes.after
+							loop
+								file_name := prefixes.item_for_iteration + ".rng"
+								if file_system.file_exists (file_name) then
+									file_system.delete_file (file_name)
+								end
+								prefixes.forth
+							end
+							if file_system.file_exists ("temp.rnc") then
+								file_system.delete_file ("temp.rnc")
+							end
+							if file_system.file_exists (imported_class_values_file_name) then
+								file_system.delete_file (imported_class_values_file_name)
+							end
 						end
 					end						
 					if not command_line_includes_trash_switch and (command_line_includes_file_switch or command_line_includes_goa_switch) then					
@@ -717,8 +723,8 @@ feature -- Initialization
 						if not command_line_includes_goa_switch then
 							file_system.delete_file ("goa_common.xsl")
 							file_system.delete_file ("goa_common.rnc")
+							file_system.delete_file ("goa_common.css")
 						end
-						file_system.delete_file ("goa_common.css")
 					end
 					if command_line_includes_verbose_switch then
 						io.put_string ("Finished.%N")
@@ -997,6 +1003,8 @@ feature {NONE} -- Command Line Arguments
 
 	command_line_includes_trash_switch: BOOLEAN is
 			-- Did user include --trash argument on the command line?
+			-- You can then run gexslt (or another transformer) from the command line
+			-- Using gexslt --param=prefix=NAMESPACE --file=validating_xml_writer.xsl --file=NAMESPACE.fl2
 		require
 			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
