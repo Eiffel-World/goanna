@@ -50,6 +50,8 @@ feature -- Attribute Values
 
   	on_click_script_select_update_startup_meetings: STRING is "select_update_startup_meetings"
 
+  	on_click_script_update_coordination_meetings: STRING is "update_coordination_meetings"
+
   	multiple_yes: STRING is "yes"
 
   	multiple_no: STRING is "no"

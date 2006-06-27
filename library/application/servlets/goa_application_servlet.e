@@ -121,7 +121,7 @@ feature -- Request Processing
 			mandatory_parameters_in_request, expected_parameters_in_request: DS_LINKED_LIST [STRING]
 			mandatory_processing_results, non_mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
 --			page_agent: FUNCTION [ANY, TUPLE [REQUEST_PROCESSING_RESULT], EXTENDED_GOA_PAGE_XML_DOCUMENT]
-			temp_name, raw_add_if_absent_parameter_name: STRING
+			temp_name: STRING
 			failed_once, failed_twice: BOOLEAN
 			suffix_list: DS_LINKED_LIST [INTEGER]
 			
@@ -267,6 +267,7 @@ feature -- Request Processing
 				response.send_redirect (secure_redirection_servlet.hyperlink (processing_result, "Dummy Text").url)
 			else
 				servlet.send_response (processing_result)
+
 			end			
 			session_status.set_has_served_a_page
 			debug ("goa_application_servlet")

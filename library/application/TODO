@@ -5,8 +5,6 @@ date: "$Date$"
 revision: "$Revision$"
 copyright: "(c) Neal L Lester, and others"
 
-goa_build -g option seems to erase the goa_common.rnc and goa_common.css files.  It's shouldn't, and it's quite annoying.
-
 Using the |= operator seems to grash goa_build; this is why my script names are currently listed in goa_common.rnc
 
 Need a script to re-build the included xslt directories.
@@ -50,4 +48,11 @@ add those variables to feature only when they are actually needed.
 The offending template is:
 
   <xsl:template match="rng:ref" mode="adding_elements">
+
+Change Goanna design so that connector may be selected at run time
+instead of compile time.
+
+DONE ====================================
+
+goa_build -g option seems to erase the goa_common.rnc and goa_common.css files.  It's shouldn't, and it's quite annoying.
 

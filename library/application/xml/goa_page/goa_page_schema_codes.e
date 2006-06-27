@@ -175,6 +175,11 @@ feature {NONE} -- Implementation
 			Result.put_last ("update_safety_suggestion_box_location")
 			Result.put_last ("update_reminder_email")
 			Result.put_last ("window.close()")
+			Result.put_last ("update_safety_meeting_requirements_with_departments")
+			Result.put_last ("update_safety_meeting_requirements_no_departments")
+			Result.put_last ("checkbox_update_startup_meetings")
+			Result.put_last ("select_update_startup_meetings")
+			Result.put_last ("update_coordination_meetings")
 		end
 
 	valid_multiple_attribute_values: DS_LINKED_LIST [STRING] is

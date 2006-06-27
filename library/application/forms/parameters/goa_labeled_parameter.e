@@ -16,7 +16,7 @@ inherit
 	
 feature
 	
-	label (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): GOA_USER_MESSAGE is
+	label (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): GOA_XML_ITEM is
 			-- label for this parameter (intended for presentation to the user
 		require
 			valid_processing_result: processing_result /= Void

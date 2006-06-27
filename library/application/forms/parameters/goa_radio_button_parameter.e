@@ -217,7 +217,7 @@ feature
 			loop
 				xml.start_row_element (Void)
 					xml.start_cell_element (Void, "1")
-						xml.add_radio_element (Void, name, the_list.index.out, yes_no_string_for_boolean (is_currently_selected_object (processing_result, the_list.item_for_iteration)))
+						xml.add_radio_element (Void, name, the_list.index.out, yes_no_string_for_boolean (is_currently_selected_object (processing_result, the_list.item_for_iteration)), yes_no_string_for_boolean (is_disabled (processing_result, suffix)))
 					xml.end_current_element
 					xml.start_cell_element (Void, "1")
 						item_label (processing_result, the_list.item_for_iteration).add_to_document (xml)

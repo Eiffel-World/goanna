@@ -36,14 +36,14 @@ feature -- Adding Elements
 			current_element_content_is_empty: current_element_contents.is_empty
 		end
 
-	add_text_item_element (choice_d2e47_name_code: INTEGER; choice_d2e47_value: STRING; text_to_add: STRING) is
+	add_text_item_element (choice_N7N210_name_code: INTEGER; choice_N7N210_value: STRING; text_to_add: STRING) is
 			--Add a new goa_common:text_item element to the xml document
 			-- Use the attribute name code xml_null_code to indicate a null attribute for the choice
 		require
 			ok_to_add_text_item: ok_to_add_element_or_text (text_item_element_code)
-			is_valid_choice_d2e47_name_code: choice_d2e47_name_code /= xml_null_code implies (create {ARRAY[INTEGER]}.make_from_array (<<class_attribute_code, span_attribute_code>>)).has (choice_d2e47_name_code)
-			valid_value_if_class: choice_d2e47_name_code = class_attribute_code implies is_valid_attribute_value (class_attribute_code, choice_d2e47_value)
-			valid_value_if_span: choice_d2e47_name_code = span_attribute_code implies is_valid_attribute_value (span_attribute_code, choice_d2e47_value)
+			is_valid_choice_N7N210_name_code: choice_N7N210_name_code /= xml_null_code implies (create {ARRAY[INTEGER]}.make_from_array (<<class_attribute_code, span_attribute_code>>)).has (choice_N7N210_name_code)
+			valid_value_if_class: choice_N7N210_name_code = class_attribute_code implies is_valid_attribute_value (class_attribute_code, choice_N7N210_value)
+			valid_value_if_span: choice_N7N210_name_code = span_attribute_code implies is_valid_attribute_value (span_attribute_code, choice_N7N210_value)
 		deferred
 		ensure
 			current_element_unchanged: current_element_code = old current_element_code
@@ -271,7 +271,7 @@ feature -- Adding Elements
 			current_element_contents_updated: current_element_contents.count = (old current_element_contents.count + 1) and current_element_contents @ current_element_contents.upper = submit_element_code
 		end
 
-	add_radio_element (new_class: STRING; new_name: STRING; new_value: STRING; new_checked: STRING; ) is
+	add_radio_element (new_class: STRING; new_name: STRING; new_value: STRING; new_checked: STRING; new_disabled: STRING; ) is
 			--Add a new goa_common:radio element to the xml document
 		require
 			ok_to_add_radio: ok_to_add_element_or_text (radio_element_code)
@@ -282,6 +282,8 @@ feature -- Adding Elements
 			valid_new_value: new_value /= Void
 			is_valid_value_new_checked: new_checked /= Void implies is_valid_attribute_value (checked_attribute_code, new_checked)
 			valid_new_checked: new_checked /= Void
+			is_valid_value_new_disabled: new_disabled /= Void implies is_valid_attribute_value (disabled_attribute_code, new_disabled)
+			valid_new_disabled: new_disabled /= Void
 		deferred
 		ensure
 			current_element_unchanged: current_element_code = old current_element_code

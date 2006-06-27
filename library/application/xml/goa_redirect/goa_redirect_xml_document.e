@@ -44,15 +44,15 @@ feature -- Adding Elements
 			contents_stack.put (<<>>)
 		end
 
-	add_text_item_element (choice_N1_name_code: INTEGER; choice_N1_value: STRING; text_to_add: STRING) is
+	add_text_item_element (choice_N19N230_name_code: INTEGER; choice_N19N230_value: STRING; text_to_add: STRING) is
 			--Add a new goa_common:text_item element to the xml document
 			-- Use the attribute name code xml_null_code to indicate a null attribute for the choice
 		local
 			name_index, value_index: INTEGER
 		do
 			writer.start_ns_tag ("", element_tag_for_code (text_item_element_code))
-			if choice_N1_name_code /= xml_null_code then
-				writer.set_attribute (attribute_name_for_code (choice_N1_name_code), choice_N1_value)
+			if choice_N19N230_name_code /= xml_null_code then
+				writer.set_attribute (attribute_name_for_code (choice_N19N230_name_code), choice_N19N230_value)
 			end
 			if text_to_add /= Void then
 				writer.add_data (text_to_add)
@@ -329,7 +329,7 @@ feature -- Adding Elements
 			writer.stop_tag
 		end
 
-	add_radio_element (new_class: STRING; new_name: STRING; new_value: STRING; new_checked: STRING; ) is
+	add_radio_element (new_class: STRING; new_name: STRING; new_value: STRING; new_checked: STRING; new_disabled: STRING; ) is
 			--Add a new goa_common:radio element to the xml document
 		local
 			name_index, value_index: INTEGER
@@ -346,6 +346,9 @@ feature -- Adding Elements
 			end
 			if new_checked /= Void then
 				writer.set_attribute (attribute_name_for_code (checked_attribute_code), new_checked)
+			end
+			if new_disabled /= Void then
+				writer.set_attribute (attribute_name_for_code (disabled_attribute_code), new_disabled)
 			end
 			current_element_contents.force (radio_element_code, current_element_contents.upper + 1)
 			writer.stop_tag
