@@ -240,6 +240,8 @@ feature -- Logging
 		
 	application_log_category: STRING is "app"
 	
+	application_error_log_category: STRING is "error"
+	
 	application_security_log_category: STRING is "security"
 	
 invariant
