@@ -36,22 +36,6 @@ feature -- Attribute Values
 
   	checked_no: STRING is "no"
 
-  	on_click_script_update_safety_suggestion_box_location: STRING is "update_safety_suggestion_box_location"
-
-  	on_click_script_update_reminder_email: STRING is "update_reminder_email"
-
-  	on_click_script_window_close: STRING is "window.close()"
-
-  	on_click_script_update_safety_meeting_requirements_with_departments: STRING is "update_safety_meeting_requirements_with_departments"
-
-  	on_click_script_update_safety_meeting_requirements_no_departments: STRING is "update_safety_meeting_requirements_no_departments"
-
-  	on_click_script_checkbox_update_startup_meetings: STRING is "checkbox_update_startup_meetings"
-
-  	on_click_script_select_update_startup_meetings: STRING is "select_update_startup_meetings"
-
-  	on_click_script_update_coordination_meetings: STRING is "update_coordination_meetings"
-
   	multiple_yes: STRING is "yes"
 
   	multiple_no: STRING is "no"

@@ -288,18 +288,7 @@
       </optional>
     </element>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="on_click_script">
-    <attribute name="on_click_script">
-      <choice>
-        <value>update_safety_suggestion_box_location</value>
-        <value>update_reminder_email</value>
-        <value>window.close()</value>
-        <value>update_safety_meeting_requirements_with_departments</value>
-        <value>update_safety_meeting_requirements_no_departments</value>
-        <value>checkbox_update_startup_meetings</value>
-        <value>select_update_startup_meetings</value>
-        <value>update_coordination_meetings</value>
-      </choice>
-    </attribute>
+    <attribute name="on_click_script"/>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="select">
     <element name="goa_common:select">
       <optional>

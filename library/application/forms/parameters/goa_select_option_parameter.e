@@ -28,6 +28,8 @@ feature
 				if not same_item (item_selected, currently_selected_item_in_database (processing_result.request_processing_result, processing_result.parameter_suffix), processing_result.request_processing_result) and ok_to_save (processing_result) then
 					set_currently_selected_item_in_database (processing_result, item_selected)
 					processing_result.set_was_updated
+				elseif always_update (processing_result.request_processing_result, processing_result.parameter_suffix) then
+					set_currently_selected_item_in_database (processing_result, item_selected)
 				end
 			end
 			commit  (processing_result.request_processing_result)
@@ -100,7 +102,13 @@ feature
  		ensure
  			ok_to_read_data (processing_result.request_processing_result)
  		end
- 	
+
+	always_update (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
+			-- Should we call set_currently_selected_item_in_database even if database hasn't been updated
+			-- Default is "no"
+		do
+			Result := False
+		end
  		
  	currently_selected_item_in_database (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): G is
  			-- The list item that is currently selected in the database

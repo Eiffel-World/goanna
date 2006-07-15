@@ -34,8 +34,8 @@ feature
 			else
 				validate (processing_result)
 				local_is_value_valid := processing_result.is_value_valid
-				local_was_item_updated := was_item_updated (item_in_processing_result (processing_result), currently_selected_object (processing_result.request_processing_result))
-				if processing_result.is_value_valid and then was_item_updated (item_in_processing_result (processing_result), currently_selected_object (processing_result.request_processing_result)) then
+				local_was_item_updated := was_item_updated (item_in_processing_result (processing_result), currently_selected_object (processing_result.request_processing_result, processing_result.parameter_suffix))
+				if processing_result.is_value_valid and then was_item_updated (item_in_processing_result (processing_result), currently_selected_object (processing_result.request_processing_result, processing_result.parameter_suffix)) then
 					save_current_value (processing_result)
 					if is_a_dependency then
 						processing_result.set_was_dependency_updated
@@ -134,7 +134,7 @@ feature
 		deferred
 		end
 		
-	currently_selected_object (processing_result: REQUEST_PROCESSING_RESULT): G is
+	currently_selected_object (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): G is
 			-- The currently selected object in the list
 		require
 			valid_processing_result: processing_result /= Void
@@ -145,7 +145,7 @@ feature
 			no_side_effects: item_list (processing_result).index = old item_list (processing_result).index
 		end
 		
-	is_currently_selected_object (processing_result: REQUEST_PROCESSING_RESULT; the_object: G): BOOLEAN is
+	is_currently_selected_object (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER; the_object: G): BOOLEAN is
 			-- Is the_object the currently selected object
 		require
 			valid_processing_result: processing_result /= Void
@@ -155,9 +155,9 @@ feature
 		do
 			list_index := item_list (processing_result).index
 			if use_equal then
-				Result := equal (the_object, currently_selected_object (processing_result))
+				Result := equal (the_object, currently_selected_object (processing_result, suffix))
 			else
-				Result := the_object = currently_selected_object (processing_result)
+				Result := the_object = currently_selected_object (processing_result, suffix)
 			end
 			item_list (processing_result).go_i_th (list_index)
 		ensure then
@@ -167,7 +167,7 @@ feature
 		
 	current_value (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 		do
-			Result := currently_selected_object (processing_result).out
+			Result := currently_selected_object (processing_result, suffix).out
 		end
 		
 	was_item_updated (item_in_list, item_in_database: G): BOOLEAN is
@@ -217,7 +217,7 @@ feature
 			loop
 				xml.start_row_element (Void)
 					xml.start_cell_element (Void, "1")
-						xml.add_radio_element (Void, name, the_list.index.out, yes_no_string_for_boolean (is_currently_selected_object (processing_result, the_list.item_for_iteration)), yes_no_string_for_boolean (is_disabled (processing_result, suffix)))
+						xml.add_radio_element (Void, full_parameter_name (name, suffix), the_list.index.out, yes_no_string_for_boolean (is_currently_selected_object (processing_result, suffix, the_list.item_for_iteration)), yes_no_string_for_boolean (is_disabled (processing_result, suffix)))
 					xml.end_current_element
 					xml.start_cell_element (Void, "1")
 						item_label (processing_result, the_list.item_for_iteration).add_to_document (xml)

@@ -7,6 +7,8 @@ copyright: "(c) Neal L Lester, and others"
 
 Using the |= operator seems to grash goa_build; this is why my script names are currently listed in goa_common.rnc
 
+refactor goa_build.e to break out creation feature into multiple sub features (moving local attributes to class attributes as necessary) in order to reduce deeply nested structure and enhance readibility.
+
 Need a script to re-build the included xslt directories.
 
 goa_build should build a select of valid values for the span element which should be exactly the same as the values for the class element.
@@ -31,6 +33,8 @@ multiple files (each a <chapter>, see the build.eant file in
 $GOBO/doc/xml/xslt to see how these are combined without an
 over-arching <book>
 
+Consider adding support for the html id, title, and lang attributes to goa_common
+
 I read through the rest of the documentation, but felt lost most of
 the time. I shall have some further suggestions to make later, but
 first it seems clear to me that we shall need an overview picture.
@@ -51,6 +55,16 @@ The offending template is:
 
 Change Goanna design so that connector may be selected at run time
 instead of compile time.
+
+If an item has only { text } as content, then GOA_BUILD should
+add feature start_element as well as add_element (new_text: STRING).
+Currently there is no way to add text except through the attribute.
+Work around: define content as { text | text_item }
+
+GOA_REQUEST_PARAMETER: Add an option to append suffix number to
+on_click_script.  This would allow for creation of suffix specific
+scripts. Currently, schema based validating of on-click script is
+disabled because NL needs suffix specific scripts.
 
 DONE ====================================
 

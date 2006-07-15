@@ -68,6 +68,24 @@ feature -- Status
 			-- Code representing no element
 		deferred
 		end
+		
+	current_element_contents_as_string: STRING is
+		local
+			local_index: INTEGER
+		do
+			Result := ""
+			from
+				local_index := current_element_contents.lower
+			until
+				local_index > current_element_contents.upper
+			loop
+				Result := Result + element_tag_for_code (current_element_contents.item (local_index))
+				if not (local_index = current_element_contents.upper) then
+					Result := Result + ", "
+				end
+				local_index := local_index + 1
+			end
+		end
 
 feature -- Document Manipulation
 

@@ -115,8 +115,6 @@ feature -- Valid Attribute Values
 					Result := Result and valid_disabled_attribute_values.has (attribute_value)
 				when checked_attribute_code then
 					Result := Result and valid_checked_attribute_values.has (attribute_value)
-				when on_click_script_attribute_code then
-					Result := Result and valid_on_click_script_attribute_values.has (attribute_value)
 				when multiple_attribute_code then
 					Result := Result and valid_multiple_attribute_values.has (attribute_value)
 				when selected_attribute_code then
@@ -166,20 +164,6 @@ feature {NONE} -- Implementation
 			create Result.make_equal
 			Result.put_last ("yes")
 			Result.put_last ("no")
-		end
-
-	valid_on_click_script_attribute_values: DS_LINKED_LIST [STRING] is
-			-- Valid values for the on_click_scriptattribute
-		once
-			create Result.make_equal
-			Result.put_last ("update_safety_suggestion_box_location")
-			Result.put_last ("update_reminder_email")
-			Result.put_last ("window.close()")
-			Result.put_last ("update_safety_meeting_requirements_with_departments")
-			Result.put_last ("update_safety_meeting_requirements_no_departments")
-			Result.put_last ("checkbox_update_startup_meetings")
-			Result.put_last ("select_update_startup_meetings")
-			Result.put_last ("update_coordination_meetings")
 		end
 
 	valid_multiple_attribute_values: DS_LINKED_LIST [STRING] is
