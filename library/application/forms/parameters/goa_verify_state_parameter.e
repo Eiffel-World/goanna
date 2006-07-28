@@ -27,20 +27,21 @@ feature
 	process (processing_result: PARAMETER_PROCESSING_RESULT) is
 			-- Process the paramter
 		local
-			value: STRING
+			value, message: STRING
 			session_status: SESSION_STATUS
 		do
 			value := processing_result.value
 			session_status := processing_result.session_status
-			start_version_access (processing_result.request_processing_result)
+			start_transaction (processing_result.request_processing_result)
 				if not equal (expected_value (processing_result.request_processing_result, processing_result.parameter_suffix), value) then
 					processing_result.error_message.add_message ("Bad " + name + " Value")
-					if session_status.has_served_a_page and then not bad_value_message (processing_result.request_processing_result).is_empty then
+					message := bad_value_message (processing_result.request_processing_result)
+					if session_status.has_served_a_page and then message /= Void and then not message.is_empty then
 						session_status.user_message.add_message (bad_value_message (processing_result.request_processing_result))
 						log_hierarchy.logger (configuration.application_security_log_category).info ("Bad " + name + " Value: " + processing_result.value + "; " + processing_result.processing_servlet.client_info (processing_result.request))
 					end
 				end
-			end_version_access (processing_result.request_processing_result)
+			commit (processing_result.request_processing_result)
 		end		
 		
 	bad_value_message (processing_result: REQUEST_PROCESSING_RESULT): STRING is

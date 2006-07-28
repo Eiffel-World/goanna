@@ -5,20 +5,20 @@ indexing
 	revision: "$Revision$"
 	copyright: "(c) Neal L Lester"
 	License: "Eiffel Forum License Version 2 (see forum.txt)"
-	
+
 -- All parameters should be instantiated as once functions in class SHARED_GOA_REQUEST_PARAMETERS
 -- Suffix may be used if the parameter is included in the request multiple times.
 -- Suffix = 0 indicates there is only one occurence of the parameter in a request
 
 deferred class
 	GOA_DEFERRED_PARAMETER
-	
+
 inherit
-	
+
 	SHARED_REQUEST_PARAMETERS
 	GOA_TEXT_PROCESSING_FACILITIES
 	GOA_TRANSACTION_MANAGEMENT
-	
+
 feature -- Attributes
 
 	name: STRING is
@@ -29,7 +29,7 @@ feature -- Attributes
 		end
 
 feature -- Queries
-		
+
 	parameter_processing_result (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): PARAMETER_PROCESSING_RESULT is
 			-- parameter processing result in processing_result corresponding to this parameter
 		require
@@ -47,7 +47,7 @@ feature -- Queries
 			ok_to_read_data: ok_to_read_data (processing_result)
 		deferred
 		end
-		
+
 	minimum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
 			-- The minimum valid suffix value
 		require
@@ -67,7 +67,7 @@ feature -- Queries
 --			This is unnecessarily restrictive; it is sometimes convenient to have maximum suffix < minimum suffix
 --			e.g. GOA_ITEM_LIST_PARAMETER whose list happens to be empty
 		end
-		
+
 	suffix_list (processing_result: REQUEST_PROCESSING_RESULT): DS_LINKED_LIST [INTEGER] is
 			-- A list of all suffix values used for this parameter
 		require
@@ -86,20 +86,20 @@ feature {GOA_PARAMETER_PROCESSING_RESULT, GOA_PARAMETER_PROCESSING_RESULT_COMPAR
 			-- Process the paramter
 		require
 			valid_processing_result: processing_result /= Void
-			ok_to_process: ok_to_process (processing_result)
+			--ok_to_process: ok_to_process (processing_result)
 			is_suffix_valid: is_suffix_valid (processing_result.request_processing_result, processing_result.parameter_suffix)
 		deferred
 		ensure
 			ok_to_process: ok_to_process (processing_result)
 		end
-		
+
 	ok_to_process (processing_result: PARAMETER_PROCESSING_RESULT): BOOLEAN is
 			-- Is it OK to process the paramter
 		require
 			valid_processing_result: processing_result /= Void
 		deferred
 		end
-		
+
 feature -- Processing Order
 
 	processing_order: INTEGER is
@@ -161,7 +161,7 @@ feature -- As XML
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result)
 		end
-		
+
 	input_class (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 			-- CSS class to use with this parameter; Void if none
 		require
@@ -172,7 +172,7 @@ feature -- As XML
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result)
 		end
-		
+
 	script_name (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 			-- Name of the script associated with this request parameter; Void if none
 		require
@@ -183,7 +183,7 @@ feature -- As XML
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result)
 		end
-		
+
 feature -- To Be Removed
 
 	is_a_dependency: BOOLEAN is
@@ -201,7 +201,7 @@ feature {NONE} -- Processing Order Constants
 	process_fifth: INTEGER is 5
 
 invariant
-	
+
 	valid_name: name /= Void and then not name.is_empty and then not (name.has (configuration.parameter_separator))
 	is_registered: request_parameters.item (name) = Current
 --	valid_processing_order: process_first <= processing_order and processing_order <= process_fifth
