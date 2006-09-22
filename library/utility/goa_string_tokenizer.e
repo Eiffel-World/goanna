@@ -2,12 +2,12 @@ indexing
 	description:
 		"splits a string into tokens %
 		%string consists of tokens and delimiters"
-	date: 
+	date:
 		"November, 1996"
-	author: 
+	author:
 		"David Clark%
 		%University of Canberra"
-	modified: "May 20 2001, Glenn Maughan"
+	modified: "May 20 2001, Glenn Maughan; Sep 23 2006, B.Herlig"
 
 class GOA_STRING_TOKENIZER
 
@@ -23,7 +23,7 @@ feature -- creation
 		do
 			make (str_, "%R%N%T")
 		end
-		
+
 	make, make_exclude_delimiters (str_, delimiters_: STRING) is
 			-- extract tokens, excluding delimiters
 		require
@@ -68,13 +68,13 @@ feature -- status
 			-- are there any tokens?
 		do
 			Result := (count = 0)
-		end		
+		end
 
 	off: BOOLEAN is
 		do
 			Result := (idx > count)
 		end
-		
+
 	item: STRING is
 		require
 			active_item: not off and not empty
@@ -93,10 +93,10 @@ feature -- status
 feature {NONE} -- implementation
 
 	str : STRING
-	
+
 	delimiters: STRING
-	
-	idx: INTEGER 
+
+	idx: INTEGER
 		-- index of current token
 
 	next_start (start_ix: INTEGER): INTEGER is
@@ -120,7 +120,7 @@ feature {NONE} -- implementation
 				Result := Result + 1
 			end
 			Result := Result - 1
-		end  
+		end
 
 	extract_tokens_exclude is
 			-- extract the tokens excluding delimiters
@@ -128,7 +128,7 @@ feature {NONE} -- implementation
 			ll: DS_LINKED_LIST [STRING]
 			start_idx, finish_idx: INTEGER
 		do
-			!!ll.make
+			create ll.make
 			from
 				start_idx := next_start (1)
 			until
@@ -148,10 +148,10 @@ feature {NONE} -- implementation
 			ll: DS_LINKED_LIST [STRING]
 			start_idx, finish_idx: INTEGER
 		do
-			!!ll.make
+			create ll.make
 			from
 				start_idx := next_start (1)
-				if (start_idx > 1) and (str.count > 0) then 
+				if (start_idx > 1) and (str.count > 0) then
 					ll.force_last (str.substring (1, start_idx - 1))
 					count := count + 1
 				end
@@ -176,7 +176,7 @@ feature {NONE} -- implementation
 			ix : INTEGER
 		do
 			if not empty then
-				!!tokens.make (1, count)
+				create tokens.make (1, count)
 				from
 					ll.start
 					ix := 1
@@ -192,10 +192,10 @@ feature {NONE} -- implementation
 
 feature
 
-	tokens: ARRAY [STRING] 
+	tokens: ARRAY [STRING]
 		-- the tokens
 
-	count: INTEGER 
+	count: INTEGER
 		-- how many tokens?
 
 end -- class GOA_STRING_TOKENIZER

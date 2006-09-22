@@ -11,9 +11,9 @@ indexing
 class GOA_XRPC_SCALAR_VALUE
 
 inherit
-	
+
 	GOA_XRPC_VALUE
-		
+
 create
 
 	make, make_base64, unmarshall
@@ -44,7 +44,7 @@ feature -- Initialisation
 				double_ref ?= new_value
 				if double_ref /= Void then
 					type := Double_type
-					string_value := value.out	
+					string_value := value.out
 				else
 					-- check boolean
 					bool_ref ?= new_value
@@ -55,13 +55,13 @@ feature -- Initialisation
 							string_value := "1"
 						else
 							string_value := "0"
-						end	
+						end
 					else
 						-- check string
 						string ?= new_value
 						if string /= Void then
 							type := String_type
-							string_value := value.out	
+							string_value := value.out
 						else
 							-- check date/time
 							date_time ?= new_value
@@ -71,7 +71,7 @@ feature -- Initialisation
 								string_value := format_date_iso8601 (date_time)
 							end
 						end
-					end		
+					end
 				end
 			end
 			unmarshall_ok := True
@@ -96,7 +96,7 @@ feature -- Initialisation
 			double_ref: DOUBLE_REF
 			bool_ref: BOOLEAN_REF
 			text: STRING
-			decoder: GOA_BASE64_ENCODER 
+			decoder: GOA_BASE64_ENCODER
 		do
 			unmarshall_ok := True
 			-- check if we were passed the value node. If so this is an untyped scalar
@@ -107,7 +107,7 @@ feature -- Initialisation
 					value := node.text.out
 				else
 					value := ""
-				end	
+				end
 				string_value := value.out
 			else
 				-- check for text child node
@@ -117,7 +117,7 @@ feature -- Initialisation
 					string_value := text.out
 					-- check for string
 					if type.is_equal (String_type) then
-						value := clone (string_value)	
+						value := string_value.twin
 					-- check for integer
 					elseif type.is_equal (Int_type) or type.is_equal (Alt_int_type) then
 						if string_value.is_integer then
@@ -143,7 +143,7 @@ feature -- Initialisation
 							unmarshall_error_code := Invalid_boolean_value
 						end
 					-- check for double
-					elseif type.is_equal (Double_type) then	
+					elseif type.is_equal (Double_type) then
 						if string_value.is_double then
 							create double_ref
 							double_ref.set_item (string_value.to_double)
@@ -166,7 +166,7 @@ feature -- Initialisation
 					else
 						unmarshall_ok := False
 						unmarshall_error_code := Invalid_value_type
-					end	
+					end
 				else
 					-- check for empty string or base64
 					if type.is_equal (String_type) or type.is_equal (Base64_type) then
@@ -183,20 +183,20 @@ feature -- Mashalling
 
 	marshall: STRING is
 			-- Serialize this scalar param to XML format
-		do	
+		do
 			create Result.make (100)
 			Result.append ("<value>")
 			-- don't bother wrapping string types in a type element
 			if type /= String_type then
 				Result.append ("<")
 				Result.append (type.out)
-				Result.append (">")	
+				Result.append (">")
 			end
 			Result.append (string_value)
 			if type /= String_type then
 				Result.append ("</")
-				Result.append (type.out)	
-				Result.append (">")	
+				Result.append (type.out)
+				Result.append (">")
 			end
 			Result.append ("</value>")
 		end
@@ -205,14 +205,14 @@ feature -- Status report
 
 	value: ANY
 			-- Value of this parameter
-	
+
 	string_value: STRING
 			-- String representation of value
 
 feature -- Conversion
 
 	as_object: ANY is
-			-- Return value as an object. ie, extract the actual 
+			-- Return value as an object. ie, extract the actual
 			-- object value from the XRPC_VALUE.
 		do
 			Result := value
@@ -242,7 +242,7 @@ feature {NONE} -- Implementation
 		ensure
 			formatted_string_exists: Result /= Void
 		end
-	
+
 	unmarshall_date_iso8601 (str: STRING): DT_DATE_TIME is
 			-- Create a date time object from the ISO8601 'str'
 			-- Return Void if 'str' does not conform to ISO8601 format.
@@ -268,9 +268,9 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-		
+
 invariant
-	
+
 	string_value_exists: unmarshall_ok implies string_value /= Void
-	
+
 end -- class GOA_XRPC_SCALAR_VALUE

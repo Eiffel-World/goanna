@@ -11,12 +11,12 @@ indexing
 class	GOA_HTTP_SESSION_MANAGER
 
 inherit
-	
+
 	DT_SHARED_SYSTEM_CLOCK
 		export
 			{NONE} all
 		end
-		
+
 create
 
 	make
@@ -28,7 +28,7 @@ feature -- Initialization
 		do
 			create sessions.make (10)
 		end
-	
+
 feature -- Access
 
 	get_session (id: STRING): like session_anchor is
@@ -40,21 +40,21 @@ feature -- Access
 			Result  := sessions.item (id)
 			Result.touch
 		end
-				
+
 feature -- Status report
 
 	has_session (id: STRING): BOOLEAN is
 			-- Does a session with 'id' exist?
 		require
-			id_exists: id /= Void			
+			id_exists: id /= Void
 		do
 			expire_sessions
 			Result  := sessions.has (id)
 		end
-	
+
 	last_session_id: STRING
 			-- Id of last session bound or touched.
-			
+
 feature -- Status setting
 
 	session_count: INTEGER is
@@ -63,7 +63,7 @@ feature -- Status setting
 			expire_sessions
 			Result := sessions.count
 		end
-		
+
 
 	bind_session (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- If the request does not already have a session, then create one.
@@ -79,35 +79,35 @@ feature -- Status setting
 			create cookie.make (Session_cookie_name, "")
 			debug ("session_management")
 				print ("Binding session%R%N")
-			end	
+			end
 			req.cookies.start
 			req.cookies.search_forth (cookie)
 			if not req.cookies.off then
 				cookie := req.cookies.item_for_iteration
 				debug ("session_management")
 					print ("Cookie value is: " + cookie.value + "%R%N")
-				end	
+				end
 				-- check for stale cookie
 				if sessions.has (cookie.value) then
 					debug ("session_management")
 						print ("We have the cookie value%R%N")
-					end	
+					end
 					session := sessions.item (cookie.value)
 					if session.is_new then
-						session.set_old					
+						session.set_old
 					end
 					session.touch
-					last_session_id := session.id	
+					last_session_id := session.id
 				else
 					debug ("session_management")
 						print ("Creating session as we don't have the cookie value%R%N")
-					end	
+					end
 					create_new_session (resp)
 				end
 			else
 				debug ("session_management")
 					print ("Creating session as we can't find the cookie%R%N")
-				end	
+				end
 				create_new_session (resp)
 			end
 		end
@@ -136,18 +136,18 @@ feature -- Status setting
 				end
 			end
 		end
-	
+
 feature {NONE} -- Implementation
 
 	session_anchor: GOA_HTTP_SESSION
 			-- Session type anchor
-			
+
 	sessions: DS_HASH_TABLE [like session_anchor, STRING]
 			-- Active sessions.
 
 	Session_cookie_name: STRING is "GSESSIONID"
 			-- Name of session cookie
-			
+
 	create_new_session (resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Create a new session and set the session cookie
 		local
@@ -161,7 +161,7 @@ feature {NONE} -- Implementation
 			resp.add_cookie (cookie)
 			notify_listeners (session, Created_code)
 		end
-	
+
 	generate_session_id: STRING is
 			-- Generate a new secure session id.
 			-- Key is generated from a random number and the current date and time.
@@ -179,13 +179,13 @@ feature {NONE} -- Implementation
 		ensure
 			new_session_id_exists: Result /= Void
 		end
-		
+
 	base64_encoder: GOA_BASE64_ENCODER is
 			-- Base64 encoder
 		once
 			create Result
 		end
-	
+
 	expire_sessions is
 			-- Check all current sessions and expire if appropriate.
 		local
@@ -206,7 +206,7 @@ feature {NONE} -- Implementation
 				-- check each session against the current time and collect in list
 				-- if it needs expiring
 				session := cursor.item
-				idle := clone (session.last_accessed_time)
+				idle := session.last_accessed_time.twin
 				idle.add_seconds (session.max_inactive_interval)
 				if now > idle then
 					-- expire session
@@ -287,13 +287,13 @@ feature {GOA_HTTP_SESSION} -- Attribute Binding Event Notification
 		require
 			session_exists: session /= Void
 			name_exists: name /= Void
-			attribute_exists: attribute /= Void	
+			attribute_exists: attribute /= Void
 		do
 			event_attribute_name := name
 			event_attribute := attribute
 			notify_listeners (session, Attribute_unbound_code)
-		end			
-	
+		end
+
 feature {NONE} -- Listener implementation
 
 	listener_list: DS_LINKED_LIST [GOA_HTTP_SESSION_EVENT_LISTENER]
@@ -309,14 +309,14 @@ feature {NONE} -- Listener implementation
 			-- Event code
 	Attribute_unbound_code: INTEGER is 5
 			-- Event code
-		
+
 	valid_event_code (arg_event_code: INTEGER): BOOLEAN is
 			-- Is the supplied event code valid?
 		do
 			inspect arg_event_code
-				when Expiring_code..Attribute_unbound_code then					
+				when Expiring_code..Attribute_unbound_code then
 					Result := True
-				else 
+				else
 					Result := False
 			end
 		end
@@ -365,5 +365,5 @@ feature {NONE} -- Listener implementation
 
 	event_attribute: ANY
 			-- Set if notifying of an attribute_bound/unbound event; otherwise void
-			
+
 end -- class GOA_HTTP_SESSION_MANAGER

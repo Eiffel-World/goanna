@@ -13,17 +13,17 @@ indexing
 class GOA_COOKIE
 
 inherit
-	
+
 	DT_SHARED_SYSTEM_CLOCK
 		export
 			{NONE} all
 			{ANY} is_equal -- for SE 1.0
 		end
-		
+
 create
 
 	make
-	
+
 feature -- Initialization
 
 	make (new_name, new_value: STRING) is
@@ -36,33 +36,33 @@ feature -- Initialization
 			set_max_age (-1)
 			set_version (Default_version)
 		end
-	
+
 feature -- Access
 
 	name: STRING
 			-- Name of this cookie
-			
+
 	value: STRING
 			-- Value of this cookie
-			
+
 	comment: STRING
 			-- Optional cookie comment
-			
+
 	domain: STRING
 			-- Optional dDomain that will see cookie
-			
+
 	max_age: INTEGER
 			-- Optional maximum age of this cookie, -1 if no expiry.
-			
+
 	path: STRING
 			-- Optional URL that will see cookie
-			
+
 	secure: BOOLEAN
 			-- Optional use SSL?
-			
+
 	version: INTEGER
 			-- Version
-			
+
 feature -- Status setting
 
 	set_comment (new_comment: like comment) is
@@ -70,17 +70,17 @@ feature -- Status setting
 		require
 			new_comment_exists: new_comment /= Void
 		do
-			comment := clone (new_comment)
+			comment := new_comment.twin
 		end
-	
+
 	set_domain (new_domain: like domain) is
 			-- Set 'domain' to 'new_domain'
 		require
 			new_domain_exists: new_domain /= Void
 		do
-			domain := clone (new_domain)
+			domain := new_domain.twin
 		end
-	
+
 	set_max_age (new_max_age: like max_age) is
 			-- Set 'max_age' to 'new_max_age'
 		do
@@ -92,31 +92,31 @@ feature -- Status setting
 		require
 			new_path_exists: new_path /= Void
 		do
-			path := clone (new_path)
+			path := new_path.twin
 		end
-	
+
 	set_secure (flag: like secure) is
 			-- Set 'secure' to 'flag'
 		do
 			secure := flag
 		end
-	
+
 	set_version (new_version: like version)	is
 			-- Set 'version' to new_version
 		do
 			version := new_version
 		end
-	
+
 feature -- Validation
 
 	is_reserved_cookie_word (word: STRING): BOOLEAN is
 			-- Is 'word' a reserved cookie word?
 		require
-			word_exists: word /= Void	
+			word_exists: word /= Void
 		local
-			lower_word: STRING		
+			lower_word: STRING
 		do
-			lower_word := clone (word)
+			lower_word := word.twin
 			lower_word.to_lower
 			Result := lower_word.is_equal ("comment")
 				or lower_word.is_equal ("discard")
@@ -127,7 +127,7 @@ feature -- Validation
 				or lower_word.is_equal ("secure")
 				or lower_word.is_equal ("version")
 		end
-	
+
 feature -- Conversion
 
 	header_string: STRING is
@@ -192,14 +192,14 @@ feature -- Conversion
 	Path_label: STRING is "Path"
 	Secure_label: STRING is "secure"
 	Version_label: STRING is "Version"
-	
+
 	Name_value_separator: STRING is "="
 	Term_separator: STRING is "; "
-	
+
 	Expired_date: STRING is "Tue, 01-Jan-1970 00:00:00 GMT"
-	
+
 	Default_version: INTEGER is 0
-		
+
 	max_age_to_date (age: INTEGER): STRING is
 			-- Convert max_age to a date
 		local
@@ -209,21 +209,21 @@ feature -- Conversion
 			date := system_clock.date_time_now
 			debug ("cookie_parsing")
 				print ("Cookie expiry date today: " + date.out + "%R%N")
-			end	
+			end
 			date.add_seconds (age)
 			debug ("cookie_parsing")
 				print ("Cookie expiry date max age: " + date.out + "%R%N")
-			end	
+			end
 			create formatter
 			Result := formatter.format_fixed_variant (date)
 			debug ("cookie_parsing")
 				print ("Cookie expiry date formatted: " + Result + "%R%N")
-			end	
+			end
 		end
-		
+
 invariant
 
 	name_exists: name /= Void
 	value_exists: value /= Void
-	
+
 end -- class GOA_COOKIE

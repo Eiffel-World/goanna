@@ -18,26 +18,26 @@ inherit
 		export
 			{NONE} all
 		end
-			
+
 	GOA_HTTP_UTILITY_FUNCTIONS
 		export
 			{NONE} all
 		end
-	
+
 	GOA_HTTPD_CGI_HEADER_VARS
 		export
 			{NONE} all
 		end
-	
+
 	GOA_STRING_MANIPULATION
 		export
 			{NONE} all
 		end
-					
+
 create
 
 	make
-	
+
 feature {NONE} -- Initialisation
 
 	make (http_request: GOA_HTTPD_REQUEST; resp: GOA_HTTPD_SERVLET_RESPONSE) is
@@ -52,13 +52,13 @@ feature {NONE} -- Initialisation
 			create parameters.make (5)
 			parse_parameters
 		end
-	
+
 feature -- Access
 
 	get_parameter (name: STRING): STRING is
 			-- Returns the value of a request parameter
 		do
-			Result := clone (parameters.item (name))
+			Result := (parameters.item (name)).twin
 		end
 
 	get_parameter_names: DS_LINEAR [STRING] is
@@ -74,7 +74,7 @@ feature -- Access
 			until
 				cursor.off
 			loop
-				array_list.force_last (clone (cursor.key))
+				array_list.force_last (cursor.key.twin)
 				cursor.forth
 			end
 			Result := array_list
@@ -93,16 +93,16 @@ feature -- Access
 			until
 				cursor.off
 			loop
-				array_list.force_last (clone (cursor.item))
+				array_list.force_last (cursor.item.twin)
 				cursor.forth
 			end
 			Result := array_list
 		end
-	
+
 	get_header (name: STRING): STRING is
 			-- Get the value of the specified request header.
 		do
-			Result := clone (internal_request.parameter (name))
+			Result := (internal_request.parameter (name)).twin
 		end
 
 	get_headers (name: STRING): DS_LINEAR [STRING] is
@@ -126,7 +126,7 @@ feature -- Access
 			end
 			Result := list
 		end
-		
+
 	get_header_names: DS_LINEAR [STRING] is
 			-- Get all header names.
 		local
@@ -140,12 +140,12 @@ feature -- Access
 			until
 				cursor.off
 			loop
-				array_list.force_last (clone (cursor.key))
+				array_list.force_last (cursor.key.twin)
 				cursor.forth
 			end
 			Result := array_list
 		end
-	
+
 feature -- Status report
 
 	has_parameter (name: STRING): BOOLEAN is
@@ -162,8 +162,8 @@ feature -- Status report
 		do
 			str := get_header (Content_length_var)
 			if str.is_integer then
-				Result := str.to_integer	
-			end 
+				Result := str.to_integer
+			end
 		end
 
 	content_type: STRING is
@@ -191,7 +191,7 @@ feature -- Status report
 	server_name: STRING is
 			-- The host name of the server that received the request.
 		do
-			Result := get_header (Server_name_var)			
+			Result := get_header (Server_name_var)
 		end
 
 	server_port: STRING is
@@ -209,7 +209,7 @@ feature -- Status report
 	remote_host: STRING is
 			-- The fully qualified name of the client that sent the request, or the
 			-- IP address of the client if the name cannot be determined.
-		do			
+		do
 			Result := get_header (Remote_host_var)
 		end
 
@@ -219,7 +219,7 @@ feature -- Status report
 			Result := False
 			-- TODO: may need to change this when we support https.
 		end
-		
+
 	has_header (name: STRING): BOOLEAN is
 			-- Does this request contain a header named 'name'?
 		do
@@ -254,14 +254,14 @@ feature -- Status report
 			end
 			Result := Session_manager.get_session (session_id)
 		end
-		
+
 	method: STRING is
 			-- The name of the HTTP method with which this request was made, for
 			-- example, GET, POST, or HEAD.
 		do
 			Result := get_header (Request_method_var)
 		end
-		
+
 	path_info: STRING is
 			-- Any extra path information associated with the URL the client sent
 			-- when it made the request.
@@ -297,33 +297,33 @@ feature -- Status report
 		do
 			Result := get_header (Script_name_var)
 		end
-	
+
 	content: STRING is
 			-- Content data
 		do
 			Result := internal_request.raw_stdin_content
 		end
-		
+
 feature {NONE} -- Implementation
 
 	internal_request: GOA_HTTPD_REQUEST
 		-- Internal request information.
-	
+
 	internal_response: GOA_HTTPD_SERVLET_RESPONSE
 		-- Response object held so that session cookie can be set.
-				
+
 	session_id: STRING
 		-- Id of session. Void until session is bound by first call to get_session.
-		
+
 	internal_cookies: DS_LINKED_LIST [GOA_COOKIE]
 		-- Cached collection of request cookies
-		
+
 	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of parameter values with support for multiple values per parameter name
-			
+
 	Encoded_form_data_content_type: STRING is "application/x-www-form-urlencoded"
 			-- Content type of form data passed in a POST request
-			
+
 	parse_parameters is
 			-- Parse the query string or stdin data for parameters and
 			-- store in params structure.		
@@ -339,11 +339,11 @@ feature {NONE} -- Implementation
 				-- Need to experiment.
 			end
 		end
-	
+
 	parse_parameter_string (str: STRING) is
 			-- Parse the parameter string 'str' and build parameter structure.
 			-- Parameters are of the form 'name=value' separated by '&' with all
-			-- spaces and special characters encoded. An exception is an image map 
+			-- spaces and special characters encoded. An exception is an image map
 			-- coordinate pair that is of the form 'value,value'. Any amount of
 			-- whitespace may separate each token.
 		local
@@ -376,19 +376,19 @@ feature {NONE} -- Implementation
 				tokenizer.forth
 			end
 		end
-		
+
 	add_parameter (name, value: STRING) is
 			-- Set decoded 'value' for the parameter 'name' to the parameters structure.
 			-- Replace any existing parameter value with the same name.
 		do
 			debug ("query_string_parsing")
-				print (generator + ".add_parameter name = " 
-					+ quoted_eiffel_string_out (name) 
+				print (generator + ".add_parameter name = "
+					+ quoted_eiffel_string_out (name)
 					+ " value = " + quoted_eiffel_string_out (value) + "%R%N")
-			end	
+			end
 			parameters.force (value, name)
 		end
-	
+
 	parse_cookie_header is
 			-- Parse the cookie header, if it exists and construct the 'internal_cookies'
 			-- collection.
@@ -428,13 +428,13 @@ feature {NONE} -- Implementation
 						value.right_adjust
 						-- remove double quotes if they wrap the value
 						if value.item (1) = '%"' then
-							value := value.substring (2, value.count - 1)							
+							value := value.substring (2, value.count - 1)
 						end
 						create new_cookie.make (name, value)
 						debug ("cookie_parsing")
 							print (generator + ".parse_cookie_header new_cookie = "
 								+ quoted_eiffel_string_out (new_cookie.header_string) + "%R%N")
-						end		
+						end
 						internal_cookies.force_last (new_cookie)
 					else
 						-- bad cookie, ignore it
@@ -443,5 +443,5 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-	
+
 end -- class GOA_HTTPD_SERVLET_REQUEST

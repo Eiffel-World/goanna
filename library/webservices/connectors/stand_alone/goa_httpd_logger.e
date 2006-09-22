@@ -3,17 +3,17 @@ indexing
 class GOA_HTTPD_LOGGER
 
 inherit
-	
+
 	L4E_PRIORITY_CONSTANTS
 		export
 			{NONE} all
 		end
-	
+
 	KL_SHARED_ARGUMENTS
 		export
 			{NONE} all
 		end
-	
+
 feature -- Access
 
 	log_hierarchy: L4E_HIERARCHY is
@@ -29,7 +29,7 @@ feature -- Access
 			appender.set_layout (layout)
 			Result.root.add_appender (appender)
 		end
-		
+
 feature {NONE} -- Implementation
 
 	Internal_category: STRING is "httpd.internal"
@@ -44,7 +44,7 @@ feature {NONE} -- Implementation
 			app_name: STRING
 --			p: INTEGER
 		once
-			app_name := clone (Arguments.argument (0))
+			app_name := (Arguments.argument (0)).twin
 -- Commented out for SmallEiffel support			
 --			p := app_name.last_index_of ('.', app_name.count)
 --			if p > 0 then
@@ -54,5 +54,5 @@ feature {NONE} -- Implementation
 			Result.append (app_name)
 			Result.append (".log")
 		end
-	
+
 end -- class GOA_HTTPD_LOGGER
