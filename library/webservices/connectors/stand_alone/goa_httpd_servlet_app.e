@@ -11,18 +11,18 @@ indexing
 deferred class GOA_HTTPD_SERVLET_APP
 
 inherit GOA_SERVLET_APPLICATION
-	
+
 	GOA_SHARED_SERVLET_MANAGER
 		export
 			{NONE} all
 		end
-		
+
 	SOCKET_MULTIPLEXER_SINGLETON
 		export
 			{NONE} all
 		end
-	
-	SOCKET_ERRORS 		
+
+	SOCKET_ERRORS
 		export
 			{NONE} all
 		end
@@ -34,7 +34,7 @@ inherit GOA_SERVLET_APPLICATION
 
 feature {NONE} -- Initialization
 
-	make (port, backlog: INTEGER) is
+	make (new_host: STRING; port, backlog: INTEGER) is
 			-- Set up the server
 		do
 			-- prepare the socket
@@ -53,13 +53,13 @@ feature {NONE} -- Initialization
 				print ("(n,e,c) : socket error (n), extended error (c), read count (c)%N")
 				print ("--------------------------------------%N")
 			end
-		end	
-		
+		end
+
 feature {NONE} -- Implementation
 
 	server_socket: GOA_HTTPD_SERVER_SOCKET
 			-- Socket for accepting of new connections
-		
+
 	run is
 			-- Start serving requests
 		local
