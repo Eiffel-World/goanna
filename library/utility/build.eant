@@ -29,15 +29,37 @@
 			Install the Goanna Kernel Library.
 			Generate Eiffel files from .ge files.
 		</description>
-		<set name="gepp_file" value="integer_formatter"/>		
+	
+		<set name="gepp_file" value="bit_manipulation"/>		
 		<geant target="ge2e">
 			<argument name="spec_dir" value="spec"/>
 			<argument name="gepp_dir" value="."/>
-			<argument name="gepp_file" value="goa_string_manipulation"/>		  
-		  
-
+			<argument name="gepp_file" value="bit_manipulation"/>
 		</geant>
-
+		<set name="gepp_file" value="character_manipulation"/>		
+		<geant target="ge2e">
+			<argument name="spec_dir" value="spec"/>
+			<argument name="gepp_dir" value="."/>
+			<argument name="gepp_file" value="character_manipulation"/>
+		</geant>
+		<set name="gepp_file" value="goa_string_manipulation"/>		
+		<geant target="ge2e">
+			<argument name="spec_dir" value="spec"/>
+			<argument name="gepp_dir" value="."/>
+			<argument name="gepp_file" value="goa_string_manipulation"/>
+		</geant>
+		<set name="gepp_file" value="integer_formatter"/>
+		<geant target="ge2e">
+			<argument name="spec_dir" value="spec"/>
+			<argument name="gepp_dir" value="."/>
+			<argument name="gepp_file" value="integer_formatter"/>
+		</geant>
+		<set name="gepp_file" value="ref_type_routines"/>
+		<geant target="ge2e">
+			<argument name="spec_dir" value="spec"/>
+			<argument name="gepp_dir" value="."/>
+			<argument name="gepp_file" value="ref_type_routines"/>
+		</geant>
 	</target>
 
 	<target name="clean">
