@@ -7,22 +7,22 @@ indexing
 
 class
 	GOA_XSLT_TRANSFORMER_FACTORY
-	
+
 inherit
-	
+
 	XM_SHARED_CATALOG_MANAGER
 	XM_XPATH_SHARED_CONFORMANCE
 	XM_XSLT_TRANSFORMER_FACTORY
 	KL_SHARED_EXCEPTIONS
 	UT_SHARED_FILE_URI_ROUTINES
 	KL_SHARED_FILE_SYSTEM
-	
+
 creation
-	
+
 	make_without_configuration
-	
+
 feature
-	
+
 	new_string_transformer_from_file_name (new_file_name: STRING): GOA_XSLT_STRING_TRANSFORMER is
 			-- Create a new transformer given the name of the file containing the stylesheet
 			-- Call this from a once function to improve performance as the stylesheet is then
@@ -41,16 +41,16 @@ feature
 				create a_uri.make_resolve_uri (file_uri.pathname_to_uri (a_cwd), file_uri.filename_to_uri (new_file_name))
 				create stylesheet.make (configuration)
 				create stylesheet_source.make (a_uri.full_reference)
-				create_new_transformer (stylesheet_source)
+				create_new_transformer (stylesheet_source, a_uri)
+--				create_new_transformer (stylesheet_source)
 				if was_error then
 					io.put_string (new_file_name + ": " + last_error_message + "%N")
 				end
 				create Result.make (created_transformer)
 				resolver_scheme := string_resolver.scheme
 				-- Just to make sure the string_resolver is created and registered
---				end
 		end
-		
+
 	string_resolver: XM_STRING_URI_RESOLVER is
 			-- Resolver used to resolve strings
 		once
@@ -71,6 +71,6 @@ feature {NONE} -- Creation
 				conformance.set_basic_xslt_processor
 				-- TODO Transition to Tiny Tree model
 		end
-		
+
 
 end -- class GOA_XSLT_TRANSFORMER_FACTORY
