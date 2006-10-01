@@ -160,7 +160,7 @@ feature {PAGE_SEQUENCER} -- Access by page_sequencer
 			master_sequence_active_sequence_matches_chain  : 	master_sequence_active_sequence_matches_chain
 		end
 
-	response : HTTP_SERVLET_RESPONSE is
+	response : GOA_HTTP_SERVLET_RESPONSE is
 		-- The web response associated with the page
 		do
 			result := page_sequencer.current_response
@@ -182,7 +182,7 @@ feature {PAGE_SEQUENCER} -- Access by page_sequencer
 			master_sequence_updated : master_sequence = new_master_sequence
 		end
 
-	set_web_request (new_web_request : HTTP_SERVLET_REQUEST) is
+	set_web_request (new_web_request : GOA_HTTP_SERVLET_REQUEST) is
 		-- Set the web request received in response to this page
 		require
 			valid_new_web_request : new_web_request /= Void
@@ -213,7 +213,7 @@ feature {DYNAMIC_URL} -- Page Processing
 
 feature {FORM, FORM_ELEMENT, PAGE_SEQUENCER}
 
-	web_request : HTTP_SERVLET_REQUEST
+	web_request : GOA_HTTP_SERVLET_REQUEST
 		-- The web request that this page is responding to
 
 feature {NONE} -- Implementation

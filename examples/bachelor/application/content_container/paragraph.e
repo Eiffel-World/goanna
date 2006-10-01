@@ -14,7 +14,6 @@ deferred class
 inherit
 
 	CONTENT_CONTAINER
-		end
 	ALIGNABLE
 		EXPORT 
 			{NONE}

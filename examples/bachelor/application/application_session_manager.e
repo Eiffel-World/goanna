@@ -13,8 +13,8 @@ class
 
 inherit
 	
-	HTTP_SESSION_EVENT_LISTENER
-	HTTP_SESSION_MANAGER
+	GOA_HTTP_SESSION_EVENT_LISTENER
+	GOA_HTTP_SESSION_MANAGER
 		redefine
 			make
 		end
@@ -24,7 +24,7 @@ creation
 
 feature {NONE} -- implementation
 
-	active_users : DS_HASH_TABLE [HTTP_SESSION, STRING]
+	active_users : DS_HASH_TABLE [GOA_HTTP_SESSION, STRING]
 
 feature {NONE} -- Creation
 
@@ -45,7 +45,7 @@ feature {LOGIN_SEQUENCE, PAGE_SEQUENCER} -- Active user Management
 			result := active_users.has (user_name)
 		end
 
-	user_session (user_name : STRING) : HTTP_SESSION is
+	user_session (user_name : STRING) : GOA_HTTP_SESSION is
 		-- The session associated with user_name
 		require
 			valid_user_name : user_name /= Void
@@ -58,7 +58,7 @@ feature {LOGIN_SEQUENCE, PAGE_SEQUENCER} -- Active user Management
 
 feature {PAGE_SEQUENCER} -- User removal
 
-	add_user (new_session : HTTP_SESSION ; user_name : STRING) is
+	add_user (new_session : GOA_HTTP_SESSION ; user_name : STRING) is
 		-- Add user_name to active_users list
 		require
 			valid_new_session : new_session /= Void
@@ -84,14 +84,14 @@ feature {PAGE_SEQUENCER} -- User removal
 			user_removed : not active_users.has (user_name)
 		end
 
-feature {HTTP_SESSION_MANAGER} -- Implementing 
+feature {GOA_HTTP_SESSION_MANAGER} -- Implementing 
 
-    expiring (session: HTTP_SESSION) is
+    expiring (session: GOA_HTTP_SESSION) is
             -- 'session' is about to be expired.
         do
         end
 
-	expired (session: HTTP_SESSION) is
+	expired (session: GOA_HTTP_SESSION) is
       	-- 'session' has expired and has been removed from
       	-- the active list of sessions
 	local
@@ -107,18 +107,18 @@ feature {HTTP_SESSION_MANAGER} -- Implementing
 			end	
         end
 
-    created (session: HTTP_SESSION) is
+    created (session: GOA_HTTP_SESSION) is
             -- 'session' has been created
         do
         end
 
-    attribute_bound (session: HTTP_SESSION; name: STRING;
+    attribute_bound (session: GOA_HTTP_SESSION; name: STRING;
         attribute: ANY) is
             -- 'attribute' has been bound in 'session' to 'name'
         do
         end
 
-    attribute_unbound (session: HTTP_SESSION; name: STRING;
+    attribute_unbound (session: GOA_HTTP_SESSION; name: STRING;
         attribute: ANY) is
             -- 'attribute' has been unbound in 'session' from 'name'
       do

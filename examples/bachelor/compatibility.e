@@ -69,13 +69,13 @@ feature
 
 	initialize is
 		do
-			{TOPIC_SEQUENCE_DOMAIN_WITH_CHILDREN} precursor
+			precursor {TOPIC_SEQUENCE_DOMAIN_WITH_CHILDREN} 
 		end
 
 	update is
 		do
-			{DOMAIN_WITH_PARENT} precursor
-			{TOPIC_SEQUENCE_DOMAIN_WITH_CHILDREN} precursor
+			precursor {DOMAIN_WITH_PARENT}
+			precursor {TOPIC_SEQUENCE_DOMAIN_WITH_CHILDREN} 
 		end
 
 	undo is

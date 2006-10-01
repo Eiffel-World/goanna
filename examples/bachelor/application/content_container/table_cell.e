@@ -23,7 +23,6 @@ feature {CONTENT_CONTAINER}
 	set_width_in_pixels (number_of_pixels : INTEGER) is
 		-- Define width in pixels
 		require
-			valid_number_of_pixels : number_of_pixels /= Void
 			non_negative_number_of_pixels : number_of_pixels >= 0
 		do
 			width := number_of_pixels
@@ -38,7 +37,6 @@ feature {CONTENT_CONTAINER}
 	set_width_in_percent (percent : INTEGER) is
 		-- Define width in percent
 		require
-			valid_percent : percent /= Void
 			non_negative_percent : percent >= 0
 		do
 			width := percent

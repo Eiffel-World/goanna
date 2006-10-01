@@ -23,7 +23,7 @@ feature
 
 	name: STRING is "gender"
 	
-	currently_selected_object (processing_result: REQUEST_PROCESSING_RESULT): STRING is
+	currently_selected_object (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 		do
 			if processing_result.session_status.is_male then
 				Result := processing_result.message_catalog.male

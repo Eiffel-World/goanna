@@ -80,7 +80,7 @@
 			in all subdirectories.
 		</description>
 
-		<!-- geant file="build.eant" target="${target}" dir="bachelor" -->
+		<geant file="build.eant" target="${target}" dir="bachelor" />
 		<geant file="build.eant" target="${target}" dir="servlet"/>
 		<geant file="build.eant" target="${target}" dir="xmlrpc"/>
 		<geant file="build.eant" target="${target}" dir="thread/message_processing"/>

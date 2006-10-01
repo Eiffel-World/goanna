@@ -54,8 +54,6 @@ feature {NONE} -- implementation
 
 	set_status_code (new_status_code : INTEGER) is
 			-- set the new status code
-		require
-			new_status_code_exists : new_status_code /= Void
 		do
 			status_history.force_first (status_code)
 			date_time_history.force_first (clone (time_last_modified))
@@ -77,19 +75,19 @@ feature {NONE} -- implementation
 			create status_history.make
 			create date_time_history.make
 			status_initialized := true
-			{TIME_STAMPED_DOMAIN} precursor
+ 			precursor {TIME_STAMPED_DOMAIN} 
 		end
 		
 	update is
 			-- Update the domain
 		do
-			{TIME_STAMPED_DOMAIN} precursor
+			precursor {TIME_STAMPED_DOMAIN} 
 		end
 		
 	initialized: BOOLEAN is
 			-- Has the domain been initialized?
 		do
-			result := status_initialized and {TIME_STAMPED_DOMAIN} precursor
+			result := status_initialized and precursor {TIME_STAMPED_DOMAIN} 
 		end
 		
 	status_initialized: BOOLEAN

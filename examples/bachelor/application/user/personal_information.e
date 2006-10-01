@@ -132,17 +132,17 @@ feature {NONE} -- Implementation
 	initialize is
 		do
 			reset_personal_information
-			{TIME_STAMPED_DOMAIN} precursor
+			precursor {TIME_STAMPED_DOMAIN}
 		end
 
 	update is
 		do
-			{TIME_STAMPED_DOMAIN} precursor
+			precursor {TIME_STAMPED_DOMAIN} 
 		end
 
 	initialized: BOOLEAN is
 		do
-			result := {TIME_STAMPED_DOMAIN} precursor
+			result := precursor {TIME_STAMPED_DOMAIN} 
 		end
 
 	reset_personal_information is

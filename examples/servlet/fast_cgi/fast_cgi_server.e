@@ -40,7 +40,7 @@ feature -- Initialization
 				print_usage
 			else
 				config.set_server_port (port)
-				parent_make (port, 10)
+				parent_make ("local_host", port, 10)
 				register_servlets
 				run
 			end

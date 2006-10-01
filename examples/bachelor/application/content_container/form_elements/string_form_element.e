@@ -139,7 +139,6 @@ feature {NONE} -- implementation
 	set_maximum_length (new_maximum_length : INTEGER) is
 		-- Set maximum length
 		require
-			valid_new_maximum_length : new_maximum_length /= Void
 			positive_new_maximum_length : new_maximum_length > 0
 		do
 			maximum_length := new_maximum_length
@@ -148,7 +147,6 @@ feature {NONE} -- implementation
 	set_size (new_size : INTEGER) is
 		-- Set size
 		require
-			valid_new_size : new_size /= Void
 			postiive_new_size : new_size > 0
 		do
 			size := new_size

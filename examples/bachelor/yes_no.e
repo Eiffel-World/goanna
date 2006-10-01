@@ -61,18 +61,18 @@ feature {NONE} -- implementation
 
 	update is
 		do
-			{STATUS_DOMAIN} precursor
-			{DOMAIN_WITH_PARENT} precursor
+			precursor {STATUS_DOMAIN} 
+			precursor {DOMAIN_WITH_PARENT} 
 		end
 
 	initialize is
 		do
-			{STATUS_DOMAIN} precursor
+			precursor {STATUS_DOMAIN} 
 		end
 
 	initialized: BOOLEAN is
 		do
-			result := {STATUS_DOMAIN} precursor
+			result := precursor {STATUS_DOMAIN} 
 		end
 
 feature {NONE} -- Creation

@@ -31,19 +31,19 @@ feature
 
 	initialize is
 		do
-			{TIME_STAMPED_DOMAIN} precursor
-			{DOMAIN_WITH_CHILDREN} precursor
-			{BRANCHING_PAGE_SEQUENCE} precursor
+			precursor {TIME_STAMPED_DOMAIN} 
+			precursor {DOMAIN_WITH_CHILDREN} 
+			precursor {BRANCHING_PAGE_SEQUENCE} 
 		end
 
 	update is
 		do
-			{TIME_STAMPED_DOMAIN} precursor
+			precursor {TIME_STAMPED_DOMAIN} 
 		end
 
 	initialized: BOOLEAN is
 		do
-			result := {TIME_STAMPED_DOMAIN} precursor and {DOMAIN_WITH_CHILDREN} precursor and {BRANCHING_PAGE_SEQUENCE} precursor
+			result := precursor {TIME_STAMPED_DOMAIN}  and precursor {DOMAIN_WITH_CHILDREN} and precursor {BRANCHING_PAGE_SEQUENCE} 
 		end
 
 end -- class TOPIC_SEQUENCE_DOMAIN_WITH_CHILDREN

@@ -50,7 +50,7 @@ feature
 			Result := processing_result.session_status.programming_language
 		end
 		
-	text_for_item (processing_result: REQUEST_PROCESSING_RESULT; item: PROGRAMMING_LANGUAGE_SELECTION): STRING is
+	text_for_item (processing_result: REQUEST_PROCESSING_RESULT;  suffix: INTEGER; item: PROGRAMMING_LANGUAGE_SELECTION): STRING is
 		do
 			Result := item.name
 		end

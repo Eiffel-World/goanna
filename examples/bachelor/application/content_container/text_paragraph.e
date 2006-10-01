@@ -38,12 +38,12 @@ feature -- implement deferred features
 
 	html_begin_element : STRING is
 		do
-			result := {PARAGRAPH} precursor + html_text_container_begin_element
+			result := precursor {PARAGRAPH}  + html_text_container_begin_element
 		end
 
 	html_end_element : STRING is
 		do
-			result := html_text_container_end_element + {PARAGRAPH} precursor
+			result := html_text_container_end_element + precursor {PARAGRAPH}
 		end
 
 feature {NONE} -- Creation

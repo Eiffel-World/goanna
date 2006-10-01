@@ -28,7 +28,7 @@ feature {PAGE_SEQUENCE_ELEMENT, PAGE_FACTORY, USER, APPLICATION_SESSION_MANAGER}
 	user : like user_anchor
 		-- The type of user processed by the application
 
-feature {SERVLET} -- communication with GOANNA Application
+feature {APPLICATION_SERVLET} -- communication with GOANNA Application
 
 	process_dynamic_url (dynamic_url_to_process : DYNAMIC_URL) is
 		-- process an incoming dynamic_url from the servlet
@@ -75,7 +75,7 @@ feature {SERVLET} -- communication with GOANNA Application
 			end
 		end
 
-	set_new_request (new_request : HTTP_SERVLET_REQUEST; new_response : HTTP_SERVLET_RESPONSE) is
+	set_new_request (new_request : GOA_HTTP_SERVLET_REQUEST; new_response : GOA_HTTP_SERVLET_RESPONSE) is
 		-- Set new request & response for the session to process
 		require
 			valid_new_request : new_request /= Void
@@ -114,9 +114,9 @@ feature -- {DYNAMIC_URL, PAGE}  -- Current request/response related attributes
 		end
 
 
-	current_request : HTTP_SERVLET_REQUEST
+	current_request : GOA_HTTP_SERVLET_REQUEST
 
-	current_response : HTTP_SERVLET_RESPONSE
+	current_response : GOA_HTTP_SERVLET_RESPONSE
 
 feature {LOGIN_SEQUENCE} -- Set User
 
@@ -218,12 +218,12 @@ feature {NONE} -- implementation
 
 feature -- session
 
-	session : HTTP_SESSION
+	session : GOA_HTTP_SESSION
 		-- The session associated with this sequencer
 
 feature {LOGIN_SEQUENCE, APPLICATION_SERVLET}
 
-	set_session (new_session : HTTP_SESSION) is
+	set_session (new_session : GOA_HTTP_SESSION) is
 		-- set session to new_session
 		require
 			valid_new_session : new_session /= Void
@@ -235,7 +235,7 @@ feature {LOGIN_SEQUENCE, APPLICATION_SERVLET}
 
 feature {NONE} -- Creation
 
-	make (new_session : HTTP_SESSION) is
+	make (new_session : GOA_HTTP_SESSION) is
 		require
 			valid_new_session : new_session /= Void
 		do

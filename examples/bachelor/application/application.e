@@ -13,11 +13,14 @@ class
 
 inherit
 	SYSTEM_CONSTANTS
---	FAST_CGI_SERVLET_APP
-	HTTPD_SERVLET_APP
+	GOA_FAST_CGI_SERVLET_APP
 		rename
 			make as parent_make
 		end
+--	GOA_HTTPD_SERVLET_APP
+--		rename
+--			make as parent_make
+--		end
 
 creation
 
@@ -30,14 +33,14 @@ feature
 
 		do
 			io.putstring ("Starting Application " + application_directory + "...%N")
-			parent_make (port, backlog_requests)
+			parent_make ("localhost", port, backlog_requests)
 			register_servlets
 			run
 		end
 
 	register_servlets is
 		local
-			application_config: SERVLET_CONFIG
+			application_config: GOA_SERVLET_CONFIG
 			application_servlet: APPLICATION_SERVLET
 		do
 			create application_config
@@ -48,5 +51,12 @@ feature
 			servlet_manager.register_servlet (application_servlet, application_directory)
 			servlet_manager.register_default_servlet (application_servlet)	
 		end
+		
+	field_exception: BOOLEAN is
+			-- 
+		do
+			Result := False
+		end
+		
 
 end -- class APPLICATION
