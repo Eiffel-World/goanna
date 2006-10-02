@@ -150,6 +150,7 @@ feature {NONE} -- Implementation
 			-- Open socket connected to service
 		do
 			create socket.open_by_name_and_port (host, port)
+			socket_ok := socket.is_open
 		ensure
 			socket_ready: socket_ok implies socket.is_open
 		end
