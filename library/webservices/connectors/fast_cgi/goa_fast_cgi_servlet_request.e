@@ -43,7 +43,7 @@ feature -- Access
 	get_header (name: STRING): STRING is
 			-- Get the value of the specified request header.
 		do
-			Result := clone (internal_request.parameters.item (name))
+			Result := internal_request.parameters.item (name).twin
 		end
 
 	get_header_names: DS_LINEAR [STRING] is
@@ -59,7 +59,7 @@ feature -- Access
 			until
 				cursor.off
 			loop
-				array_list.force_last (clone (cursor.key))
+				array_list.force_last (cursor.key.twin)
 				cursor.forth
 			end
 			Result := array_list

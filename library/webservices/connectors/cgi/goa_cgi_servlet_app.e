@@ -111,7 +111,7 @@ feature {NONE} -- Implementation
 			resp.send_error (Sc_not_found)
 		end
 
-	servlet_app_make (port, backlog: INTEGER) is
+	servlet_app_make (new_host: STRING; port, backlog: INTEGER) is
 			-- Not used in a CGI app 	
 		do
 		end

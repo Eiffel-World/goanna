@@ -62,33 +62,20 @@ feature -- Basic operations
 			-- Handle a request by dispatching it to the correct method handler.
 		local
 			method: STRING
-			failed: BOOLEAN
 		do
-			if not failed then	
-				method := req.method
-				if method.is_equal (Method_get) then
-					do_get (req, resp)
-				elseif method.is_equal (Method_post) then
-					do_post (req, resp)
-				elseif method.is_equal (Method_head) then
-					do_head (req, resp)
-				else
-					resp.send_error (Sc_not_implemented)
-				end
-				-- make sure the response has been flushed.
-				resp.flush_buffer
+			method := req.method
+			if method.is_equal (Method_get) then
+				do_get (req, resp)
+			elseif method.is_equal (Method_post) then
+				do_post (req, resp)
+			elseif method.is_equal (Method_head) then
+				do_head (req, resp)
 			else
-				-- make sure the error page has been flushed.
-				resp.flush_buffer
+				resp.send_error (Sc_not_implemented)
 			end
+			resp.flush_buffer
 		rescue
-			-- attempt to send an internal error page
-			if not failed then
-				log_service_error
-				resp.send_error (Sc_internal_server_error)
-				failed := True		
-				retry
-			end
+			log_service_error
 		end
 
 	destroy is

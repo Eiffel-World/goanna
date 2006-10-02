@@ -42,10 +42,10 @@ feature
 			valid_processing_result: processing_result /= Void
 			valid_index: 0 < index and index <= option_list (processing_result, suffix).count
 		do
-			Result := text_for_item (processing_result, option_list (processing_result, suffix).item (index))
+			Result := text_for_item (processing_result, suffix, option_list (processing_result, suffix).item (index))
 		end
 		
-	text_for_item (processing_result: REQUEST_PROCESSING_RESULT; item: G): STRING is
+	text_for_item (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER; item: G): STRING is
 			-- Text for the item at index
 		require
 			ok_to_read_data (processing_result)
@@ -158,7 +158,7 @@ feature
 				until
 					local_option_list.after
 				loop
-					xml.add_option_element (local_option_list.index.out, yes_no_string_for_boolean (show_the_item_as_selected (local_option_list.item_for_iteration, processing_result, suffix)), text_for_item (processing_result, local_option_list.item_for_iteration))
+					xml.add_option_element (local_option_list.index.out, yes_no_string_for_boolean (show_the_item_as_selected (local_option_list.item_for_iteration, processing_result, suffix)), text_for_item (processing_result, suffix, local_option_list.item_for_iteration))
 					local_option_list.forth
 				end
 			xml.end_current_element

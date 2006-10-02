@@ -50,7 +50,7 @@ feature -- Attributes
 				Result.keep_head (period_index -1)
 			end
 		end
-		
+
 	ok_to_process_servlet (processing_result: GOA_REQUEST_PROCESSING_RESULT): BOOLEAN is
 			-- Does current user have permission to have this servlet processed?
 			-- May be redefined in descendents as necessary

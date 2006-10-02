@@ -12,15 +12,17 @@ class GOA_HTTPD_SERVING_SOCKET
 
 inherit
 
-	TCP_SOCKET
-		redefine
-			multiplex_read_callback
-		end
+--	TCP_SOCKET
+--		redefine
+--			multiplex_read_callback
+--		end
 
-	SOCKET_MULTIPLEXER_SINGLETON
-		export
-			{NONE}all
-		end
+--	SOCKET_MULTIPLEXER_SINGLETON
+--		export
+---			{NONE}all
+--		end
+
+-- TODO PORT TO EPOSIX
 
 	GOA_SHARED_SERVLET_MANAGER
 		

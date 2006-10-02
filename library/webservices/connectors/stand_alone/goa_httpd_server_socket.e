@@ -12,16 +12,18 @@ class GOA_HTTPD_SERVER_SOCKET
 
 inherit
 
-	TCP_SERVER_SOCKET
-		redefine
-			new_connection_socket,
-			multiplex_read_callback
-		end
+--	TCP_SERVER_SOCKET
+--		redefine
+--			new_connection_socket,
+--			multiplex_read_callback
+--		end
 
-	SOCKET_MULTIPLEXER_SINGLETON
-		export
-			{NONE} all
-		end
+--	SOCKET_MULTIPLEXER_SINGLETON
+--		export
+--			{NONE} all
+--		end
+
+-- TODO Port to EPOSIX
 
 	GOA_HTTPD_LOGGER
 		export
@@ -45,19 +47,19 @@ feature
 			-- we got a new client. Register the socket that talks to this client as a
 			-- managed socket so that a select can work on it too
 		local
-			socket : TCP_SOCKET
+--			socket : TCP_SOCKET
 		do
 			debug ("status_output")
 				io.put_character ('#')
 			end
-			socket := wait_for_new_connection
-			if socket /= Void then
-				socket_multiplexer.register_managed_socket_read (socket)
-			else
-				log_hierarchy.logger (Internal_category).error ("Server socket error: " + socket_multiplexer.last_socket_error_code.out + ","
-					+ socket_multiplexer.last_extended_socket_error_code.out + " read_bytes=" 
-					+ socket_multiplexer.managed_read_count.out)
-			end
+--			socket := wait_for_new_connection
+--			if socket /= Void then
+--				socket_multiplexer.register_managed_socket_read (socket)
+--			else
+--				log_hierarchy.logger (Internal_category).error ("Server socket error: " + socket_multiplexer.last_socket_error_code.out + ","
+--					+ socket_multiplexer.last_extended_socket_error_code.out + " read_bytes=" 
+--					+ socket_multiplexer.managed_read_count.out)
+--			end
 		end
 
 end -- class GOA_HTTPD_SERVER_SOCKET

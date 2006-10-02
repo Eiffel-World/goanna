@@ -122,5 +122,6 @@ feature -- Basic operations
 --			content_length_set: contains_header ("Content-Length")
 		deferred
 		end
+			
 	
 end -- class GOA_HTTP_SERVLET_RESPONSE

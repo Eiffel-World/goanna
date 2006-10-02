@@ -392,7 +392,6 @@ feature {NONE} -- Implementation
 		do
 --			io.put_string (generator + ".write " + quoted_eiffel_string_out (data))
 			std.output.put_string (data)
-			-- TODO: check ok and handle errors
 		end
 
 feature {NONE} -- Implementation
