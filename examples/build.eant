@@ -29,6 +29,7 @@
 
 		<set name="target" value="install"/>
 		<geant target="do_all"/>
+		<geant file="build.eant" target="copy_files" dir="application" />
 	</target>
 
 	<target name="compile" depend="install">
