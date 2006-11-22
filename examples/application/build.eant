@@ -25,6 +25,12 @@
 		<echo message="   geant clean"/>
 		<echo message="   geant clobber"/>
 	</target>
+
+	<target name="copy_files">
+	  <copy file="$GOANNA/library/application/xml/goa_page/goa_page.xsl" to_directory="." />
+	  <copy file="$GOANNA/library/application/xml/goa_page/goa_page.frng" to_directory="." />
+	  <copy file="$GOANNA/library/application/xml/goa_common/goa_common.xsl" to_directory="." />
+	</target>
 	
 <!-- Implementation -->
 
