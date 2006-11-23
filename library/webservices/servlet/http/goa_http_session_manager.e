@@ -132,7 +132,7 @@ feature -- Status setting
 					notify_listeners (session, Expiring_code)
 					sessions.remove (key)
 					notify_listeners (session, Expired_code)
-					if not sessions.off then sessions.forth end
+					-- dont do a 'sessions.forth' since removing an element moves the cursor.
 				end
 			end
 		end

@@ -11,7 +11,7 @@ indexing
 class GOA_XRPC_ARRAY_VALUE
 
 inherit
-	
+
 	GOA_XRPC_VALUE
 
 create
@@ -51,7 +51,7 @@ feature -- Initialisation
 			end
 			unmarshall_ok := True
 		end
-		
+
 	unmarshall (node: XM_ELEMENT) is
 			-- Unmarshall array value from XML node.
 		local
@@ -101,7 +101,7 @@ feature -- Initialisation
 					unmarshall_ok := False
 					unmarshall_error_code := Array_contains_no_values
 				end
-				
+
 			else
 				unmarshall_ok := False
 				unmarshall_error_code := Array_data_element_missing
@@ -114,7 +114,7 @@ feature -- Mashalling
 			-- Serialize this array param to XML format
 		local
 			i: INTEGER
-		do	
+		do
 			create Result.make (300)
 			Result.append ("<value><array><data>")
 			from
@@ -132,11 +132,11 @@ feature -- Access
 
 	value: ARRAY [GOA_XRPC_VALUE]
 			-- Array value
-	
+
 feature -- Conversion
 
 	as_object: ANY is
-			-- Return value as an object. ie, extract the actual 
+			-- Return value as an object. ie, extract the actual
 			-- object value from the XRPC_VALUE.
 		local
 			array: ARRAY [ANY]
@@ -152,6 +152,6 @@ feature -- Conversion
 				i := i + 1
 			end
 			Result := array
-		end	
-		
+		end
+
 end -- class GOA_XRPC_ARRAY_VALUE

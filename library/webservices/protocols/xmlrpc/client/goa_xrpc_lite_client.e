@@ -11,17 +11,17 @@ indexing
 class GOA_XRPC_LITE_CLIENT
 
 inherit
-	
+
 	GOA_XRPC_CONSTANTS
 		export
 			{NONE} all
 		end
-		
+
 	KL_EXCEPTIONS
 		export
 			{NONE} all
 		end
-		
+
 creation
 
 	make
@@ -44,8 +44,8 @@ feature -- Initialisation
 feature -- Basic routines
 
 	invoke (call: GOA_XRPC_CALL) is
-			-- Send 'call' to server to be executed. Make 'invocation_ok' True if call is 
-			-- successful and make result available in 'response'. Make 'invocation_ok' False 
+			-- Send 'call' to server to be executed. Make 'invocation_ok' True if call is
+			-- successful and make result available in 'response'. Make 'invocation_ok' False
 			-- if the call failed and make the fault
 			-- available in 'fault'.
 		require
@@ -55,14 +55,14 @@ feature -- Basic routines
 			fault := Void
 			send_call (call)
 			if socket_ok then
-				receive_response	
+				receive_response
 				-- check for response assertion failure and raise exception
 				if not invocation_ok and exception_on_failure then
 					if fault.code = Assertion_failure then
 						raise ("Remote_assertion_failure")
 					end
 				end
-			end	
+			end
 		ensure
 			response_available: invocation_ok implies (response /= Void and fault = Void)
 			fault_available: not invocation_ok implies (response = Void and fault /= Void)
@@ -72,13 +72,13 @@ feature -- Status report
 
 	invocation_ok: BOOLEAN
 			-- Was the last call successful?
-			
+
 	response: GOA_XRPC_RESPONSE
 			-- Last call response. Only available if 'invocation_ok'.
-			
+
 	fault: GOA_XRPC_FAULT
 			-- Last fault. Only available if not 'invocation_ok'.
-	
+
 	exception_on_failure: BOOLEAN
 			-- Should an exception be raised if a remote call assertion fails?
 			-- Default: false
@@ -90,23 +90,23 @@ feature -- Status setting
 		do
 			exception_on_failure := flag
 		end
-		
+
 feature {NONE} -- Implementation
 
 	socket_ok: BOOLEAN
 			-- Was last socket operation successful?
-			
+
 	host: STRING
 			-- Server host name
-			
+
 	port: INTEGER
 			-- Server port
-			
+
 	uri: STRING
 			-- Server XMLRPC uri
-			
+
 	socket: EPX_TCP_CLIENT_SOCKET
-	
+
 	send_call (call: GOA_XRPC_CALL) is
 			-- Send 'call' over the wire
 		require
@@ -145,16 +145,16 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-		
+
 	connect is
 			-- Open socket connected to service
 		do
 			create socket.open_by_name_and_port (host, port)
 			socket_ok := socket.is_open
 		ensure
-			socket_ready: socket_ok implies socket.is_open
+			socket_ready: socket_ok = socket.is_open
 		end
-		
+
 	disconnect is
 			-- Open socket connected to service
 		do
@@ -165,7 +165,7 @@ feature {NONE} -- Implementation
 		ensure
 			socket_closed: socket = Void
 		end
-		
+
 	receive_response is
 			-- Recieve response from server and determine type
 		local
@@ -178,7 +178,7 @@ feature {NONE} -- Implementation
 				connect
 			end
 			if socket_ok then
-				-- read until complete response has been read 
+				-- read until complete response has been read
 				content_length_found := False
 				content_length := -1
 				end_header_index := -1
@@ -214,7 +214,7 @@ feature {NONE} -- Implementation
 	content_length_found: BOOLEAN
 	content_length, end_header_index: INTEGER
 	content: STRING
-	
+
 	check_response (buffer: STRING; more_bytes: BOOLEAN): BOOLEAN is
 			-- Check response to determine if all headers and body has been read. 'more_bytes' 
 			-- indicates if more bytes were read before entering this routine. If this is false
@@ -264,11 +264,11 @@ feature {NONE} -- Implementation
 				if Result then
 					content := buffer.substring (end_header_index, buffer.count)
 				end
-			end	
+			end
 		end
-		
+
 	process_response is
-			-- Parse response and determine if it is a response or fault. Store in 
+			-- Parse response and determine if it is a response or fault. Store in
 			-- appropriate attribute and set 'invokation_ok' flag.
 		require
 			content_exists: content /= Void
@@ -281,7 +281,7 @@ feature {NONE} -- Implementation
 			create parser.make
 			create tree_pipe.make
 			parser.set_callbacks (tree_pipe.start)
-			parser.parse_from_string (content)		
+			parser.parse_from_string (content)
 			if parser.is_correct then
 				-- retrieve child if available
 				if not tree_pipe.document.root_element.is_empty then
@@ -290,7 +290,7 @@ feature {NONE} -- Implementation
 				-- peek at response elements to determine if it is a fault or not
 				if child /= Void and then child.name.is_equal (Fault_element) then
 					create fault.unmarshall (tree_pipe.document.root_element)
-					if not fault.unmarshall_ok then		
+					if not fault.unmarshall_ok then
 						-- create fault
 						create fault.make (fault.unmarshall_error_code)
 						response := Void
@@ -304,13 +304,13 @@ feature {NONE} -- Implementation
 						create fault.make (response.unmarshall_error_code)
 						response := Void
 					end
-				end	
+				end
 			else
 				invocation_ok := False
 				response := Void
 				-- create fault
 				create fault.make (Bad_payload_fault_code)
-			end	
+			end
 		end
-		
+
 end -- GOA_XRPC_LITE_CLIENT

@@ -110,7 +110,7 @@ feature -- Status setting
 		end
 
 	set_content_type (type: STRING) is
-			-- Set hte content type of the response being sent to the client.
+			-- Set the content type of the response being sent to the client.
 			-- The content type may include the type of character encoding used, for
 			-- example, 'text/html; charset=ISO-885904'
 		do

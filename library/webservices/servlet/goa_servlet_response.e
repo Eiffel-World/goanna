@@ -22,7 +22,7 @@ feature -- Status report
 			-- had its status code and headers written.
 		deferred
 		end
-		
+
 feature -- Status setting
 
 	set_content_length (length: INTEGER) is
@@ -31,21 +31,21 @@ feature -- Status setting
 			positive_length: length >= 0
 		deferred
 		end
-	
+
 	set_content_type (type: STRING) is
-			-- Set hte content type of the response being sent to the client.
+			-- Set the content type of the response being sent to the client.
 			-- The content type may include the type of character encoding used, for
 			-- example, 'text/html; charset=ISO-885904'
 		require
 			type_exists: type /= Void
 		deferred
 		end
-	
+
 	set_buffer_size (size: INTEGER) is
 			-- Set the preferred buffer size for the body of the response.
 		deferred
 		end
-	
+
 feature -- Basic operations
 
 	flush_buffer is
@@ -66,5 +66,5 @@ feature -- Basic operations
 		ensure
 			not_committed: not is_committed
 		end
-		
+
 end -- class GOA_SERVLET_RESPONSE

@@ -93,8 +93,8 @@ feature -- Status setting
 		end
 
 	set_servlet_mapping_prefix (virtual_prefix: STRING) is
-			-- Set the servlet mapping prefix to 'prefix'. This is used to set
-			-- a virtual prefix name for accessing servlets. eg. "/servlet". The
+			-- Set the servlet mapping prefix to `virtual_prefix'. This is used to set
+			-- a virtual prefix name for accessing servlets. eg. "servlet". The
 			-- prefix should not begin or end in a slash. It will always be relative
 			-- to the document root.
 			-- If a servlet prefix is to be used, it must be set before any servlets

@@ -13,12 +13,12 @@ class GOA_BASE64_ENCODER
 inherit
 
 	KL_IMPORTED_INTEGER_ROUTINES
-	
+
 	KL_STRING_ROUTINES
 		export
 			{NONE} all
 		end
-		
+
 feature -- Basic operations
 
 	encode (data: STRING): STRING is
@@ -30,19 +30,19 @@ feature -- Basic operations
 		ensure
 			encoded_exists: Result /= Void
 		end
-		
+
 	encode_for_session_key (data: STRING): STRING is
 			-- Base64 encode 'data' with a modified Base64 character
 			-- set that is suitable for use as a session key and for
 			-- transmission as a cookie value.
 		require
-			data_exists: data /= Void	
+			data_exists: data /= Void
 		do
-			Result := perform_encoding (data, session_key_chars)	
+			Result := perform_encoding (data, session_key_chars)
 		ensure
 			encoded_exists: Result /= Void
 		end
-		
+
 	decode (data: STRING): STRING is
 			-- Base64 encode 'data'
 		require
@@ -52,7 +52,7 @@ feature -- Basic operations
 		ensure
 			decoded_exists: Result /= Void
 		end
-	
+
 feature {NONE} -- Implementation
 
 	base_64_chars: ARRAY [CHARACTER] is
@@ -73,10 +73,10 @@ feature {NONE} -- Implementation
         ensure
         	sixty_five_chars: Result.count = 65
         end
-   
+
 	session_key_chars: ARRAY [CHARACTER] is
 			-- Encoding alphabet for session keys. Contains only chars that
-			-- are safe to use in cookies, URLs and file names. Same as BASE64 
+			-- are safe to use in cookies, URLs and file names. Same as BASE64
 			-- except the last two chars and the padding char
      	once
      		Result := <<
@@ -127,64 +127,64 @@ feature {NONE} -- Implementation
 			Result.put (62, ('+').code)
 			Result.put (63, ('/').code)
 		end
-		
+
 	perform_encoding (data: STRING; chars: ARRAY [CHARACTER]): STRING is
 			-- Encode 'data' using characters in 'char_set'.
 		require
 			data_exists: data /= Void
-			char_set_exists: chars /= Void		
+			char_set_exists: chars /= Void
  		local
  			quad, trip: BOOLEAN
  			i, index, val: INTEGER
  		do
 			Result := make_buffer (((data.count + 2) // 3) * 4)
- 			from 
+ 			from
  				i := 1
  				index := 1
  			until
  				i > data.count
  			loop
  				quad := False
- 				trip := False				
+ 				trip := False
  				val := INTEGER_.bit_and (255, data.item (i).code)
  				val := INTEGER_.bit_shift_left (val, 8)
  				if i + 1 <= data.count then
  					val := INTEGER_.bit_or (val, INTEGER_.bit_and (255, data.item (i + 1).code))
  					trip := True
- 				end				
+ 				end
  				val := INTEGER_.bit_shift_left (val, 8)
  				if i + 2 <= data.count then
  					val := INTEGER_.bit_or (val, INTEGER_.bit_and (255, data.item (i + 2).code))
  					quad := True
- 				end 				
+ 				end
  				if quad then
  					Result.put (chars.item (INTEGER_.bit_and (val, 63) + 1), index + 3)
  				else
  					Result.put (chars.item (65), index + 3)
- 				end				
+ 				end
  				val := INTEGER_.bit_shift_right (val, 6)
  				if trip then
  					Result.put (chars.item (INTEGER_.bit_and (val, 63) + 1), index + 2)
  				else
  					Result.put (chars.item (65), index + 2)
- 				end				
+ 				end
  				val := INTEGER_.bit_shift_right (val, 6)
- 				Result.put (chars.item (INTEGER_.bit_and (val, 63) + 1), index + 1)				
+ 				Result.put (chars.item (INTEGER_.bit_and (val, 63) + 1), index + 1)
  				val := INTEGER_.bit_shift_right (val, 6)
  				Result.put (chars.item (INTEGER_.bit_and (val, 63) + 1), index)
- 				
+
  				i := i + 3
  				index := index + 4
-	 		end		
+	 		end
  		ensure
-			encoded_string_exists: Result /= Void 			
+			encoded_string_exists: Result /= Void
  		end
- 		
+
 	perform_decoding (data: STRING; chars: ARRAY [CHARACTER]): STRING is
 			-- Decode 'data' using characters in 'char_set'.
 		require
 			data_exists: data /= Void
-			char_set_exists: chars /= Void		
+			char_set_exists: chars /= Void
  		local
  			len, shift, accum, index, ix, value: INTEGER
  		do
@@ -194,8 +194,8 @@ feature {NONE} -- Implementation
  			end
  			if data.count > 1 and data.item (data.count - 1) = '=' then
  				len := len - 1
- 			end		
- 			Result := make_buffer (len)		
+ 			end
+ 			Result := make_buffer (len)
  			from
  				ix := 1
  				index := 1
@@ -221,5 +221,5 @@ feature {NONE} -- Implementation
  		ensure
 			decoded_string_exists: Result /= Void
  		end
- 		
+
 end -- class GOA_BASE64_ENCODER

@@ -11,8 +11,8 @@ indexing
 class GOA_COOKIE_NAME_EQUALITY_TESTER
 
 inherit
-	
-	DS_EQUALITY_TESTER [GOA_COOKIE]
+
+	KL_EQUALITY_TESTER [GOA_COOKIE]
 		redefine
 			test
 		end
@@ -30,5 +30,5 @@ feature -- Status report
 				Result := v.name.is_equal (u.name)
 			end
 		end
-		
+
 end -- class GOA_COOKIE_NAME_EQUALITY_TESTER
