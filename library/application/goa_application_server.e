@@ -8,9 +8,9 @@ indexing
 
 deferred class
 	GOA_APPLICATION_SERVER
-	
+
 inherit
-	
+
 	GOA_SERVLET_APPLICATION
 		redefine
 			all_servlets_registered
@@ -36,6 +36,8 @@ inherit
 feature
 
 	application_make is
+		local
+			dep: IN_LIST_DEPENDENCY
 		do
 			if command_line_ok and then configuration.test_mode then
 				execute
@@ -93,6 +95,8 @@ feature
 		do
 			create session_status.make
 			session.set_attribute (configuration.session_status_attribute_name, session_status)
+		ensure then
+			session_status_set: session.has_attribute (configuration.session_status_attribute_name)
         end
 
     attribute_bound (session: GOA_HTTP_SESSION; name: STRING; attribute: ANY) is
@@ -115,7 +119,7 @@ feature
 		do
 			servlet_manager.register_servlet (servlet, servlet.name)
 		end
-		
+
 	command_line_ok: BOOLEAN is
 			-- Command line has been parsed and is valid
 			-- First create (or assign an existing object to) application_configuration.
@@ -129,11 +133,11 @@ feature
 		ensure
 			valid_configuration: configuration /= Void
 		end
-		
+
 	field_exception: BOOLEAN is
 			-- Should we attempt to retry?
 		do
-			
+
 			if exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) then
 				Result := False
 			else
@@ -158,7 +162,7 @@ feature
 			application_log: L4E_FILE_APPENDER
 			application_layout: L4E_PATTERN_LAYOUT
 		do
-		
+
 			create {L4E_SYSLOG_APPENDER} syslog.make ("Syslog", "localhost", Log_user)
 			create {L4E_PATTERN_LAYOUT} layout.make ("@d [@-6p] port: " + configuration.port.out + " @c - @m%N")
 			syslog.set_layout (layout)
@@ -178,7 +182,7 @@ feature
 		once
 			create Result.make (1000000, "NONE")
 		end
-		
+
 	all_servlets_registered: BOOLEAN is
 		local
 			has_this_servlet: BOOLEAN
@@ -205,8 +209,8 @@ feature
 				servlet_by_name.forth
 			end
 		end
-		
-		
-		
+
+
+
 
 end -- class GOA_APPLICATION_SERVER
