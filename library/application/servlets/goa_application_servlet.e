@@ -8,7 +8,7 @@ indexing
 
 deferred class
 	GOA_APPLICATION_SERVLET
-	
+
 inherit
 
 	GOA_HTTP_SERVLET
@@ -38,7 +38,7 @@ feature -- Attributes
 			no_spaces: not Result.has (' ')
 			-- TODO Add some better validity checks
 		end
-		
+
 	name_without_extension: STRING is
 			-- The name of this servlet, without the extension
 		local
@@ -62,9 +62,9 @@ feature -- Attributes
 
 	receive_secure: BOOLEAN
 		-- This servlet should receive information from clients via SSL
-	
+
 feature -- Parameter Queries
-	
+
 	has_mandatory_parameter (the_parameter: STRING): BOOLEAN is
 			-- Does servlet include the_parameter as a mandatory parameter?
 		require
@@ -90,7 +90,7 @@ feature -- Parameter Queries
 		end
 
 	add_database_updated_message (processing_result: REQUEST_PROCESSING_RESULT) is
-			-- Add message telling user database was updated 
+			-- Add message telling user database was updated
 		require
 			valid_processing_result: processing_result /= Void
 			processing_result_was_processed: processing_result.was_processed
@@ -102,7 +102,7 @@ feature -- Parameter Queries
 		end
 
 feature -- Request Processing
-	
+
 	do_get (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Called to allow the servlet to handle a GET request.
 			-- Verify form elements in request conform to semantics required by this servlet
@@ -124,11 +124,11 @@ feature -- Request Processing
 			temp_name: STRING
 			failed_once, failed_twice: BOOLEAN
 			suffix_list: DS_LINKED_LIST [INTEGER]
-			
+
 		do
 			debug ("goa_application_servlet")
 				io.put_string ("========" + generator + "%N")
-			end		
+			end
 			if not failed_once then
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
 --				io.put_string ("Request: " + name + client_info (request) + "%N")
@@ -146,13 +146,13 @@ feature -- Request Processing
 					create expected_parameters_in_request.make_equal
 					create mandatory_processing_results.make
 					create non_mandatory_processing_results.make
-					-- Verify legality of each parameter; 
+					-- Verify legality of each parameter;
 					-- illegal input means user has submitted obsolete form (through back button)
 					-- or there is a bug in the form (or form processor) or
 					-- a hacker deliberately submitting illegal form data
 					-- Validity of user input is checked during parameter processing (request_processor.process)
 					parameter_names := request.get_parameter_names
-					from 
+					from
 						parameter_names.start
 						all_parameters_are_legal := True
 					until
@@ -174,7 +174,7 @@ feature -- Request Processing
 							if not mandatory_parameters_in_request.has (parameter_name) then
 								mandatory_parameters_in_request.force_last (parameter_name)
 							end
-						elseif expected_parameters.has (parameter_name) then 
+						elseif expected_parameters.has (parameter_name) then
 							if not expected_parameters_in_request.has (parameter_name) then
 								expected_parameters_in_request.force_last (parameter_name)
 							end
@@ -197,10 +197,37 @@ feature -- Request Processing
 					all_expected_parameters_are_present := equal (expected_parameters.count, expected_parameters_in_request.count)
 					all_parameters_are_present := all_mandatory_parameters_are_present and all_expected_parameters_are_present
 					if not all_mandatory_parameters_are_present then
-						log_hierarchy.logger (configuration.application_security_log_category).info ("Missing Mandatory Parameter")
+						log_hierarchy.logger (configuration.application_security_log_category).info ("Missing Mandatory Parameter(s)")
+						if configuration.test_mode then
+							io.put_string ("Missing Mandatory Parameters:%N")
+							from
+								mandatory_parameters.start
+							until
+								mandatory_parameters.after
+							loop
+								if not mandatory_parameters_in_request.has (mandatory_parameters.item_for_iteration) then
+									io.put_string (mandatory_parameters.item_for_iteration + "%N")
+								end
+								mandatory_parameters.forth
+							end
+						end
 					end
 					if not all_expected_parameters_are_present then
 						log_hierarchy.logger (configuration.application_security_log_category).info ("Missing Expected Parameter")
+						if configuration.test_mode then
+							io.put_string ("Missing Mandatory Parameters:%N")
+							from
+								expected_parameters.start
+							until
+								expected_parameters.after
+							loop
+								if not expected_parameters_in_request.has (expected_parameters.item_for_iteration) then
+									io.put_string (expected_parameters.item_for_iteration + "%N")
+								end
+								expected_parameters.forth
+							end
+						end
+
 					end
 					all_parameters_are_legal := all_parameters_are_legal and all_parameters_are_present
 					if all_parameters_are_legal then
@@ -245,9 +272,13 @@ feature -- Request Processing
 						processing_result.process_submit_parameter_if_present
 					end
 				end
-				servlet := configuration.next_page (processing_result)
+				start_transaction (processing_result)
+					servlet := configuration.next_page (processing_result)
+				commit (processing_result)
 			elseif not failed_twice then
-				servlet := configuration.next_page (processing_result)
+				start_transaction (processing_result)
+					servlet := configuration.next_page (processing_result)
+				commit (processing_result)
 			else
 				servlet ?= servlet_manager.default_servlet
 				if servlet = Void and then servlet_manager.default_servlet = Void then
@@ -268,11 +299,11 @@ feature -- Request Processing
 			else
 				servlet.send_response (processing_result)
 
-			end			
+			end
 			session_status.set_has_served_a_page
 			debug ("goa_application_servlet")
 				io.put_string ("========" + generator + " response sent%N")
-			end		
+			end
 		rescue
 			if ok_to_write_data (processing_result) then
 				commit (processing_result)
@@ -285,7 +316,7 @@ feature -- Request Processing
 				log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Once")
 				log_hierarchy.logger (configuration.application_log_category).info (exception_trace)
 				-- TODO This should be done in a generic (not application specific) way.
-				failed_once := True		
+				failed_once := True
 				retry
 			elseif not failed_twice then
 				log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice")
@@ -317,7 +348,7 @@ feature -- Linking
 --				Result.set_tool_tip (tool_tip_class (processing_result), tool_tip (processing_result))
 --			end
 		end
-		
+
 	post_hyperlink (processing_result: REQUEST_PROCESSING_RESULT; text: STRING): GOA_EXTERNAL_HYPERLINK is
 			-- A hyperlink to the this servlet
 		require
@@ -329,7 +360,7 @@ feature -- Linking
 				Result.set_secure
 			end
 		end
-		
+
 	post_url (processing_result: REQUEST_PROCESSING_RESULT): STRING is
 			-- URL to which data should be posted for this servlet
 		require
@@ -360,7 +391,7 @@ feature -- Suplementary Processing
 		end
 
 -- I'm having trouble with compatibility with my Wizard Code; I'll have to rethink this later
-		
+
 --	tool_tip_class (the_topic: PAGE_SEQUENCE_ELEMENT_TOPIC; processing_result: REQUEST_PROCESSING_RESULT): STRING is
 			-- Class of the tool tip associated with this URL
 --		require
@@ -368,7 +399,7 @@ feature -- Suplementary Processing
 --		do
 --			Result := Void
 --		end
-		
+
 --	tool_tip (the_topic: PAGE_SEQUENCE_ELEMENT_TOPIC; processing_result: REQUEST_PROCESSING_RESULT): STRING is
 --			-- Text of the tool tip associated with this URL
 --		do
@@ -391,7 +422,7 @@ feature -- Suplementary Processing
 		ensure
 			not_ok_to_read_write_data: implements_transaction_and_version_access implies not (ok_to_read_data (processing_result) or ok_to_write_data (processing_result))
 		end
-		
+
 	perform_invalid_mandatory_parameters_processing (processing_result: GOA_REQUEST_PROCESSING_RESULT) is
 			-- Called after parameters in servlet form have completed their processing
 			-- if one or more mandatory parameters in the servlet are invalid
@@ -406,24 +437,24 @@ feature -- Suplementary Processing
 		ensure
 			not_ok_to_read_write_data: implements_transaction_and_version_access implies not (ok_to_read_data (processing_result) or ok_to_write_data (processing_result))
 		end
-		
+
 feature {GOA_PARAMETER_PROCESSING_RESULT} -- Parameter Semantics
 
 	mandatory_parameters: DS_LINKED_LIST [STRING]
 			-- Names of parameters that must all be valid for to allow processing of other parameters
-			
+
 	expected_parameters: DS_LINKED_LIST [STRING]
 			-- Names of parameters that must be present in the request
-			
+
 	possible_parameters: DS_LINKED_LIST [STRING]
 			-- Parameters that may or may not be present in the request
-			
+
 	add_if_absent_parameters: DS_LINKED_LIST [STRING]
 			-- Parameters that should be added to the request if they are not present int he request
-			
+
 	pass_through_parameters: DS_LINKED_LIST [STRING]
 			-- Parameters that are passed through to the processing result without processing them
-		
+
 feature -- Logging Facilities
 
 	client_info (req: GOA_HTTP_SERVLET_REQUEST): STRING is
@@ -477,10 +508,10 @@ feature -- Logging Facilities
 			-- Called if service routine generates an exception; may be redefined by descendents
 		do
 			if not exception_is_shutdown_signal then
-				log_hierarchy.logger (configuration.application_log_category).info (generator + ".service:%N" + exception_trace)			
+				log_hierarchy.logger (configuration.application_log_category).info (generator + ".service:%N" + exception_trace)
 			end
 		end
-		
+
 	exception_is_shutdown_signal: BOOLEAN is
 			-- Was the last developer exception a signal to shutdown the application
 		do
@@ -517,7 +548,7 @@ feature {NONE} -- Creation
 		end
 
 invariant
-	
+
 	valid_name: name /= Void and then not name.is_empty
 	valid_mandatory_parameters: mandatory_parameters /= Void
 	valid_expected_parameters: expected_parameters /= Void
@@ -525,6 +556,6 @@ invariant
 	valid_add_if_absent_parameters: add_if_absent_parameters /= Void
 	possible_parameters_has_submit: possible_parameters.has (standard_submit_parameter.name)
 	is_registered: servlet_by_name.has (name_without_extension)
-	
-	
+
+
 end -- class GOA_APPLICATION_SERVLET
