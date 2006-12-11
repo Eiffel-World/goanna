@@ -16,7 +16,7 @@
 	<inherit>
 		<parent location="${GOBO}/misc/eiffel.eant">
 			<redefine target="init_system"/>
-			<redefine target="install"/>
+			<!-- <redefine target="install"/> -->
 			<redefine target="help"/>
 		</parent>
 	</inherit>
@@ -34,7 +34,7 @@
 
 <!-- Implementation -->
 
-	<!-- override install for ISE only -->
+	<!-- override install for ISE only 
 	<target name="install" depend="init">
 		<description>
 			Install ${system} directory.
@@ -44,7 +44,7 @@
 		<set name="eiffel" value="ise"/>
 		<geant target="xace"/>
 		<geant target="other_install"/>
-	</target>
+	</target> -->
 
 	<target name="init_system">
 		<set name="system" value="application"/>

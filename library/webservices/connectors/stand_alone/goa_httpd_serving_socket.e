@@ -12,20 +12,18 @@ class GOA_HTTPD_SERVING_SOCKET
 
 inherit
 
---	TCP_SOCKET
---		redefine
---			multiplex_read_callback
---		end
+	EPX_TCP_SOCKET
+		redefine
+			multiplexer_read_callback
+		end
 
---	SOCKET_MULTIPLEXER_SINGLETON
---		export
----			{NONE}all
---		end
-
--- TODO PORT TO EPOSIX
+	EPX_SOCKET_MULTIPLEXER_SINGLETON
+		export
+			{NONE}all
+		end
 
 	GOA_SHARED_SERVLET_MANAGER
-		
+
 	GOA_HTTPD_LOGGER
 		export
 			{NONE} all
@@ -35,26 +33,26 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 	GOA_HTTPD_CGI_HEADER_VARS
 		export
 			{NONE} all
 		end
-			
+
 create
 
-    make_uninitialized
+    attach_to_socket
 
 feature
 
-	multiplex_read_callback is
+	multiplexer_read_callback (a_multiplexer: EPX_SOCKET_MULTIPLEXER) is
 			-- this routine is called if there is data ready for
 			-- reading on our socket
 		local
 			http_request: GOA_HTTPD_REQUEST
 			resp: GOA_HTTPD_SERVLET_RESPONSE
 			req: GOA_HTTPD_SERVLET_REQUEST
-			path: STRING
+			current_path: STRING
 			request: STRING
 		do
 			debug ("status_output")
@@ -63,82 +61,80 @@ feature
 			-- read the request
 			check_socket_error ("read callback")
 			request := receive_request
-			if socket_ok then			
+			if socket_ok then
 				create http_request.make (Current, request)
 				-- create request and response objects from request buffer
 				create resp.make (request, Current)
 				create req.make (http_request, resp)
-				-- dispatch to the registered servlet using the path info as the registration name.
+				-- dispatch to the registered servlet using the current_path info as the registration name.
 				if req.has_header (Script_name_var) then
-					path := req.get_header (Script_name_var)
-					if path /= Void then
-						-- remove leading slash from path
-						path.keep_tail (path.count - 1)
+					current_path := req.get_header (Script_name_var)
+					if current_path /= Void then
+						-- remove leading slash from current_path
+						current_path.keep_tail (current_path.count - 1)
 					end
-				end			
-				if path /= Void then
-					log_hierarchy.logger (Access_category).info ("Servicing request: /" + path)
+				end
+				if current_path /= Void then
+					log_hierarchy.logger (Access_category).info ("Servicing request: /" + current_path)
 					-- attempt to handle the request and send 'not found' if not handled.
-					if servlet_manager.has_registered_servlet (path) then
-						servlet_manager.servlet (path).service (req, resp)
+					if servlet_manager.has_registered_servlet (current_path) then
+						servlet_manager.servlet (current_path).service (req, resp)
 					elseif servlet_manager.has_default_servlet then
 						servlet_manager.default_servlet.service (req, resp)
 					else
 						resp.send_error (Sc_not_found)
-						log_hierarchy.logger (Access_category).error ("Servlet not found for URI " + path)
+						log_hierarchy.logger (Access_category).error ("Servlet not found for URI " + current_path)
 					end
 				else
 					handle_missing_servlet (resp)
 					log_hierarchy.logger (Access_category).error ("Request URI not specified")
-				end			
+				end
 			end
 			-- close socket after sending reply
-			socket_multiplexer.unregister_managed_socket_read (Current)
+			socket_multiplexer.remove_read_socket (Current)
 			close
 		end
+
+
 
 feature {NONE}
 
 	receive_request: STRING is
 			-- Recieve request from client
 		local
-			buffer: STRING
 			done: BOOLEAN
 		do
 			create Result.make (8192)
 			if socket_ok then
-				-- read until complete request has been read 
+				-- read until complete request has been read
 				content_length_found := False
 				content_length := -1
 				end_header_index := -1
 				from
-					create buffer.make (8192)
-					buffer.fill_blank
-					receive_string (buffer)
+					read_string (8192)
 					check_socket_error ("after priming read")
 				until
 					done or not socket_ok
 				loop
-					Result.append (buffer.substring (1, bytes_received))
+					Result.append (last_string)
 					debug ("socket")
 						io.putstring ("Current request string: " + result + "%N")
 					end
 					done := check_request (Result) -- (was True) <===================== Here is the change
 					if not done then
-						buffer.fill_blank
-						receive_string (buffer)
-						check_socket_error ("after loop read")					
+						read_string (8192)
+						check_socket_error ("after loop read")
 					end
 				end
 				debug ("socket")
-					io.putstring ("Current Buffer Contents: " + buffer + "%N")
+					io.putstring ("Current Buffer Contents: " + last_string + "%N")
 				end
 			end
 		end
 
 	content_length_found: BOOLEAN
 	content_length, end_header_index: INTEGER
-	
+
 	check_request (buffer: STRING): BOOLEAN is
 			-- Check request to determine if all headers and body have been read
 		require
@@ -174,12 +170,12 @@ feature {NONE}
 			if content_length_found then
 				-- have enough bytes for the body been read?
 				Result := buffer.count = end_header_index + content_length - 1
-			end	
+			end
 		end
 
 	socket_ok: BOOLEAN
 			-- Was last socket operation successful?
-			
+
 	handle_missing_servlet (resp: GOA_HTTPD_SERVLET_RESPONSE) is
 			-- Send error page indicating missing servlet
 		require
@@ -196,23 +192,25 @@ feature {NONE}
 			debug ("socket")
 				print ("Socket status (" + message + "):%N")
 			end
-			if last_error_code /= Sock_err_no_error then
+			if errno.is_not_ok then
 				socket_ok := False
 				debug ("socket")
-					io.putstring ("Socket error: " + last_error_code.out + "%N")
-					io.putstring ("Extended error: " + last_extended_socket_error_code.out + "%N")
+					io.putstring ("Socket error: " + errno.first_value.out + "%N")
+-- TODO					io.putstring ("Extended error: " + last_extended_socket_error_code.out + "%N")
 				end
-				log_hierarchy.logger (Internal_category).error ("Socket error: " + last_error_code.out + "%N")
-				log_hierarchy.logger (Internal_category).error ("Extended error: " + last_extended_socket_error_code.out + "%N")
+				log_hierarchy.logger (Internal_category).error ("Socket error: " + errno.first_value.out + "%N")
+-- TODO				log_hierarchy.logger (Internal_category).error ("Extended error: " + last_extended_socket_error_code.out + "%N")
+
+				errno.clear_first
 			else
 				socket_ok := True
 			end
 			debug ("socket")
-				print ("%TBytes received: " + bytes_received.out + "%N")
-				print ("%TBytes sent: " + bytes_sent.out + "%N")
-				print ("%TBytes available: " + bytes_available.out + "%N")
-				print ("%TSocket valid: " + is_valid.out + "%N")
+				print ("%TBytes received: " + receive_buffer_size.out + "%N")
+				print ("%TBytes sent: " + send_buffer_size.out + "%N")
+-- TODO				print ("%TBytes available: " + bytes_available.out + "%N")
+				print ("%TSocket valid: " + is_open.out + "%N")
 			end
 		end
-		
+
 end -- class GOA_HTTPD_SERVING_SOCKET

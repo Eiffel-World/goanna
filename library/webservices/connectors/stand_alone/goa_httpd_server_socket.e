@@ -12,54 +12,68 @@ class GOA_HTTPD_SERVER_SOCKET
 
 inherit
 
---	TCP_SERVER_SOCKET
---		redefine
---			new_connection_socket,
---			multiplex_read_callback
---		end
+	EPX_TCP_SERVER_SOCKET
+		redefine
+			multiplexer_read_callback,
+			accept
+		end
 
---	SOCKET_MULTIPLEXER_SINGLETON
---		export
---			{NONE} all
---		end
-
--- TODO Port to EPOSIX
+	EPX_SOCKET_MULTIPLEXER_SINGLETON
+		export
+			{NONE} all
+		end
 
 	GOA_HTTPD_LOGGER
 		export
 			{NONE} all
 		end
-		
+
 create
 
     make
 
 feature
 
-	new_connection_socket: GOA_HTTPD_SERVING_SOCKET is
-			-- this is a factory method. Override it to return an instance of a different class
-			-- that will represent the connection to the client
+	accept: ABSTRACT_TCP_SOCKET is
+			-- Return the next completed connection from the front of the
+			-- completed connection queue. If there are no completed
+			-- connections, the process is put to sleep.
+			-- If the socket is non-blocking, Void will be returned and
+			-- the process is not put to sleep..
+		local
+			client_fd: INTEGER
 		do
-			create Result.make_uninitialized
+			address_length := client_socket_address.capacity
+			client_fd := abstract_accept (fd, client_socket_address.ptr, $address_length)
+			if client_fd = unassigned_value then
+				if errno.is_not_ok and then errno.value /= EAGAIN then
+					raise_posix_error
+				end
+			else
+				create {GOA_HTTPD_SERVING_SOCKET} Result.attach_to_socket (client_fd, True)
+				last_client_address := new_socket_address_in_from_pointer (client_socket_address, address_length)
+			end
 		end
 
-	multiplex_read_callback is
+	multiplexer_read_callback (a_multiplexer: EPX_SOCKET_MULTIPLEXER) is
 			-- we got a new client. Register the socket that talks to this client as a
 			-- managed socket so that a select can work on it too
 		local
---			socket : TCP_SOCKET
+			socket : ABSTRACT_TCP_SOCKET
 		do
 			debug ("status_output")
 				io.put_character ('#')
 			end
---			socket := wait_for_new_connection
---			if socket /= Void then
---				socket_multiplexer.register_managed_socket_read (socket)
---			else
---				log_hierarchy.logger (Internal_category).error ("Server socket error: " + socket_multiplexer.last_socket_error_code.out + ","
---					+ socket_multiplexer.last_extended_socket_error_code.out + " read_bytes=" 
---					+ socket_multiplexer.managed_read_count.out)
---			end
+			socket := accept
+			if errno.is_ok then
+				socket_multiplexer.add_read_socket (socket)
+			else
+				log_hierarchy.logger (Internal_category).error (
+					"Server socket error: " + socket_multiplexer.errno.first_value.out
+-- TODO					+ "," + socket_multiplexer.last_extended_socket_error_code.out
+				)
+				errno.clear_first
+			end
 		end
 
 end -- class GOA_HTTPD_SERVER_SOCKET

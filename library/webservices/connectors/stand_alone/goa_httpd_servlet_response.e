@@ -30,7 +30,7 @@ create
 
 feature {NONE}-- Initialization
 
-	make (buffer: STRING; request_socket: TCP_SOCKET) is
+	make (buffer: STRING; request_socket: EPX_TCP_SOCKET) is
 			-- Build a new HTTPD response object that provides access to
 			-- 'response' information.
 			-- Initialise the response information to allow a successful (Sc_ok) response
@@ -252,7 +252,7 @@ feature {NONE} -- Implementation
 	internal_buffer: STRING
 		-- Internal request information.
 
-	internal_socket: TCP_SOCKET
+	internal_socket: EPX_TCP_SOCKET
 		-- Socket for send response
 
 	content_length: INTEGER
@@ -419,7 +419,7 @@ feature {NONE} -- Implementation
 			debug ("httpd_response_write")
 				print (generator + " response bytes = " + data.count.out + "%R%N")
 			end
-			internal_socket.send_string (data)
+			internal_socket.put_string (data)
 			-- TODO: check for internal_socket errors
 		end
 

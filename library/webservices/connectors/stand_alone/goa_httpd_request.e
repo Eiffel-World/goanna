@@ -11,21 +11,21 @@ indexing
 class GOA_HTTPD_REQUEST
 
 inherit
-	
+
 		GOA_HTTPD_CGI_HEADER_VARS
 			export
 				{NONE} all
 			end
-		
+
 		GOA_STRING_MANIPULATION
 			export
 				{NONE} all
 			end
-			
+
 create
-	
+
 	make, make_standard_socket
-	
+
 feature -- Initialisation
 
 	make (socket: GOA_HTTPD_SERVING_SOCKET; buffer: STRING) is
@@ -43,8 +43,8 @@ feature -- Initialisation
 			set_server_parameters (socket.servlet_manager.config.server_port,
 				socket.servlet_manager.config.document_root)
 		end
-	
-	make_standard_socket (socket: TCP_SOCKET; buffer: STRING; server_port: INTEGER; 
+
+	make_standard_socket (socket: EPX_TCP_SOCKET; buffer: STRING; server_port: INTEGER;
 		doc_root, servlet_mapping_prefix: STRING) is
 			-- Parse 'buffer' to initialise the request parameters
 		require
@@ -60,12 +60,12 @@ feature -- Initialisation
 			a_servlet_prefix := servlet_mapping_prefix
 			parse_request_buffer (buffer)
 			set_server_parameters (server_port, doc_root)
-		end	
-		
+		end
+
 feature -- Access
 
-	serving_socket: TCP_SOCKET
-	
+	serving_socket: EPX_TCP_SOCKET
+
 	parameter (name: STRING): STRING is
 			-- Return value of parameter 'name'
 		require
@@ -74,7 +74,7 @@ feature -- Access
 		do
 			Result := parameters.item (name)
 		end
-		
+
 	has_parameter (name: STRING): BOOLEAN is
 			-- Does the parameter 'name' exists for this request?
 		require
@@ -85,12 +85,12 @@ feature -- Access
 
 	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of request parameters. Equivalent to the CGI parameter set.
-		
+
 	raw_stdin_content: STRING
 			-- Request body content. Empty string if no content.
-			
+
 feature {NONE} -- Implementation
-		
+
 	set_server_parameters (server_port: INTEGER; doc_root: STRING) is
 			-- Set server specific parameters for request
 		require
@@ -99,18 +99,18 @@ feature {NONE} -- Implementation
 			parameters.force ("Goanna HTTP Server V1.0", Server_software_var)
 			parameters.force ("CGI/1.1", Gateway_interface_var)
 			parameters.force (server_port.out, Server_port_var)
-			parameters.force (serving_socket.peer_name, Remote_host_var)
-			parameters.force (serving_socket.peer_address, Remote_addr_var)
+-- TODO			parameters.force (serving_socket.peer_name, Remote_host_var)
+			parameters.force (serving_socket.remote_address.address.out, Remote_addr_var)
 			parameters.force (doc_root, Document_root_var)
 		end
-		
+
 	Last_header_line: STRING is "%R%N%R%N"
 			-- String that indicates the last header has been read.
 			--| Specific to the GOA_STRING_TOKENIZER token parsing method
 
 	Header_separator_line: STRING is "%R%N"
 			-- String that separates headers.
-			
+
 	parse_request_buffer (buffer: STRING) is
 			-- Parse request buffer to set parameters
 		require
@@ -172,7 +172,7 @@ feature {NONE} -- Implementation
 		end
 
 	a_servlet_prefix, document_root: STRING
-	
+
 	parse_request_uri (token: STRING) is
 			-- Parse the request uri extracting the path info, script path and query string.
 		require
@@ -181,7 +181,7 @@ feature {NONE} -- Implementation
 			query_index, slash_index: INTEGER
 			query, script, path, servlet_prefix: STRING
 		do
-			
+
 			query_index := index_of_char (token, '?', 1)
 			if query_index /= 0 then
 				query := token.substring (1, query_index - 1)
@@ -216,10 +216,10 @@ feature {NONE} -- Implementation
 				parameters.force (document_root + path, Path_translated_var)
 			end
 		end
-	
+
 	Http_header_prefix: STRING is "HTTP_"
 			-- Prefix for all headers found in the request
-			
+
 	parse_header (header: STRING) is
 			-- Parse the header and set appropriate CGI variables
 		require
@@ -242,18 +242,18 @@ feature {NONE} -- Implementation
 					name.put ('_', i)
 					i := index_of_char (name, '-', i + 1)
 				end
-				name := Http_header_prefix + name 
+				name := Http_header_prefix + name
 				-- extract the value
 				value := header.substring (colon_index + 1, header.count)
 				value.left_adjust
 				parameters.force (value, name)
 			end
 		end
-		
+
 invariant
-	
+
 	socket_exists: serving_socket /= Void
 	parameters_exist: parameters /= Void
 	raw_content_exists: raw_stdin_content /= Void
-	
+
 end -- class GOA_HTTPD_REQUEST

@@ -82,7 +82,7 @@
 
 		<geant file="build.eant" target="${target}" dir="cgi"/>
 		<geant file="build.eant" target="${target}" dir="fast_cgi"/>
-		<echo message="Standalone web server not working for now - awaiting multiplexing in eposix"/>
-		<!-- <geant file="build.eant" target="${target}" dir="standalone"/> -->
-		<!-- <geant file="build.eant" target="${target}" dir="application"/> -->	</target>
+		<geant file="build.eant" target="${target}" dir="standalone"/>
+		<geant file="build.eant" target="${target}" dir="application"/>
+	</target>
 </project>
