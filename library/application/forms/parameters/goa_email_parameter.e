@@ -16,7 +16,7 @@ deferred class
 	GOA_EMAIL_PARAMETER
 
 inherit
-	
+
 	GOA_NON_EMPTY_UPDATE_INPUT_PARAMETER
 		undefine
 			ok_to_save
@@ -25,7 +25,7 @@ inherit
 		end
 	GOA_EMAIL_STATUS_FACILIITES
 	GOA_SHARED_APPLICATION_CONFIGURATION
-	
+
 feature
 
 	is_queried: BOOLEAN is False
@@ -34,7 +34,7 @@ feature
 		deferred
 		end
 
-		
+
 	validate (processing_result: PARAMETER_PROCESSING_RESULT) is
 			-- Process the paramter
 		local
@@ -64,6 +64,7 @@ feature
 				end
 				if not address_is_valid then
 					processing_result.error_message.add_message (message_catalog.invalid_email_message)
+					log_hierarchy.logger (configuration.application_log_category).info ("invalid_email_address: " + new_email_address + "; Domain: " + domain)
 				end
 			end
 			if not equal (new_email_address, current_email_address) then
@@ -78,7 +79,7 @@ feature
 		end
 
 feature {NONE} -- Implementation
-		
+
 	set_email_status (processing_result: PARAMETER_PROCESSING_RESULT; new_status: INTEGER) is
 			-- Set status code for this e-mail address
 		require
@@ -87,12 +88,12 @@ feature {NONE} -- Implementation
 			is_valid_email_status_code: is_valid_email_status_code (new_status)
 		deferred
 		end
-		
+
 	is_mandatory: BOOLEAN is
 			-- Is user required to enter this email address?
 			-- Default is yes
 		once
 			Result := True
 		end
-		
+
 end -- class GOA_EMAIL_PARAMETER
