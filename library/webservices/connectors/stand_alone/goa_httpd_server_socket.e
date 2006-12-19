@@ -15,7 +15,8 @@ inherit
 	EPX_TCP_SERVER_SOCKET
 		redefine
 			multiplexer_read_callback,
-			accept
+			accept,
+			backlog_default
 		end
 
 	EPX_SOCKET_MULTIPLEXER_SINGLETON
@@ -30,7 +31,8 @@ inherit
 
 create
 
-    make
+    listen_by_address,
+    listen_by_address_and_backlog
 
 feature
 
@@ -75,6 +77,37 @@ feature
 				errno.clear_first
 			end
 		end
+
+
+
+feature {NONE} -- Implementation
+
+	listen_by_address_and_backlog (hp: EPX_HOST_PORT; a_backlog: INTEGER_32) is
+			-- does the same as `listen_by_address' except that it allows to set a user defined backlog
+		require
+			closed: not is_open
+			hp_not_void: hp /= Void
+			supported_family: hp.socket_address.address_family = af_inet or hp.socket_address.address_family = af_inet6
+			tcp_protocol: hp.service.protocol_type = sock_stream
+			a_backlog_positive: a_backlog >= 0
+		do
+			private_backlog := a_backlog
+			listen_by_address (hp)
+		end
+
+
+	private_backlog: INTEGER_32
+
+	backlog_default: INTEGER_32 is
+			-- redefined to support a user defined backlog
+		do
+			if private_backlog < 0 then
+				Result := somaxconn
+			else
+				Result := private_backlog
+			end
+		end
+
 
 end -- class GOA_HTTPD_SERVER_SOCKET
 

@@ -34,14 +34,23 @@ inherit GOA_SERVLET_APPLICATION
 
 feature {NONE} -- Initialization
 
-	make (new_host: STRING; port, backlog: INTEGER) is
+	make (new_host: STRING; port, a_backlog: INTEGER) is
 			-- Set up the server
+		local
+			a_hp: EPX_HOST_PORT
+			a_host: EPX_HOST
+			a_service: EPX_SERVICE
 		do
 			-- default action is not to use the excepten error handling of eposix
 			security.error_handling.disable_exceptions
 
 			-- prepare the socket
-			create server_socket.make -- TODO (port, backlog)
+			create a_host.make_from_ip4_any
+			create a_service.make_from_port (port, "tcp")
+			create a_hp.make (a_host, a_service)
+
+			create server_socket.listen_by_address_and_backlog (a_hp, a_backlog)
+
 			socket_multiplexer.add_read_socket (server_socket)
 			log_hierarchy.logger (Internal_category).info ("Goanna HTTPD Server. Version 1.0")
 			log_hierarchy.logger (Internal_category).info ("Copyright (C) 2001 Glenn Maughan.")
@@ -94,7 +103,7 @@ feature {NONE} -- Implementation
 			end
 
 			socket_multiplexer.errno.clear_first
-			
+
 		end
 
 end -- class GOA_HTTPD_SERVLET_APP
