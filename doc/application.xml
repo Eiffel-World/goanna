@@ -777,10 +777,71 @@ limitations may be found <ulink
 url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/src/goa_build/transform/validating_xml_writer.xsl?view=markup">here</ulink>.
       
     </para>
-    <section id="creating_document_schemas">
+    <para>
+
+To get started on a custom schema:
+
+    </para>
+    <orderedlist>
+      <listitem>
+	<para>
+
+Create a Relax NG Compact Syntax schema (with a rnc extension) for the
+XML which your web application will generate.
+
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+
+Create a XSLT stylesheet (with an xsl extension) which will transform
+that XML into HTML (or any other form required).
+
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+
+Create the CSS stylesheet the HTML page will reference (optional).
+
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+
+Place these files in a separate directory and then type:
+
+	</para>
+	<para>
+
+goa_build -f your_schema.rnc
+
+	</para>
+	<para>
+
+The files your_schema_xml_document.e, your_schema_attribute_values.e,
+and your_schema_schema_codes.e will be created in this
+directory. Create the class YOUR_SCHEMA_XML_DOCUMENT_EXTENDED (with
+the file name your_schema_xml_document_extended.e) which inherits from
+YOUR_SCHEMA_XML_DOCUMENT. Use this class in your application.
+
+	</para>
+      </listitem>
+      <listitem>
+	  <para>
+
+Additional details and requirements for these files are provided
+below.
+
+	  </para>
+	</listitem>
+    </orderedlist>
+  </section>
+  
+  <section id="creating_document_schemas">
       <title>Creating Document Schemas</title>
       <para>
-	
+	 
 <ulink
 url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_page/goa_page.rnc?view=markup">goa_page.rnc</ulink>
 and the corresponding XSLT transform <ulink
@@ -887,6 +948,7 @@ schema and all supporting files.  Type:
       <para>
 <projectname>goa_build -h</projectname>	
       </para>
+
       <para>
 for more information on using the boa_build tool.  Note that when
 using the -d --datadirectory switch (recommended) the data directory
@@ -1012,5 +1074,4 @@ to the class <classname>NAMESPACE_PREFIX_XML_DOCUMENT.</classname>
 	
       </para>
     </section>
-  </section>
 </chapter>
