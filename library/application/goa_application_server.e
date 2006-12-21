@@ -36,8 +36,6 @@ inherit
 feature
 
 	application_make is
-		local
-			dep: IN_LIST_DEPENDENCY
 		do
 			if command_line_ok and then configuration.test_mode then
 				execute
