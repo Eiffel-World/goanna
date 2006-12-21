@@ -20,7 +20,4 @@
 	<mount location="${GOBO}/library/kernel.xace"/>
 	<mount location="${GOANNA}/library/library.xace"/>
 	<mount location="${GOANNA}/library/application/library.xace" />
-
-
-
 </system>
