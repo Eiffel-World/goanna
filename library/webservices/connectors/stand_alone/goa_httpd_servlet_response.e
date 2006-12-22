@@ -237,6 +237,14 @@ feature -- Basic operations
 			until
 				data_index > data.count
 			loop
+				-- Samuele Lucchini <origo@muele.net> (18/12/2006)
+				-- 
+				-- Create a new buffer here since `flush_buffer' sets the buffer size to zero.
+				-- If `data.count' > `initial_buffer_size' you need to allocate a new buffer
+				-- otherwise you won't be able to complete the transmission sending all chunks.
+
+				create content_buffer.make (initial_buffer_size)
+				
 				buffer_space := content_buffer.capacity - content_buffer.count
 				end_index := data.count.min (data_index + buffer_space - 1)
 				content_buffer.append (data.substring (data_index, end_index))
