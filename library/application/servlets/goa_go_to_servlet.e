@@ -7,30 +7,30 @@ indexing
 
 class
 	GOA_GO_TO_SERVLET
-	
+
 inherit
-	
+
 	GOA_APPLICATION_SERVLET
 		redefine
 			make
 		end
 	GOA_NON_DATABASE_ACCESS_TRANSACTION_MANAGEMENT
-	
+
 creation
-	
+
 	make
-	
+
 feature
 
 	name: STRING is "go_to.htm"
 
 feature {NONE} -- Creation
-	
+
 	make is
 			-- Creation
 		do
 			Precursor
 			expected_parameters.force_last (page_parameter.name)
 		end
-		
+
 end -- class GOA_GO_TO_SERVLET

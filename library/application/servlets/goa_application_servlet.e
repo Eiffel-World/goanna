@@ -494,15 +494,27 @@ feature -- Logging Facilities
 				end
 
 			end
-			Result.append ("][Content: ")
-			if req.content /= Void then
-				 Result.append (eiffel_string_out (req.content))
-			end
-			Result.append ("][Query String: ")
-			if req.query_string /= Void then
-				 Result.append (eiffel_string_out (req.query_string) + "]")
+			if log_request_content then
+				Result.append ("][Content: ")
+				if req.content /= Void then
+					 Result.append (eiffel_string_out (req.content))
+				end
+				Result.append ("][Query String: ")
+				if req.query_string /= Void then
+					Result.append (eiffel_string_out (req.query_string) + "]")
+				end
+			else
+				Result.append ("][Content/Query String Redacted for Security Purposes]")
 			end
 		end
+
+	log_request_content: BOOLEAN is
+			-- Should content/query string of request be logged?
+			-- Default is not to log content received from secure servlets
+		do
+			Result := not receive_secure
+		end
+
 
 	log_service_error is
 			-- Called if service routine generates an exception; may be redefined by descendents
@@ -534,6 +546,9 @@ feature {NONE} -- Creation
 	make is
 			-- Creation
 		do
+			check
+				not_registered: not servlet_by_name.has (name_without_extension)
+			end
 			servlet_by_name.force (Current, name_without_extension)
 			check
 				registered: servlet_by_name.has (name_without_extension)
