@@ -124,12 +124,18 @@ feature -- Request Processing
 			temp_name: STRING
 			failed_once, failed_twice: BOOLEAN
 			suffix_list: DS_LINKED_LIST [INTEGER]
+			ts: GOA_DISPLAYABLE_SERVLET
 
 		do
 			debug ("goa_application_servlet")
 				io.put_string ("========" + generator + "%N")
 			end
 			if not failed_once then
+				io.put_string ("Receive secure: " + receive_secure.out + "%N")
+				ts ?= Current
+				if ts /= Void then
+					io.put_string ("Send secure: " + ts.send_secure.out + "%N")
+				end
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
 --				io.put_string ("Request: " + name + client_info (request) + "%N")
 				-- Obtain session status and initialize if necessary
