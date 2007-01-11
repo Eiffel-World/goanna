@@ -37,8 +37,6 @@ cluster
 	goanna_utility_ise4 (goanna_utility) : "$\spec\ise4"
 	logging (library) 			:	"$\logging"
 	datetime (library) 			:	"$\datetime"
-	yaesockets (goanna) 			:	"$\sockets"
-	yaesockets_helper (yaesockets) 	: 	"$\spec\ise"
 	gobo (goanna)				:	"$\gobo"
 	kl_kernel (gobo)				:	"$\library\kernel";
 	kl_kernel_spec (gobo)			:	"$\library\kernel\spec\ise";

@@ -107,15 +107,6 @@ cluster
 			"CVS"; "net"; "nt"; 
 		end
 
-	yaesockets:		"$YAESOCKETS"
-		exclude
-			"udp_socket.e"; 
-		default
-			assertion(require)
-		end
-
-	yaesockets_ise (yaesockets):		"$\spec\ise"
-
 	all base:		"$ISE_EIFFEL\library\base"
 		exclude
 			"desc"; "table_eiffel3"; "CVS"; 

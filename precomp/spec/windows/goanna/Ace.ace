@@ -55,11 +55,6 @@ cluster
 
 	logging (goanna):				"$\logging"
 
-	yaesockets:					"$YAESOCKETS"
-
-	yaesockets_ise (yaesockets):		"$\spec\ise"
-
-
 	all base:					"$ISE_EIFFEL\library\base"
 		exclude
 			"desc"; "table_eiffel3"; "event"; "CVS"; 

@@ -325,16 +325,7 @@ feature {NONE} -- Implementation
 						is_new_connection := True
 					end
 					-- check peer address for allowed server addresses
-	--				peer := request.socket.remote_address
-	--				debug ("yaesockets")
-	--					print("Yaesockets Error :")
-	--					print(last_socket_error_code)
-	--					print(',')
-	--					print(last_extended_socket_error_code)
-	--					print ("%R%N")
-	--					print ("peer_address: " + peer + "%R%N")
-	--				end
-	--				if peer_address_ok (peer) then
+					-- if peer_address_ok (peer) then
 						-- attempt to read the request. If this fails and it was an old
 						-- connection then the server probably closed it; try making a new connection
 						-- before giving up.
@@ -349,16 +340,6 @@ feature {NONE} -- Implementation
 						else
 							request_read := True
 						end
-	--					debug ("yaesockets")
-	--						print ("Yaesockets - request readOK? " + request_read.out + "%N")
-	--					end
-	--				else
-						-- reset and attempt a new connection
-	--					error (Servlet_app_log_category, "Connection from address " + peer + " rejected.")				
-	--					request.socket.close
-	--					request.set_socket (Void)
-	--					is_new_connection := False
-	--				end
 				end
 			end
 		rescue

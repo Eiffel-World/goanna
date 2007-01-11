@@ -89,10 +89,6 @@ cluster
 
 	all thread:		"$ISE_EIFFEL/library/thread"
 
-	yaesockets:		"$YAESOCKETS"
-
-	yaesockets_ise (yaesockets):		"$\spec\ise"
-
 external
 
 	include_path:

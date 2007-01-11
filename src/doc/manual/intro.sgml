@@ -91,26 +91,6 @@
 	Also make sure you add the GOBO <filename>bin</filename> directory to your path.
       </para>
     </section>
-    <section>
-      <title>Yaesockets</title>
-      <para>
-	The other third-party library used in Goanna is <firstterm>Yaesockets</firstterm>, 
-	developed by Marcio Marchini.
-	This library provides a comprehensive socket API with good support for multiplexed 
-	connections. Yaesockets can be downloaded from 
-	<link>http://sourceforge.net/projects/yaesockets</link>.
-      </para>
-      <para>
-	Install Yaesockets as described in its documentation. Ensure that the environment
-	variable <envar>YEASOCKETS</envar> is set to the top level directory and that the C 
-	library has been compiled. To avoid linking problems later on, make sure you
-	use the same C compiler that you will be using in your Eiffel environment. For example,
-	if you use Borland C++ as the back-end compiler for your Eiffel environment, then
-	compile the Yaesockets library using with the same compiler. The generated object file
-	(<filename>cl.obj</filename> on Windows or <filename>cl.o</filename> on Unix) should be
-	located in the <filename>C</filename> folder of the Yaesockets installation.
-      </para>
-    </section>
   </section>
   
   <section>

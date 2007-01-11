@@ -172,7 +172,5 @@ cluster
 	log4e_layouts (log4e): "$/layouts"
 	log4e_layouts_pattern (log4e_layouts): "$/pattern"
 	codegen: "${GOANNA}/library/utility/codegen"
-	yaesockets: "${YAESOCKETS}"
-	yaesockets_spec_ise: "${YAESOCKETS}/spec/ise"
 
 end

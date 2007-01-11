@@ -4,6 +4,8 @@ Project Goanna Release Notes
 Release XX
 ----------
 
+o Removed YAESOCKETS dependency
+
 o Fixed web site WPME link
 
 o Fixed reading of binary files for BINARY_CONTENT_FILE_HANDLER. (Thanks Paul-Georges Crismer). 
