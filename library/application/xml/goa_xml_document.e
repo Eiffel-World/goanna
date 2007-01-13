@@ -7,22 +7,22 @@ indexing
 	revision: "$Revision$"
 	copyright: "(c) 2004 Neal L. Lester"
 	License: "Eiffel Forum License Version 2 (see forum.txt)"
-	
+
 deferred class
 	GOA_XML_DOCUMENT
-	
+
 inherit
 
 	KL_SHARED_FILE_SYSTEM
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	KL_IMPORTED_ARRAY_ROUTINES
 	KL_IMPORTED_STRING_ROUTINES
-	
+
 feature -- Status
-	
+
 	root_element_added: BOOLEAN
 			-- Has the root element already been added to the document
-			
+
 	is_complete: BOOLEAN is
 			-- Is the document complete?
 		do
@@ -38,7 +38,13 @@ feature -- Status
 				Result := xml_null_code
 			end
 		end
-		
+
+	current_element_name: STRING is
+		do
+			Result := element_tag_by_code.item (current_element_code).twin
+		end
+
+
 	current_element_contents: ARRAY [INTEGER] is
 			-- Codes representing the contents (elements and/or text) of the current element
 		do
@@ -55,7 +61,7 @@ feature -- Status
 			if current_element_contents.is_empty then
 				Result := False
 			else
-				Result := current_element_contents @ current_element_contents.upper = xml_text_code 
+				Result := current_element_contents @ current_element_contents.upper = xml_text_code
 			end
 		end
 
@@ -68,7 +74,7 @@ feature -- Status
 			-- Code representing no element
 		deferred
 		end
-		
+
 	current_element_contents_as_string: STRING is
 		local
 			local_index: INTEGER
@@ -104,7 +110,7 @@ feature -- Document Manipulation
 			if_last_element_was_text_text_not_added: old last_element_is_text implies current_element_contents.count = old current_element_contents.count
 			text_element_added_to_content: not old last_element_is_text implies current_element_contents.count = (old current_element_contents.count + 1)
 		end
-		
+
 	end_current_element is
 			-- End the current open element in the document
 		require
@@ -119,7 +125,7 @@ feature -- Document Manipulation
 			element_stack.remove
 			contents_stack.remove
 		end
-		
+
 	add_item (the_item: GOA_XML_ITEM) is
 			-- Add the_item to document
 		require
@@ -127,7 +133,7 @@ feature -- Document Manipulation
 		do
 			the_item.add_to_document (Current)
 		end
-			
+
 feature -- Output
 
 	as_xml: STRING is
@@ -139,7 +145,7 @@ feature -- Output
 		ensure
 			is_valid_xml: configuration.validate_xml implies is_valid_xml (Result)
 		end
-		
+
 	as_html: STRING is
 			-- Transform the_page to html
 		local
@@ -155,7 +161,7 @@ feature -- Output
 				saxon_input_file.put_string (as_xml)
 				saxon_input_file.close
 				command_text := configuration.java_binary_location + " -jar " + configuration.saxon_jar_file_location + " " + configuration.temp_saxon_input_file_name + " " + transform_file_name + " > " + configuration.temp_saxon_output_file_name
-				io.put_string (command_text + "%N")
+--				io.put_string (command_text + "%N")
 				create shell_command.make (command_text)
 				shell_command.execute
 				saxon_output_file := file_system.new_input_file (configuration.temp_saxon_output_file_name)
@@ -188,7 +194,7 @@ feature -- Output
 			the_file.put_string (as_xml)
 			the_file.close
 		end
-		
+
 	put_html_to_file (file_name: STRING) is
 			-- Put html version of current document to file named file_name; will generate exception
 			-- if unable to open and write to file_name
@@ -202,8 +208,8 @@ feature -- Output
 			the_file.open_write
 			the_file.put_string (as_html)
 			the_file.close
-		end		
-		
+		end
+
 feature -- Validity
 
 	ok_to_add_element_or_text (the_element_code: INTEGER): BOOLEAN is
@@ -265,7 +271,7 @@ feature -- Validity
 				Result := valid_name_codes.has (input_name_codes.item (index))
 				index := index + 1
 			end
-		end			
+		end
 
 	is_valid_element_tag (the_tag: STRING): BOOLEAN is
 			-- Is the_tag a valid element tag?
@@ -279,7 +285,7 @@ feature -- Validity
 				Result := element_code_by_tag.has (local_the_tag)
 			end
 		end
-		
+
 	is_valid_attribute_name (the_name: STRING): BOOLEAN is
 			-- Is the_name a valid attribute name?
 		local
@@ -292,24 +298,24 @@ feature -- Validity
 				Result := attribute_code_by_name.has (local_the_name)
 			end
 		end
-		
+
 	is_valid_attribute_value (attribute_name_code: INTEGER; attribute_value: STRING): BOOLEAN is
 			-- is attribute_value valid for athe attribute given by attribute_name_code
 		deferred
 		end
-		
+
 	is_valid_element_tag_code (the_code: INTEGER): BOOLEAN is
 			-- Does the_code represent an element code used in this schema?
 		do
 			Result := element_tag_by_code.has (the_code)
 		end
-		
+
 	is_valid_attribute_name_code (the_code: INTEGER): BOOLEAN is
 			-- Does the_code represent an attribute name code used in this schema?
 		do
 			Result := attribute_name_by_code.has (the_code)
 		end
-		
+
 	is_valid_element_content (the_element_code: INTEGER; the_content: ARRAY [INTEGER]): BOOLEAN is
 		deferred
 		end
@@ -327,7 +333,7 @@ feature -- Code and Tag/Name Cross Reference
 		do
 			Result := element_tag_by_code.item (the_code)
 		end
-		
+
 	element_code_for_tag (the_tag: STRING): INTEGER is
 			-- The element code corresponding to the_tag
 		require
@@ -339,7 +345,7 @@ feature -- Code and Tag/Name Cross Reference
 			local_the_tag.to_lower
 			Result := element_code_by_tag.item (local_the_tag)
 		end
-		
+
 	attribute_code_for_name (the_name: STRING): INTEGER is
 			-- The attribute code corresponding to the_name
 		require
@@ -351,7 +357,7 @@ feature -- Code and Tag/Name Cross Reference
 			local_the_name.to_lower
 			Result := attribute_code_by_name.item (local_the_name)
 		end
-		
+
 	attribute_name_for_code (the_code: INTEGER): STRING is
 			-- The attribute name corresponding with the_code
 		require
@@ -359,7 +365,7 @@ feature -- Code and Tag/Name Cross Reference
 		do
 			Result := attribute_name_by_code.item (the_code)
 		end
-		
+
 feature {NONE} -- Implementation
 
 	attribute_code_by_name: DS_HASH_TABLE [INTEGER, STRING] is
@@ -371,25 +377,25 @@ feature {NONE} -- Implementation
 			-- Element codes, keyed by element tag
 		deferred
 		end
-		
+
 	element_tag_by_code: DS_HASH_TABLE [STRING, INTEGER] is
 			-- Element tags, keyed by element code
 		deferred
 		end
-		
+
 	attribute_name_by_code: DS_HASH_TABLE [STRING, INTEGER] is
 			-- Attribute names, keyed by attribute code
 		deferred
 		end
 
 feature -- Options
-		
+
 	reset_to_iso_8859_1_encoded is
 			-- Reset (clear document); start new as a ISO 8859-1 encoded document
 		do
 			make_iso_8859_1_encoded
 		end
-	
+
 	reset_to__utf8_encoded is
 			-- Reset (clear document); start new as a UTF8 encoded document
 		do
@@ -397,13 +403,13 @@ feature -- Options
 		end
 
 feature -- {NONE} -- Implementation
-			
+
 	element_stack: DS_LINKED_STACK [INTEGER]
 			-- Stack containing codes representing the currently open elements in the document
-			
+
 	contents_stack: DS_LINKED_STACK [ARRAY [INTEGER]]
 			-- Stack containing codes representing the contents of all currently open elements in the document
-			
+
 	writer: EPX_XML_WRITER
 			-- Implements creatino of the XML document
 
@@ -413,7 +419,7 @@ feature {NONE} -- Transformation
 			-- Name of file containing XSLT transform to generate html version of this document
 		deferred
 		end
-		
+
 	schema_file_name: STRING is
 			-- Name of file containing Relax NG schema for this document
 		deferred
@@ -421,21 +427,23 @@ feature {NONE} -- Transformation
 
 	xslt_transformer_factory: GOA_XSLT_TRANSFORMER_FACTORY is
 			-- Where new XSLT Transformers come from
-		once
+		do
 			create Result.make_without_configuration
+			-- If this is a once function, GEXSLT retains references and bloats memory usage
 		end
-		
+
 	transformer: GOA_XSLT_STRING_TRANSFORMER is
 			-- Transformer used to generate HTML from this pages XML
 		do
-			if transformers.has (transform_file_name) then
-				Result := transformers.item (transform_file_name)
-			else
+--			if transformers.has (transform_file_name) then
+--				Result := transformers.item (transform_file_name)
+--			else
 				Result := xslt_transformer_factory.new_string_transformer_from_file_name (transform_file_name)
-				transformers.force (Result, transform_file_name)
-			end
+				-- If we reuse transformers, GEXSLT retains references and bloats memory usage
+--				transformers.force (Result, transform_file_name)
+--			end
 		end
-		
+
 	transformers: DS_HASH_TABLE [GOA_XSLT_STRING_TRANSFORMER, STRING] is
 			-- Transformers indexed by transform_file_name
 		once
@@ -459,7 +467,7 @@ feature {NONE} -- Transformation
 			create shell_command.make (jing_execution_string)
 			shell_command.execute
 			Result := shell_command.exit_code = 0
-		end		
+		end
 
 feature {NONE} -- Creation
 
@@ -469,14 +477,14 @@ feature {NONE} -- Creation
 			initialize
 			writer.add_header_iso_8859_1_encoding
 		end
-	
+
 	make_utf8_encoded is
 			-- Creation; as a UTF8 encoded document
 		do
 			initialize
 			writer.add_header_utf_8_encoding
 		end
-	
+
 	initialize is
 			-- Establish Invariant
 		do
@@ -486,7 +494,7 @@ feature {NONE} -- Creation
 			create writer.make
 			root_element_added := False
 		end
-		
+
 invariant
 
 	valid_element_stack: element_stack /= Void

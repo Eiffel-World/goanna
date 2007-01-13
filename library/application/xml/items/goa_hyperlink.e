@@ -10,7 +10,7 @@ deferred class
 	GOA_HYPERLINK
 
 inherit
-	
+
 	GOA_XML_ITEM
 	GOA_HTTP_UTILITY_FUNCTIONS
 		export
@@ -18,10 +18,10 @@ inherit
 		end
 	GOA_SHARED_APPLICATION_CONFIGURATION
 
-feature  
-	
+feature
+
 feature {GOA_COMMON_XML_DOCUMENT_EXTENDED} -- Services
-	
+
 	add_to_document (the_document: GOA_COMMON_XML_DOCUMENT_EXTENDED) is
 			-- Add an xml representation of this hyperlink to the_documnet
 		do
@@ -32,7 +32,7 @@ feature {GOA_COMMON_XML_DOCUMENT_EXTENDED} -- Services
 				the_document.add_text (text)
 			the_document.end_current_element
 		end
-		
+
 feature -- Queries
 
 	ok_to_add (the_document: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
@@ -43,8 +43,9 @@ feature -- Queries
 
 	url: STRING is
 			-- The URL for this hyperlink
-		
+
 		do
+
 			Result := "http"
 			if is_secure then
 				Result.extend ('s')
@@ -56,9 +57,9 @@ feature -- Queries
 				Result.append ("#" + anchor)
 			end
 		end
-		
+
 feature -- Status Setting
-		
+
 	add_parameter (name, value: STRING) is
 			-- Add a parameter to the hyperlink
 			-- n.b. Does not do any escaping on name or value
@@ -69,7 +70,7 @@ feature -- Status Setting
 			parameter_names.force_last (name)
 			parameter_values.force_last (value)
 		end
-		
+
 	set_anchor (new_anchor: STRING) IS
 			-- Add an anchor to the hyperlink
 		require
@@ -77,7 +78,7 @@ feature -- Status Setting
 		do
 			anchor := new_anchor
 		end
-		
+
 	set_secure is
 			-- Use https (default is no)
 		do
@@ -85,7 +86,7 @@ feature -- Status Setting
 		ensure
 			is_secure: is_secure
 		end
-		
+
 	set_css_class (new_class: STRING) is
 			-- Set css_class to new_class
 		do
@@ -110,22 +111,22 @@ feature -- Status Setting
 		end
 
 feature {NONE} -- Implementation
-		
+
 	anchor: STRING
 			-- Anchor for the hyperlink
 
 	host_and_path: STRING
 			-- Host name and path to document
-			
+
 	text: STRING
 			-- Text associated with the hyperlink
-			
+
 	css_class: STRING
 			-- CSS class associated with the hyperlink
-			
+
 	tool_tip_class: STRING
 			-- Class of the tool tip associated with this URL
-			
+
 	tool_tip: STRING
 			-- Text of the tool tip associated with this URL
 
@@ -134,14 +135,14 @@ feature {NONE} -- Implementation
 
 	parameter_names, parameter_values: DS_LINKED_LIST [STRING]
 			-- Names and values for all parameters for the hyperlink
-	
+
 	initialize is
 			-- Intiialize the object
 		do
 			create parameter_names.make_equal
 			create parameter_values.make_equal
 		end
-		
+
 	query_string: STRING is
 			-- The query string portion of the hyperlink
 		do
@@ -168,7 +169,7 @@ feature {NONE} -- Implementation
 		end
 
 invariant
-	
+
 	valid_text: text /= Void
 	valid_host_and_path: host_and_path /= Void and then not host_and_path.is_empty
 	valid_parameter_names: parameter_names /= Void

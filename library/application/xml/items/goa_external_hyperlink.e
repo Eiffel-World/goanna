@@ -13,11 +13,11 @@ inherit
 
 	GOA_HYPERLINK
 	KL_IMPORTED_STRING_ROUTINES
-	
+
 creation
-	
+
 	make
-	
+
 feature {NONE} -- Creation
 
 	make (new_host_and_path, new_text: STRING) is
@@ -28,8 +28,11 @@ feature {NONE} -- Creation
 		do
 			initialize
 			host_and_path := STRING_.cloned_string (new_host_and_path)
+			if equal (host_and_path.substring (1, 7).as_upper, "HTTP://") then
+				host_and_path.keep_tail (host_and_path.count - 7)
+			end
 			text := STRING_.cloned_string (new_text)
 		end
-		
+
 
 end -- class GOA_EXTERNAL_HYPERLINK
