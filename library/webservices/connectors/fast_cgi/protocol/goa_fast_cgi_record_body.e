@@ -18,17 +18,17 @@ inherit
 		end
 
 	UC_UNICODE_ROUTINES
-	
+
 	UT_STRING_FORMATTER
 		export
 			{NONE} all
 		end
-	
+
 	GOA_STRING_MANIPULATION
 		export
 			{NONE} all
 		end
-			
+
 feature -- Initialization
 
 	read (header: GOA_FAST_CGI_RECORD_HEADER; socket: ABSTRACT_TCP_SOCKET) is
@@ -39,42 +39,49 @@ feature -- Initialization
 			valid_socket: socket.is_open
 		local
 			raw_padding: STRING
+			bytes_to_read: INTEGER
 		do
 			read_ok := True
-			-- read content data
-			if header.content_length > 0 then
-				
-				socket.read_string (header.content_length)
-				raw_content_data := socket.last_string
-				if raw_content_data.count = header.content_length then
-					process_body_fields
-				else
-					read_ok := False
-				end
+			from
+				raw_content_data := ""
+				bytes_to_read := header.content_length
+			until
+				bytes_to_read <= 0 or not read_ok
+			loop
+				socket.read_string (bytes_to_read)
+				raw_content_data.append (socket.last_string)
+				bytes_to_read := bytes_to_read - socket.last_read
+				read_ok := socket.last_read > 0
 			end
-			-- read padding data
-			if read_ok and header.padding_length > 0 then
-				socket.read_string (header.padding_length)
-				raw_padding := socket.last_string
+			from
+				raw_padding := ""
+				bytes_to_read := header.padding_length
+			until
+				bytes_to_read <= 0 or not read_ok
+			loop
+				socket.read_string (bytes_to_read)
+				raw_padding.append (socket.last_string)
+				bytes_to_read := bytes_to_read - socket.last_read
+				read_ok := socket.last_read > 0
 			end
 		end
-	
+
 feature -- Access
 
 	read_ok: BOOLEAN
 			-- Was last read operation successful?
-			
+
 	raw_content_data: STRING
 			-- Content data read from socket.
-		
+
 	padding_length: INTEGER
 			-- Length of padding to write.
-				
+
 feature {NONE} -- Implementation
 
 	process_body_fields is
 			-- Extract body fields from raw content data.
 		deferred
 		end
-	
+
 end -- class GOA_FAST_CGI_RECORD_BODY

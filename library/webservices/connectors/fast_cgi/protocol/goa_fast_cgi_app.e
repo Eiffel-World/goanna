@@ -18,7 +18,7 @@ inherit
 		end
 
 	KL_SHARED_EXCEPTIONS
-	
+
 feature -- Basic operations
 
 	run is
@@ -38,7 +38,7 @@ feature -- Basic operations
 				retry
 			end
 		end
-	
+
 	process_request is
 			-- Process a request.
 		deferred
@@ -51,5 +51,5 @@ feature -- Basic operations
 			True
 		deferred
 		end
-			
+
 end -- class GOA_FAST_CGI_APP

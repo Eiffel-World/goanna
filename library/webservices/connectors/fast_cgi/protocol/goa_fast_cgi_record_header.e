@@ -21,20 +21,20 @@ inherit
 		export
 			{NONE} all
 		end
-		
+
 	UC_UNICODE_ROUTINES
-		
+
 	KL_IMPORTED_INTEGER_ROUTINES
-	
+
 	GOA_STRING_MANIPULATION
 		export
 			{NONE} all
 		end
-			
+
 create
 
 	make, read
-	
+
 feature -- Initialization
 
 	make (new_version, new_request_id, new_type, new_content_length, new_padding_length: INTEGER) is
@@ -56,29 +56,37 @@ feature -- Initialization
 feature -- Access
 
 	version, request_id, type, content_length, padding_length: INTEGER
-	
+
 	read_ok: BOOLEAN
-	
+
 	write_ok: BOOLEAN
-	
+
 feature -- Basic operations
 
 	read (socket: ABSTRACT_TCP_SOCKET) is
 			-- Read header data from 'socket'
 		local
 			buffer: STRING
+			bytes_to_read: INTEGER
 		do
 			buffer := create_blank_buffer (Fcgi_header_len)
-			socket.read_string (Fcgi_header_len)
-			buffer := socket.last_string
-			if buffer /= Void and then buffer.count = Fcgi_header_len then
+			read_ok := True
+			from
+				bytes_to_read := Fcgi_header_len
+				buffer := ""
+			until
+				bytes_to_read <= 0 or not read_ok
+			loop
+				socket.read_string (Fcgi_header_len)
+				buffer.append (socket.last_string)
+				bytes_to_read := bytes_to_read - socket.last_read
+				read_ok := socket.last_read > 0
+			end
+			if buffer.count = Fcgi_header_len then
 				process_header_bytes (buffer)
-				read_ok := True
-			else
-				read_ok := False
 			end
 		end
-	
+
 	write (socket: ABSTRACT_TCP_SOCKET) is
 			-- Write this header to 'socket'
 		require
@@ -121,7 +129,7 @@ feature -- Basic operations
 			end
 --			io.put_string ("Starting write finished.%N")
 		end
-	
+
 feature {NONE} -- Implementation
 
 	process_header_bytes (buffer: STRING) is
@@ -139,5 +147,5 @@ feature {NONE} -- Implementation
 			padding_length := buffer.item (7).code
 			-- reserved byte is also read but ignored
 		end
-		
+
 end -- class GOA_FAST_CGI_RECORD_HEADER

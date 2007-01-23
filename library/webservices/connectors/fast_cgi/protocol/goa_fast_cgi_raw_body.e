@@ -13,16 +13,16 @@ class GOA_FAST_CGI_RAW_BODY
 inherit
 
 	GOA_FAST_CGI_RECORD_BODY
-	
+
 	UT_STRING_FORMATTER
 		export
 			{NONE} all
 		end
-		
+
 create
 
 	make, read
-	
+
 feature -- Initialization
 
 	make (new_data: STRING; padding: INTEGER) is
@@ -30,12 +30,12 @@ feature -- Initialization
 			-- 'padding' characters as padding.
 		require
 			new_data_exists: new_data /= Void
-			positive_padding: padding >= 0	
+			positive_padding: padding >= 0
 		do
 			raw_content_data := new_data
 			padding_length := padding
 		end
-	
+
 feature -- Basic operations
 
 	write (socket: ABSTRACT_TCP_SOCKET) is
@@ -59,10 +59,10 @@ feature -- Basic operations
 			socket.put_string (enc_data)
 --			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
 			debug("fcgi_protocol")
-				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
 			end
 		end
-		
+
 feature {NONE} -- Implementation
 
 	process_body_fields is
@@ -70,5 +70,5 @@ feature {NONE} -- Implementation
 		do
 			-- no processing required. Access via raw_content_data.
 		end
-		
+
 end -- class GOA_FAST_CGI_RAW_BODY

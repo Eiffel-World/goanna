@@ -15,18 +15,18 @@ inherit
 	GOA_FAST_CGI_DEFS
 		export
 			{NONE} all
-		end	
+		end
 
 	GOA_FAST_CGI_VARIABLES
 		export
 			{NONE} all
 		end
-	
+
 	KL_SHARED_EXECUTION_ENVIRONMENT
 		export
 			{NONE} all
 		end
-		
+
 	L4E_SHARED_HIERARCHY
 		rename
 			warn as log_warn
@@ -35,7 +35,7 @@ inherit
 		end
 	POSIX_CONSTANTS
 	KL_EXCEPTIONS
-				
+
 feature -- Initialisation
 
 	make (new_host: STRING; port, backlog: INTEGER) is
@@ -56,10 +56,10 @@ feature -- Initialisation
 			server_backlog := backlog
 			set_valid_peer_addresses
 		end
-	
+
 feature -- FGCI interface
 
-	accept: INTEGER is 
+	accept: INTEGER is
 			-- Accept a new request from the HTTP server and create
 			-- a CGI-compatible execution environment for the request.
 			-- Returns zero for a successful call, -1 for error.
@@ -78,11 +78,11 @@ feature -- FGCI interface
 				-- finish the previous request
 				finish
 				-- accept the next request
-				Result := accept_request				
+				Result := accept_request
 			end
 			debug ("fcgi_interface")
 				print (generator + ".accept - finished%R%N")
-			end			
+			end
 		rescue
 			if is_developer_exception_of_name (broken_pipe_exception_message) and then srv_socket /= Void then
 			-- See TODO for broken_pipe_error
@@ -96,14 +96,14 @@ feature -- FGCI interface
 			else
 				srv_socket := Void
 				request := Void
-				Result := -1 
+				Result := -1
 				failed := True
 				debug ("fcgi_interface")
 					print (generator + ".accept - exception%R%N")
 				end
 			end
 		end
-		
+
 	broken_pipe_exception_message: STRING is "Broken pipe"
 		-- Possibly Linux only; Not known if this is the same on Windows
 		-- See TODO for broken_pipe_error
@@ -124,7 +124,7 @@ feature -- FGCI interface
 		-- catch and retry, and the program will crash.
 		-- However, relying on the text of the message seems
 		-- less reliable then using the error codes
-				
+
 	initialize_listening is
 		local
 			service: EPX_SERVICE
@@ -138,18 +138,18 @@ feature -- FGCI interface
 			create srv_socket.listen_by_address (host_port)
 			request := Void
 			srv_socket.errno.clear_first
-			srv_socket.errno.clear			
+			srv_socket.errno.clear
 		end
-		
 
-	finish is 
+
+	finish is
 			-- Finish the current request from the HTTP server. The
-			-- current request was started by the most recent call to 
+			-- current request was started by the most recent call to
 			-- 'accept'.
 		do
 			debug ("fcgi_interface")
 				print (generator + ".finish%R%N")
-			end			
+			end
 			if request /= Void then
 				-- complete the current request
 				request.end_request
@@ -165,20 +165,20 @@ feature -- FGCI interface
 			end
 		end
 
-	flush is 
+	flush is
 			-- Flush output and error streams.
 		do
 		end
 
-	putstr (str: STRING) is 
+	putstr (str: STRING) is
 			-- Print 'str' to standard output stream.
 		require
 			request_exists: request /= Void
-		do 
+		do
 			request.write_stdout (str)
 		end
 
-	warn (str: STRING) is 
+	warn (str: STRING) is
 			-- Print 'str' to standard error stream.
 		require
 			request_exists: request /= Void
@@ -186,7 +186,7 @@ feature -- FGCI interface
 			request.write_stderr (str)
 		end
 
-	getstr (amount: INTEGER): STRING is 
+	getstr (amount: INTEGER): STRING is
 			-- Read 'amount' characters from standard input stream.
 		require
 			request_exists: request /= Void
@@ -231,40 +231,40 @@ feature -- FGCI interface
 				end
 			end
 		end
-		
+
 feature -- Access
 
 	request: GOA_FAST_CGI_REQUEST
 		-- Current request being processed. Void if none.
-	
+
 feature {NONE} -- Implementation
 
 	host: EPX_HOST
 		-- Host that is listening for requests
 
-	
+
 	accept_called: BOOLEAN
 		-- Has accept been called?
-				
+
 	srv_socket: EPX_TCP_SERVER_SOCKET
 		-- The server socket that this applications listens for requests on.
-	
+
 	svr_port: INTEGER
 		-- The port to listen on.
-		
+
 	host_name: STRING
 		-- Name of the host
-			
+
 	server_backlog: INTEGER
 		-- The number of requests that can remain outstanding.
-	
+
 	valid_peer_addresses: DS_LINKED_LIST [STRING]
 		-- Peer addresses that are allowed to connect to this server as defined
 		-- in environment variable FCGI_WEB_SERVER_ADDRS.
 		-- Void if all peers can connect.
-		
+
 	Fcgi_web_server_addrs: STRING is "FCGI_WEB_SERVER_ADDRS"
-	
+
 	set_valid_peer_addresses is
 			-- Collect valid peer addresses
 		local
@@ -289,12 +289,12 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-		
+
 	accept_request: INTEGER is
 			-- Wait for a request to be received
 		local
 			is_new_connection, request_read, failed: BOOLEAN
-		do			
+		do
 			-- setup the request and its connection. Use the current request if keep_connection is
 			-- specified. Otherwise create a new one.
 			if not failed then
@@ -307,7 +307,7 @@ feature {NONE} -- Implementation
 					end
 					if request.failed then
 						request := Void
-						Result := -1	
+						Result := -1
 					end
 				else
 					create request.make
@@ -317,7 +317,7 @@ feature {NONE} -- Implementation
 				from
 					is_new_connection := False
 				until
-					request_read or Result = -1		
+					request_read or Result = -1
 				loop
 					if request.socket = Void then
 						-- accept new connection (blocking)
@@ -341,6 +341,9 @@ feature {NONE} -- Implementation
 							request_read := True
 						end
 				end
+				if Result < 0 then
+					io.put_string ("GOA_FAST_CGI.accept_request = " + Result.out + "%N")
+				end
 			end
 		rescue
 			io.put_string ("Is broken pipe: " + is_developer_exception_of_name ("Broken pipe%N").out)
@@ -351,13 +354,13 @@ feature {NONE} -- Implementation
 				retry
 			end
 		end
-		
+
 	peer_address_ok (peer_address: STRING): BOOLEAN is
 			-- Does 'perr_address' appear in the allowable peer addresses for
 			-- this server as defined in the environment variable FCGI_WEB_SERVER_ADDRS?
 		require
 			peer_address_exists: peer_address /= Void and then not peer_address.is_empty
-		do		
+		do
 			if valid_peer_addresses = Void then
 				Result := True
 			else
@@ -375,9 +378,9 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-		
+
 	Servlet_app_log_category: STRING is "servlet.app"
-	
+
 	initialise_logger is
 			-- Set logger appenders
 		local
@@ -389,6 +392,6 @@ feature {NONE} -- Implementation
 			appender.set_layout (layout)
 			log_hierarchy.logger (Servlet_app_log_category).add_appender (appender)
 		end
-	
+
 end -- class GOA_FAST_CGI
 
