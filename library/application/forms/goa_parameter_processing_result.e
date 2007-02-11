@@ -10,28 +10,28 @@ deferred class
 	GOA_PARAMETER_PROCESSING_RESULT
 
 inherit
-	
+
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	GOA_TEXT_PROCESSING_FACILITIES
 	L4E_SHARED_HIERARCHY
 	GOA_SHARED_REQUEST_PARAMETERS
 	GOA_TRANSACTION_MANAGEMENT
 	KL_IMPORTED_STRING_ROUTINES
-	
+
 feature
-	
+
 feature -- Attributes
 
 	raw_parameter: STRING
 			-- The raw parameter as received from the user
-	
+
 	parameter_name: STRING
 			-- The name portion of the parameter; using the convention
 			-- parameter_name:parameter (parameter_name is the name portion; parameter is the parameter portion)
-	
+
 	parameter_suffix: INTEGER
 			-- The suffix portion of the raw_parameter, Void if none
-			
+
 	request_parameter: GOA_DEFERRED_PARAMETER is
 			-- parameter associated with this result
 		do
@@ -40,53 +40,53 @@ feature -- Attributes
 
 	value: STRING
 			-- The value of the parameter
-			
+
 	is_value_valid: BOOLEAN is
 			-- Was the value valid.  False generally indicates that an error message should be displayed
 			-- To the user and that the form should be displayed again.
 		do
 			Result := error_message.is_empty
 		end
-			
+
 	error_message: GOA_USER_ERROR_MESSAGE
 			-- Error message (if any) generated from processing this parameter
-			
-	request_processing_result: REQUEST_PROCESSING_RESULT	
+
+	request_processing_result: REQUEST_PROCESSING_RESULT
 			-- The processing result with which this parameter processing result is associated
-			
+
 	was_processed: BOOLEAN
 			-- Has this parameter been processed?
-			
+
 	was_dependency_updated: BOOLEAN
 			-- Did the request update a value upon which subsequent pages in the wizard may depend?
-			
+
 	was_updated: BOOLEAN
 			-- Was the database updated when this parameter was processed?
-			
+
 	session_status: SESSION_STATUS is
 			-- SESSION_STATUS associated with this parameter
 		do
 			Result := request_processing_result.session_status
 		end
-		
+
 	processing_servlet: GOA_APPLICATION_SERVLET is
 			-- The servlet that is processing this request
 		do
 			Result := request_processing_result.processing_servlet
 		end
-		
+
 	request: GOA_HTTP_SERVLET_REQUEST is
 			-- The request that is being processed
 		do
 			Result := request_processing_result.request
 		end
-		
+
 	message_catalog: MESSAGE_CATALOG is
 			-- The message catalog associated with the current session
 		do
 			Result := request_processing_result.message_catalog
 		end
-			
+
 feature {GOA_REQUEST_PARAMETER} -- Database updating
 
 	set_was_updated is
@@ -94,10 +94,10 @@ feature {GOA_REQUEST_PARAMETER} -- Database updating
 		do
 			was_updated := True
 			request_processing_result.set_was_updated
-		end		
+		end
 
 feature {GOA_DEFERRED_PARAMETER} -- Dependency Updating
-			
+
 	set_was_dependency_updated is
 			-- Set updated_dependency to True
 		obsolete
@@ -107,7 +107,7 @@ feature {GOA_DEFERRED_PARAMETER} -- Dependency Updating
 			request_processing_result.set_was_dependency_updated
 			set_was_updated
 		end
-		
+
 feature {GOA_REQUEST_PROCESSING_RESULT} -- Processing
 
 	process (the_parameter: PARAMETER_PROCESSING_RESULT) is
@@ -122,13 +122,15 @@ feature {GOA_REQUEST_PROCESSING_RESULT} -- Processing
 		local
 			is_suffix_valid: BOOLEAN
 		do
+			debug ("goa_parameter_processing_result")
+				io.put_string ("Processing parameter: " + the_parameter.raw_parameter + "%N")
+			end
 			was_processed := True
 			if request.has_parameter (raw_parameter) then
 				value := request.get_parameter (raw_parameter)
 			else
 				value := ""
 			end
-			
 			start_version_access (request_processing_result)
 				is_suffix_valid := request_parameter.is_suffix_valid (request_processing_result, parameter_suffix)
 			end_version_access (request_processing_result)
@@ -164,7 +166,7 @@ feature {NONE} -- Creation
 		ensure
 			raw_parameter_name: equal (raw_parameter, new_raw_parameter.as_lower)
 		end
-		
+
 invariant
 
 	is_value_valid: value /= Void

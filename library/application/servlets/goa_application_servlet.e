@@ -17,16 +17,16 @@ inherit
 		end
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	GOA_TEXT_PROCESSING_FACILITIES
-	EXCEPTIONS
 	GOA_AUTHENTICATION_STATUS_CODE_FACILITIES
-	L4E_SHARED_HIERARCHY
 	GOA_SHARED_VIRTUAL_DOMAIN_HOSTS
 	GOA_SHARED_SERVLET_MANAGER
+	GOA_HTTP_UTILITY_FUNCTIONS
 	UT_STRING_FORMATTER
 	GOA_TRANSACTION_MANAGEMENT
 	KL_IMPORTED_STRING_ROUTINES
 	SHARED_REQUEST_PARAMETERS
 	SHARED_SERVLETS
+	ACCESS_FACILITIES
 
 feature -- Attributes
 
@@ -124,18 +124,11 @@ feature -- Request Processing
 			temp_name: STRING
 			failed_once, failed_twice: BOOLEAN
 			suffix_list: DS_LINKED_LIST [INTEGER]
-			ts: GOA_DISPLAYABLE_SERVLET
-
 		do
 			debug ("goa_application_servlet")
 				io.put_string ("========" + generator + "%N")
 			end
 			if not failed_once then
-				io.put_string ("Receive secure: " + receive_secure.out + "%N")
-				ts ?= Current
-				if ts /= Void then
-					io.put_string ("Send secure: " + ts.send_secure.out + "%N")
-				end
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
 --				io.put_string ("Request: " + name + client_info (request) + "%N")
 				-- Obtain session status and initialize if necessary
@@ -285,6 +278,10 @@ feature -- Request Processing
 				start_transaction (processing_result)
 					servlet := configuration.next_page (processing_result)
 				commit (processing_result)
+			elseif exception_html (request, response) /= Void then
+				response.send (exception_html (request, response).twin)
+				exception_html_sent_to_user (request, response)
+				session_status.set_has_served_a_page
 			else
 				servlet ?= servlet_manager.default_servlet
 				if servlet = Void and then servlet_manager.default_servlet = Void then
@@ -293,22 +290,23 @@ feature -- Request Processing
 					raise ("servlet_manager.default_servlet must conform to " + generating_type)
 				end
 			end
-			debug ("goa_application_servlet")
-				io.put_string ("Generating Servlet: " + servlet.name + "%N")
-			end
-			if session_status.virtual_domain_host.use_ssl and servlet.send_secure and not request.is_secure then
-				-- We received an insecure request, but response must be sent via SSL
-				-- Redirect client to an SSL page so they may obtain the response securely
-				processing_result.session_status.set_secure_page (servlet)
---				io.put_string ("Redirect to: " +  + "%N")
-				response.send_redirect (secure_redirection_servlet.hyperlink (processing_result, "Dummy Text").url)
-			else
-				servlet.send_response (processing_result)
-
-			end
-			session_status.set_has_served_a_page
-			debug ("goa_application_servlet")
-				io.put_string ("========" + generator + " response sent%N")
+			if not failed_twice then
+				debug ("goa_application_servlet")
+					io.put_string ("Generating Servlet: " + servlet.name + "%N")
+				end
+				if session_status.virtual_domain_host.use_ssl and servlet.send_secure and not request.is_secure then
+					-- We received an insecure request, but response must be sent via SSL
+					-- Redirect client to an SSL page so they may obtain the response securely
+					processing_result.session_status.set_secure_page (servlet)
+--					io.put_string ("Redirect to: " +  + "%N")
+					response.send_redirect (secure_redirection_servlet.hyperlink (processing_result, "Dummy Text").url)
+				else
+					servlet.send_response (processing_result)
+				end
+				session_status.set_has_served_a_page
+				debug ("goa_application_servlet")
+					io.put_string ("========" + generator + " response sent%N")
+				end
 			end
 		rescue
 			if ok_to_write_data (processing_result) then
@@ -316,20 +314,32 @@ feature -- Request Processing
 			elseif ok_to_read_data (processing_result) then
 				end_version_access (processing_result)
 			end
-			if exception_is_shutdown_signal then
-				-- Do Nothing; we want this propogate on up
+			if 	exception_is_shutdown_signal or
+				is_developer_exception_of_name (broken_pipe_exception_message) or
+				is_developer_exception_of_name (connection_reset_by_peer_message) then
+				-- Do nothing; let these bubble up				
 			elseif not failed_once then
-				log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Once")
 				log_hierarchy.logger (configuration.application_log_category).info (exception_trace)
 				-- TODO This should be done in a generic (not application specific) way.
 				failed_once := True
 				retry
 			elseif not failed_twice then
 				log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice")
-				log_hierarchy.logger (configuration.application_log_category).info (exception_trace)
 				failed_twice := True
 				retry
 			end
+		end
+
+	exception_html (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE): STRING is
+		do
+			-- HTML to send to user if an exception occurs
+			-- May be redefined by descendents
+		end
+
+	exception_html_sent_to_user (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE) is
+		do
+			-- Actions to take if exception_html is sent to the user
+			-- May be redefine by descendents
 		end
 
 	do_post (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE) is

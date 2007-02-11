@@ -8,24 +8,24 @@ indexing
 
 deferred class
 	GOA_REQUEST_PROCESSING_RESULT
-	
+
 inherit
-	
+
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	GOA_TEXT_PROCESSING_FACILITIES
 	SHARED_REQUEST_PARAMETERS
-	
+
 feature -- Attributes
 
 	request: GOA_HTTP_SERVLET_REQUEST
 			-- The request that was processed
-	
+
 	response: GOA_HTTP_SERVLET_RESPONSE
 			-- The response that Goanna provided with the request
-	
+
 	session_status: SESSION_STATUS
 			-- Session status associated with the request
-			
+
 	message_catalog: MESSAGE_CATALOG is
 			-- Message catalog for this user
 		do
@@ -34,15 +34,15 @@ feature -- Attributes
 
 	processing_servlet: GOA_APPLICATION_SERVLET
 			-- The servlet that is processing the request that generated this result
-			
+
 	generating_servlet: GOA_DISPLAYABLE_SERVLET
 			-- The servlet that is generating the next page that will be displayed to the user
-			
+
 	virtual_domain_host: VIRTUAL_DOMAIN_HOST is
 		do
 			Result := session_status.virtual_domain_host
 		end
-		
+
 
 	all_input_was_valid: BOOLEAN is
 			-- Was all input received during the request valid?
@@ -51,19 +51,19 @@ feature -- Attributes
 		do
 			Result := all_parameters_are_valid and final_processing_was_valid
 		end
-			
+
 	was_processed: BOOLEAN
 			-- This request has been processed
-			
+
 	was_updated: BOOLEAN
 			-- Did any of the parameters update the data model?
-			
+
 	final_processing_was_valid: BOOLEAN
 			-- Post processing (performed by the servlet) indicates request is valid
-			
+
 	all_mandatory_parameters_are_valid: BOOLEAN
 			-- Are all mandatory parameters valid?
-			
+
 	is_generating_response: BOOLEAN is
 			-- Is this processing result currently being used to generate a response to the user
 			-- False during initial processing of request from user
@@ -86,7 +86,7 @@ feature -- Attributes
 		do
 			Result := parameter_names.has (name)
 		end
-		
+
 	has_parameter_result (name: STRING; suffix: INTEGER): BOOLEAN is
 			-- Does this processing result include a result for name:suffix
 			-- Use 0 if no suffix
@@ -95,7 +95,7 @@ feature -- Attributes
 		do
 			Result := parameter_processing_results.has (full_parameter_name (name, suffix))
 		end
-		
+
 	parameter_processing_result (name: STRING; suffix: INTEGER): PARAMETER_PROCESSING_RESULT is
 			-- Processing result for parameter with name:suffix
 			-- Use 0 if no suffix
@@ -106,7 +106,7 @@ feature -- Attributes
 				Result := parameter_processing_results.item (full_parameter_name (name, suffix))
 			end
 		end
-		
+
 	parameter_value (name: STRING; suffix: INTEGER): STRING is
 			-- Value of parameter with name:suffix
 			-- Returns empty string if no such parameter in the request
@@ -125,13 +125,13 @@ feature -- Attributes
 		ensure
 			valid_result: Result /= Void
 		end
-		
+
 	page_selected_servlet: GOA_DISPLAYABLE_SERVLET
 			-- Servlet set by the GOA_PAGE_PARAMETER, if any
 
 	all_parameters_are_valid: BOOLEAN
 			-- Are the indicated parameters all valid?
-			
+
 feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_PARAMETER} -- Processing
 
 	process_parameters is
@@ -145,7 +145,7 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 			sorter.sort (mandatory_processing_results)
 			debug ("goa_request_processing_result")
 				io.put_string ("Non Mandatory Parameters Before Sorting:%N")
-				from 
+				from
 					non_mandatory_processing_results.start
 				until
 					non_mandatory_processing_results.after
@@ -157,7 +157,7 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 			sorter.sort (non_mandatory_processing_results)
 			debug ("goa_request_processing_result")
 				io.put_string ("Non Mandatory Parameters After Sorting:%N")
-				from 
+				from
 					non_mandatory_processing_results.start
 				until
 					non_mandatory_processing_results.after
@@ -187,11 +187,11 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 				until
 					non_mandatory_processing_results.after
 				loop
-					if not non_mandatory_processing_results.item_for_iteration.was_processed then 
+					if not non_mandatory_processing_results.item_for_iteration.was_processed then
 						-- Process if it hasn't already been processed, and if it is not a pass-through parameter
 						non_mandatory_processing_results.item_for_iteration.process (non_mandatory_processing_results.item_for_iteration)
 					end
-					non_mandatory_processing_results.forth						
+					non_mandatory_processing_results.forth
 				end
 			end
 		ensure
@@ -202,7 +202,7 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 				Retry
 			end
 		end
-		
+
 	process_submit_parameter_if_present is
 			-- Process the submit parameter, if one is present
 		local
@@ -216,13 +216,13 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 		ensure
 			was_processed: was_processed
 		end
-		
+
 	set_final_processing_valid is
 			-- Post processing (in the servlet) completed successfully; the request is fully validated
 		do
 			final_processing_was_valid := True
 		end
-		
+
 	add_parameter_processing_result (processing_result: PARAMETER_PROCESSING_RESULT; is_mandatory: BOOLEAN) is
 			-- Add processing_result to parameter_processing_results
 		require
@@ -242,31 +242,31 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 				non_mandatory_processing_results.force_last (processing_result)
 			end
 		end
-		
+
 	set_page_selected_servlet (the_servlet: GOA_DISPLAYABLE_SERVLET) is
 		do
 			page_selected_servlet := the_servlet
 		end
-		
+
 	set_was_updated is
 		do
 			was_updated := True
 		ensure
 			was_updated: was_updated
 		end
-		
+
 
 feature {GOA_USER_ERROR_MESSAGE} -- Parameter Validity
-		
+
 	set_not_all_parameters_are_valid is
 		do
 			all_parameters_are_valid := False
 		ensure
 			not_all_parameters_are_valid: not all_parameters_are_valid
 		end
-		
+
 feature {GOA_DISPLAYABLE_SERVLET} -- Generating Servlet
-		
+
 	set_generating_servlet (new_generating_servlet: GOA_DISPLAYABLE_SERVLET) is
 			-- Set generating_servlet to new_generating_servlet
 		do
@@ -305,7 +305,7 @@ feature {NONE} -- Creation
 		end
 
 feature {GOA_PARAMETER_PROCESSING_RESULT, GOA_APPLICATION_SERVLET} -- Implementation
-		
+
 feature {NONE} -- Implementation
 
 	sorter: DS_QUICK_SORTER [GOA_PARAMETER_PROCESSING_RESULT] is
@@ -313,7 +313,7 @@ feature {NONE} -- Implementation
 		once
 			create Result.make (comparator)
 		end
-		
+
 	comparator: GOA_PARAMETER_PROCESSING_RESULT_COMPARATOR is
 			-- Comparator used for sorting GOA_PARAMETER_PROCESSING_RESULTS
 		once
@@ -326,10 +326,10 @@ feature {NONE} -- Implementation
 	mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
 	non_mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
 			-- Mandatory and non-mandatory processing results
-			
+
 	parameter_names: DS_LINKED_LIST [STRING]
 			-- The names of all parameters registered in this result
-			
+
 	error_messages_displayed: DS_LINKED_LIST [STRING]
 			-- List of parameters for which error messages have been displayed
 
@@ -357,6 +357,6 @@ invariant
 	valid_non_mandatory_processing_results: non_mandatory_processing_results /= Void
 	valid_parameter_processing_results: parameter_processing_results /= Void
 	valid_parameter_names: parameter_names /= Void
-	valid_error_messages_displayed: error_messages_displayed /= Void		
-		
+	valid_error_messages_displayed: error_messages_displayed /= Void
+
 end -- class GOA_REQUEST_PROCESSING_RESULT

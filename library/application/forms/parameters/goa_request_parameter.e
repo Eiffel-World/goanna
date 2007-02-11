@@ -8,12 +8,12 @@ indexing
 
 deferred class
 	GOA_REQUEST_PARAMETER
-	
+
 inherit
 
 	GOA_DEFERRED_PARAMETER
 	L4E_SHARED_HIERARCHY
-	
+
 feature -- Attributes
 
 	processing_order: INTEGER is
@@ -43,13 +43,13 @@ feature -- Queries
 		do
 			Result := processing_result.parameter_processing_result (name, suffix)
 		end
-		
+
 	is_suffix_valid (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
 			-- Is suffix a valid value.  Default is suffix = 0 (no suffix allowed)
 		do
 			Result := minimum_suffix (processing_result) <= suffix and suffix <= maximum_suffix (processing_result)
 		end
-		
+
 	minimum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
 			-- The minimum valid suffix value
 		once
@@ -61,7 +61,7 @@ feature -- Queries
 		once
 			Result := 0
 		end
-		
+
 	suffix_list (processing_result: REQUEST_PROCESSING_RESULT): DS_LINKED_LIST [INTEGER] is
 			-- A list of all suffix values used for this parameter
 		local
@@ -83,35 +83,35 @@ feature -- Queries
 			end
 		end
 
-		
+
 feature -- As XML
-		
+
 	is_disabled (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
 			-- Default is always enabled
 		once
 			Result := False
 		end
-		
+
 	input_class (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 			-- CSS class for input of this parameter
 			-- Void if none
 		once
 			Result := Void
 		end
-		
+
 	script_name (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 			-- Name of the script associated with this request parameter; Void if none
 		once
 			Result := Void
 		end
-		
+
 feature -- To be removed
 
 	is_a_dependency: BOOLEAN is
 		once
 			Result := False
 		end
-		
+
 feature {NONE} -- Creation
 
 	make is
@@ -120,6 +120,6 @@ feature {NONE} -- Creation
 			name_not_registered: not request_parameters.has (name)
 		do
 			request_parameters.force (Current, name)
-		end	
+		end
 
 end -- class GOA_REQUEST_PARAMETER

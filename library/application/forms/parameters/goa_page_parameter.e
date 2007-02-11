@@ -7,18 +7,18 @@ indexing
 
 class
 	GOA_PAGE_PARAMETER
-	
+
 inherit
-	
+
 	GOA_NON_DISPLAYABLE_PARAMETER
 	GOA_NON_DATABASE_ACCESS_PARAMETER
 	GOA_SHARED_SERVLET_MANAGER
 	SHARED_SERVLETS
-	
+
 creation
-	
+
 	make
-	
+
 feature
 
 	name: STRING is "page"
@@ -35,5 +35,5 @@ feature
 			end
 			processing_result.request_processing_result.set_page_selected_servlet (servlet)
 		end
-		
+
 end -- class GOA_PAGE_PARAMETER

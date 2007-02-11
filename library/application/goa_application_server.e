@@ -27,9 +27,6 @@ inherit
 	GOA_SHARED_VIRTUAL_DOMAIN_HOSTS
 	KL_SHARED_EXCEPTIONS
 	L4E_SHARED_HIERARCHY
-		rename
-			warn as log_warn
-		end
 	L4E_SYSLOG_APPENDER_CONSTANTS
 	SHARED_SERVLETS
 
@@ -43,6 +40,30 @@ feature
 				detach
 			end
 		end
+
+	initialise_logger is
+			-- Set logger appenders
+		local
+			syslog: L4E_APPENDER
+			layout: L4E_LAYOUT
+			application_log: L4E_FILE_APPENDER
+			application_layout: L4E_PATTERN_LAYOUT
+		do
+
+			create {L4E_SYSLOG_APPENDER} syslog.make ("Syslog", "localhost", Log_user)
+			create {L4E_PATTERN_LAYOUT} layout.make ("@d [@-6p] port: " + configuration.port.out + " @c - @m%N")
+			syslog.set_layout (layout)
+			log_hierarchy.logger ("goanna").add_appender (syslog) -- This is used by Goanna itself.
+			log_hierarchy.logger ("goanna").set_priority (None_p) -- Change to Debug_p or whatever to get these.
+			create application_log.make (configuration.log_file_name, True)
+			create application_layout.make ("@d [@-6p] @c - @m%N")
+			application_log.set_layout (application_layout)
+			log_hierarchy.logger (configuration.application_log_category).add_appender (application_log)
+			log_hierarchy.logger (configuration.application_log_category).set_priority (info_p)
+			log_hierarchy.logger (configuration.application_security_log_category).add_appender (application_log)
+			log_hierarchy.logger (configuration.application_security_log_category).set_priority (info_p)
+		end
+
 
 	execute is
 			-- Create and initialise a new FAST_CGI server that will listen for connections
@@ -135,15 +156,18 @@ feature
 	field_exception: BOOLEAN is
 			-- Should we attempt to retry?
 		do
-
 			if exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) then
 				Result := False
+			elseif is_developer_exception_of_name (broken_pipe_exception_message) then
+				log_hierarchy.logger (configuration.application_log_category).info (broken_pipe_exception_message)
+				Result := True
+			elseif is_developer_exception_of_name (connection_reset_by_peer_message) then
+				log_hierarchy.logger (configuration.application_log_category).info (connection_reset_by_peer_message)
+				Result := True
 			else
-				-- The framework should catch and retry any exceptions before they reach here
-				-- Thus, if we get here, it probably indicates a bug in the framework and not the application
-				-- Best to fail at this point, at least for now
 				log_hierarchy.logger (configuration.application_log_category).info (exceptions.exception_trace)
-				Result := False
+				uncaught_exception_occurred
+				Result := True
 			end
 			if not Result then
 				log_hierarchy.logger (configuration.application_log_category).info ("Application Ending...")
@@ -152,27 +176,9 @@ feature
 			bring_down_implies_false: exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) implies not Result
 		end
 
-	initialise_logger is
-			-- Set logger appenders
-		local
-			syslog: L4E_APPENDER
-			layout: L4E_LAYOUT
-			application_log: L4E_FILE_APPENDER
-			application_layout: L4E_PATTERN_LAYOUT
+	uncaught_exception_occurred is
 		do
-
-			create {L4E_SYSLOG_APPENDER} syslog.make ("Syslog", "localhost", Log_user)
-			create {L4E_PATTERN_LAYOUT} layout.make ("@d [@-6p] port: " + configuration.port.out + " @c - @m%N")
-			syslog.set_layout (layout)
-			log_hierarchy.logger ("goanna").add_appender (syslog) -- This is used by Goanna itself.
-			log_hierarchy.logger ("goanna").set_priority (None_p) -- Change to Debug_p or whatever to get these.
-			create application_log.make (configuration.log_file_name, True)
-			create application_layout.make ("@d [@-6p] @c - @m%N")
-			application_log.set_layout (application_layout)
-			log_hierarchy.logger (configuration.application_log_category).add_appender (application_log)
-			log_hierarchy.logger (configuration.application_log_category).set_priority (info_p)
-			log_hierarchy.logger (configuration.application_security_log_category).add_appender (application_log)
-			log_hierarchy.logger (configuration.application_security_log_category).set_priority (info_p)
+			-- Descendents may redefine if necessary
 		end
 
 	none_p: L4E_PRIORITY is

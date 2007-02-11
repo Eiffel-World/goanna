@@ -37,7 +37,7 @@ feature
 			stylesheet_source: XM_XSLT_URI_SOURCE
 			resolver_scheme: STRING
 		do
-				io.put_string (new_file_name)
+--				io.put_string (new_file_name)
 				a_cwd := file_system.string_to_pathname (file_system.current_working_directory)
 				create a_uri.make_resolve_uri (file_uri.pathname_to_uri (a_cwd), file_uri.filename_to_uri (new_file_name))
 				create stylesheet.make (configuration)

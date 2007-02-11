@@ -26,12 +26,12 @@ feature
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result)
 		end
-	
+
 	minimum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
 		do
 			Result := 1
 		end
-		
+
 	maximum_suffix (processing_result: REQUEST_PROCESSING_RESULT): INTEGER is
 		do
 			Result := item_list (processing_result).count
