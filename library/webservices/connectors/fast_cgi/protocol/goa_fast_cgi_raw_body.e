@@ -19,6 +19,8 @@ inherit
 			{NONE} all
 		end
 
+	EPX_CURRENT_PROCESS
+
 create
 
 	make, read
@@ -36,6 +38,8 @@ feature -- Initialization
 			padding_length := padding
 		end
 
+	write_ok: BOOLEAN	
+
 feature -- Basic operations
 
 	write (socket: ABSTRACT_TCP_SOCKET) is
@@ -46,7 +50,12 @@ feature -- Basic operations
 		local
 			enc_data: STRING
 			padding: STRING
+			bytes_to_send, retries: INTEGER
 		do
+			debug ("fcgi_protocol")
+				io.put_string (generating_type + ".write + %N")
+			end
+			
 			create enc_data.make (raw_content_data.count + padding_length)
 			enc_data.append_string (raw_content_data)
 			if padding_length > 0 then
@@ -55,11 +64,28 @@ feature -- Basic operations
 			end
 --			io.put_string ("FAST_CGI_RAW_BODY.write bytes to send: " + enc_data.count.out + "%N")
 --			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%N")
---			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
-			socket.put_string (enc_data)
+			--			io.put_string ("Bytes to send: " + enc_data.count.out + 
+			--			"%N")
+			from
+				bytes_to_send := enc_data.count
+				write_ok := True
+			until
+				bytes_to_send <= 0 or not write_ok
+			loop
+				socket.put_string (enc_data)
+				bytes_to_send := bytes_to_send - socket.last_written
+				if socket.last_written = 0 then
+					retries := retries + 1
+					millisleep (10)
+					write_ok := retries < 5
+				end
+			end
 --			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
 			debug("fcgi_protocol")
---				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+				--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + 
+				--				"%R%N")
+				io.put_string ("write_ok: " + write_ok.out + "%N")
+				io.put_string (generating_type + ".write - finished%N")
 			end
 		end
 

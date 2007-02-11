@@ -23,7 +23,7 @@ inherit
 		end
 
 	KL_IMPORTED_INTEGER_ROUTINES
-	
+
 	POSIX_CONSTANTS
 
 creation
@@ -43,49 +43,49 @@ feature -- Initialization
 			create parameters.make (20)
 --			io.put_string ("============================================  Request Created%N")
 		end
-	
+
 feature -- Access
-	
+
 	failed: BOOLEAN
 		-- Did this request fail?
-			
+
 	socket: ABSTRACT_TCP_SOCKET
 		-- The request communication socket
-				
-	read_ok: BOOLEAN 
+
+	read_ok: BOOLEAN
 		-- Was the last read operation successful?
-		
+
 	write_ok: BOOLEAN
 		-- Was the last write operation successful?
-		
+
 	request_id: INTEGER
 		-- Request id. Zero for management request.
-	
+
 	keep_connection: BOOLEAN
-			
+
 	role: INTEGER
-	
+
 	flags: INTEGER
-	
+
 	version: INTEGER
-	
+
 	type: INTEGER
-	
+
 	content_length: INTEGER
-	
+
 	padding_length: INTEGER
-		
+
 	app_status: INTEGER
 			-- Application status
-		
+
 	num_writers: INTEGER
 			-- Number of writers
-				
+
 	parameters: DS_HASH_TABLE [STRING, STRING]
 			-- Table of parameters passed to this request.
-	
+
 	raw_stdin_content: STRING
-	
+
 	broken_pipe: BOOLEAN is
 			-- Was the last error for the serving socket a broken pipe?
 		do
@@ -110,18 +110,18 @@ feature -- Basic operations
 			-- Process management records as they are encountered.
 			--| Can be called recursively to read parts of a stream.
 		local
-			record_header: GOA_FAST_CGI_RECORD_HEADER	
+			record_header: GOA_FAST_CGI_RECORD_HEADER
 		do
 			debug ("fcgi_protocol")
 				print (generator + ".read%R%N")
-			end	
+			end
 			from
 				read_ok := True
 				stdin_records_done := False
 				param_records_done := False
 			until
 				not read_ok or (stdin_records_done and param_records_done)
-			loop				
+			loop
 				-- read begin request record. It may be a management record, if so, process it.
 				record_header := read_header
 				if read_ok then
@@ -134,7 +134,7 @@ feature -- Basic operations
 				print (generator + ".read - finished.%R%N")
 			end
 		end
-	
+
 	write_stderr (str: STRING) is
 			-- Write 'str' as a stderr record to the socket
 		require
@@ -167,9 +167,9 @@ feature -- Basic operations
 			record_header.write (socket)
 			debug ("fcgi_protocol")
 				print (generator + ".write_stderr - finished%R%N")
-			end			
+			end
 		end
-	
+
 	write_stdout (str: STRING) is
 			-- Write 'str' as a stdout record to the socket
 		require
@@ -196,7 +196,7 @@ feature -- Basic operations
 				bytes_to_send := (65535).min (str.count - (offset - 1))
 --				io.put_string (generator + "Bytes to send: " + bytes_to_send.out + "%N")
 				-- create and send stdout stream record
-				
+
 				create record_header.make (version, request_id, Fcgi_stdout, bytes_to_send, 0)
 				debug ("fcgi_protocol")
 					body_string := str.substring (offset, offset + bytes_to_send - 1)
@@ -221,7 +221,7 @@ feature -- Basic operations
 --			create now.make_now
 --			io.put_string ("Finished {FAST_CGI_REQUEST}.write_std_out: " + now.out + "%N")
 		end
-		
+
 	end_request is
 			-- Notify the web server that this request has completed.
 		require
@@ -231,12 +231,11 @@ feature -- Basic operations
 			record_header: GOA_FAST_CGI_RECORD_HEADER
 			record_body: GOA_FAST_CGI_END_REQUEST_BODY
 		do
---			io.put_string ("FAST_CGI_REQUEST.end_request starting...%N")
 			debug ("fcgi_protocol")
 				print (generator + ".end_request%R%N")
 			end
 			-- send end request record
-			create record_header.make (version, request_id, Fcgi_end_request, 
+			create record_header.make (version, request_id, Fcgi_end_request,
 				Fcgi_end_req_body_len, 0)
 			create record_body.make (Fcgi_request_complete, 0)
 			record_header.write (socket)
@@ -245,30 +244,29 @@ feature -- Basic operations
 			debug ("fcgi_protocol")
 				print (generator + ".end_request - finished%R%N")
 			end
---			io.put_string ("FAST_CGI_REQUEST.end_request finished.%N")
 		end
-	
+
 feature {NONE} -- Implementation
 
 	stdin_records_done, param_records_done: BOOLEAN
 			-- Have all stdin and param records been read?
-	
-	raw_param_content: STRING	
+
+	raw_param_content: STRING
 			-- Buffers to hold raw data collected from stream records.
-				
+
 	read_header: GOA_FAST_CGI_RECORD_HEADER is
 			-- Read record header from the socket.
 		do
 			debug ("fcgi_protocol")
 				print (generator + ".read_header%R%N")
-			end	
+			end
 			create Result.read (socket)
 			read_ok := Result.read_ok
 			debug ("fcgi_protocol")
 				print (generator + ".read_header - finished%R%N")
-			end				
+			end
 		end
-	
+
 	read_body (record_header: GOA_FAST_CGI_RECORD_HEADER) is
 			-- Read the body of the record depending on the type of the
 			-- record
@@ -277,7 +275,7 @@ feature {NONE} -- Implementation
 		do
 			debug ("fcgi_protocol")
 				print (generator + ".read_body%R%N")
-			end	
+			end
 			inspect
 				record_header.type
 			when Fcgi_begin_request then
@@ -292,13 +290,13 @@ feature {NONE} -- Implementation
 				-- TODO: handle unknown record type
 				debug ("fcgi_protocol")
 					print (generator + ".read_body - unknown record type%R%N")
-				end	
+				end
 			end
 			debug ("fcgi_protocol")
 				print (generator + ".read_body - finished%R%N")
-			end				
+			end
 		end
-	
+
 	read_begin_request_body (record_header: GOA_FAST_CGI_RECORD_HEADER) is
 			-- Read body of begin request record and process data.
 		local
@@ -306,7 +304,7 @@ feature {NONE} -- Implementation
 		do
 			debug ("fcgi_protocol")
 				print (generator + ".read_begin_request_body%R%N")
-			end	
+			end
 			-- read body
 			create record_body
 			record_body.read (record_header, socket)
@@ -324,17 +322,17 @@ feature {NONE} -- Implementation
 			end
 			debug ("fcgi_protocol")
 				print (generator + ".read_begin_request_body - finished%R%N")
-			end				
-		end		
-	
+			end
+		end
+
 	read_param_request_body (record_header: GOA_FAST_CGI_RECORD_HEADER) is
 			-- Read body of param request record and process data.
 		local
-			record_body: GOA_FAST_CGI_RAW_BODY	
+			record_body: GOA_FAST_CGI_RAW_BODY
 		do
 			debug ("fcgi_protocol")
 				print (generator + ".read_param_request_body%R%N")
-			end	
+			end
 			-- check if this is an empty param record. If so, flag end of params
 			if record_header.content_length = 0 then
 				param_records_done := True
@@ -347,18 +345,18 @@ feature {NONE} -- Implementation
 					if raw_param_content = Void then
 						create raw_param_content.make (record_header.content_length)
 					end
-					raw_param_content.append_string (record_body.raw_content_data)	
+					raw_param_content.append_string (record_body.raw_content_data)
 					debug ("fcgi_protocol")
 						print (generator + ".read_param_request_body = ")
 						print (quoted_eiffel_string_out (record_body.raw_content_data) + "%R%N")
-					end	
-				end		
+					end
+				end
 			end
 			debug ("fcgi_protocol")
 				print (generator + ".read_param_request_body - finished%R%N")
 			end
 		end
-	
+
 	read_stdin_request_body (record_header: GOA_FAST_CGI_RECORD_HEADER) is
 			-- Read body of stdin request record and process data.
 		local
@@ -366,7 +364,7 @@ feature {NONE} -- Implementation
 		do
 			debug ("fcgi_protocol")
 				print (generator + ".read_stdin_request_body%R%N")
-			end	
+			end
 			-- check if this is an empty stdin record. If so, flag end of stdin
 			if record_header.content_length = 0 then
 				stdin_records_done := True
@@ -383,14 +381,14 @@ feature {NONE} -- Implementation
 					debug ("fcgi_protocol")
 						print (generator + ".read_stdin_request_body = ")
 						print (quoted_eiffel_string_out (record_body.raw_content_data) + "%R%N")
-					end	
-				end				
+					end
+				end
 			end
 			debug ("fcgi_protocol")
 				print (generator + ".read_stdin_request_body - finished%R%N")
-			end			
+			end
 		end
-	
+
 	process_parameter_raw_data is
 			-- Extract parameters from 'raw_param_content'
 		local
@@ -406,7 +404,7 @@ feature {NONE} -- Implementation
 				offset >= raw_param_content.count
 			loop
 				-- determine number of bytes in name length, 1 or 4
-				short_name := INTEGER_.bit_shift_right (raw_param_content.item (offset).code, 7) = 0 
+				short_name := INTEGER_.bit_shift_right (raw_param_content.item (offset).code, 7) = 0
 				-- build name length
 				if short_name then
 					name_length := INTEGER_.bit_and (raw_param_content.item (offset).code, 127)
@@ -419,7 +417,7 @@ feature {NONE} -- Implementation
 					offset := offset + 4
 				end
 				-- determine number of bytes in value length, 1 or 4
-				short_value := INTEGER_.bit_shift_right (raw_param_content.item (offset).code, 7) = 0 
+				short_value := INTEGER_.bit_shift_right (raw_param_content.item (offset).code, 7) = 0
 				-- build value length
 				if short_value then
 					value_length := INTEGER_.bit_and (raw_param_content.item (offset).code, 127)
@@ -440,14 +438,14 @@ feature {NONE} -- Implementation
 				-- store parameter
 				parameters.force (value, name)
 				debug ("fcgi_protocol")
-					print (generator + ".process_parameter_raw_data: name = " 
+					print (generator + ".process_parameter_raw_data: name = "
 						+ quoted_eiffel_string_out (name))
 					print (" value = " + quoted_eiffel_string_out (value) + "%R%N")
 				end
 			end
 			debug ("fcgi_protocol")
-				print (generator + ".process_parameter_raw_data: Finished") 
+				print (generator + ".process_parameter_raw_data: Finished")
 			end
 		end
-	
+
 end -- class GOA_FAST_CGI_REQUEST

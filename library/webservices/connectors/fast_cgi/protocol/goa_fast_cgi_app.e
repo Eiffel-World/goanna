@@ -30,6 +30,7 @@ feature -- Basic operations
 				accept < 0
 			loop
 				process_request
+--				io.put_string ("GOA_FAST_CGI_APP.run; accept =
 			end
 		rescue
 			if not field_exception then

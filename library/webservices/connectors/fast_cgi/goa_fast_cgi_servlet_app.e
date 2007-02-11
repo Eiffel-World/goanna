@@ -11,16 +11,16 @@ indexing
 deferred class GOA_FAST_CGI_SERVLET_APP
 
 inherit
-	
+
 	GOA_SERVLET_APPLICATION
-	
+
 	GOA_FAST_CGI_APP
 		rename
 			make as fast_cgi_app_make
 		export
 			{NONE} fast_cgi_app_make
 		end
-	
+
 	GOA_SHARED_SERVLET_MANAGER
 		export
 			{NONE} all
@@ -31,7 +31,7 @@ inherit
 			{NONE} all
 		end
 	KL_EXCEPTIONS
-	
+
 feature -- Initialisation
 
 	make (new_host: STRING; port, backlog: INTEGER) is
@@ -39,9 +39,9 @@ feature -- Initialisation
 		do
 			fast_cgi_app_make (new_host, port, backlog)
 		end
-	
+
 feature -- Basic operations
-		
+
 	process_request is
 			-- Process a request.
 		local
@@ -58,17 +58,17 @@ feature -- Basic operations
 				create resp.make (request)
 				debug ("Fast CGI servlet app")
 							info (Servlet_app_log_category, "Response created")
-				end			
-				create req.make (request, resp)	
-				-- dispatch to the registered servlet using the path info as the registration 
+				end
+				create req.make (request, resp)
+				-- dispatch to the registered servlet using the path info as the registration
 				-- name.
 				debug ("Fast CGI servlet app")
 							info (Servlet_app_log_category, "About to check for path info...")
-				end			
+				end
 				if req.has_header (Path_info_var) then
 					debug ("Fast CGI servlet app")
 							info (Servlet_app_log_category, "About to check for path info...Got it!")
-					end			
+					end
 					path := req.get_header (Path_info_var)
 					if path /= Void then
 						-- remove leading slash from path
@@ -77,11 +77,11 @@ feature -- Basic operations
 				end
 				debug ("Fast CGI servlet app")
 					info (Servlet_app_log_category, "About to check for non-void path...")
-				end			
+				end
 				if path /= Void then
 					debug ("Fast CGI servlet app")
 						info (Servlet_app_log_category, "About to check for non-void path...Got it!")
-					end			
+					end
 					-- Search upwards through a hierarchy of servlet names.
 					from
 						servlet_name := path
@@ -144,19 +144,8 @@ feature -- Basic operations
 					end
 				end
 			end
-		rescue
-			if is_developer_exception_of_name (broken_pipe_exception_message) then
-			-- See TODO for broken_pipe_error
-			-- Once STDC_BASE.raise_posix_error is implemented correctly
-			-- The above line may be replaced with the following line
---			if srv_socket.errno.first_value = broken_pipe_error then
-				srv_socket.errno.clear_first
-				initialize_listening
-				failed := True
-				retry
-			end		
 		end
-		
+
 feature {NONE} -- Implementation
 
 	handle_missing_servlet (resp: GOA_FAST_CGI_SERVLET_RESPONSE) is
@@ -166,5 +155,5 @@ feature {NONE} -- Implementation
 		do
 			resp.send_error (Sc_not_found)
 		end
-	
+
 end -- class GOA_FAST_CGI_SERVLET_APP

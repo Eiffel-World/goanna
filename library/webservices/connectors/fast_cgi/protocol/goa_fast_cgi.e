@@ -84,46 +84,14 @@ feature -- FGCI interface
 				print (generator + ".accept - finished%R%N")
 			end
 		rescue
-			if is_developer_exception_of_name (broken_pipe_exception_message) and then srv_socket /= Void then
-			-- See TODO for broken_pipe_error
-			-- Once STDC_BASE.raise_posix_error is implemented correctly
-			-- The above line may be replaced with the following line
---			if srv_socket /= Void and then srv_socket.errno.first_value = broken_pipe_error then
-				srv_socket.errno.clear_first
-				initialize_listening
-				failed := True
-				retry
-			else
-				srv_socket := Void
-				request := Void
-				Result := -1
-				failed := True
-				debug ("fcgi_interface")
-					print (generator + ".accept - exception%R%N")
-				end
+			srv_socket := Void
+			request := Void
+			Result := -1
+			failed := True
+			debug ("fcgi_interface")
+				print (generator + ".accept - exception%R%N")
 			end
 		end
-
-	broken_pipe_exception_message: STRING is "Broken pipe"
-		-- Possibly Linux only; Not known if this is the same on Windows
-		-- See TODO for broken_pipe_error
-
-	broken_pipe_error: INTEGER is 32
-		-- Linux Only; probably 10054 on Windows
-		-- TODO Change this to refer to the platform
-		-- independent EPOSIX constant, once one is added to
-		-- EPOSIX.  At that time, verify that
-		-- STDC_BASE.raise_posix_error correctly sets
-		-- STDC_BASE.errno.first_value
-		-- Also see fixes required (then) for rescue
-		-- clauses of accept and process_request
-		-- I have one lingering question about using
-		-- broken pipe error instead of the exception message
-		-- If errno.first_value is not 0 when the broken pipe
-		-- exception occurs then the rescue clause will not
-		-- catch and retry, and the program will crash.
-		-- However, relying on the text of the message seems
-		-- less reliable then using the error codes
 
 	initialize_listening is
 		local
@@ -153,7 +121,7 @@ feature -- FGCI interface
 			if request /= Void then
 				-- complete the current request
 				request.end_request
-				if request.keep_connection then
+				if request.keep_connection and then request.socket.is_open then
 					request.socket.close
 					request.make -- reset the request
 				else
@@ -190,11 +158,22 @@ feature -- FGCI interface
 			-- Read 'amount' characters from standard input stream.
 		require
 			request_exists: request /= Void
+		local
+			bytes_to_read: INTEGER
+			read_ok: BOOLEAN
 		do
-			create Result.make (amount)
-			Result.fill_blank
-			request.socket.read_string (amount)
-			Result := request.socket.last_string
+			from
+				Result := ""
+				read_ok := True
+				bytes_to_read := amount
+			until
+				bytes_to_read <= 0 or not read_ok
+			loop
+				request.socket.read_string (amount)
+				Result.append (request.socket.last_string)
+				bytes_to_read := bytes_to_read - request.socket.last_read
+				read_ok := request.socket.last_read > 0
+			end
 		end
 
 	getline (amount: INTEGER): STRING is
@@ -326,24 +305,23 @@ feature {NONE} -- Implementation
 					end
 					-- check peer address for allowed server addresses
 					-- if peer_address_ok (peer) then
-						-- attempt to read the request. If this fails and it was an old
-						-- connection then the server probably closed it; try making a new connection
-						-- before giving up.
-						request.read
-						if not request.read_ok then
-							request.socket.close
-							request.set_socket (Void)
-							-- if this was a new connection then we failed, otherwise try again
-							if is_new_connection then
-								Result := -1
-							end
-						else
-							request_read := True
+					-- attempt to read the request. If this fails and it was an old
+					-- connection then the server probably closed it; try making a new connection
+					-- before giving up.
+					request.read
+					if not request.read_ok then
+						request.socket.close
+						request.set_socket (Void)
+						-- if this was a new connection then we failed, otherwise try again
+						if is_new_connection then
+							Result := -1
 						end
+					else
+						request_read := True
+					end
 				end
-				if Result < 0 then
-					io.put_string ("GOA_FAST_CGI.accept_request = " + Result.out + "%N")
-				end
+--				if Result < 0 then
+--					io.put_string ("GOA_FAST_CGI.accept_request = " + Result.out + "%N")--				end
 			end
 		rescue
 			io.put_string ("Is broken pipe: " + is_developer_exception_of_name ("Broken pipe%N").out)

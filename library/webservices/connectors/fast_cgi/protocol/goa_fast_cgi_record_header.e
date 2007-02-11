@@ -30,6 +30,7 @@ inherit
 		export
 			{NONE} all
 		end
+	EPX_CURRENT_PROCESS
 
 create
 
@@ -69,6 +70,7 @@ feature -- Basic operations
 			buffer: STRING
 			bytes_to_read: INTEGER
 		do
+			millisleep (5)
 			buffer := create_blank_buffer (Fcgi_header_len)
 			read_ok := True
 			from
@@ -94,8 +96,13 @@ feature -- Basic operations
 			valid_socket: socket.is_open
 		local
 			enc_data: STRING
+			bytes_to_send, retries: INTEGER
 		do
---			io.put_string ("Starting write...%N")
+			debug ("fcgi_protocol")
+				io.put_string (generating_type + ".write + %N")
+			end
+
+			--			io.put_string ("Starting write...%N")
 --			io.put_string ("Version: " + version.out + "%N")
 --			io.put_string ("request_id: " + request_id.out + "%N")
 --			io.put_string ("type: " + type.out + "%N")
@@ -117,7 +124,20 @@ feature -- Basic operations
 --			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
 --			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
 --			io.put_string ("Sending data...%N")
-			socket.put_string (enc_data)
+			from
+				bytes_to_send := enc_data.count
+				write_ok := True
+			until
+				bytes_to_send <= 0 or not write_ok
+			loop
+				socket.put_string (enc_data)
+				bytes_to_send := bytes_to_send - socket.last_written
+				if socket.last_written = 0 then
+					retries := retries + 1
+					millisleep (10)
+					write_ok := retries < 5
+				end
+			end
 --			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
 --			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
 --			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
@@ -125,7 +145,10 @@ feature -- Basic operations
 --			io.put_string ("FAST_CGI_RECORD_HEADER Write OK: " + write_ok.out + "%N")
 --			io.put_string ("FAST_CGI_RECORD_HEADER bytes sent: " + socket.bytes_sent.out + "%N")
 			debug("fcgi_protocol")
-				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+				--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) +
+				--				"%R%N")
+				io.put_string ("write_ok: " + write_ok.out + "%N")
+				io.put_string (generating_type + ".write - finished + %N")
 			end
 --			io.put_string ("Starting write finished.%N")
 		end
