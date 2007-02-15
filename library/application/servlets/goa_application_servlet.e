@@ -26,7 +26,8 @@ inherit
 	KL_IMPORTED_STRING_ROUTINES
 	SHARED_REQUEST_PARAMETERS
 	SHARED_SERVLETS
-	ACCESS_FACILITIES
+	L4E_SHARED_HIERARCHY
+	GOA_APPLICATION_EXCEPTION_HANDLING
 
 feature -- Attributes
 
@@ -121,7 +122,7 @@ feature -- Request Processing
 			mandatory_parameters_in_request, expected_parameters_in_request: DS_LINKED_LIST [STRING]
 			mandatory_processing_results, non_mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
 --			page_agent: FUNCTION [ANY, TUPLE [REQUEST_PROCESSING_RESULT], EXTENDED_GOA_PAGE_XML_DOCUMENT]
-			temp_name: STRING
+			temp_name, exception_description: STRING
 			failed_once, failed_twice: BOOLEAN
 			suffix_list: DS_LINKED_LIST [INTEGER]
 		do
@@ -280,14 +281,13 @@ feature -- Request Processing
 				commit (processing_result)
 			elseif exception_html (request, response) /= Void then
 				response.send (exception_html (request, response).twin)
-				exception_html_sent_to_user (request, response)
 				session_status.set_has_served_a_page
 			else
 				servlet ?= servlet_manager.default_servlet
 				if servlet = Void and then servlet_manager.default_servlet = Void then
-					raise ("No default servlet; Please set servlet_manager.default_servlet")
+					exceptions.raise ("No default servlet; Please set servlet_manager.default_servlet")
 				elseif servlet = Void then
-					raise ("servlet_manager.default_servlet must conform to " + generating_type)
+					exceptions.raise ("servlet_manager.default_servlet must conform to " + generating_type)
 				end
 			end
 			if not failed_twice then
@@ -314,32 +314,54 @@ feature -- Request Processing
 			elseif ok_to_read_data (processing_result) then
 				end_version_access (processing_result)
 			end
-			if 	exception_is_shutdown_signal or
-				is_developer_exception_of_name (broken_pipe_exception_message) or
-				is_developer_exception_of_name (connection_reset_by_peer_message) then
-				-- Do nothing; let these bubble up				
+			if 	exception_is_shutdown_signal then
+				processing_result.response.send ("Server Will Be Shut Down</br>")
+				processing_result.response.flush_buffer
+			elseif 	exceptions.is_developer_exception_of_name (broken_pipe_exception_message) or
+					exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) or not
+					field_exception (request, response) then
+				-- Do nothing
 			elseif not failed_once then
-				log_hierarchy.logger (configuration.application_log_category).info (exception_trace)
-				-- TODO This should be done in a generic (not application specific) way.
+				log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Once:%N" + exceptions.exception_trace)
+				do_get_exception_occurred (request, response)
 				failed_once := True
 				retry
 			elseif not failed_twice then
-				log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice")
+				if exceptions.is_developer_exception then
+					log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice: " + exceptions.developer_exception_name)
+				else
+					log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice: " + exceptions.meaning (exceptions.exception))
+				end
 				failed_twice := True
 				retry
 			end
 		end
 
 	exception_html (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE): STRING is
-		do
-			-- HTML to send to user if an exception occurs
+		require
+			valid_request: request /= Void
+			valid_response: response /= Void
+			-- HTML to send to user if an exception in procedure do_get occurs
 			-- May be redefined by descendents
+		do
 		end
 
-	exception_html_sent_to_user (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE) is
+	do_get_exception_occurred (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE) is
+		require
+			valid_request: request /= Void
+			valid_response: response /= Void
 		do
-			-- Actions to take if exception_html is sent to the user
+			-- Actions to take if an exception occurs in procedure do_get
 			-- May be redefine by descendents
+		end
+
+	field_exception (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE): BOOLEAN is
+			-- Should GOA_APPLICATION_SERVLET.do_get field the exception?
+		require
+			valid_request: request /= Void
+			valid_response: response /= Void
+		once
+			Result := True
 		end
 
 	do_post (request: GOA_HTTP_SERVLET_REQUEST; response: GOA_HTTP_SERVLET_RESPONSE) is
@@ -536,14 +558,14 @@ feature -- Logging Facilities
 			-- Called if service routine generates an exception; may be redefined by descendents
 		do
 			if not exception_is_shutdown_signal then
-				log_hierarchy.logger (configuration.application_log_category).info (generator + ".service:%N" + exception_trace)
+				log_hierarchy.logger (configuration.application_log_category).info (generator + ".service:%N" + exceptions.exception_trace)
 			end
 		end
 
 	exception_is_shutdown_signal: BOOLEAN is
 			-- Was the last developer exception a signal to shutdown the application
 		do
-			Result := equal (configuration.bring_down_server_exception_description, developer_exception_name)
+			Result := exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description)
 		end
 
 	service (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
@@ -551,7 +573,7 @@ feature -- Logging Facilities
 		do
 			precursor (req, resp)
 			if configuration.bring_down_server then
-				raise (configuration.bring_down_server_exception_description)
+				exceptions.raise (configuration.bring_down_server_exception_description)
 				-- The default version of this routine will swallow the exception and continue serving requests
 				-- So re-raise the exception here
 			end

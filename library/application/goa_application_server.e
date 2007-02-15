@@ -29,16 +29,19 @@ inherit
 	L4E_SHARED_HIERARCHY
 	L4E_SYSLOG_APPENDER_CONSTANTS
 	SHARED_SERVLETS
+	GOA_APPLICATION_EXCEPTION_HANDLING
 
 feature
 
 	application_make is
 		do
-			if command_line_ok and then configuration.test_mode then
-				execute
-			elseif command_line_ok then
-				detach
-			end
+			execute
+-- Troubleshooting possible issue with detach
+--			if command_line_ok and then configuration.test_mode then
+--				execute
+--			elseif command_line_ok then
+--				detach
+--			end
 		end
 
 	initialise_logger is
@@ -153,33 +156,45 @@ feature
 			valid_configuration: configuration /= Void
 		end
 
+	connection_reset_by_peer_exception_occurred is
+		do
+			log_hierarchy.logger (configuration.application_log_category).info (connection_reset_by_peer_message)
+		end
+
+
 	field_exception: BOOLEAN is
 			-- Should we attempt to retry?
 		do
 			if exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) then
-				Result := False
-			elseif is_developer_exception_of_name (broken_pipe_exception_message) then
+				log_hierarchy.logger (configuration.application_log_category).info ("Application Ending per Request")
+			elseif unable_to_listen then
+				log_hierarchy.logger (configuration.application_log_category).error ("Unable to open listening socket; is the socket in use?")
+			elseif exceptions.is_developer_exception_of_name (broken_pipe_exception_message) then
 				log_hierarchy.logger (configuration.application_log_category).info (broken_pipe_exception_message)
 				Result := True
-			elseif is_developer_exception_of_name (connection_reset_by_peer_message) then
-				log_hierarchy.logger (configuration.application_log_category).info (connection_reset_by_peer_message)
+			elseif exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) then
+				connection_reset_by_peer_exception_occurred
 				Result := True
 			else
-				log_hierarchy.logger (configuration.application_log_category).info (exceptions.exception_trace)
+				log_hierarchy.logger (configuration.application_log_category).info ("Exception Occurred:%N" + exceptions.exception_trace)
 				uncaught_exception_occurred
 				Result := True
 			end
-			if not Result then
-				log_hierarchy.logger (configuration.application_log_category).info ("Application Ending...")
-			end
 		ensure
 			bring_down_implies_false: exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) implies not Result
+			unable_to_listen_implies_false: unable_to_listen implies not Result
 		end
 
 	uncaught_exception_occurred is
 		do
 			-- Descendents may redefine if necessary
 		end
+
+	unable_to_listen: BOOLEAN is
+			-- Is the application in a state where it cannot listen for requests?
+		deferred
+		end
+
 
 	none_p: L4E_PRIORITY is
 			-- Prioty designates no events
