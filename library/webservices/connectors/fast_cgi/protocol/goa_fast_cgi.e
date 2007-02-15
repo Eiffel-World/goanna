@@ -34,7 +34,7 @@ inherit
 			{NONE} all
 		end
 	POSIX_CONSTANTS
-	KL_EXCEPTIONS
+	GOA_APPLICATION_EXCEPTION_HANDLING
 
 feature -- Initialisation
 
@@ -65,6 +65,7 @@ feature -- FGCI interface
 			-- Returns zero for a successful call, -1 for error.
 		local
 			failed: BOOLEAN
+			retries: INTEGER
 		do
 			debug ("fcgi_interface")
 				print (generator + ".accept%R%N")
@@ -84,14 +85,22 @@ feature -- FGCI interface
 				print (generator + ".accept - finished%R%N")
 			end
 		rescue
-			srv_socket := Void
-			request := Void
-			Result := -1
-			failed := True
-			debug ("fcgi_interface")
-				print (generator + ".accept - exception%R%N")
+			if exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) then
+				connection_reset_by_peer_exception_occurred
+				retries := retries + 1
+				if retries < 5 then
+					retry
+				end
 			end
 		end
+
+	connection_reset_by_peer_exception_occurred is
+			-- While processing the request, the connection was reset by peer
+
+		do
+			initialize_listening
+		end
+
 
 	initialize_listening is
 		local
@@ -107,8 +116,11 @@ feature -- FGCI interface
 			request := Void
 			srv_socket.errno.clear_first
 			srv_socket.errno.clear
+		rescue
+			unable_to_listen := True
 		end
 
+	unable_to_listen: BOOLEAN
 
 	finish is
 			-- Finish the current request from the HTTP server. The
@@ -322,14 +334,6 @@ feature {NONE} -- Implementation
 				end
 --				if Result < 0 then
 --					io.put_string ("GOA_FAST_CGI.accept_request = " + Result.out + "%N")--				end
-			end
-		rescue
-			io.put_string ("Is broken pipe: " + is_developer_exception_of_name ("Broken pipe%N").out)
-			io.put_string ("Value: " + srv_socket.errno.value.out + "%N")
-			io.put_string ("First Value: " + srv_socket.errno.first_value.out + "%N")
-			if srv_socket.errno.value = signal_pipe then
-				failed := True
-				retry
 			end
 		end
 
