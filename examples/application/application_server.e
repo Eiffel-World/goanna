@@ -12,18 +12,25 @@ class
 inherit
 
 	GOA_APPLICATION_SERVER
+		rename
+			warn as log_warn
+		redefine
+			connection_reset_by_peer_exception_occurred
+		end
 	GOA_FAST_CGI_SERVLET_APP
 		undefine
 			initialise_logger, all_servlets_registered
+		redefine
+			connection_reset_by_peer_exception_occurred
 		end
 	SHARED_SERVLETS
-		
+
 create
 
 	application_make
-	
+
 feature
-	
+
 	command_line_ok: BOOLEAN is
 		local
 			a_host: VIRTUAL_DOMAIN_HOST
@@ -39,7 +46,15 @@ feature
 	register_servlets is
 		do
 			register_servlet (question_servlet)
+			servlet_manager.register_default_servlet (question_servlet)
 			register_servlet (answer_servlet)
 		end
-		
+
+	connection_reset_by_peer_exception_occurred is
+		do
+			Precursor {GOA_FAST_CGI_SERVLET_APP}
+			Precursor {GOA_APPLICATION_SERVER}
+		end
+
+
 end -- class MSP_SERVER

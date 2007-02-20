@@ -8,7 +8,7 @@ indexing
 
 class
 	APPLICATION_CONFIGURATION
-	
+
 inherit
 
 	GOA_APPLICATION_CONFIGURATION
@@ -32,28 +32,29 @@ feature -- Page Sequencing
 				Result := question_servlet
 			end
 		end
-		
+
 	port: INTEGER is 7878
-	
+
 feature
-	
-	internal_data_directory: STRING is "$GOANNA/examples/application/"
-	
-	internal_document_root: STRING is 
+
+	internal_document_root: STRING is
 		once
 			Result := internal_data_directory
 		end
-	
+
 	fast_cgi_directory: STRING is "/fastcgi/demo/"
-	
+
 	internal_test_mode: BOOLEAN is True
-	
+
 	validate_email_domain: BOOLEAN is False
-	
-	default_virtual_host_lookup_string: STRING is "localhost"
-	
+
 	stylesheet: STRING is "goa_common.css"
 
+
+	default_virtual_host_lookup_string: STRING is "localhost"
+
+	internal_data_directory: STRING is "$GOANNA/examples/application/"
+
 	bring_down_server_servlet_name: STRING is "uo98344noqpfjslak8392nowpg.htm"
-	
+
 end -- class APPLICATION_CONFIGURATION
