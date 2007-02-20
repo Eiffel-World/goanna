@@ -11,9 +11,9 @@ indexing
 class GOA_FAST_CGI_CONNECTOR
 
 inherit
-	
+
 	GOA_CONNECTOR
-	
+
 	GOA_FAST_CGI
 		rename
 			Log_hierarchy as Fast_cgi_log_hierarchy,
@@ -32,7 +32,7 @@ inherit
 		end
 
 create
-	
+
 	make
 
 feature -- Initialisation
@@ -44,7 +44,7 @@ feature -- Initialisation
 			default_create
 			info (generator, "Listening on port: " + port.out)
 		end
-		
+
 feature -- Basic operations
 
 	read_request is
@@ -59,14 +59,14 @@ feature -- Basic operations
 				info (generator,  "new request received")
 				create response.make (request)
 				last_response := response
-				create {FAST_CGI_SERVLET_REQUEST} last_request.make (request, response)	
+				create {GOA_FAST_CGI_SERVLET_REQUEST} last_request.make (request, response)
 				last_operation_ok := True
 			else
 				error (generator, "error accepting new request")
 				last_operation_ok := False
 				last_response := Void
 				last_request := Void
-			end		
+			end
 		end
 
 end -- class GOA_FAST_CGI_CONNECTOR
