@@ -316,7 +316,7 @@
 
  	  	<!--  "Image" template -->
 	  	
-	<xsl:element name="IMG" >
+	<xsl:element name="img" >
 		<xsl:call-template name="goa_common:class" />
 		<xsl:attribute name="src"><xsl:value-of select="@url" /></xsl:attribute>
 		<xsl:attribute name="height"><xsl:value-of select="@height" /></xsl:attribute>

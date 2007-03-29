@@ -21,12 +21,12 @@
 
 <xsl:template match="goa_page:page">
 
-<xsl:element name="HTML">
-  <xsl:element name="HEAD">
+<xsl:element name="html">
+  <xsl:element name="head">
     <!-- Page Title -->
-    <TITLE><xsl:value-of select="/goa_page:page/@page_title" /></TITLE>
+    <xsl:element name ="title"><xsl:value-of select="/goa_page:page/@page_title" /></xsl:element>
 
-    <xsl:element name="LINK">
+    <xsl:element name="link">
 	
       <!-- Link to external stylesheet -->
 
@@ -35,7 +35,7 @@
       <xsl:attribute name="href">http://<xsl:value-of select="/goa_page:page/@host_name" />/<xsl:value-of select="/goa_page:page/@style_sheet" /></xsl:attribute>
     </xsl:element>
   </xsl:element>
-  <xsl:element name="BODY">
+  <xsl:element name="body">
     <xsl:choose>
       <xsl:when test="/goa_page:page/@submit_url"> 
 	<xsl:element name="form">
