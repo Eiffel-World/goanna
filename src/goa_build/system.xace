@@ -18,6 +18,6 @@
 
 	<mount location="${GOBO}/library/library.xace"/>
 	<mount location="${GOBO}/library/kernel.xace"/>
-	<mount location="$ECLOP/library.xace" />
+	<mount location="${ECLOP}/library.xace" />
 	<mount location="${GOANNA}/library/library.xace"/>
 </system>

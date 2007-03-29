@@ -131,6 +131,7 @@ feature {GOA_REQUEST_PROCESSING_RESULT} -- Processing
 			else
 				value := ""
 			end
+
 			start_version_access (request_processing_result)
 				is_suffix_valid := request_parameter.is_suffix_valid (request_processing_result, parameter_suffix)
 			end_version_access (request_processing_result)

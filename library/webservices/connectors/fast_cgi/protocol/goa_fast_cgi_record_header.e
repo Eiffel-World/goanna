@@ -102,7 +102,7 @@ feature -- Basic operations
 				io.put_string (generating_type + ".write + %N")
 			end
 
-			--			io.put_string ("Starting write...%N")
+--			io.put_string ("Starting write...%N")
 --			io.put_string ("Version: " + version.out + "%N")
 --			io.put_string ("request_id: " + request_id.out + "%N")
 --			io.put_string ("type: " + type.out + "%N")
@@ -118,7 +118,7 @@ feature -- Basic operations
 			enc_data.put (code_to_string (padding_length).item (1), 7)
 			enc_data.put ('%/0/', 8) -- reserved byte
 --			io.put_string ("FAST_CGI_RECORD_HEADER.write: " + quoted_eiffel_string_out(enc_data) + "%N")
---	7		io.put_string ("FAST_CGI_RECORD_HEADER bytes to send: " + enc_data.count.out + "%N")
+--			io.put_string ("FAST_CGI_RECORD_HEADER bytes to send: " + enc_data.count.out + "%N")
 --			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
 --			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
 --			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
@@ -145,8 +145,7 @@ feature -- Basic operations
 --			io.put_string ("FAST_CGI_RECORD_HEADER Write OK: " + write_ok.out + "%N")
 --			io.put_string ("FAST_CGI_RECORD_HEADER bytes sent: " + socket.bytes_sent.out + "%N")
 			debug("fcgi_protocol")
-				--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) +
-				--				"%R%N")
+--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
 				io.put_string ("write_ok: " + write_ok.out + "%N")
 				io.put_string (generating_type + ".write - finished + %N")
 			end

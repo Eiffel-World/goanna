@@ -77,6 +77,7 @@ feature
 			snoop_servlet: GOA_SNOOP_SERVLET
 		do
 			if command_line_ok then
+				-- create a server listening for 'host:port'
 				make (configuration.host, configuration.port, 10)
 				-- Register built in servlets
 				register_servlet (go_to_servlet)
@@ -92,6 +93,7 @@ feature
 				the_posix_signal.set_child_stop (True)
 				the_posix_signal.set_default_action
 				the_posix_signal.apply
+				-- start to processe requests
 				run
 			end
 		end

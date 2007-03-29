@@ -189,12 +189,33 @@ feature -- FGCI interface
 		end
 
 	getline (amount: INTEGER): STRING is
-			-- Read up to n - 1 consecutive bytes from the input stream
-			-- into the Result. Stops before n - 1 bytes have been read
+			-- Read up to 'amount' characters from the input stream
+			-- Stops before 'amount' characters have been read
 			-- if '%N' or EOF is read.
+
+			-- SCL
+			-- should the %N be part of the result??
 		require
 			request_exists: request /= Void
+		local
+			i: INTEGER
+			end_of_line: BOOLEAN
+			c: CHARACTER
 		do
+			create Result.make (amount)
+			from
+				i := 0
+			until
+				i >= amount or end_of_line
+			loop
+				request.socket.read_character
+				c := request.socket.last_character
+				Result.append_character (c)
+				i := i+1
+				if request.socket.eof or else c='%N' then
+					end_of_line := true
+				end
+			end
 		end
 
 	getparam (name: STRING): STRING is
@@ -292,13 +313,14 @@ feature {NONE} -- Implementation
 				if request /= Void then
 					-- complete the previous request
 					request.end_request
-					if request.failed or not request.keep_connection then
-						request.socket.close
-						request.make -- reset the request
-					end
 					if request.failed then
+						request.socket.close
+						request.make   -- reset the request
 						request := Void
 						Result := -1
+					elseif not request.keep_connection then
+						request.socket.close
+						request.make   -- reset the request
 					end
 				else
 					create request.make
@@ -333,7 +355,8 @@ feature {NONE} -- Implementation
 					end
 				end
 --				if Result < 0 then
---					io.put_string ("GOA_FAST_CGI.accept_request = " + Result.out + "%N")--				end
+--					io.put_string ("GOA_FAST_CGI.accept_request = " + Result.out + "%N")
+--				end
 			end
 		end
 

@@ -118,7 +118,7 @@ feature -- Request Processing
 			session_status: SESSION_STATUS
 			processing_result: REQUEST_PROCESSING_RESULT
 			parameter_processing_result: PARAMETER_PROCESSING_RESULT
-			current_parameter_is_legal, all_parameters_are_legal, all_mandatory_parameters_are_present, all_expected_parameters_are_present, all_parameters_are_present: BOOLEAN
+			current_parameter_is_unexpected, unexpected_parameters_found, all_mandatory_parameters_are_present, all_expected_parameters_are_present: BOOLEAN
 			mandatory_parameters_in_request, expected_parameters_in_request: DS_LINKED_LIST [STRING]
 			mandatory_processing_results, non_mandatory_processing_results: DS_LINKED_LIST [PARAMETER_PROCESSING_RESULT]
 --			page_agent: FUNCTION [ANY, TUPLE [REQUEST_PROCESSING_RESULT], EXTENDED_GOA_PAGE_XML_DOCUMENT]
@@ -132,8 +132,9 @@ feature -- Request Processing
 			if not failed_once then
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
 --				io.put_string ("Request: " + name + client_info (request) + "%N")
+
 				-- Obtain session status and initialize if necessary
-				session_status ?= request.session.get_attribute ("SESSION_STATUS")
+				session_status ?= request.session.get_attribute (configuration.session_status_attribute_name)
 				check
 					valid_session_status: session_status /= Void
 				end
@@ -142,10 +143,12 @@ feature -- Request Processing
 					session_status.initialize (processing_result)
 				end
 				if ok_to_process_servlet (processing_result) then
+					-- init the lists to store the parameters and their processing results
 					create mandatory_parameters_in_request.make_equal
 					create expected_parameters_in_request.make_equal
 					create mandatory_processing_results.make
 					create non_mandatory_processing_results.make
+
 					-- Verify legality of each parameter;
 					-- illegal input means user has submitted obsolete form (through back button)
 					-- or there is a bug in the form (or form processor) or
@@ -154,21 +157,26 @@ feature -- Request Processing
 					parameter_names := request.get_parameter_names
 					from
 						parameter_names.start
-						all_parameters_are_legal := True
+						unexpected_parameters_found := False
 					until
 						parameter_names.after
 					loop
-						current_parameter_is_legal := True
+						current_parameter_is_unexpected := False
+
+						-- get the parameter name
+						-- raw_parameter_name is used to look up the value in the request
+						-- parameter_name is normalized (suffix removed and all lower case letters)
 						raw_parameter_name := parameter_names.item_for_iteration
-						parameter_name := STRING_.cloned_string (raw_parameter_name)
---						io.put_string ("Raw Parameter_name: " + parameter_name + "%N")
+						parameter_name := name_from_raw_parameter (raw_parameter_name)
 						parameter_name.to_lower
-						parameter_name := name_from_raw_parameter (parameter_name)
+--						io.put_string ("Raw Parameter_name: " + raw_parameter_name + "%N")
 --						io.put_string ("Parameter_name: " + parameter_name + "%N")
+
+						-- Get the value of the parameter and remove leading and trailing spaces
 						parameter_value := request.get_parameter (raw_parameter_name)
-						-- Remove leading and trailing spaces from all input; normalize parameter name to lower case
 						parameter_value.left_adjust
 						parameter_value.right_adjust
+
 						-- Cross check parameter name against mandatory, expected and possible parameter lists
 						if mandatory_parameters.has (parameter_name) then
 							if not mandatory_parameters_in_request.has (parameter_name) then
@@ -181,21 +189,23 @@ feature -- Request Processing
 						elseif possible_parameters.has (parameter_name) or add_if_absent_parameters.has (parameter_name) or pass_through_parameters.has (parameter_name) then
 							-- This is a legal parameter
 						else
-							all_parameters_are_legal := False
-							current_parameter_is_legal := False
+							-- This parameter should not be here.
+							current_parameter_is_unexpected := True
+							unexpected_parameters_found := True
 							log_hierarchy.logger (configuration.application_security_log_category).info ("Illegal parameter [" + parameter_names.item_for_iteration + "] with value = %"" + request.get_parameter (parameter_names.item_for_iteration) + "%" received in servlet " + name)
 						end
-						if current_parameter_is_legal then
+						
+						if not current_parameter_is_unexpected then
 							-- Create a processing result for this parameter and add it to the request_processing_result
 							create parameter_processing_result.make (raw_parameter_name, processing_result)
 							processing_result.add_parameter_processing_result (parameter_processing_result, mandatory_parameters.has (parameter_name))
 						end
 						parameter_names.forth
 					end
+
 					-- Verify that all of the expected parameters are in fact present in the request
 					all_mandatory_parameters_are_present := equal (mandatory_parameters.count, mandatory_parameters_in_request.count)
 					all_expected_parameters_are_present := equal (expected_parameters.count, expected_parameters_in_request.count)
-					all_parameters_are_present := all_mandatory_parameters_are_present and all_expected_parameters_are_present
 					if not all_mandatory_parameters_are_present then
 						log_hierarchy.logger (configuration.application_security_log_category).info ("Missing Mandatory Parameter(s)")
 						if configuration.test_mode then
@@ -215,7 +225,7 @@ feature -- Request Processing
 					if not all_expected_parameters_are_present then
 						log_hierarchy.logger (configuration.application_security_log_category).info ("Missing Expected Parameter")
 						if configuration.test_mode then
-							io.put_string ("Missing Mandatory Parameters:%N")
+							io.put_string ("Missing Expected Parameters:%N")
 							from
 								expected_parameters.start
 							until
@@ -229,8 +239,9 @@ feature -- Request Processing
 						end
 
 					end
-					all_parameters_are_legal := all_parameters_are_legal and all_parameters_are_present
-					if all_parameters_are_legal then
+
+					-- do the next step only if no unexpected parameters have been found and all mandatory and expected parameters are present
+					if not unexpected_parameters_found and all_mandatory_parameters_are_present and all_expected_parameters_are_present then
 						-- add any add_if_absent parameters which are in fact absent
 						from
 							add_if_absent_parameters.start
@@ -246,8 +257,8 @@ feature -- Request Processing
 							until
 								suffix_list.after
 							loop
-								if not processing_result.has_parameter_result (add_if_absent_parameters.item_for_iteration, suffix_list.item_for_iteration) then
-									create parameter_processing_result.make (full_parameter_name (add_if_absent_parameters.item_for_iteration, suffix_list.item_for_iteration), processing_result)
+								if not processing_result.has_parameter_result (temp_name, suffix_list.item_for_iteration) then
+									create parameter_processing_result.make (full_parameter_name (temp_name, suffix_list.item_for_iteration), processing_result)
 									processing_result.add_parameter_processing_result (parameter_processing_result,  False)
 								end
 								suffix_list.forth

@@ -8,9 +8,9 @@ indexing
 
 deferred class
 	GOA_SUBMIT_PARAMETER
-	
+
 inherit
-	
+
 	GOA_REQUEST_PARAMETER
 	GOA_STRING_LABELED_PARAMETER
 
@@ -29,20 +29,21 @@ feature
 		do
 			Result := xml.ok_to_add_element_or_text (xml.submit_element_code)
 		end
-		
+
 	css_class (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
-			-- CSS class associated witht his parameter (default = none or void)
+			-- CSS class associated witht his parameter
+			-- Default none (Void)
 		do
 			Result := Void
 		end
-		
+
 	on_click_script (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 			-- Script that should execute when this parameter is clicked on
 			-- Default none (Void)
 		do
 			Result := Void
 		end
-		
+
 	current_value (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 		do
 			result := label_string (processing_result, suffix)
@@ -53,7 +54,7 @@ feature
 		once
 			Result := False
 		end
-		
-		
+
+
 
 end -- class GOA_SUBMIT_PARAMETER
