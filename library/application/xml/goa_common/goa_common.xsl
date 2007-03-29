@@ -18,7 +18,7 @@
 
 	<!-- Division Template -->
 
-	<xsl:element name="DIV">
+	<xsl:element name="div">
 		<xsl:call-template name="goa_common:class" />
 		<xsl:apply-templates />
 	</xsl:element>
