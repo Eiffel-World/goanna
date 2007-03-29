@@ -723,13 +723,13 @@ feature {NONE} -- Transformation
 	transform_file_name: STRING is
 			-- Name of file containing the XSLT transform to produce an HTML version of this document
 		once
-			Result := configuration.data_directory + "goa_page.xsl"
+			Result := configuration.xslt_directory + "goa_page.xsl"
 		end
 
 	schema_file_name: STRING is
 			-- Name of the file containing the Relax NG Schema for this document
 		once
-			Result := configuration.data_directory + "goa_page.frng"
+			Result := configuration.xslt_directory + "goa_page.frng"
 		end
 
 end -- GOA_PAGE_XML_DOCUMENT

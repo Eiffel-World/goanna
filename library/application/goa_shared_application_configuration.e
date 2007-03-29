@@ -7,20 +7,20 @@ indexing
 	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 class
-	
+
 	GOA_SHARED_APPLICATION_CONFIGURATION
-	
+
 feature
-	
+
 	configuration: APPLICATION_CONFIGURATION is
 			-- Application configuration
 		once
 			Result := active_configuration
 		end
-		
+
 	active_configuration: APPLICATION_CONFIGURATION
 			-- Configuration to use for this run
-			
+
 	touch_configuration is
 			-- Touch the configuration object to instantiate the once function
 		require
@@ -28,7 +28,9 @@ feature
 		local
 			a_string: STRING
 		do
-			a_string := configuration.data_directory
+			a_string := configuration.log_directory
+			a_string := configuration.temp_directory
+			a_string := configuration.xslt_directory
 		end
-		
+
 end -- class GOA_SHARED_APPLICATION_CONFIG

@@ -31,10 +31,22 @@ feature -- Page Sequencing
 --			not_ok_to_read_write_data: implements_transaction_and_version_access implies not (ok_to_read_data (processing_result) or ok_to_write_data (processing_result))
 		end
 
-	data_directory: STRING is
-			-- Interpreted version of internal_data_directory
+	log_directory: STRING is
+			-- Interpreted version of internal_log_directory
 		once
-			Result := execution_environment.interpreted_string (internal_data_directory)
+			Result := execution_environment.interpreted_string (internal_log_directory)
+		end
+
+	temp_directory: STRING is
+			-- Interpreted version of internal_temp_directory
+		once
+			Result := execution_environment.interpreted_string (internal_temp_directory)
+		end
+
+	xslt_directory: STRING is
+			-- Interpreted version of internal_xslt_directory
+		once
+			Result := execution_environment.interpreted_string (internal_xslt_directory)
 		end
 
 	document_root: STRING is
@@ -46,9 +58,33 @@ feature -- Page Sequencing
 feature -- Deferred Features
 
 	internal_data_directory: STRING is
-			-- Directory containing application data files; e.g. must exist and be writable
+			-- Directory where the log files will be written to; e.g. must exist and be writable
 			-- Include trailing directory separator
+		obsolete
+			"Use instead the following: internal_log_directory, internal_temp_directory, internal_xslt_directory"
 		deferred
+		end
+
+	internal_log_directory: STRING is
+			-- Directory where the log files will be written to; e.g. must exist and be writable
+			-- Include trailing directory separator
+		do
+			Result := internal_data_directory
+		end
+
+	internal_temp_directory: STRING is
+			-- Directory where the temp files will be written to; e.g. must exist and be writable
+			-- Include trailing directory separator
+		do
+			Result := internal_data_directory
+		end
+
+	internal_xslt_directory: STRING is
+			-- Directory where the xslt translation files are located
+			-- e.g. must exist and contain 'goa_page.xsl' and 'goa_page.frng'
+			-- Include trailing directory separator
+		do
+			Result := internal_data_directory
 		end
 
 	internal_document_root: STRING is
@@ -167,13 +203,13 @@ feature -- File Names
 	temp_saxon_input_file_name: STRING is
 			-- Name of temporary input file for transformations by Saxon
 		once
-			Result := data_directory + "saxon_input.xml"
+			Result := temp_directory + "saxon_input.xml"
 		end
 
 	temp_saxon_output_file_name: STRING is
 			-- Name of temporary output fiel for transformations by Saxon
 		once
-			Result := data_directory + "saxon_output.xml"
+			Result := temp_directory + "saxon_output.xml"
 		end
 
 feature -- Transformation
@@ -212,13 +248,13 @@ feature -- Logging
 	log_file_name: STRING is
 			-- Name of file used to log servlet activity
 		once
-			Result := data_directory + "application.log"
+			Result := log_directory + "application.log"
 		end
 
 	illegal_requests_file_name: STRING is
 			-- Name of file used to log full text of illegal requests
 		once
-			Result := data_directory + "illegal_requests.log"
+			Result := log_directory + "illegal_requests.log"
 		end
 
 feature -- Servlet Names
@@ -247,7 +283,9 @@ feature -- Logging
 
 invariant
 
-	data_directory_is_readable: file_system.directory_exists (data_directory) and then file_system.is_directory_readable (data_directory)
+	log_directory_is_readable: file_system.directory_exists (log_directory) and then file_system.is_directory_readable (log_directory)
+	temp_directory_is_readable: file_system.directory_exists (temp_directory) and then file_system.is_directory_readable (temp_directory)
+	xslt_directory_is_readable: file_system.directory_exists (xslt_directory) and then file_system.is_directory_readable (xslt_directory)
 	use_saxon_implies_valid_java_binary_location: use_saxon implies file_system.file_exists (java_binary_location)
 	use_saxon_implies_valid_saxon_jar_file_location: use_saxon implies file_system.file_exists (saxon_jar_file_location)
 	validate_xml_implies_valid_jing_invocation: validate_xml implies jing_invocation /= Void

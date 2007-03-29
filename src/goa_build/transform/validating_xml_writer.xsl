@@ -162,13 +162,13 @@ feature {NONE} -- Transformation
 	transform_file_name: STRING is
 			-- Name of file containing the XSLT transform to produce an HTML version of this document
 		once
-			Result := configuration.data_directory + "<xsl:value-of select="$transform_file_name" />"
+			Result := configuration.xslt_directory + "<xsl:value-of select="$transform_file_name" />"
 		end
 
 	schema_file_name: STRING is
 			-- Name of the file containing the Relax NG Schema for this document
 		once
-			Result := configuration.data_directory + "<xsl:value-of select="$schema_file_name" />"
+			Result := configuration.xslt_directory + "<xsl:value-of select="$schema_file_name" />"
 		end
 				
 end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT

@@ -459,7 +459,7 @@ feature {NONE} -- Transformation
 			xml_file_name, jing_execution_string: STRING
 			shell_command: KL_SHELL_COMMAND
 		do
-			xml_file_name := configuration.data_directory + "temp.xml"
+			xml_file_name := configuration.temp_directory + "temp.xml"
 			create file.make_open_write (xml_file_name)
 			file.put_string (xml + "%N")
 			file.close
