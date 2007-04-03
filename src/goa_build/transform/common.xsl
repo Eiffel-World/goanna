@@ -23,9 +23,11 @@
 	<xsl:variable name="namespace" as="xs:string" select="namespace-uri-for-prefix ($prefix, /rng:grammar)" />
 	<xsl:variable name="imported_file_name" as="xs:string" select="concat ($prefix_lower, '.imp')" />
 	<xsl:variable name="imported_elements" as="document-node()" select="document ($imported_file_name)" />
+	<xsl:variable name="all_element_collections" select="//rng:define[child::rng:choice | child::rng:ref | child::rng:zeroOrMore | child::rng:oneOrMore]" />
 	<xsl:key name="attributes" match="//rng:attribute" use="@name" />
 	<xsl:key name="elements" match="//rng:element" use="../@name" />
 	<xsl:key name="refs" match="//rng:ref" use="@name" />
+	<xsl:key name="element_collections" match="//rng:define[child::rng:choice | child::rng:ref | child::rng:zeroOrMore | child::rng:oneOrMore]" use="@name" />
 
 
  
@@ -76,10 +78,10 @@
 	<xsl:variable name="name" as="xs:string" select="../@name"/>
 	<xsl:variable name="element_code" as="xs:string" select="concat ($name, '_element_code')" />
 	<xsl:variable name="last_ref" as="node()?" select="descendant::rng:ref[position () = last()]" />
- 	<xsl:variable name="includes_elements" as="xs:boolean" select="count (descendant::rng:ref[key ('elements', @name)]) > 0" />
+ 	<xsl:variable name="includes_elements" as="xs:boolean" select="count (descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]) > 0" />
  	<xsl:variable name="open_ended" as="xs:boolean" select="$last_ref[ancestor::rng:oneOrMore or ancestor::rng:zeroOrMore]" />
  	<xsl:variable name="has_attributes" as="xs:boolean" select="count (descendant::rng:ref[key ('attributes', @name)]) > 0" />
- 	<xsl:variable name="has_elements" as="xs:boolean" select="count (descendant::rng:ref[key ('elements', @name)]) > 0" />
+ 	<xsl:variable name="has_elements" as="xs:boolean" select="count (descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]) > 0" />
  	<xsl:variable name="text_element_is_last" as="xs:boolean" select="name (descendant::*[last()]) eq 'text'" />
  	<xsl:variable name="only_one_text_element" as="xs:boolean" select="count (descendant::rng:text) = 1 and not (descendant::rng:text/ancestor::zeroOrMore) and not (descendant::rng:text/ancestor::oneOrMore)" />
  	<xsl:variable name="text_not_in_choice" as="xs:boolean" select="not (descendant::rng:text/ancestor::rng:choice)" />

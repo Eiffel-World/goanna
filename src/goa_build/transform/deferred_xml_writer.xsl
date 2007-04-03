@@ -33,7 +33,7 @@ type.
 	<xsl:variable name="name" select="@name"/>
  	<xsl:variable name="element" select="key ('elements', $name)" />
  	<xsl:variable name="last_ref" select="$element/descendant::rng:ref[position () = last()]" />
- 	<xsl:variable name="includes_elements" select="$element/descendant::rng:ref[key ('elements', @name)]" />
+ 	<xsl:variable name="includes_elements" select="$element/descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]" />
  	<xsl:variable name="open_ended" select="$last_ref[ancestor::rng:oneOrMore or ancestor::rng:zeroOrMore]" />
 indexing
 
@@ -107,7 +107,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 	<!-- Name of a feature that adds an element to the document -->
 
 	<xsl:choose>
-		<xsl:when test="descendant::rng:ref[key ('elements', @name)]">
+		<xsl:when test="descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]">
 			<xsl:text>start_</xsl:text>
 		</xsl:when>
 		<xsl:otherwise>
@@ -124,7 +124,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 
 	<xsl:variable name="attribute" select="key ('attributes', @name)" />
 	<xsl:if test="$attribute">
-		<xsl:variable name="includes_elements" select="key ('elements', @name)/descendant::rng:ref[key ('elements', @name)]" />
+		<xsl:variable name="includes_elements" select="key ('elements', @name)/descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]" />
 		<xsl:variable name="current_ref" select="@name" />
 		<xsl:choose>
 			<xsl:when test="ancestor::rng:choice/rng:ref[1]/@name = $current_ref">

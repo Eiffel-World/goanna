@@ -8,81 +8,85 @@ indexing
 class
 	GOA_XML_SCHEMA_ELEMENT
 
+inherit
+	GOA_XML_DEERRED_SCHEMA_ELEMENT
+
 creation
 
-	make_optional, make_required, make_zero_or_more, make_one_or_more
+	make_required,
+	make_optional,
+	make_zero_or_more,
+	make_one_or_more
 
-feature -- Query
 
-	is_required: BOOLEAN
-			-- Is this element required to be present for the parent element to be valid?
+feature {GOA_XML_ELEMENT_SCHEMA, GOA_XML_DEERRED_SCHEMA_ELEMENT} -- Query
 
-	is_multiple_element: BOOLEAN
-			-- May this element be present multiple times in a valid parent element?
-
-	is_valid_element_code (element_code: INTEGER): BOOLEAN is
-			-- Does element_code represent a valid element at this location in the parent element?
+	is_valid_content_impl (the_fragment: DS_ARRAYED_LIST [INTEGER]): BOOLEAN is
+			-- Does this element represent a valid element at the given location in the parent element?
+			-- The location is given by the internal cursor of the_fragment
+			-- If the feature retuns false, the_fragment must be unchanged.
 		do
-			Result := element_codes.has (element_code)
+			from
+				Result := False
+			until
+				the_fragment.after or else
+				(the_fragment.item_for_iteration /= element_code or (Result and not is_multiple_element))
+			loop
+				the_fragment.forth
+				Result := True
+			end
+
+			if not is_required then
+				Result := True
+			end
 		end
 
 feature {NONE} -- Implementation
 
-	element_codes: ARRAY [INTEGER]
-			-- The codes of all elements that are valid at this location in the parent element
+	element_code: INTEGER
+			-- The code of the element.
 
 feature {NONE} -- Creation
 
-	make_optional (new_element_codes: ARRAY[INTEGER]) is
-			-- Make an optional element
-		require
-			valid_new_element_codes: new_element_codes /= Void
+	make_optional (new_element_code: INTEGER) is
+			-- Make an 'optional' element
 		do
+			element_code := new_element_code
 			is_required := False
 			is_multiple_element := False
-			element_codes := clone (new_element_codes)
 		ensure
-			element_codes_updated: equal (element_codes, new_element_codes)
+			element_code_set: element_code = new_element_code
 		end
 
-	make_required (new_element_codes: ARRAY[INTEGER]) is
-			-- Make a required element
-		require
-			valid_new_element_codes: new_element_codes /= Void
+	make_required (new_element_code: INTEGER) is
+			-- Make a 'required' element
 		do
-			element_codes := clone (new_element_codes)
+			element_code := new_element_code
 			is_required :=  True
 			is_multiple_element := False
 		ensure
-			element_codes_updated: equal (element_codes, new_element_codes)
+			element_code_set: element_code = new_element_code
 		end
 
-	make_zero_or_more (new_element_codes: ARRAY[INTEGER]) is
-			-- Make a zero or element
-		require
-			valid_new_element_codes: new_element_codes /= Void
+	make_zero_or_more (new_element_code: INTEGER) is
+			-- Make a 'zero or more' element
 		do
-			element_codes := clone (new_element_codes)
+			element_code := new_element_code
 			is_required := False
 			is_multiple_element := True
 		ensure
-			element_codes_updated: equal (element_codes, new_element_codes)
+			element_code_set: element_code = new_element_code
 		end
 
-	make_one_or_more (new_element_codes: ARRAY[INTEGER]) is
-			-- Make a one or more element
-		require
-			valid_new_element_codes: new_element_codes /= Void
+	make_one_or_more (new_element_code: INTEGER) is
+			-- Make a 'one or more' element
 		do
-			element_codes := clone (new_element_codes)
+			element_code := new_element_code
 			is_required := True
 			is_multiple_element := True
 		ensure
-			element_codes_updated: equal (element_codes, new_element_codes)
+			element_code_set: element_code = new_element_code
 		end
 
-invariant
-
-	valid_element_codes: element_codes /= Void
 
 end -- class GOA_XML_SCHEMA_ELEMENT

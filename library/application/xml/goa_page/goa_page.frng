@@ -16,16 +16,17 @@
         <ref name="class"/>
       </optional>
       <oneOrMore>
-        <choice><ref name="text_item"/>
-<ref name="popup_hyperlink"/>
-<ref name="hyperlink"/>
-<ref name="submit"/>
-<ref name="input"/>
-<ref name="radio"/>
-<ref name="select"/>
-<ref name="text_area"/>
-<ref name="image"/>
-</choice>
+        <choice>
+          <ref name="text_item"/>
+          <ref name="popup_hyperlink"/>
+          <ref name="hyperlink"/>
+          <ref name="submit"/>
+          <ref name="input"/>
+          <ref name="radio"/>
+          <ref name="select"/>
+          <ref name="text_area"/>
+          <ref name="image"/>
+        </choice>
       </oneOrMore>
     </element>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="text_item">
@@ -48,19 +49,20 @@
         <ref name="class"/>
       </optional>
       <oneOrMore>
-        <choice><ref name="paragraph"/>
-<ref name="submit"/>
-<ref name="division"/>
-<ref name="hyperlink"/>
-<ref name="text_item"/>
-<ref name="input"/>
-<ref name="hidden"/>
-<ref name="radio"/>
-<ref name="select"/>
-<ref name="text_area"/>
-<ref name="table"/>
-<ref name="image"/>
-</choice>
+        <choice>
+          <ref name="paragraph"/>
+          <ref name="submit"/>
+          <ref name="division"/>
+          <ref name="hyperlink"/>
+          <ref name="text_item"/>
+          <ref name="input"/>
+          <ref name="hidden"/>
+          <ref name="radio"/>
+          <ref name="select"/>
+          <ref name="text_area"/>
+          <ref name="table"/>
+          <ref name="image"/>
+        </choice>
       </oneOrMore>
     </element>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="ordered_list">
@@ -78,10 +80,13 @@
         <ref name="class"/>
       </optional>
       <oneOrMore>
-        <choice><ref name="text_item"/>
-<ref name="hyperlink"/>
-<ref name="popup_hyperlink"/>
-</choice>
+        <choice>
+          <ref name="division"/>
+          <ref name="paragraph"/>
+          <ref name="text_item"/>
+          <ref name="hyperlink"/>
+          <ref name="popup_hyperlink"/>
+        </choice>
       </oneOrMore>
     </element>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="unordered_list">
@@ -165,17 +170,18 @@
       </optional>
       <ref name="colspan"/>
       <zeroOrMore>
-        <choice><ref name="text_item"/>
-<ref name="popup_hyperlink"/>
-<ref name="hyperlink"/>
-<ref name="submit"/>
-<ref name="input"/>
-<ref name="radio"/>
-<ref name="checkbox"/>
-<ref name="select"/>
-<ref name="text_area"/>
-<ref name="division"/>
-</choice>
+        <choice>
+          <ref name="text_item"/>
+          <ref name="popup_hyperlink"/>
+          <ref name="hyperlink"/>
+          <ref name="submit"/>
+          <ref name="input"/>
+          <ref name="radio"/>
+          <ref name="checkbox"/>
+          <ref name="select"/>
+          <ref name="text_area"/>
+          <ref name="division"/>
+        </choice>
       </zeroOrMore>
     </element>
   </define><define xmlns:goa_common="http://www.sourceforge.net/projects/goanna/goa_common" name="colspan">
@@ -392,22 +398,25 @@
         <ref name="submit_url"/>
       </optional>
       <zeroOrMore>
-        <choice><ref name="paragraph"/>
-<ref name="division"/>
-<ref name="text_area"/>
-<ref name="submit"/>
-<ref name="hyperlink"/>
-<ref name="text_item"/>
-<ref name="ordered_list"/>
-<ref name="unordered_list"/>
-<ref name="hidden"/>
-<ref name="popup_hyperlink"/>
-<ref name="table"/>
-<ref name="select"/>
-<ref name="input"/>
-<ref name="radio"/>
-<ref name="image"/>
-</choice>
+        <choice>
+          <ref name="paragraph"/>
+          <ref name="division"/>
+          <ref name="text_area"/>
+          <ref name="submit"/>
+          <text/>
+          <ref name="hyperlink"/>
+          <ref name="text_item"/>
+          <ref name="ordered_list"/>
+          <ref name="unordered_list"/>
+          <ref name="hidden"/>
+          <ref name="popup_hyperlink"/>
+          <ref name="table"/>
+          <ref name="select"/>
+          <ref name="input"/>
+          <ref name="radio"/>
+          <ref name="image"/>
+          <ref name="address"/>
+        </choice>
       </zeroOrMore>
     </element>
   </define>
