@@ -136,16 +136,6 @@ variables.
       <listitem>
 	<para>
 
-Install <ulink
-url="http://prdownloads.sourceforge.net/swete/unofficial-eclop.zip?download">Unofficial
-ECLOP</ulink> and set the environment variable ECLOP to the directory
-containing the library.xace file.
-	  
-	</para>
-      </listitem>
-      <listitem>
-	<para>
-
 Install the
 <ulink url="http://sourceforge.net/cvs/?group_id=14711">CVS version of Goanna</ulink>
 as described
