@@ -18,7 +18,7 @@ inherit
 	KL_EXECUTION_ENVIRONMENT
 	XM_SHARED_CATALOG_MANAGER
 	KL_IMPORTED_STRING_ROUTINES
-	
+
 create
 
 	make
@@ -33,10 +33,10 @@ feature -- Initialization
 -- The eiffel classes generated are:
 -- NAMESPACE_PREFIX_XML_DOCUMENT
 --   This is the primary class representing the schema.  For included schemas, this
---   is a deferred class including deferred features for the schema codes and 
+--   is a deferred class including deferred features for the schema codes and
 --   attribute and element tags used in the schema.
 -- NAMESPACE_PREFIX_SCHEMA_CODES
---   Generated only for document schemas.  Contains integer codes representing 
+--   Generated only for document schemas.  Contains integer codes representing
 --   elements and attributes in the schema and string constants for the
 --   element and attribute names
 -- NAMESPACE_ATTRIBUTE_VALUES
@@ -104,59 +104,19 @@ feature -- Initialization
 			temporary_transformer: GOA_XSLT_STRING_TRANSFORMER
 		do
 			if not exception_occurred then
-				create command_line_syntax.make (command_line_options)
-				create command_line_parser.make (command_line_syntax)
-				command_line_parser.parse (arguments.argument_array)
-				if command_line_parser.invalid_options_found and not command_line_includes_help_switch then
-					io.put_string ( command_line_parser.error_message + help_usage )
-				elseif command_line_includes_help_switch then
-					io.put_string ("Build XML Authoring Classes from one or more Relax NG Compact Syntax %
-									%grammar(s).%N%N" )
-					-- I suppose this should really use the switch constants defined below
-					io.put_string (	"Usage: goa_build [-f|--file filename1 filename2 ...]%N%
-									%                 [-v|--verbose]%N%
-									%                 [-n|--norefresh]%N%
-									%                 [-e|--eiffeldirectory directoryname]%N%
-									%                 [-d|--datadirectory directoryname]%N%
-									%                 [-g|--goa%N%
-									%				  [-t|--trash%N%
-									%                 [-a|--author %"author's name%"]%N%
-									%                 [-c|--copyright %"copyright declaration%"]%N%
-									%                 [-l|--license %"license declaration%"]%N%
-									%                 [-h|--help]%N%N%
-									%file (-f)            = Name(s) of file(s) containing Relax NG Compact Syntax%N%
-									%                       grammar(s) used to generate the XML authoring classes%N%
-									%                       Do not enclose name or space delimited list of names%N%
-									%                       in quotes (enclosing a single file name containing%N%
-									%                       spaces in quotes may work but is not recommended)%N%
-									%                       Can't be used with the --goa switch.%N%
-									%verbose (-v)         = Verbose mode (provides context for certain error %N%
-									%                       messages)%N%
-									%norefresh (-n)       = Do not refresh files from Goanna directories%N%
-									%eiffeldirectory (-e) = Directory in which to place generated eiffel classes%N%
-									%datadirectory (-d)   = The location of the web application's%N%
-									%                       configuration.data_directory%N%
-									%goa (-g)             = Rebuild goa_common and other supplied files%N%
-									%                       Prebuilt versions are mounted automatically%N%
-									%                       Can't be used with the --file switch.%N%
-									%                       for use by Goanna developers only%N%
-									%author (-a)          = Name of the application's author (for indexing clauses)%N%
-									%trash (-t)           = Leave trash files in directory (for debugging goa_build)%N%
-									%copyright (-c)       = Copyright declaration (for indexing clauses)%N%
-									%license (-l)         = License declaration (for indexing clauses)%N%
-									%help (-h)            = See this help message%N%N%
-									%For Example:%N%N%
-									%goa_build -f file1.rnc file2.rnc%N%
-									%          -d ../datadirectory %N%
-									%          -e ../eiffeldirectory %N%
-									%          -v%N%
-									%          -a %"Neal Lester%"%N%
-									%          -c %"(c) 2005 Neal Lester%"%N%
-									%          -l %"Eiffel Form License V2.0 (http://www.opensource.org/licenses/ver2_eiffel.php%"%N" )
-				elseif command_line_includes_file_switch and then not unreadable_files (command_line_parser.valid_options.item (file_switch)).is_empty then
+				command_line_parser.parse_arguments
+				if command_line_parser.error_handler.has_error then
+					io.put_string (help_usage)
+				elseif command_line_includes_goa_switch and command_line_includes_file_switch then
+					io.put_string ("The -f (--file) and -g (--goa) options are mutually exclusive%N")
+					io.put_string (help_usage)
+				elseif  not command_line_includes_goa_switch and not command_line_includes_file_switch then
+					io.put_string ("You must specify either the -f (--file) or the -g (--goa) option%N")
+					io.put_string (help_usage)
+				elseif command_line_includes_file_switch and then not unreadable_files (file_option.parameters).is_empty then
 					-- Some of the files specified in the -f argument are not readable
 					io.put_string ("The file(s) ")
-					local_unreadable_files := unreadable_files (command_line_parser.valid_options.item (file_switch))
+					local_unreadable_files := unreadable_files (file_option.parameters)
 					from
 						local_unreadable_files.start
 					until
@@ -200,7 +160,7 @@ feature -- Initialization
 					else
 						target_data_directory_name := file_system.current_working_directory
 					end
-					if command_line_includes_file_switch or command_line_includes_goa_switch then					
+					if command_line_includes_file_switch or command_line_includes_goa_switch then
 						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/common.xsl"), "common.xsl")
 						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/attribute_values.xsl"), "attribute_values.xsl")
 						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/schema_codes.xsl"), "schema_codes.xsl")
@@ -257,7 +217,7 @@ feature -- Initialization
 						end
 						-- Initialize file name lists
 						if command_line_includes_file_switch then
-							file_names := command_line_parser.valid_options.item (file_switch)
+							file_names := file_option.parameters
 						else
 							file_names := create {DS_LINKED_LIST [STRING]}.make_equal
 						end
@@ -296,7 +256,7 @@ feature -- Initialization
 								and then not rnc_file_contents_upper.has_substring ("NONNEGATIVEINTEGER") then
 								-- For reasons I don't understand (bug in trang or xmllint?), a grammar that includes another
 								-- grammar that uses xsd:nonNegativeInteger must contain at least one such attribute in the
-								-- top level grammar or xmllint will not properly validate the file given the 
+								-- top level grammar or xmllint will not properly validate the file given the
 								-- Relax NG files created by trang.  Simply adding the datatypeLibrary namespace declaration
 								-- to the top level grammar (which I think should work) isn't enough.
 								-- Of course this test is unncessarily restrictive; it is really required only if the
@@ -316,7 +276,7 @@ feature -- Initialization
 							elseif rnc_file_contents_upper.has_substring (class_attribute_placeholder) and then not stylesheet_declaration_matcher.has_matched then
 								-- CLASS_ATTRIBUTE_PLACEHOLDER does not have a matching stylesheet declaration
 								io.put_string ("Please add a css stylesheet declaration to " + file_name + " or remove it%'s " + class_attribute_placeholder + ".%N")
-							elseif 	rnc_file_contents_upper.has_substring (class_attribute_placeholder) and then 
+							elseif 	rnc_file_contents_upper.has_substring (class_attribute_placeholder) and then
 									rnc_file_contents_upper.substring (rnc_file_contents.substring_index (class_attribute_placeholder, 1) + class_attribute_placeholder.count, rnc_file_contents_upper.count).has_substring (class_attribute_placeholder) then
 								-- There are two CLASS_ATTRIBUTE_PLACEHOLDERs
 								io.put_string ("Please include only one CLASS_ATTRIBUTE_PLACEHOLDER in the file " + file_name + "%N")
@@ -356,12 +316,12 @@ feature -- Initialization
 										put_string_to_current_directory (final_file_name, rnc_file_contents)
 										error_message := Void
 									else
-										final_file_name := file_name		
+										final_file_name := file_name
 									end
 								else
-									final_file_name := file_name										
+									final_file_name := file_name
 								end
-									
+
 								if command_line_includes_verbose_switch then
 									io.put_string ("  Converting " + expanded_file_name + " to Relax NG with trang%N")
 								end
@@ -417,7 +377,7 @@ feature -- Initialization
 									error_message := Void
 									if command_line_includes_verbose_switch then
 										io.put_string ("  Flatten stage 3%N")
-									end	
+									end
 									flat3 := flatten_stage_3_transformer.transform_string_to_string (flat2)
 									frng_file_name := namespace_prefix + ".frng"
 									if command_line_includes_verbose_switch then
@@ -553,7 +513,7 @@ feature -- Initialization
 											final_file_name := "temp.rng"
 										end
 									end
-								end				
+								end
 								if final_file_name /= Void then
 									error_message := "Unable to open file " + rng_file_name + " for reading."
 									rng_input_file := file_system.new_input_file (final_file_name)
@@ -561,7 +521,7 @@ feature -- Initialization
 									rng_input_file.open_read
 									rng_input_file.read_string (rng_file_length)
 									rng_file_contents := rng_input_file.last_string
-									error_message := Void						
+									error_message := Void
 									-- Find (recursively) all included files; write included class values
 									-- declarations to file
 									create included_rng_files.make_equal
@@ -596,7 +556,7 @@ feature -- Initialization
 										end
 										write_included_class_values (included_rng_files)
 									end
-								
+
 									-- XSLT transformations
 									write_included_class_values (included_rng_files)
 									deferred_xml_writer_transformer.set_string_parameter (namespace_prefix, "prefix")
@@ -624,10 +584,10 @@ feature -- Initialization
 									end
 									if file_system.file_exists (imported_class_values_file_name) then
 										file_system.delete_file (imported_class_values_file_name)
-									end	
+									end
 								end
 							end
-							all_included_rng_files.forth	
+							all_included_rng_files.forth
 						end
 						if command_line_includes_datadirectory_switch then
 							-- Recrusively examine XSLT files to find all included transforms
@@ -649,7 +609,7 @@ feature -- Initialization
 								xsl_input_file.open_read
 								xsl_input_file.read_string (xsl_file_length)
 								xsl_file_contents := xsl_input_file.last_string
-								error_message := Void						
+								error_message := Void
 								included_xsl_files_string := xsl_included_files_transformer.transform_string_to_string (xsl_file_contents)
 								included_xsl_files := pipe_separated_splitter.split (included_xsl_files_string)
 								from
@@ -707,8 +667,8 @@ feature -- Initialization
 								file_system.delete_file (imported_class_values_file_name)
 							end
 						end
-					end						
-					if not command_line_includes_trash_switch and (command_line_includes_file_switch or command_line_includes_goa_switch) then					
+					end
+					if not command_line_includes_trash_switch and (command_line_includes_file_switch or command_line_includes_goa_switch) then
 						file_system.delete_file ("common.xsl")
 						file_system.delete_file ("attribute_values.xsl")
 						file_system.delete_file ("schema_codes.xsl")
@@ -743,7 +703,7 @@ feature {NONE} -- Implementation
 
 	write_included_class_values (included_file_names: DS_LIST [STRING]) is
 			-- Examine all included_file_names for stylesheet declarations
-			-- When found, write the imported value declarations for the 
+			-- When found, write the imported value declarations for the
 			-- "class" attribute to the file imported_class_values.xml
 		local
 			writer: EPX_XML_WRITER
@@ -757,7 +717,7 @@ feature {NONE} -- Implementation
 			create writer.make
 			writer.add_header_iso_8859_1_encoding
 			writer.start_ns_tag ("", "grammar")
-			writer.set_a_name_space ("rng", "http://relaxng.org/ns/structure/1.0")		
+			writer.set_a_name_space ("rng", "http://relaxng.org/ns/structure/1.0")
 			writer.start_ns_tag ("", "define")
 			writer.set_attribute ("name", "class")
 			writer.start_ns_tag ("", "choice")
@@ -784,20 +744,20 @@ feature {NONE} -- Implementation
 						until
 							values_list.after
 						loop
-							writer.add_ns_tag ("", "value", values_list.item_for_iteration)					
+							writer.add_ns_tag ("", "value", values_list.item_for_iteration)
 							values_list.forth
 						end
 					end
-					included_file_names.forth					
+					included_file_names.forth
 				end
-	
+
 			end
 			writer.stop_tag
 			writer.stop_tag
 			writer.stop_tag
 			put_string_to_current_directory (imported_class_values_file_name, writer.as_string)
 		end
-		
+
 	imported_class_values_file_name: STRING is "imported_class_values.xml"
 			-- File name to which imported class values are written			
 
@@ -807,7 +767,7 @@ feature {NONE} -- Implementation
 			create Result.make
 			Result.set_separators ("|")
 		end
-		
+
 	stylesheet_class_names (the_stylesheet_file_name: STRING): DS_LINKED_LIST [STRING] is
 			-- CSS Class names in file given by the_stylesheet_file_name
 		require
@@ -856,14 +816,14 @@ feature {NONE} -- Implementation
 				Result := interpreted_string (Result)
 			end
 		end
-		
+
 	stylesheet_declaration_matcher: RX_PCRE_MATCHER is
 			-- Pattern matcher used to find stylesheet declarations in rnc files
 		once
 			create Result.make
 			Result.compile ("#\s*stylesheet\s*=\s*%"[a-zA-Z0-9./\_-]+%"")
 		end
-		
+
 	class_name_matcher: RX_PCRE_MATCHER is
 			-- Pattern matcher used to find class names in a CSS stylesheet
 		once
@@ -892,31 +852,70 @@ feature {NONE} -- Implementation
 				file_names.forth
 			end
 		end
-		
+
+feature {NONE} -- Placeholder
+
+	class_attribute_placeholder: STRING is "CLASS_ATTRIBUTE_PLACEHOLDER"
+
 feature {NONE} -- Command Line Parsing
 
-	class_attribute_placeholder: STRING is "CLASS_ATTRIBUTE_PLACEHOLDER"	
-
-	command_line_options: ARRAY [STRING] is
-			-- Options to create COMMAND_LINE_SYNTAX object
+	command_line_parser: AP_PARSER is
+		-- The command line parser
 		once
-			Result := 	<<	file_switch + ",--file=!file# The names of files containing Relax NG Compact Syntax Grammar(s)", 
-							verbose_switch + ",--verbose# Verbose mode",
-							norefresh_switch + ",--norefresh# Do not refresh Goanna files",
-							eiffeldirectory_switch + ",--eiffeldirectory=!eiffeldirectory# Eiffel directory name",
-							datadirectory_switch + ",--datadirectory=!datadirectory# The location of the web applications configuration.data_directory.",
-							goa_switch + ",--goa# Rebuild goa_common and other supplied files",
-							trash_switch + ",--trash# Leave trash files for debugging goa_build",
-							author_switch + ",--author=!author# The name of the author",
-							copyright_switch + ",--copyright=!copyright# Copyright declaration",
-							license_switch + ",--license=!license# Licesnse declaration",
-							help_switch + ",--help# Information about program usage.",
-							"(-f|-g)">>
+			create Result.make
+			Result.set_application_description ("Generate Eiffel classes which write XML conforming to Relax NG Compact Syntax Grammar(s)")
+			create file_option.make ('f', "file")
+			file_option.set_description
+				("Space delemitted Name(s) of file(s) containing Relax NG Compact Syntax grammar(s) %
+				%used to generate the XML authoring classes. Do not enclose name or %
+				%space delimited list of names in quotes (enclosing a single file name %
+				%containing spaces in quotes may work but is not recommended). %
+				%Can't be used with the --goa switch.")
+			Result.options.force_last (file_option)
+			create verbose_flag.make ('v', "verbose")
+			verbose_flag.set_description ("Verbose mode (provides context for certain error messages)")
+			Result.options.force_last (verbose_flag)
+			create norefresh_flag.make ('n', "norefresh")
+			norefresh_flag.set_description ("Do not refresh files from Goanna directories")
+			Result.options.force_last (norefresh_flag)
+			create goa_flag.make ('g', "goa")
+			goa_flag.set_description
+				("Rebuild goa_common and other supplied files. %
+				%Prebuilt versions are mounted automatically. %
+				%Can't be used with the --file switch.")
+			Result.options.force_last (goa_flag)
+			create trash_flag.make ('t', "trash")
+			trash_flag.set_description ("Leave trash files in directory (for debugging goa_build)")
+			Result.options.force_last (trash_flag)
+			create eiffeldirectory_option.make ('e', "eiffeldirectory")
+			eiffeldirectory_option.set_description ("Directory in which to place generated eiffel classes")
+			Result.options.force_last (eiffeldirectory_option)
+			create datadirectory_option.make ('d', "datadirectory")
+			datadirectory_option.set_description ("The location of the web applications configuration.data_directory.")
+			Result.options.force_last (datadirectory_option)
+			create author_option.make ('a', "author")
+			author_option.set_description ("Name of the application's author (for indexing clauses)")
+			Result.options.force_last (author_option)
+			create copyright_option.make ('c', "copyright")
+			copyright_option.set_description ("Copyright declaration (for indexing clauses)")
+			Result.options.force_last (copyright_option)
+			create license_option.make ('l', "license")
+			license_option.set_description ("License declaration (for indexing clauses)")
+			Result.options.force_last (license_option)
 		end
 
-	command_line_syntax: COMMAND_LINE_SYNTAX
-	command_line_parser: COMMAND_LINE_PARSER
-			-- ECLOP syntax and parser
+-- Flags and options for the command_line_parser
+
+	verbose_flag: AP_FLAG
+	norefresh_flag: AP_FLAG
+	goa_flag: AP_FLAG
+	trash_flag: AP_FLAG
+	file_option: AP_STRING_OPTION
+	eiffeldirectory_option: AP_STRING_OPTION
+	datadirectory_option: AP_STRING_OPTION
+	author_option: AP_STRING_OPTION
+	copyright_option: AP_STRING_OPTION
+	license_option: AP_STRING_OPTION
 
 	help_usage: STRING is "Use goa_build -h for help%N"
 
@@ -925,35 +924,35 @@ feature {NONE} -- Command Line Arguments
 	command_line_includes_file_switch: BOOLEAN is
 			-- Did user include the file_switch on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (file_switch) 	
+			Result := file_option.was_found
 		end
 
 
 	command_line_includes_help_switch: BOOLEAN is
 			-- Did user include the help_switch on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (help_switch) 	
+			Result := command_line_parser.help_option.was_found
 		end
 
 	command_line_includes_eiffeldirectory_switch: BOOLEAN is
 			-- Did user include --eiffeldirectory argument on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (eiffeldirectory_switch) 	
+			Result := eiffeldirectory_option.was_found
 		end
 
 	exactly_one_eiffeldirectory_argument: BOOLEAN is
 			-- Does the list of arguments given by user for the -e argument contain exactly one item?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_eiffeldirectory_switch
 		once
-			Result := command_line_parser.valid_options.item (eiffeldirectory_switch).count = 1
+			Result := eiffeldirectory_option.parameters.count = 1
 		end
 
 	eiffeldirectory_argument: STRING is
@@ -963,15 +962,15 @@ feature {NONE} -- Command Line Arguments
 			command_line_includes_database_argument: command_line_includes_eiffeldirectory_switch
 			exactly_one_eiffeldirectory_argument: exactly_one_eiffeldirectory_argument
 		once
-			Result := interpreted_string (command_line_parser.valid_options.item (eiffeldirectory_switch).item (1))
+			Result := eiffeldirectory_option.parameters.item (1)
 		end
 
 	command_line_includes_datadirectory_switch: BOOLEAN is
 			-- Did user include --eiffeldirectory argument on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (datadirectory_switch) 	
+			Result := datadirectory_option.was_found
 		end
 
 	exactly_one_datadirectory_argument: BOOLEAN is
@@ -980,25 +979,25 @@ feature {NONE} -- Command Line Arguments
 			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_datadirectory_switch
 		once
-			Result := command_line_parser.valid_options.item (datadirectory_switch).count = 1
+			Result := datadirectory_option.parameters.count = 1
 		end
 
 	datadirectory_argument: STRING is
 			-- The -e argument given by the user
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_datadirectory_switch
 			exactly_one_datadirectory_argument: exactly_one_datadirectory_argument
 		once
-			Result := interpreted_string (command_line_parser.valid_options.item (datadirectory_switch).item (1))
+			Result := interpreted_string (datadirectory_option.parameters.item (1))
 		end
 
 	command_line_includes_goa_switch: BOOLEAN is
 			-- Did user include --goa argument on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (goa_switch) 	
+			Result := goa_flag.was_found
 		end
 
 	command_line_includes_trash_switch: BOOLEAN is
@@ -1006,129 +1005,116 @@ feature {NONE} -- Command Line Arguments
 			-- You can then run gexslt (or another transformer) from the command line
 			-- Using gexslt --param=prefix=NAMESPACE --file=validating_xml_writer.xsl --file=NAMESPACE.fl2
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (trash_switch) 	
+			Result := trash_flag.was_found
 		end
-		
+
 	command_line_includes_author_switch: BOOLEAN is
 			-- Did user include --author argument on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (author_switch) 	
+			Result := author_option.was_found
 		end
 
 	exactly_one_author_argument: BOOLEAN is
 			-- Does the list of arguments given by user for the -e argument contain exactly one item?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_author_switch
 		once
-			Result := command_line_parser.valid_options.item (author_switch).count = 1
+			Result := author_option.parameters.count = 1
 		end
 
 	author_argument: STRING is
 			-- The --author argument given by the user
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_author_switch
 			exactly_one_author_argument: exactly_one_author_argument
 		once
-			Result := command_line_parser.valid_options.item (author_switch).item (1)
+			Result := author_option.parameters.item (1)
 		end
 
 	command_line_includes_copyright_switch: BOOLEAN is
 			-- Did user include --copyright argument on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (copyright_switch) 	
+			Result := copyright_option.was_found
 		end
 
 	exactly_one_copyright_argument: BOOLEAN is
 			-- Does the list of arguments given by user for the -e argument contain exactly one item?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_copyright_switch
 		once
-			Result := command_line_parser.valid_options.item (copyright_switch).count = 1
+			Result := copyright_option.parameters.count = 1
 		end
 
 	copyright_argument: STRING is
 			-- The --copyright argument given by the user
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_copyright_switch
 			exactly_one_copyright_argument: exactly_one_copyright_argument
 		once
-			Result := command_line_parser.valid_options.item (copyright_switch).item (1)
+			Result := copyright_option.parameters.item (1)
 		end
 
 	command_line_includes_license_switch: BOOLEAN is
 			-- Did user include --license argument on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (license_switch) 	
+			Result := license_option.was_found
 		end
 
 	exactly_one_license_argument: BOOLEAN is
 			-- Does the list of arguments given by user for the -e argument contain exactly one item?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_license_switch
 		once
-			Result := command_line_parser.valid_options.item (license_switch).count = 1
+			Result := license_option.parameters.count = 1
 		end
 
 	license_argument: STRING is
 			-- The --license argument given by the user
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 			command_line_includes_database_argument: command_line_includes_license_switch
 			exactly_one_license_argument: exactly_one_license_argument
 		once
-			Result := command_line_parser.valid_options.item (license_switch).item (1)
+			Result :=  license_option.parameters.item (1)
 		end
-		
+
 	command_line_includes_verbose_switch: BOOLEAN is
 			-- Did user include the verbose_switch on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (verbose_switch) 	
+			Result := verbose_flag.was_found
 		end
 
 	command_line_includes_norefresh_switch: BOOLEAN is
 			-- Did user include the norefresh_switch on the command line?
 		require
-			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
+--			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := command_line_parser.valid_options.has (norefresh_switch) 	
+			Result := norefresh_flag.was_found
 		end
 
-
-	file_switch: STRING is "-f"
-	verbose_switch: STRING is "-v"
-	norefresh_switch: STRING is "-n"
-	eiffeldirectory_switch: STRING is "-e"
-	datadirectory_switch: STRING is "-d"
-	goa_switch: STRING is "-g"
-	author_switch: STRING is "-a"
-	copyright_switch: STRING is "-c"
-	trash_switch: STRING is "-t"
-	license_switch: STRING is "-l"
-	help_switch: STRING is "-h"
-
 feature {NONE} -- XSLT Transformations
-		
+
 	transformer_factory: GOA_XSLT_TRANSFORMER_FACTORY is
 			-- Where XSLT Transformers come from
 		once
 			create Result.make_without_configuration
 		end
-		
+
 	flatten_stage_1_transformer: GOA_XSLT_STRING_TRANSFORMER is
 			-- XSLT Transformer used to perform stage 1 of combining included schemas into a single file
 		once
@@ -1139,13 +1125,13 @@ feature {NONE} -- XSLT Transformations
 			-- XSLT Transformer used to perform stage 2 of combining included schemas into a single file
 		once
 			Result := transformer_factory.new_string_transformer_from_file_name ("flatten_2.xsl")
-		end	
+		end
 
 	flatten_stage_3_transformer: GOA_XSLT_STRING_TRANSFORMER is
 			-- XSLT Transformer used to perform stage 3 of combining included schemas into a single file
 		once
 			Result := transformer_factory.new_string_transformer_from_file_name ("flatten_3.xsl")
-		end	
+		end
 
 	imported_transformer: GOA_XSLT_STRING_TRANSFORMER is
 			-- XSLT Transformer used to generate the import schema file
@@ -1170,7 +1156,7 @@ feature {NONE} -- XSLT Transformations
 		once
 			Result := transformer_factory.new_string_transformer_from_file_name ("validating_xml_writer.xsl")
 		end
-		
+
 	deferred_xml_writer_transformer: GOA_XSLT_STRING_TRANSFORMER is
 			-- XSLT Transformer used to generate deferred eiffel class {FILE_NAME}_XML_DOCUMENT
 		once
@@ -1200,7 +1186,7 @@ feature {NONE} -- Output Facilities
 		do
 			put_string_to_file ("", file_name, content)
 		end
-		
+
 	put_string_to_data_directory (file_name, content: STRING) is
 			-- Write content to a file named file_name in the data_directory
 		require
@@ -1214,9 +1200,9 @@ feature {NONE} -- Output Facilities
 			else
 				put_string_to_file ("", file_name, content)
 			end
-			
+
 		end
-		
+
 	put_string_to_eiffel_directory (file_name, content: STRING) is
 			-- Write content to a file named file_name in the eiffel_directory
 		require
@@ -1253,5 +1239,5 @@ feature {NONE} -- Output Facilities
 			the_file.put_string (content)
 			the_file.close
 		end
-			
+
 end -- class GOA_BUILD
