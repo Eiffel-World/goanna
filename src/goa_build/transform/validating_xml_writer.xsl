@@ -155,8 +155,9 @@ feature -- Element Validity
 
 feature -- {NONE} -- Element Content Validity
 
-	<xsl:apply-templates select="//rng:element[descendant::rng:ref[key ('elements', @name)]]" mode="content_validity" />
-
+	<xsl:apply-templates select="//rng:element[descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]]" mode="content_validity" />
+	<xsl:apply-templates select="$all_element_collections" mode="content_validity" />
+	
 feature {NONE} -- Transformation
 
 	transform_file_name: STRING is
@@ -180,7 +181,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 	<!-- Name of a feature that adds an element to the document -->
 
 	<xsl:choose>
-		<xsl:when test="descendant::rng:ref[key ('elements', @name)]">
+		<xsl:when test="descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]">
 			<xsl:text>start_</xsl:text>
 		</xsl:when>
 		<xsl:otherwise>
@@ -197,7 +198,7 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 
 	<xsl:variable name="attribute" as="node()?" select="key ('attributes', @name)" />
 	<xsl:if test="$attribute">
-		<xsl:variable name="includes_elements" as="xs:boolean" select="count (key ('elements', @name)/descendant::rng:ref[key ('elements', @name)]) > 0" />
+		<xsl:variable name="includes_elements" as="xs:boolean" select="count (key ('elements', @name)/descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name) ]) > 0" />
 		<xsl:variable name="current_ref" as="node()?" select="@name" />
 		<xsl:choose>
 			<xsl:when test="ancestor::rng:choice/rng:ref[1]/@name = $current_ref">
@@ -257,19 +258,220 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 </xsl:template>
 
 <xsl:template match="rng:element" mode="content_validity">
-
+	
 	<!-- 	Create an XML_CONTENT_SCHEMA class (named element_name_content_validity) 
 		defining valid elements and-or text that may be contained within
 		the element -->
-		
+	
 	<xsl:variable name="element_name" as="xs:string" select="../@name" />
 	<xsl:value-of select="$element_name" />
 	<xsl:text>_content_validity: GOA_XML_ELEMENT_SCHEMA is&#xA;</xsl:text>
 	<xsl:text>&#x9;&#x9;&#x9;-- Schema representing valid contents of a(n) </xsl:text><xsl:value-of select="$element_name" /><xsl:text> element&#xA;</xsl:text>
 	<xsl:text>&#x9;&#x9;once&#xA;</xsl:text>
-	<xsl:text>&#x9;&#x9;&#x9;create Result.make&#xA;</xsl:text>
+	<xsl:text>&#x9;&#x9;&#x9;create Result.make (&#xA;</xsl:text>
+	
+	<xsl:apply-templates select="." mode="content_validity_output" />
+	
+	<xsl:text>&#xA;&#x9;&#x9;&#x9;)&#xA;</xsl:text>
+	<xsl:text>&#x9;&#x9;end&#xA;&#xA;&#x9;</xsl:text>
+</xsl:template>
+
+
+<xsl:template match="rng:define" mode="content_validity">
+	
+	<!-- 	Create an GOA_XML_DEERRED_SCHEMA_ELEMENT class (named 'collection_name'_collection) 
+		defining valid elements and-or text that may be contained within
+		the element -->
+	
+	<xsl:variable name="collection_name" as="xs:string" select="@name" />
+	<xsl:value-of select="$collection_name" />
+	<xsl:text>_collection: GOA_XML_DEERRED_SCHEMA_ELEMENT is&#xA;</xsl:text>
+	<xsl:text>&#x9;&#x9;&#x9;-- Schema representing valid contents of a(n) </xsl:text><xsl:value-of select="$collection_name" /><xsl:text> collection&#xA;</xsl:text>
+	<xsl:text>&#x9;&#x9;do&#xA;</xsl:text>
+	<xsl:text>&#x9;&#x9;&#x9;Result :=&#xA;</xsl:text>
+	
+	<xsl:apply-templates select="." mode="content_validity_output" />
+	
+	<xsl:text>&#xA;&#x9;&#x9;end&#xA;&#xA;&#x9;</xsl:text>
+</xsl:template>
+
+
+<xsl:template match="*" mode="content_validity_output">
+
+	<!-- all children which are or contain  'element_refs', 'list_refs' or 'text'-->
+	<xsl:variable name="all_children" as="node()*" select="child::*" />
+	<xsl:variable name="children" as="node()*" select="$all_children[descendant-or-self::*[key ('elements', @name) | key('element_collections', @name) | self::rng:text]]" />
+	
+	<!-- all siblings which are or contain  'element_refs', 'element_collection_refs' or 'text'-->
+	<xsl:variable name="all_siblings" as="node()*" select="parent::*/*" />
+	<xsl:variable name="siblings" as="node()*" select="$all_siblings[descendant-or-self::*[key ('elements', @name) | key('element_collections', @name) | self::rng:text]]" />
+	
+	<!-- variables which give informations about the parents -->
+	<xsl:variable name="is_in_optional" as="xs:boolean" select="count(parent::rng:optional) > 0" />
+	<xsl:variable name="is_in_zero_or_more" as="xs:boolean" select="count(parent::rng:zeroOrMore) > 0" />
+	<xsl:variable name="is_in_one_or_more" as="xs:boolean" select="count(parent::rng:oneOrMore) > 0" />
+	
+	<!-- DEBUG  -->
+	
+	
+	
+<!--
+	
+	<xsl:text> local-name: </xsl:text><xsl:value-of select="local-name ()" />
+	<xsl:if test="@name">   @name: <xsl:value-of select="@name" /></xsl:if>
+	<xsl:text>&#xA;</xsl:text>
+	
+	<xsl:text> all_children: &#xA;</xsl:text>
+	<xsl:for-each select="$all_children">
+		<xsl:text>&#x9; local-name: </xsl:text><xsl:value-of select="local-name ()" />
+		<xsl:if test="@name">   @name: <xsl:value-of select="@name" /></xsl:if>
+		<xsl:text>&#xA;</xsl:text>
+	</xsl:for-each>
+	<xsl:text> children: &#xA;</xsl:text>
+	<xsl:for-each select="$children">
+		<xsl:text>&#x9; local-name: </xsl:text><xsl:value-of select="local-name ()" />
+		<xsl:if test="@name">   @name: <xsl:value-of select="@name" /></xsl:if>
+		<xsl:text>&#xA;</xsl:text>
+	</xsl:for-each>
+	<xsl:text> all_sibling &#xA;</xsl:text>
+	<xsl:for-each select="$all_siblings">
+		<xsl:text>&#x9; local-name: </xsl:text><xsl:value-of select="local-name ()" />
+		<xsl:if test="@name">   @name: <xsl:value-of select="@name" /></xsl:if>
+		<xsl:text>&#xA;</xsl:text>
+	</xsl:for-each>
+	<xsl:text> sibling &#xA;</xsl:text>
+	<xsl:for-each select="$siblings">
+		<xsl:text>&#x9; local-name: </xsl:text><xsl:value-of select="local-name ()" />
+		<xsl:if test="@name">   @name: <xsl:value-of select="@name" /></xsl:if>
+		<xsl:text>&#xA;</xsl:text>
+	</xsl:for-each>
+	<xsl:text> is_in_optional: </xsl:text><xsl:value-of select="$is_in_optional" /><xsl:text>&#xA;</xsl:text>
+	<xsl:text> is_in_zero_or_more: </xsl:text><xsl:value-of select="$is_in_zero_or_more" /><xsl:text>&#xA;</xsl:text>
+	<xsl:text> is_in_one_or_more: </xsl:text><xsl:value-of select="$is_in_one_or_more" /><xsl:text>&#xA;&#xA;</xsl:text>
+	
+	
+	
+	<xsl:for-each select="//rng:define[child::rng:choice]">
+		<xsl:text>&#x9; local-name: </xsl:text><xsl:value-of select="local-name ()" />
+		<xsl:if test="@name">   @name: <xsl:value-of select="@name" /></xsl:if>
+		<xsl:text>&#xA;</xsl:text>
+	</xsl:for-each>
+	
+	
+	 END OF DEBUG -->
+	
+	
+	
+	
+	<!-- name of the creation procedures -->
+	<xsl:variable name="creation_procedure" as="xs:string">
+		<xsl:choose>
+			<!-- for conjunctions of elments in 'group', 'optional', 'zeroOrMore' or 'oneOrMore' -->
+			<xsl:when test="local-name () eq 'group'">
+				<xsl:text>make_required</xsl:text>
+			</xsl:when>
+			<xsl:when test="local-name () eq 'optional'">
+				<xsl:text>make_optional</xsl:text>
+			</xsl:when>
+			<xsl:when test="local-name () eq 'zeroOrMore'">
+				<xsl:text>make_zero_or_more</xsl:text>
+			</xsl:when>
+			<xsl:when test="local-name () eq 'oneOrMore'">
+				<xsl:text>make_one_or_more</xsl:text>
+			</xsl:when>
+			
+			<!-- for elements in a collection -->
+			<xsl:when test="count ($siblings) > 1">
+				<xsl:text>make_required</xsl:text>
+			</xsl:when>
+			
+			<!-- for single elements -->
+			<xsl:when test="$is_in_optional">
+				<xsl:text>make_optional</xsl:text>
+			</xsl:when>
+			<xsl:when test="$is_in_zero_or_more">
+				<xsl:text>make_zero_or_more</xsl:text>
+			</xsl:when>
+			<xsl:when test="$is_in_one_or_more">
+				<xsl:text>make_one_or_more</xsl:text>
+			</xsl:when>
+			
+			<xsl:otherwise>
+				<xsl:text>make_required</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	
+	<xsl:choose>
+		<xsl:when test="local-name () eq 'text' or local-name () eq 'ref'">
+			<xsl:choose>
+				<!-- Output for 'text' 'elements' and 'element_collections' -->
+				<xsl:when test="local-name () eq 'text'">
+					<xsl:text>&#x9;&#x9;&#x9;&#x9;create {GOA_XML_SCHEMA_ELEMENT}.</xsl:text>
+					<xsl:value-of select="$creation_procedure" />
+					<xsl:text> (xml_text_code)</xsl:text>
+				</xsl:when>
+				<xsl:when test="count (key ('elements', @name)) > 0">
+					<xsl:text>&#x9;&#x9;&#x9;&#x9;create {GOA_XML_SCHEMA_ELEMENT}.</xsl:text>
+					<xsl:value-of select="$creation_procedure" />
+					<xsl:text> (</xsl:text><xsl:value-of select="@name" /><xsl:text>_element_code)</xsl:text>
+				</xsl:when>
+				<xsl:when test="count (key ('element_collections', @name)) > 0">
+					<xsl:text>&#x9;&#x9;&#x9;&#x9;</xsl:text><xsl:value-of select="@name" /><xsl:text>_collection</xsl:text>
+				</xsl:when>
+			</xsl:choose>
+		</xsl:when>
+		
+		<xsl:otherwise>
+			<!-- we only need to start a collection if this element is a 'choice' a 'group' or contains more than one children -->
+			<xsl:variable name="start_collection" as="xs:boolean" select="local-name () eq 'choice' or local-name () eq 'group' or count ($children) > 1" />
+			<xsl:variable name="actual_class_name" as="xs:string">
+				<xsl:choose>
+					<!-- if this is a 'choice' we start a disjunction -->
+					<xsl:when test="local-name () eq 'choice'">
+						<xsl:text>GOA_XML_SCHEMA_ELEMENT_DISJUNCTION</xsl:text>
+					</xsl:when>
+					
+					<!-- else we start a disjunction -->
+					<xsl:otherwise>
+						<xsl:text>GOA_XML_SCHEMA_ELEMENT_CONJUNCTION</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			
+			<xsl:if test="$start_collection">
+				<xsl:text>&#x9;&#x9;&#x9;&#x9;create {</xsl:text><xsl:value-of select="$actual_class_name" /><xsl:text>}.</xsl:text>
+				<xsl:value-of select="$creation_procedure" />
+				<xsl:text> (&#xA;</xsl:text>
+				<xsl:text>&#x9;&#x9;&#x9;&#x9;&lt;&lt;&#xA;</xsl:text>
+			</xsl:if>
+			
+			<!-- in any case we do a recursiv call for each child -->
+			<xsl:for-each select="$children">
+				<xsl:apply-templates select="." mode="content_validity_output" />
+				<xsl:if test="position() != last()"><xsl:text>,</xsl:text></xsl:if>
+				<xsl:if test="last() != 1"><xsl:text>&#xA;</xsl:text></xsl:if>
+			</xsl:for-each>
+			
+			<!-- if we started an element we need to close it bevor we leaf the template -->
+			<xsl:if test="$start_collection">
+				<xsl:text>&#x9;&#x9;&#x9;&#x9;&gt;&gt;)</xsl:text>
+			</xsl:if>
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+		
+
+<!-- old implementation: can be deleted once the new one is tested -->
+<xsl:template match="rng:element" mode="content_validity_output_old">
+
+	<xsl:param name="precursor" select="'none'" />
+
+	<xsl:variable name="exactly_one_child" as="xs:boolean" select="count(child::*) = 0" />
+
 	<xsl:for-each select="descendant::*">
-		<xsl:if test="count (key ('elements', @name)) > 0 or local-name () eq 'text' or (local-name () eq 'choice') and count (descendant::rng:ref[key ('elements', @name)]) > 0">
+		<!-- if descendant:     is a ref to an element    or          is a text      or    (    is a choice         and  contains refs to elements )  -->
+		<xsl:if test="count (key ('elements', @name)) > 0 or local-name () eq 'text' or ((local-name () eq 'choice') and count (descendant::rng:ref[key ('elements', @name)]) > 0)">
 			<xsl:variable name="this_node" as="node()" select="." />
 			<xsl:variable name="is_text" as="xs:boolean" select="local-name () eq 'text'" />
 			<xsl:variable name="is_in_a_choice" as="xs:boolean" select="count (ancestor::rng:choice) > 0" />
@@ -309,7 +511,6 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 			</xsl:if>
 		</xsl:if>
 	</xsl:for-each>
-	<xsl:text>&#x9;&#x9;end&#xA;&#xA;&#x9;</xsl:text>
 </xsl:template>
 		
 
