@@ -57,7 +57,7 @@ feature -- Initialization
 --   copy goa provided rnc schemas, xsl transforms, and css files to current directory
 --   copy goa provided xsl transforms to data directory
 --   copy goa provided xml_documents_extended to eiffel directory
--- For each document schema file specifed in the --file argument
+-- For each document schema file specifed in the parameter list
 --   expand CLASS_ATTRIBUTE_PLACEHOLDER with class attribute value declaration (if needed)
 --   use trang to convert rnc file to rng
 --   combine included schemas into a single file using flatten_1.xsl
@@ -107,16 +107,16 @@ feature -- Initialization
 				command_line_parser.parse_arguments
 				if command_line_parser.error_handler.has_error then
 					io.put_string (help_usage)
-				elseif command_line_includes_goa_switch and command_line_includes_file_switch then
-					io.put_string ("The -f (--file) and -g (--goa) options are mutually exclusive%N")
+				elseif command_line_includes_goa_switch and command_line_includes_parameters then
+					io.put_string ("You may not specify file name(s) with the -g (--goa) option%N")
 					io.put_string (help_usage)
-				elseif  not command_line_includes_goa_switch and not command_line_includes_file_switch then
-					io.put_string ("You must specify either the -f (--file) or the -g (--goa) option%N")
+				elseif  not command_line_includes_goa_switch and not command_line_includes_parameters then
+					io.put_string ("You must specify one or more file names (unless using the -g (--goa) option)%N")
 					io.put_string (help_usage)
-				elseif command_line_includes_file_switch and then not unreadable_files (file_option.parameters).is_empty then
-					-- Some of the files specified in the -f argument are not readable
+				elseif command_line_includes_parameters and then not unreadable_files (command_line_parser.parameters).is_empty then
+					-- Some of the files specified in the parameter list
 					io.put_string ("The file(s) ")
-					local_unreadable_files := unreadable_files (file_option.parameters)
+					local_unreadable_files := unreadable_files (command_line_parser.parameters)
 					from
 						local_unreadable_files.start
 					until
@@ -130,7 +130,7 @@ feature -- Initialization
 						end
 						local_unreadable_files.forth
 					end
-					io.put_string ("provided in the -f (file) argument cannot be read%N" + help_usage)
+					io.put_string ("cannot be read%N" + help_usage)
 				elseif command_line_includes_eiffeldirectory_switch and then not exactly_one_eiffeldirectory_argument then
 					io.put_string ("-e (--eiffeldirectory) may contain only one argument.  Enclosing a path containing spaces may work%N" + help_usage)
 				elseif command_line_includes_eiffeldirectory_switch and then not file_system.directory_exists (interpreted_string(eiffeldirectory_argument)) then
@@ -160,7 +160,7 @@ feature -- Initialization
 					else
 						target_data_directory_name := file_system.current_working_directory
 					end
-					if command_line_includes_file_switch or command_line_includes_goa_switch then
+					if command_line_includes_parameters or command_line_includes_goa_switch then
 						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/common.xsl"), "common.xsl")
 						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/attribute_values.xsl"), "attribute_values.xsl")
 						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/schema_codes.xsl"), "schema_codes.xsl")
@@ -187,7 +187,7 @@ feature -- Initialization
 						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_redirect/goa_redirect.frng"), file_system.pathname (target_data_directory_name, "goa_redirect.frng"))
 						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_page/goa_page.frng"), file_system.pathname (target_data_directory_name, "goa_page.frng"))
 					end
-					if command_line_includes_file_switch or command_line_includes_goa_switch then
+					if command_line_includes_parameters or command_line_includes_goa_switch then
 						-- Read value of environment variable TRANG_INVOCATION
 						trang_invocation := variable_value ("TRANG_INVOCATION")
 						if trang_invocation = Void then
@@ -216,8 +216,8 @@ feature -- Initialization
 							attribute_values_transformer.set_string_parameter (license_argument, "license")
 						end
 						-- Initialize file name lists
-						if command_line_includes_file_switch then
-							file_names := file_option.parameters
+						if command_line_includes_parameters then
+							file_names := command_line_parser.parameters
 						else
 							file_names := create {DS_LINKED_LIST [STRING]}.make_equal
 						end
@@ -668,7 +668,7 @@ feature -- Initialization
 							end
 						end
 					end
-					if not command_line_includes_trash_switch and (command_line_includes_file_switch or command_line_includes_goa_switch) then
+					if not command_line_includes_trash_switch and (command_line_includes_parameters or command_line_includes_goa_switch) then
 						file_system.delete_file ("common.xsl")
 						file_system.delete_file ("attribute_values.xsl")
 						file_system.delete_file ("schema_codes.xsl")
@@ -864,14 +864,8 @@ feature {NONE} -- Command Line Parsing
 		once
 			create Result.make
 			Result.set_application_description ("Generate Eiffel classes which write XML conforming to Relax NG Compact Syntax Grammar(s)")
-			create file_option.make ('f', "file")
-			file_option.set_description
-				("Space delemitted Name(s) of file(s) containing Relax NG Compact Syntax grammar(s) %
-				%used to generate the XML authoring classes. Do not enclose name or %
-				%space delimited list of names in quotes (enclosing a single file name %
-				%containing spaces in quotes may work but is not recommended). %
-				%Can't be used with the --goa switch.")
-			Result.options.force_last (file_option)
+			Result.set_parameters_description ("file1 file2 ... (Name(s) of file(s) containing Relax NG Compact Syntax grammar(s) %
+				%used to generate the XML authoring classes. No file names are allowed with the --goa switch.)")
 			create verbose_flag.make ('v', "verbose")
 			verbose_flag.set_description ("Verbose mode (provides context for certain error messages)")
 			Result.options.force_last (verbose_flag)
@@ -882,7 +876,7 @@ feature {NONE} -- Command Line Parsing
 			goa_flag.set_description
 				("Rebuild goa_common and other supplied files. %
 				%Prebuilt versions are mounted automatically. %
-				%Can't be used with the --file switch.")
+				%Do not include file names when using this option.")
 			Result.options.force_last (goa_flag)
 			create trash_flag.make ('t', "trash")
 			trash_flag.set_description ("Leave trash files in directory (for debugging goa_build)")
@@ -910,7 +904,7 @@ feature {NONE} -- Command Line Parsing
 	norefresh_flag: AP_FLAG
 	goa_flag: AP_FLAG
 	trash_flag: AP_FLAG
-	file_option: AP_STRING_OPTION
+--	file_option: AP_STRING_OPTION
 	eiffeldirectory_option: AP_STRING_OPTION
 	datadirectory_option: AP_STRING_OPTION
 	author_option: AP_STRING_OPTION
@@ -921,12 +915,12 @@ feature {NONE} -- Command Line Parsing
 
 feature {NONE} -- Command Line Arguments
 
-	command_line_includes_file_switch: BOOLEAN is
+	command_line_includes_parameters: BOOLEAN is
 			-- Did user include the file_switch on the command line?
 		require
 --			valid_command_line_valid_options: command_line_parser /= Void and then command_line_parser.valid_options /= Void
 		once
-			Result := file_option.was_found
+			Result := not command_line_parser.parameters.is_empty
 		end
 
 
