@@ -764,7 +764,7 @@ the same file name. A document schema and all supporting files
 subdirectory. When designing a schema please keep in mind that the
 full RNC is not currently supported.  An (incomplete) list of known
 limitations may be found <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/src/goa_build/transform/validating_xml_writer.xsl?view=markup">here</ulink>.
+url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/src/goa_build/transform/README?view=markup">here</ulink>.
       
     </para>
     <para>

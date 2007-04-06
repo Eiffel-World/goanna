@@ -21,7 +21,7 @@ creation
 
 feature {GOA_XML_ELEMENT_SCHEMA, GOA_XML_DEERRED_SCHEMA_ELEMENT} -- Query
 
-	is_valid_content_impl (the_fragment: DS_ARRAYED_LIST [INTEGER]): BOOLEAN is
+	is_valid_content_fragment (the_fragment: DS_ARRAYED_LIST [INTEGER]): BOOLEAN is
 			-- Does this element represent a valid element at the given location in the parent element?
 			-- The location is given by the internal cursor of the_fragment
 			-- If the feature retuns false, the_fragment must be unchanged.
@@ -30,20 +30,23 @@ feature {GOA_XML_ELEMENT_SCHEMA, GOA_XML_DEERRED_SCHEMA_ELEMENT} -- Query
 		do
 			from
 				Result := False
+				was_complete := False
 				content.start
 			until
 				content.after or the_fragment.after or Result
 			loop
-				Result := content.item_for_iteration.is_valid_content_impl (the_fragment)
+				Result := content.item_for_iteration.is_valid_content_fragment (the_fragment)
+				was_complete := content.item_for_iteration.was_complete
 				content.forth
 			end
 
 			if Result and is_multiple_element and not the_fragment.after then
-				recursion_result := is_valid_content_impl (the_fragment)
+				recursion_result := is_valid_content_fragment (the_fragment)
 			end
 
 			if not is_required then
 				Result := True
+				was_complete:= True
 			end
 		end
 

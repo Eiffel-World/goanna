@@ -21,7 +21,7 @@ creation
 
 feature {GOA_XML_ELEMENT_SCHEMA, GOA_XML_DEERRED_SCHEMA_ELEMENT} -- Query
 
-	is_valid_content_impl (the_fragment: DS_ARRAYED_LIST [INTEGER]): BOOLEAN is
+	is_valid_content_fragment (the_fragment: DS_ARRAYED_LIST [INTEGER]): BOOLEAN is
 			-- Does this element represent a valid element at the given location in the parent element?
 			-- The location is given by the internal cursor of the_fragment
 			-- If the feature retuns false, the_fragment must be unchanged.
@@ -39,6 +39,8 @@ feature {GOA_XML_ELEMENT_SCHEMA, GOA_XML_DEERRED_SCHEMA_ELEMENT} -- Query
 			if not is_required then
 				Result := True
 			end
+
+			was_complete := Result
 		end
 
 feature {NONE} -- Implementation

@@ -22,7 +22,7 @@ feature -- Query
 		do
 			create al.make_from_array (the_fragment)
 			al.start
-			Result := content.is_valid_content_impl (al) and then al.after
+			Result := content.is_valid_content_fragment (al) and (content.was_complete and al.after)
 		end
 
 	is_valid_content_fragment (the_fragment: ARRAY [INTEGER]): BOOLEAN is
@@ -32,7 +32,7 @@ feature -- Query
 		do
 			create al.make_from_array (the_fragment)
 			al.start
-			Result := content.is_valid_content_impl (al)
+			Result := content.is_valid_content_fragment (al)
 		end
 
 
