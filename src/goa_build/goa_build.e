@@ -681,9 +681,11 @@ feature -- Initialization
 						file_system.delete_file ("xsl_include_list.xsl")
 						file_system.delete_file ("imported.xsl")
 						if not command_line_includes_goa_switch then
-							file_system.delete_file ("goa_common.xsl")
 							file_system.delete_file ("goa_common.rnc")
+						end
+						if not (xsl_files.has ("goa_common.xsl") or command_line_includes_goa_switch) then
 							file_system.delete_file ("goa_common.css")
+							file_system.delete_file ("goa_common.xsl")
 						end
 					end
 					if command_line_includes_verbose_switch then

@@ -7,64 +7,6 @@
 	copyright: "Copyright (c) 2004 Neal L Lester"
 	license:   "Eiffel Forum License V2.0 (http://www.opensource.org/licenses/ver2_eiffel.php)"
 
-DESCRIPTION
-
-The four files common.xsl, schema_codes.xsl, deferred_xml_writer, 
-and validating_xml_wrter.xsl are xslt transforms that generate
-eiffel classes from a Relax NG grammar.  
-
-http://www.oasis-open.org/committees/relax-ng/spec-20011203.html
-
-schema_codes.xsl creates a class that includes integer
-codes and string constants representing the elements and attributes
-defined in the schema.
-
-deferred_xml_writer.xsl creates a deferred class that represents a
-schema fragment intended for inclusion in another schema.  This allows
-eiffel to see documents containing the included schema as distinct
-types.
-
-common.xsl contains some templates that are common to the various
-transforms.
-
-validating_xml_writer.xsl outputs an eiffel class that includes features
-for creating and populating an xml document conforming with the
-Relax NG schema.  The validity rules defined by the Relax NG grammar
-are embedded as preconditions in the eiffel class.
-
-See test/sample.rnc for an example schema that passes all unit tests.
-
-See test/generate_classes.sh for an example of how to use the
-transforms on Linux using the Saxon xslt processor.  
-
-Use the parameters author, copyright, and license to populate the
-corresponding indexing clauses in the generated Eiffel classes.
-
-KNOWN LIMITATIONS
-
-1) The Relax NG grammar used as input to the stylesheet may include
-   elements from only one namespace, and that namespace must be named
-   first in the grammar element.
-2) The transforms assume that the xslt processor will return namespace
-   prefixes in the order declared in the grammar element (Saxon does).
-   If the class and feature names don't match the grammar namespace
-   prefix, then pass in the prefix as a parameter
-   (prefix=namespace-prefix)   
-3) A mandatory element following an optional choice element of the
-   same name may be incorrectly rejected by the class (e.g. an element
-   containing elements { (name1 | name2)*, name1 } the element will be incorrectly
-   rejected as invalid if it contains only one name1 element.
-4) xsd:nonNegativeInteger is the only data type supported (it should be easy
-   to add more).
-5) Nested element choices e.g. { (element1, element2) | element3 } are
-   not supported.
-6) When combining grammars, only the combine="choice" option ( |= in compact
-   syntax notation) is supported.  The element in the included file
-   must be a choice element.  Note that there are no automated checks to ensure
-   the input files comform with this requirement.
-7) Does not (currently) support mixing namespaces that contain elements
-   with the same name.
-	
 -->
 <xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"
   xmlns:rng="http://relaxng.org/ns/structure/1.0"
@@ -137,8 +79,8 @@ feature -- Element Validity
 			-- Is the_fragment a valid valid element/text sequence in element given by the_element_code
 		do
 			inspect the_element_code
-<xsl:apply-templates select="//rng:element[descendant::rng:ref[key ('elements', @name)]]" mode="fragment_when_list" />
-<xsl:text>			else</xsl:text>
+<xsl:apply-templates select="//rng:element[descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]]" mode="fragment_when_list" />
+			else
 				Result := False
 			end
 		end
@@ -147,8 +89,8 @@ feature -- Element Validity
 			-- Is the_content a valid complete and valid element/text sequence in element given by the_element_code
 		do
 			inspect the_element_code
-<xsl:apply-templates select="//rng:element[descendant::rng:ref[key ('elements', @name)]]" mode="content_when_list" />
-<xsl:text>			else</xsl:text>
+<xsl:apply-templates select="//rng:element[descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]]" mode="content_when_list" />
+			else
 				Result := False
 			end
 		end
@@ -176,21 +118,11 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 
 </xsl:template> 
 
-<xsl:template match="rng:element" mode="element_name">
 
-	<!-- Name of a feature that adds an element to the document -->
 
-	<xsl:choose>
-		<xsl:when test="descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]">
-			<xsl:text>start_</xsl:text>
-		</xsl:when>
-		<xsl:otherwise>
-			<xsl:text>add_</xsl:text>
-		</xsl:otherwise>
-	</xsl:choose>
-	<xsl:value-of select="../@name" />
-	<xsl:text>_element</xsl:text>
-</xsl:template>
+
+
+
 
 <xsl:template match="rng:ref" mode="build_feature_variables">
 

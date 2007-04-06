@@ -102,22 +102,6 @@ end -- <xsl:value-of select="$prefix_upper"/>_XML_DOCUMENT
 </xsl:template>
  
 
-<xsl:template match="rng:element" mode="element_name">
-
-	<!-- Name of a feature that adds an element to the document -->
-
-	<xsl:choose>
-		<xsl:when test="descendant::rng:ref[key ('elements', @name) | key ('element_collections', @name)]">
-			<xsl:text>start_</xsl:text>
-		</xsl:when>
-		<xsl:otherwise>
-			<xsl:text>add_</xsl:text>
-		</xsl:otherwise>
-	</xsl:choose>
-	<xsl:value-of select="../@name" />
-	<xsl:text>_element</xsl:text>
-</xsl:template>
-
 <xsl:template match="rng:ref" mode="build_feature_variables">
 
 	<!-- The feature parameters for a feature that adds an element to the document -->
