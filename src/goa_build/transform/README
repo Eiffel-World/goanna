@@ -26,7 +26,7 @@ are embedded as preconditions in the eiffel class.
 See test/sample.rnc for an example schema that passes all unit tests.
 
 See test/generate_classes.sh for an example of how to use the
-transforms on Linux using the Saxon xslt processor.  
+transforms on Linux using the Saxon xslt processor (obsolete).  
 
 Use the parameters author, copyright, and license to populate the
 corresponding indexing clauses in the generated Eiffel classes.
@@ -40,7 +40,7 @@ KNOWN LIMITATIONS
    elements from only one namespace, and that namespace must be named
    first in the grammar element.
 2) The transforms assume that the xslt processor will return namespace
-   prefixes in the order declared in the grammar element (Saxon does).
+   prefixes in the order declared in the grammar element (GEXSLT does).
    If the class and feature names don't match the grammar namespace
    prefix, then pass in the prefix as a parameter
    (prefix=namespace-prefix)   
