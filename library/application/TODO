@@ -17,10 +17,10 @@ goa_build should be able to handle includes that don't involve other schemas (i.
 
 goa_build should be able to handle patterns that define groups of elements (i.e. pattern = previous_pattern1 | previous_pattern2)
 
+goa_build should not rely on the XSLT processor to return namespace prefixes in the order defined in the source document.
+
 Documentation (including doc/application.xml) should have a build.eant file, with a target of install, and this should be called from the install target of the build.eant
 file in the parent directory.
-
-Convert goa_build from eclop to Gobo command line parsing.
 
 Remove generated files from xml/goa_common, xml/goa_page, and xml/goa_redirect directories and instead create a geant install task to create them.
 
@@ -74,3 +74,4 @@ DONE ====================================
 
 goa_build -g option seems to erase the goa_common.rnc and goa_common.css files.  It's shouldn't, and it's quite annoying.
 
+Convert goa_build from eclop to Gobo command line parsing.
