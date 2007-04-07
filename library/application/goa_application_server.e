@@ -36,7 +36,7 @@ feature
 	application_make is
 		do
 			execute
--- Troubleshooting possible issue with detach
+-- TODO Troubleshoot issue with detach
 --			if command_line_ok and then configuration.test_mode then
 --				execute
 --			elseif command_line_ok then
@@ -158,12 +158,6 @@ feature
 			valid_configuration: configuration /= Void
 		end
 
-	connection_reset_by_peer_exception_occurred is
-		do
-			log_hierarchy.logger (configuration.application_log_category).info (connection_reset_by_peer_message)
-		end
-
-
 	field_exception: BOOLEAN is
 			-- Should we attempt to retry?
 		do
@@ -173,13 +167,17 @@ feature
 				log_hierarchy.logger (configuration.application_log_category).error ("Unable to open listening socket; is the socket in use?")
 			elseif exceptions.is_developer_exception_of_name (broken_pipe_exception_message) then
 				log_hierarchy.logger (configuration.application_log_category).info (broken_pipe_exception_message)
+				initialize_listening
 				Result := True
 			elseif exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) then
-				connection_reset_by_peer_exception_occurred
+				log_hierarchy.logger (configuration.application_log_category).info (connection_reset_by_peer_message)
+				initialize_listening
 				Result := True
 			else
-				log_hierarchy.logger (configuration.application_log_category).info ("Exception Occurred:%N" + exceptions.exception_trace)
-				uncaught_exception_occurred
+				if log_uncaught_exception_trace then
+					log_hierarchy.logger (configuration.application_log_category).info ("Exception Occurred:%N" + exceptions.exception_trace)
+				end
+				initialize_listening
 				Result := True
 			end
 		ensure
@@ -187,16 +185,20 @@ feature
 			unable_to_listen_implies_false: unable_to_listen implies not Result
 		end
 
-	uncaught_exception_occurred is
-		do
-			-- Descendents may redefine if necessary
+	initialize_listening is
+		deferred
+		end
+
+	log_uncaught_exception_trace: BOOLEAN is
+			-- An uncaught exception has occured; should we log the trace?
+		once
+			Result := True
 		end
 
 	unable_to_listen: BOOLEAN is
 			-- Is the application in a state where it cannot listen for requests?
 		deferred
 		end
-
 
 	none_p: L4E_PRIORITY is
 			-- Prioty designates no events
