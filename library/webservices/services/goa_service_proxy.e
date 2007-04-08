@@ -9,12 +9,12 @@ indexing
 	license: "Eiffel Forum License v2 (see forum.txt)."
 
 deferred class GOA_SERVICE_PROXY
-	
+
 inherit
-	
+
 	GOA_REGISTRY [ROUTINE [ANY, TUPLE]]
-	
-	
+
+
 feature -- Status report
 
 	valid_operands (a_name: STRING; operands: TUPLE): BOOLEAN is
@@ -26,12 +26,15 @@ feature -- Status report
 		do
 			Result := get (a_name).valid_operands (operands)
 		end
-		
+
 	process_ok: BOOLEAN
 			-- Did the last execution of this service succeed?
-	
+
 	last_result: ANY
 			-- The result of the last execution. Void if no result.
+
+	last_fault: STRING
+			-- The last fault that occured. Void if no fault occured.
 
 	help (a_name: STRING): STRING is
 			-- Documentation for the named service.
@@ -40,12 +43,12 @@ feature -- Status report
 			service_exists: has (a_name)
 		do
 			if routine_help /= Void and then routine_help.has (a_name) then
-				Result := routine_help.item (a_name)		
+				Result := routine_help.item (a_name)
 			else
 				Result := ""
-			end			
+			end
 		end
-			
+
 feature -- Status setting
 
 	register_with_help (element: ROUTINE [ANY, TUPLE]; a_name, help_string: STRING) is
@@ -61,13 +64,14 @@ feature -- Status setting
 			element_registered: has (a_name)
 			help_set: help (a_name).is_equal (help_string)
 		end
-		
+
 	call (a_name: STRING; args: TUPLE) is
 			-- Call named routine
 		local
 			function: FUNCTION [ANY, TUPLE, ANY]
 			routine: ROUTINE [ANY, TUPLE]
 		do
+			last_fault := Void
 			last_result := Void
 			if has (a_name) then
 				routine := get (a_name)
@@ -82,7 +86,7 @@ feature -- Status setting
 				process_ok := True
 			else
 				process_ok := False
-			end	
+			end
 		end
 
 	set_help (a_name, help_string: STRING) is
@@ -116,5 +120,5 @@ feature -- Implementation
 
 	routine_help: DS_HASH_TABLE [STRING, STRING]
 			-- Help strings for individual routine of this service.
-		
+
 end -- class GOA_SERVICE_PROXY

@@ -16,38 +16,38 @@ inherit
 		redefine
 			do_get, do_post
 		end
-	
+
 	GOA_SHARED_SERVICE_REGISTRY
 		export
 			{NONE} all
 		end
-	
+
 	GOA_XRPC_CONSTANTS
 		export
 			{NONE} all
 		end
-	
+
 	KL_EXCEPTIONS
 		export
 			{NONE} all
 		end
-	
+
 	GOA_HTTPD_LOGGER
 		export
 			{NONE} all
 		end
-		
+
 creation
 
 	init
-		
+
 feature -- Basic operations
 
 	do_get (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Process GET request
 		local
 			response_text: STRING
-		do			
+		do
 			create fault.make (Unsupported_method_fault_code)
 			response_text := fault.marshall
 			-- send response
@@ -55,7 +55,7 @@ feature -- Basic operations
 			resp.set_content_length (response_text.count)
 			resp.send (response_text)
 		end
-	
+
 	do_post (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Process POST request
 		local
@@ -86,12 +86,16 @@ feature -- Basic operations
 							if call.are_parameters_valid and then agent_service.valid_operands (action, parameters) then
 								agent_service.call (action, parameters)
 								if agent_service.process_ok then
-									-- check for a result, if so pack it up to send back
-									if agent_service.last_result /= Void then
+										-- if a fault occured, send it back
+									if agent_service.last_fault /= Void then
+										create fault.make_with_detail (user_fault, agent_service.last_fault)
+										response_text := fault.marshall
+										-- check for a result, if so pack it up to send back
+									elseif agent_service.last_result /= Void then
 										result_value := Value_factory.build (agent_service.last_result)
 										if result_value /= Void then
 											create response.make (create {GOA_XRPC_PARAM}.make (result_value))
-											response_text := response.marshall	
+											response_text := response.marshall
 										else
 											-- construct fault response for invalid return type
 											create fault.make (Invalid_action_return_type)
@@ -99,13 +103,13 @@ feature -- Basic operations
 										end
 									else
 										create response.make (Void)
-										response_text := response.marshall	
+										response_text := response.marshall
 									end
 								else
 									-- construct fault response for failed call
 									create fault.make_with_detail (Unable_to_execute_service_action, " " + call.method_name.out)
 									response_text := fault.marshall
-								end	
+								end
 							else
 								-- construct fault response for invalid action operands
 								create fault.make_with_detail (Invalid_operands_for_service_action, " " + call.method_name.out)
@@ -120,7 +124,7 @@ feature -- Basic operations
 						-- construct fault response for invalid service
 						create fault.make_with_detail (Service_not_found, " " + service_name)
 						response_text := fault.marshall
-					end	
+					end
 				else
 					response_text := fault.marshall
 				end
@@ -147,11 +151,11 @@ feature -- Basic operations
 		end
 
 feature {NONE} -- Implementation
-	
+
 	valid_call: BOOLEAN
 			-- Flag indicating whether the request contains a valid
 			-- XMLRPC call.
-			
+
 	parse_call (req: GOA_HTTP_SERVLET_REQUEST) is
 			-- Parse XMLRPC call from request data. Will set 'valid_call' 
 			-- if the request contained a valid XMLRPC call. If an error is
@@ -165,7 +169,7 @@ feature {NONE} -- Implementation
 			create parser.make
 			create tree_pipe.make
 			parser.set_callbacks (tree_pipe.start)
-			parser.parse_from_string (req.content)		
+			parser.parse_from_string (req.content)
 			if parser.is_correct then
 				create call.unmarshall (tree_pipe.document.root_element)
 				if not call.unmarshall_ok then
@@ -178,17 +182,17 @@ feature {NONE} -- Implementation
 				-- create fault
 				create fault.make (Bad_payload_fault_code)
 				call := Void
-			end	
+			end
 		ensure
 			fault_exists_if_invalid: not valid_call implies fault /= Void
 		end
 
 	call: GOA_XRPC_CALL
 			-- Received call
-			
+
 	response: GOA_XRPC_RESPONSE
 			-- Response to send to client. Void if a fault occurred.
-			
+
 	fault: GOA_XRPC_FAULT
 			-- Fault to send to client. Void if a valid response was generated.
 
@@ -213,5 +217,5 @@ feature {NONE} -- Implementation
 		ensure
 			fault_initialised: fault /= Void and then fault.code = Assertion_failure
 		end
-		
+
 end -- class GOA_XMLRPC_SERVLET
