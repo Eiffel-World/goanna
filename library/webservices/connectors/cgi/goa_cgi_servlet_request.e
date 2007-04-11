@@ -18,17 +18,17 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 	GOA_CGI_VARIABLES
 		export
 			{NONE} all
 		end
-		
+
 	GOA_HTTP_UTILITY_FUNCTIONS
 		export
 			{NONE} all
 		end
-		
+
 	GOA_STRING_MANIPULATION
 		export
 			{NONE} all
@@ -38,7 +38,7 @@ inherit
 		export
 			{NONE} all
 		end
-	
+
 	KL_SHARED_STANDARD_FILES
 		export
 			{NONE} all
@@ -47,7 +47,7 @@ inherit
 create
 
 	make
-	
+
 feature {NONE} -- Initialisation
 
 	make (resp: GOA_CGI_SERVLET_RESPONSE) is
@@ -59,10 +59,16 @@ feature {NONE} -- Initialisation
 			create parameters.make (5)
 			parse_parameters
 		end
-	
+
 feature -- Access
 
 	get_parameter (name: STRING): STRING is
+			-- Returns the value of a request parameter
+		do
+			Result := clone (parameters.item (name).last)
+		end
+
+	get_multiple_parameter (name: STRING): DS_LINKED_LIST [STRING] is
 			-- Returns the value of a request parameter
 		do
 			Result := clone (parameters.item (name))
@@ -71,7 +77,7 @@ feature -- Access
 	get_parameter_names: DS_LINEAR [STRING] is
 			-- Return all parameter names
 		local
-			cursor: DS_HASH_TABLE_CURSOR [STRING, STRING]
+			cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [STRING], STRING]
 			array_list: DS_ARRAYED_LIST [STRING]
 		do
 			create array_list.make (parameters.count)
@@ -90,22 +96,31 @@ feature -- Access
 	get_parameter_values: DS_LINEAR [STRING] is
 			-- Return all parameter values
 		local
-			cursor: DS_HASH_TABLE_CURSOR [STRING, STRING]
+			cursor: DS_HASH_TABLE_CURSOR [DS_LINKED_LIST [STRING], STRING]
+			ll_cursor: DS_LINKED_LIST_CURSOR [STRING]
 			array_list: DS_ARRAYED_LIST [STRING]
 		do
-			create array_list.make (parameters.count)
+			create array_list.make (parameters.count + 10)
 			cursor := parameters.new_cursor
 			from
 				cursor.start
 			until
 				cursor.off
 			loop
-				array_list.force_last (clone (cursor.item))
+				ll_cursor := cursor.item.new_cursor
+				from
+					ll_cursor.start
+				until
+					ll_cursor.after
+				loop
+					array_list.force_last (clone (ll_cursor.item))
+					ll_cursor.forth
+				end
 				cursor.forth
 			end
 			Result := array_list
 		end
-	
+
 	get_header (name: STRING): STRING is
 			-- Get the value of the specified request header.
 		do
@@ -133,7 +148,7 @@ feature -- Access
 			end
 			Result := list
 		end
-		
+
 	get_header_names: DS_LINEAR [STRING] is
 			-- Get all header names.
 		local
@@ -166,7 +181,7 @@ feature -- Access
 			array_list.force_last (Http_cookie_var)
 			Result := array_list
 		end
-	
+
 feature -- Status report
 
 	has_parameter (name: STRING): BOOLEAN is
@@ -224,7 +239,7 @@ feature -- Status report
 			-- The host name of the server that received the request.
 		do
 			if has_header (Server_name_var) then
-				Result := get_header (Server_name_var)			
+				Result := get_header (Server_name_var)
 			else
 				Result := ""
 			end
@@ -244,22 +259,22 @@ feature -- Status report
 			-- The internet protocol (IP) address of the client that sent the request.
 		do
 			if has_header (Remote_addr_var) then
-				Result := get_header (Remote_addr_var)	
+				Result := get_header (Remote_addr_var)
 			else
 				Result := ""
 			end
-			
+
 		end
 
 	remote_host: STRING is
 			-- The fully qualified name of the client that sent the request, or the
 			-- IP address of the client if the name cannot be determined.
-		do	
+		do
 			if has_header (Remote_host_var) then
 				Result := get_header (Remote_host_var)
 			else
 				Result := ""
-			end		
+			end
 		end
 
 	is_secure: BOOLEAN is
@@ -269,7 +284,7 @@ feature -- Status report
 				Result := True
 			end
 		end
-		
+
 	has_header (name: STRING): BOOLEAN is
 			-- Does this request contain a header named 'name'?
 		do
@@ -281,10 +296,10 @@ feature -- Status report
 			-- for example, "BASIC" or "SSL" or Void if the servlet was not protected.
 		do
 			if has_header (Auth_type_var) then
-				Result := get_header (Auth_type_var)	
+				Result := get_header (Auth_type_var)
 			else
 				Result := ""
-			end		
+			end
 		end
 
 	cookies: DS_LINKED_LIST [GOA_COOKIE] is
@@ -308,7 +323,7 @@ feature -- Status report
 			end
 			Result := Session_manager.get_session (session_id)
 		end
-		
+
 	method: STRING is
 			-- The name of the HTTP method with which this request was made, for
 			-- example, GET, POST, or HEAD.
@@ -317,7 +332,7 @@ feature -- Status report
 				Result := get_header (Request_method_var)
 			else
 				Result := ""
-			end	
+			end
 		end
 
 	path_info: STRING is
@@ -325,10 +340,10 @@ feature -- Status report
 			-- when it made the request.
 		do
 			if has_header (Path_info_var) then
-				Result := get_header (Path_info_var)	
+				Result := get_header (Path_info_var)
 			else
 				Result := ""
-			end	
+			end
 		end
 
 	path_translated: STRING is
@@ -336,10 +351,10 @@ feature -- Status report
 			-- the query string translated to a real path.
 		do
 			if has_header (Path_translated_var) then
-				Result := get_header (Path_translated_var)	
+				Result := get_header (Path_translated_var)
 			else
 				Result := ""
-			end	
+			end
 		end
 
 	query_string: STRING is
@@ -347,7 +362,7 @@ feature -- Status report
 			-- Returns Void if no query string is sent.
 		do
 			if has_header (Query_string_var) then
-				Result := get_header (Query_string_var)	
+				Result := get_header (Query_string_var)
 			else
 				Result := ""
 			end
@@ -358,10 +373,10 @@ feature -- Status report
 			-- authenticated, or Void if the user has not been authenticated.
 		do
 			if has_header (Remote_user_var) then
-				Result := get_header (Remote_user_var)	
+				Result := get_header (Remote_user_var)
 			else
 				Result := ""
-			end		
+			end
 		end
 
 	servlet_path: STRING is
@@ -370,44 +385,44 @@ feature -- Status report
 			-- any extra path information or a query string.
 		do
 			if has_header (Script_name_var) then
-				Result := get_header (Script_name_var)	
+				Result := get_header (Script_name_var)
 			else
 				Result := ""
-			end	
+			end
 		end
-	
+
 	content: STRING is
 			-- Content data
 		do
 			debug ("CGI servlet request")
 				print ("Content entered%N")
-			end				
+			end
 			if has_header (Content_length_var) then
 				debug ("CGI servlet request")
 					print ("Found content length header%N")
-				end	
+				end
 				if internal_content = Void then
 					if content_length > 0 then
 						debug ("CGI servlet request")
 							print ("Content length > 0%N")
-						end	
+						end
 						-- TODO: check for errors
 						std.input.read_string (content_length)
 						internal_content := std.input.last_string
 						debug ("CGI servlet request")
 							print ("Internal content is: " + internal_content + "%N")
-						end							
+						end
 					else
 						debug ("CGI servlet request")
 							print ("No internal content 1%N")
-						end							
+						end
 						internal_content := ""
 					end
 				end
 			else
 				debug ("CGI servlet request")
 					print ("No internal content 2%N")
-				end					
+				end
 				internal_content := ""
 			end
 
@@ -417,28 +432,28 @@ feature -- Status report
 			else
 				Result := ""
 			end
-			
+
 		end
-		
+
 feature {CGI_SERVLET_REQUEST} -- Implementation
-	
+
 	internal_content: STRING
 			-- Content read from stdin
-			
+
 	internal_response: GOA_CGI_SERVLET_RESPONSE
 		-- Response object held so that session cookie can be set.
-		
+
 	session_id: STRING
 		-- Id of session. Void until session is bound by first call to get_session.
-		
+
 	internal_cookies: DS_LINKED_LIST [GOA_COOKIE]
 		-- Cached collection of request cookies
-		
-	parameters: DS_HASH_TABLE [STRING, STRING]
+
+	parameters: DS_HASH_TABLE [DS_LINKED_LIST [STRING], STRING]
 			-- Table of parameter values with support for multiple values per parameter name
 
 feature {NONE} -- Implementation
-				
+
 	parse_parameters is
 			-- Parse the query string or stdin data for parameters and
 			-- store in params structure.			
@@ -452,7 +467,7 @@ feature {NONE} -- Implementation
 			elseif method.is_equal ("POST") then
 				debug ("CGI servlet request")
 					print ("POST - parse content%N")
-				end	
+				end
 				string_to_process := clone (content)
 			else
 				-- not sure where the parameters will be for other request methods.
@@ -462,11 +477,11 @@ feature {NONE} -- Implementation
 				parse_parameter_string (string_to_process)
 			end
 		end
-	
+
 	parse_parameter_string (str: STRING) is
 			-- Parse the parameter string 'str' and build parameter structure.
 			-- Parameters are of the form 'name=value' separated by '&' with all
-			-- spaces and special characters encoded. An exception is an image map 
+			-- spaces and special characters encoded. An exception is an image map
 			-- coordinate pair that is of the form 'value,value'. Any amount of
 			-- whitespace may separate each token.
 		require
@@ -501,19 +516,22 @@ feature {NONE} -- Implementation
 				tokenizer.forth
 			end
 		end
-		
+
 	add_parameter (name, value: STRING) is
 			-- Set decoded 'value' for the parameter 'name' to the parameters structure.
-			-- Replace any existing parameter value with the same name.
+			-- Append to the list if the name already exists in the hashtable
 		do
 			debug ("query_string_parsing")
-				print (generator + ".add_parameter name = " 
-					+ quoted_eiffel_string_out (name) 
+				print (generator + ".add_parameter name = "
+					+ quoted_eiffel_string_out (name)
 					+ " value = " + quoted_eiffel_string_out (value) + "%R%N")
-			end	
-			parameters.force (value, name)
+			end
+			if not parameters.has (name) then
+				parameters.put (create {DS_LINKED_LIST [STRING]}.make, name)
+			end
+			parameters.item (name).put_last (value)
 		end
-	
+
 	parse_cookie_header is
 			-- Parse the cookie header, if it exists and construct the 'internal_cookies'
 			-- collection.
@@ -553,7 +571,7 @@ feature {NONE} -- Implementation
 						value.right_adjust
 						-- remove double quotes if they wrap the value
 						if value.item (1) = '%"' then
-							value := value.substring (2, value.count - 1)							
+							value := value.substring (2, value.count - 1)
 						end
 						if not tester.is_reserved_cookie_word (name) then
 							create new_cookie.make (name, value)
@@ -561,7 +579,7 @@ feature {NONE} -- Implementation
 						debug ("cookie_parsing")
 							print (generator + ".parse_cookie_header new_cookie = "
 								+ quoted_eiffel_string_out (new_cookie.header_string) + "%R%N")
-						end		
+						end
 						internal_cookies.force_last (new_cookie)
 					else
 						-- bad cookie, ignore it
@@ -570,12 +588,12 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
-		
+
 	tester: GOA_COOKIE is
 			-- Used to test validity of values
 		once
 			create result.make ("test", "test")
 		end
-		
-	
+
+
 end -- class GOA_CGI_SERVLET_REQUEST
