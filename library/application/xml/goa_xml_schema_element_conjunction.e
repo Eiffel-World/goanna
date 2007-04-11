@@ -45,8 +45,17 @@ feature {GOA_XML_ELEMENT_SCHEMA, GOA_XML_DEERRED_SCHEMA_ELEMENT} -- Query
 			end
 
 			if Result then
-				if not the_fragment.after and is_multiple_element then
-					recursion_result := is_valid_content_fragment (the_fragment)
+				if the_fragment.after then
+					-- move the cursor of content to the first element which is not optional
+					-- since if only optional elements remain, the conjunction was also complete
+					from
+					until content.after or else content.item_for_iteration.is_required
+					loop content.forth
+					end
+				else
+					if is_multiple_element then
+						recursion_result := is_valid_content_fragment (the_fragment)
+					end
 				end
 			else
 				-- restore the_fragment since we couldn't match the conjunction
