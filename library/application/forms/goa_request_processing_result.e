@@ -13,7 +13,7 @@ inherit
 
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	GOA_TEXT_PROCESSING_FACILITIES
-	SHARED_REQUEST_PARAMETERS
+	GOA_SHARED_REQUEST_PARAMETERS
 
 feature -- Attributes
 
@@ -265,7 +265,7 @@ feature {GOA_USER_ERROR_MESSAGE} -- Parameter Validity
 			not_all_parameters_are_valid: not all_parameters_are_valid
 		end
 
-feature {GOA_DISPLAYABLE_SERVLET} -- Generating Servlet
+feature {GOA_APPLICATION_SERVLET} -- Generating Servlet
 
 	set_generating_servlet (new_generating_servlet: GOA_DISPLAYABLE_SERVLET) is
 			-- Set generating_servlet to new_generating_servlet
