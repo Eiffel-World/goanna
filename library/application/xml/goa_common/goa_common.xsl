@@ -13,6 +13,8 @@
   exclude-result-prefixes="goa_common"
   >
 
+<xsl:key name="popup_hyperlink" match="goa_common:popup_hyperlink" use="'A'" />
+<xsl:key name="tool_tip" match="goa_common:tool_tip"  use="'A'" />
 
 <xsl:template match="goa_common:division">
 
@@ -327,7 +329,7 @@
 
 <xsl:template name="goa_common_scripts">
 
-	<xsl:if test="//goa_common:popup_hyperlink">
+	<xsl:if test="key ('popup_hyperlink', 'A')">
 	
 		<!-- Script that opens new window for popup hyperlinks -->
 	
@@ -345,7 +347,7 @@
 		</xsl:element>
 	</xsl:if>
 
-	<xsl:if test="boolean (//goa_common:tool_tip)">
+	<xsl:if test="boolean (key ('tool_tip', 'A'))">
 
 	  <!-- Scripts that display/hide tool tips -->
 
