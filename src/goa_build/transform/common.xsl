@@ -360,7 +360,7 @@
 				<xsl:text>			if </xsl:text>
 				<xsl:apply-templates select="." mode="choice_name" />
 				<xsl:text> /= xml_null_code then&#xA;</xsl:text>
-				<xsl:text>				writer.set_attribute (attribute_name_for_code (</xsl:text>
+				<xsl:text>				writer.add_attribute (attribute_name_for_code (</xsl:text>
 				<xsl:apply-templates select="." mode="choice_name" />
 				<xsl:text>), </xsl:text>
 				<xsl:apply-templates select="." mode="choice_value" />
@@ -371,7 +371,7 @@
 				<xsl:text>			if </xsl:text>
 				<xsl:apply-templates select="." mode="attribute_value_variable" />
 				<xsl:text> /= Void then&#xA;</xsl:text>
-				<xsl:text>				writer.set_attribute (attribute_name_for_code (</xsl:text>
+				<xsl:text>				writer.add_attribute (attribute_name_for_code (</xsl:text>
 				<xsl:value-of select="$attribute_code" />
 				<xsl:text>), </xsl:text>
 				<xsl:apply-templates select="." mode="attribute_value_variable" />
@@ -397,7 +397,7 @@
 					<xsl:apply-templates select="." mode="choice_name" />
 					<xsl:text>.upper&#xA;</xsl:text>
 					<xsl:text>				loop&#xA;</xsl:text>
-					<xsl:text>					writer.set_attribute (attribute_name_for_code (</xsl:text>
+					<xsl:text>					writer.add_attribute (attribute_name_for_code (</xsl:text>
 					<xsl:apply-templates select="." mode="choice_name" />
 					<xsl:text> @ name_index), </xsl:text>
 					<xsl:apply-templates select="." mode="choice_value" />
@@ -420,7 +420,7 @@
 					<xsl:apply-templates select="." mode="attribute_value_variable" />
 					<xsl:text>.upper&#xA;</xsl:text>
 					<xsl:text>				loop&#xA;</xsl:text>
-					<xsl:text>					writer.set_attribute (attribute_name_for_code (</xsl:text>
+					<xsl:text>					writer.add_attribute (attribute_name_for_code (</xsl:text>
 					<xsl:apply-templates select="." mode="attribute_code" />
 					<xsl:text>), </xsl:text>
 					<xsl:apply-templates select="." mode="attribute_value_variable" />
