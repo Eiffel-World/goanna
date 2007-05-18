@@ -425,8 +425,6 @@ feature -- Status report
 				end
 				internal_content := ""
 			end
-
--- WASHERE
 			if internal_content /= Void then
 				Result := internal_content
 			else
@@ -527,7 +525,7 @@ feature {NONE} -- Implementation
 					+ " value = " + quoted_eiffel_string_out (value) + "%R%N")
 			end
 			if not parameters.has (name) then
-				parameters.put (create {DS_LINKED_LIST [STRING]}.make, name)
+				parameters.force (create {DS_LINKED_LIST [STRING]}.make, name)
 			end
 			parameters.item (name).put_last (value)
 		end
@@ -561,14 +559,22 @@ feature {NONE} -- Implementation
 					tokenizer.off
 				loop
 					pair := tokenizer.item
-					i := index_of_char (pair, '=', 1)
-					if i > 0 then
+					if pair.is_empty then
+						i := 0
+					else
+						i := index_of_char (pair, '=', 1)
+					end
+					if i > 1 then
 						name := pair.substring (1, i - 1)
 						name.left_adjust
 						name.right_adjust
-						value := pair.substring (i + 1, pair.count)
-						value.left_adjust
-						value.right_adjust
+						if i = pair.count then
+							value := ""
+						else
+							value := pair.substring (i + 1, pair.count)
+							value.left_adjust
+							value.right_adjust
+						end
 						-- remove double quotes if they wrap the value
 						if value.item (1) = '%"' then
 							value := value.substring (2, value.count - 1)
@@ -594,6 +600,7 @@ feature {NONE} -- Implementation
 		once
 			create result.make ("test", "test")
 		end
+
 
 
 end -- class GOA_CGI_SERVLET_REQUEST
