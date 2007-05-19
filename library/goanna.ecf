@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?><system xmlns="http://www.eiffel.com/developers/xml/configuration-1-1-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-1-0 http://www.eiffel.com/developers/xml/configuration-1-1-0.xsd" name="goanna" uuid="7643A549-5318-9847-73B5-87EF12EF9742" library_target="goanna">
 	<target name="goanna">
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="eposix" location="$EPOSIX\src\eposix.ecf" readonly="true"/>
+		<library name="eposix" location="$EPOSIX\eposix.ecf" readonly="true"/>
 		<library name="gobo" location="$ISE_LIBRARY\library\gobo\gobo.ecf" readonly="true"/>
 		<library name="log4e" location="$LOG4E\library\log4e.ecf" readonly="true"/>
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
