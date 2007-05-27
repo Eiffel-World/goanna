@@ -7,7 +7,7 @@ indexing
 	License: "Eiffel Forum License Version 2 (see forum.txt)"
 
 class
-	GOA_EMAIL_STATUS_FACILIITES
+	GOA_EMAIL_STATUS_FACILITIES
 
 feature
 	
@@ -40,4 +40,4 @@ feature
 		end
 		
 
-end -- class GOA_EMAIL_STATUS_FACILIITES
+end -- class GOA_EMAIL_STATUS_FACILITIES
