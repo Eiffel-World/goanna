@@ -15,7 +15,7 @@ inherit
 	KL_SHARED_EXCEPTIONS
 	KL_SHARED_FILE_SYSTEM
 	KL_SHARED_OPERATING_SYSTEM
-	KL_EXECUTION_ENVIRONMENT
+	KL_SHARED_EXECUTION_ENVIRONMENT
 	XM_SHARED_CATALOG_MANAGER
 	KL_IMPORTED_STRING_ROUTINES
 
@@ -133,11 +133,11 @@ feature -- Initialization
 					io.put_string ("cannot be read%N" + help_usage)
 				elseif command_line_includes_eiffeldirectory_switch and then not exactly_one_eiffeldirectory_argument then
 					io.put_string ("-e (--eiffeldirectory) may contain only one argument.  Enclosing a path containing spaces may work%N" + help_usage)
-				elseif command_line_includes_eiffeldirectory_switch and then not file_system.directory_exists (interpreted_string(eiffeldirectory_argument)) then
+				elseif command_line_includes_eiffeldirectory_switch and then not file_system.directory_exists (execution_environment.interpreted_string(eiffeldirectory_argument)) then
 					io.put_string ("directory " + eiffeldirectory_argument + " specified in -e (--eiffeldirectory) argument does not exist%N" + help_usage)
 				elseif command_line_includes_datadirectory_switch and then not exactly_one_datadirectory_argument then
 					io.put_string ("-d (--datadirectory) may contain only one argument.  Enclosing a path containing spaces may work%N" + help_usage)
-				elseif command_line_includes_datadirectory_switch and then not file_system.directory_exists (interpreted_string(datadirectory_argument)) then
+				elseif command_line_includes_datadirectory_switch and then not file_system.directory_exists (execution_environment.interpreted_string(datadirectory_argument)) then
 					io.put_string ("directory " + datadirectory_argument + " specified in -d (--datadirectory) argument does not exist%N" + help_usage)
 				elseif command_line_includes_author_switch and then not exactly_one_author_argument then
 					io.put_string ("Please enclose the -a (--author) argument in quotes%N" + help_usage)
@@ -161,35 +161,35 @@ feature -- Initialization
 						target_data_directory_name := file_system.current_working_directory
 					end
 					if command_line_includes_parameters or command_line_includes_goa_switch then
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/common.xsl"), "common.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/attribute_values.xsl"), "attribute_values.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/schema_codes.xsl"), "schema_codes.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/validating_xml_writer.xsl"), "validating_xml_writer.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/deferred_xml_writer.xsl"), "deferred_xml_writer.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_1.xsl"), "flatten_1.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_2.xsl"), "flatten_2.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/flatten_3.xsl"), "flatten_3.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/include_list.xsl"), "include_list.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/xsl_include_list.xsl"), "xsl_include_list.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/src/goa_build/transform/imported.xsl"), "imported.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.rnc"), "goa_common.rnc")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/common.xsl"), "common.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/attribute_values.xsl"), "attribute_values.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/schema_codes.xsl"), "schema_codes.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/validating_xml_writer.xsl"), "validating_xml_writer.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/deferred_xml_writer.xsl"), "deferred_xml_writer.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/flatten_1.xsl"), "flatten_1.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/flatten_2.xsl"), "flatten_2.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/flatten_3.xsl"), "flatten_3.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/include_list.xsl"), "include_list.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/xsl_include_list.xsl"), "xsl_include_list.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/src/goa_build/transform/imported.xsl"), "imported.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.rnc"), "goa_common.rnc")
 						current_directory_has_goa_common_xsl := file_system.file_exists ("goa_common.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.xsl"), "goa_common.xsl")
-						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.css"), "goa_common.css")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.xsl"), "goa_common.xsl")
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.css"), "goa_common.css")
 					end
 					if not command_line_includes_norefresh_switch then
 						if command_line_includes_verbose_switch then
 							io.put_string ("Refreshing Goanna Files%N")
 						end
-						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.xsl"), file_system.pathname (target_data_directory_name, "goa_common.xsl"))
-						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_redirect/goa_redirect.xsl"), file_system.pathname (target_data_directory_name, "goa_redirect.xsl"))
-						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_page/goa_page.xsl"), file_system.pathname (target_data_directory_name, "goa_page.xsl"))
-						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_redirect/goa_redirect.frng"), file_system.pathname (target_data_directory_name, "goa_redirect.frng"))
-						file_system.copy_file (interpreted_string ("$GOANNA/library/application/xml/goa_page/goa_page.frng"), file_system.pathname (target_data_directory_name, "goa_page.frng"))
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/library/application/xml/goa_common/goa_common.xsl"), file_system.pathname (target_data_directory_name, "goa_common.xsl"))
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/library/application/xml/goa_redirect/goa_redirect.xsl"), file_system.pathname (target_data_directory_name, "goa_redirect.xsl"))
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/library/application/xml/goa_page/goa_page.xsl"), file_system.pathname (target_data_directory_name, "goa_page.xsl"))
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/library/application/xml/goa_redirect/goa_redirect.frng"), file_system.pathname (target_data_directory_name, "goa_redirect.frng"))
+						file_system.copy_file (execution_environment.interpreted_string ("$GOANNA/library/application/xml/goa_page/goa_page.frng"), file_system.pathname (target_data_directory_name, "goa_page.frng"))
 					end
 					if command_line_includes_parameters or command_line_includes_goa_switch then
 						-- Read value of environment variable TRANG_INVOCATION
-						trang_invocation := variable_value ("TRANG_INVOCATION")
+						trang_invocation := execution_environment.variable_value ("TRANG_INVOCATION")
 						if trang_invocation = Void then
 							trang_invocation := "trang"
 						end
@@ -230,7 +230,7 @@ feature -- Initialization
 							file_names.after
 						loop
 							file_name := file_names.item_for_iteration
-							expanded_file_name := interpreted_string (file_name)
+							expanded_file_name := execution_environment.interpreted_string (file_name)
 							if command_line_includes_verbose_switch then
 								io.put_string ("Processing file " + expanded_file_name + "%N")
 							end
@@ -245,7 +245,7 @@ feature -- Initialization
 							schema_codes_transformer.set_string_parameter (namespace_prefix, "prefix")
 							attribute_values_transformer.set_string_parameter (namespace_prefix, "prefix")
 							-- Read contents of file
-							rnc_input_file := file_system.new_input_file (interpreted_string(file_name))
+							rnc_input_file := file_system.new_input_file (execution_environment.interpreted_string(file_name))
 							rnc_file_length := rnc_input_file.count
 							rnc_input_file.open_read
 							rnc_input_file.read_string (rnc_file_length)
@@ -815,7 +815,7 @@ feature {NONE} -- Implementation
 				Result := STRING_.cloned_string(stylesheet_declaration_matcher.captured_substring (0))
 				Result.keep_tail (Result.count - Result.index_of ('%"', 1))
 				Result.keep_head (Result.count - 1)
-				Result := interpreted_string (Result)
+				Result := execution_environment.interpreted_string (Result)
 			end
 		end
 
@@ -848,7 +848,7 @@ feature {NONE} -- Implementation
 				file_names.after
 			loop
 				file_name := file_names.item_for_iteration
-				if not file_system.is_file_readable (interpreted_string(file_name)) then
+				if not file_system.is_file_readable (execution_environment.interpreted_string(file_name)) then
 					Result.force_last (file_name)
 				end
 				file_names.forth
@@ -985,7 +985,7 @@ feature {NONE} -- Command Line Arguments
 			command_line_includes_database_argument: command_line_includes_datadirectory_switch
 			exactly_one_datadirectory_argument: exactly_one_datadirectory_argument
 		once
-			Result := interpreted_string (datadirectory_option.parameters.item (1))
+			Result := execution_environment.interpreted_string (datadirectory_option.parameters.item (1))
 		end
 
 	command_line_includes_goa_switch: BOOLEAN is
