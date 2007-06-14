@@ -38,7 +38,7 @@ feature -- Initialization
 			padding_length := padding
 		end
 
-	write_ok: BOOLEAN	
+	write_ok: BOOLEAN
 
 feature -- Basic operations
 
@@ -55,7 +55,7 @@ feature -- Basic operations
 			debug ("fcgi_protocol")
 				io.put_string (generating_type + ".write + %N")
 			end
-			
+
 			create enc_data.make (raw_content_data.count + padding_length)
 			enc_data.append_string (raw_content_data)
 			if padding_length > 0 then
@@ -64,7 +64,7 @@ feature -- Basic operations
 			end
 --			io.put_string ("FAST_CGI_RAW_BODY.write bytes to send: " + enc_data.count.out + "%N")
 --			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%N")
-			--			io.put_string ("Bytes to send: " + enc_data.count.out + 
+			--			io.put_string ("Bytes to send: " + enc_data.count.out +
 			--			"%N")
 			from
 				bytes_to_send := enc_data.count
@@ -74,15 +74,14 @@ feature -- Basic operations
 			loop
 				socket.put_string (enc_data)
 				bytes_to_send := bytes_to_send - socket.last_written
-				if socket.last_written = 0 then
-					retries := retries + 1
-					millisleep (10)
-					write_ok := retries < 5
+				write_ok := socket.errno.first_value = 0
+				if bytes_to_send > 0 then
+					enc_data.keep_tail (bytes_to_send)
 				end
 			end
 --			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
 			debug("fcgi_protocol")
-				--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + 
+				--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) +
 				--				"%R%N")
 				io.put_string ("write_ok: " + write_ok.out + "%N")
 				io.put_string (generating_type + ".write - finished%N")

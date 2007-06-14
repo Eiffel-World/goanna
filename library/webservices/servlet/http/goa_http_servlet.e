@@ -17,7 +17,7 @@ inherit
 create
 
 	init
-	
+
 feature -- Initialization
 
 	init (config: GOA_SERVLET_CONFIG) is
@@ -40,7 +40,7 @@ feature -- Basic operations
 			response_exists: resp /= Void
 		do
 		end
-	
+
 	do_head (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Called to allow the servlet to handle a HEAD request.
 		require
@@ -48,7 +48,7 @@ feature -- Basic operations
 			response_exists: resp /= Void
 		do
 		end
-		
+
 	do_post (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Called to allow the servlet to handle a POST request.
 			-- Default: do nothing
@@ -57,7 +57,7 @@ feature -- Basic operations
 			response_exists: resp /= Void
 		do
 		end
-		
+
 	service (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Handle a request by dispatching it to the correct method handler.
 		local
@@ -74,6 +74,9 @@ feature -- Basic operations
 				resp.send_error (Sc_not_implemented)
 			end
 			resp.flush_buffer
+			if not resp.write_ok then
+				log_write_error (resp)
+			end
 		rescue
 			log_service_error
 		end
@@ -84,17 +87,27 @@ feature -- Basic operations
 			-- up any resources that are being held.
 		do
 		end
-		
+
 	log_service_error is
 			-- Called if service routine generates an exception; may be redefined by descendents
 		do
-			
+			-- Nothing by default
 		end
-		
+
+	log_write_error (the_response: GOA_HTTP_SERVLET_RESPONSE) is
+			-- Called if there was a problem sending response to the client
+			-- May be redefined by descendents
+		require
+			valid_the_response: the_response /= Void
+		do
+			-- Nothing by default
+		end
+
+
 feature {NONE} -- Implementation
-			
+
 	Method_get: STRING is "GET"
 	Method_post: STRING is "POST"
 	Method_head: STRING is "HEAD"
-	
+
 end -- class GOA_HTTP_SERVLET

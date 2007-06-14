@@ -11,19 +11,19 @@ indexing
 class GOA_CGI_SERVLET_RESPONSE
 
 inherit
-	
+
 	GOA_HTTP_SERVLET_RESPONSE
 
 	GOA_HTTP_UTILITY_FUNCTIONS
 		export
 			{NONE} all
-		end	
+		end
 
 	KL_SHARED_STANDARD_FILES
 		export
 			{NONE} all
 		end
-		
+
 create
 	make
 
@@ -50,13 +50,13 @@ feature -- Access
 		do
 			Result := headers.has (name)
 		end
-	
+
 feature -- Status report
-		
+
 	is_committed: BOOLEAN
 			-- Has the response been committed? A committed response has already
 			-- had its status code and headers written.
-	
+
 feature -- Status setting
 
 	set_buffer_size (size: INTEGER) is
@@ -64,7 +64,7 @@ feature -- Status setting
 			--| If the buffer has not already been created, this routine will do so.
 		do
 			if content_buffer = Void then
-				initial_buffer_size := size				
+				initial_buffer_size := size
 			else
 				content_buffer.resize (size)
 			end
@@ -132,7 +132,7 @@ feature -- Status setting
 		do
 			set_status_message (sc, status_code_message (sc))
 		end
-	
+
 	set_status_message (sc: INTEGER; message: STRING) is
 			-- Set the status code to 'sc' with 'message' as the text message to
 			-- send to the client.			
@@ -140,7 +140,7 @@ feature -- Status setting
 			status := sc
 			status_message := message
 		end
-	
+
 feature -- Basic operations
 
 	flush_buffer is
@@ -219,52 +219,54 @@ feature -- Basic operations
 			write_headers
 			debug ("response_headers")
 				print ("Sending a temorary redirect response - headers written%N")
-			end			
+			end
 			write (page)
 			debug ("response_headers")
 				print ("Sending a temorary redirect response - page written%N")
-			end						
+			end
 		end
-	
+
 	send (data: STRING) is
-			-- Send 'data' to the client. The data is buffered for writing. It will not be 
-			-- physically sent to the client until 'flush_buffer' is called. 
+			-- Send 'data' to the client. The data is buffered for writing. It will not be
+			-- physically sent to the client until 'flush_buffer' is called.
 		do
 			-- keep extending the buffer if needed. We do not periodically send it until flush is called
 			-- so that we can determine the correct content length.
 			if content_buffer = Void then
-				create content_buffer.make (initial_buffer_size)			
+				create content_buffer.make (initial_buffer_size)
 			end
 			content_buffer.append_string (data)
 		end
-		
+
+feature {GOA_APPLICATION_SERVLET} -- Exported to debug connection reset by peer error
+
+	content_buffer: STRING
+		-- Buffer for writing output for response. Not used when error or redirect
+		-- pages are sent. Created on demand
+
 feature {NONE} -- Implementation
-			
+
 	content_length: INTEGER
 		-- The length of the content that will be sent with this response.
-	
+
 	Default_buffer_size: INTEGER is 4096
 		-- Default size of output buffer
-	
+
 	initial_buffer_size: INTEGER
 		-- Size of buffer to create.
-				
-	content_buffer: STRING
-		-- Buffer for writing output for response. Not used when error or redirect 
-		-- pages are sent. Created on demand
-		
+
 	status: INTEGER
 		-- The result status that will be send with this response.
-	
+
 	status_message: STRING
 		-- The status message. Void if none.
-			
+
 	cookies: DS_LINKED_LIST [GOA_COOKIE]
 		-- The cookies that will be sent with this response.
-		
+
 	headers: DS_HASH_TABLE [DS_LINKED_LIST [STRING], STRING]
 		-- The headers that will be sent with this response.
-						
+
 	build_error_page (sc: INTEGER; msg: STRING): STRING is
 			-- Build a standard error page for status code 'sc' and message 'msg'
 		require
@@ -280,11 +282,11 @@ feature {NONE} -- Implementation
 			Result.append_string ("</P>")
 			Result.append_string ("</BODY></HTML>")
 		end
-		
+
 	build_redirect_page (location: STRING): STRING is
 			-- Build a temporary redirect page to redirect to 'location'
 		require
-			location_exists: location /= Void			
+			location_exists: location /= Void
 		do
 			create Result.make (100)
 			Result.append_string ("<HTML><HEAD><TITLE>Document Has Moved</TITLE></HEAD>")
@@ -296,7 +298,7 @@ feature {NONE} -- Implementation
         	Result.append_string ("</A><P>")
         	Result.append_string ("</BODY></HTML>")
 		end
-			
+
 	build_headers: STRING is
 			-- Build string representation of headers suitable for sending as a response.			
 		local
@@ -330,7 +332,7 @@ feature {NONE} -- Implementation
 				print (Result)
 			end
 		end
-	
+
 	set_default_headers is
 			-- Set default headers for all responses including the Server and Date headers.	
 		do
@@ -343,7 +345,7 @@ feature {NONE} -- Implementation
 		end
 
 	Expired_date: STRING is "Tue, 01-Jan-1970 00:00:00 GMT"
-	
+
 	set_cookie_headers is
 			-- Add 'Set-Cookie' header for cookies. Add a separate 'Set-Cookie' header
 			-- for each new cookie.
@@ -358,7 +360,7 @@ feature {NONE} -- Implementation
 					add_header ("Set-Cookie", cookies.item_for_iteration.header_string)
 					debug ("cookie_parsing")
 						print (generator + ".set_cookie_header value = "
-							+ quoted_eiffel_string_out (cookies.item_for_iteration.header_string) 
+							+ quoted_eiffel_string_out (cookies.item_for_iteration.header_string)
 							+ "%R%N")
 					end
 					cookies.forth
@@ -368,11 +370,11 @@ feature {NONE} -- Implementation
 				set_header ("Expires", Expired_date)
 			end
 		end
-	
+
 	write_headers is
 			-- Write the response headers to the output stream.
 		require
-			not_committed: not is_committed	
+			not_committed: not is_committed
 		do
 			-- NOTE: There is no need to send the HTTP status line because
 			-- the FastCGI protocol does it for us.
@@ -384,7 +386,7 @@ feature {NONE} -- Implementation
 		ensure
 			is_committed: is_committed
 		end
-	
+
 	write (data: STRING) is
 			-- Write 'data' to the output stream for this response
 		require
@@ -398,5 +400,5 @@ feature {NONE} -- Implementation
 
 	latin1: STRING is "; charset=ISO-8859-1"
 			-- Define the Latin-1 character set.
-	
+
 end -- class GOA_CGI_SERVLET_RESPONSE

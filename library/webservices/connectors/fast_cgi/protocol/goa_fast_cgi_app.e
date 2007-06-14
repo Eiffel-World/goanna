@@ -22,22 +22,70 @@ inherit
 feature -- Basic operations
 
 	run is
-			-- Read requests as they are received and process each by calling
-			-- process_request
+			-- Read, process, and finish requests
+		local
+			request_read, ending_listening: BOOLEAN
 		do
-			from
-			until
-				accept < 0
-			loop
-				process_request
+			if not ending_listening then
+				initialize_listening
+				retries := retries + 1
+				from
+				until
+					end_application or max_retries_exceeded
+				loop
+					request_read := accept_request
+					if request_read then
+						process_request
+					else
+						initialize_listening
+						retries := retries + 1
+					end
+					finish
+				end
+				ending_listening := True
+				end_listening
+			end
+			if max_retries_exceeded then
+				error (Servlet_app_log_category, "Application ended because GOA_FAST_CGI_APP.max_retries_exceeded")
 			end
 		rescue
-			if not field_exception then
+			if not ending_listening and not field_exception then
 				error (Servlet_app_log_category, "Uncaught exception, code: " + Exceptions.exception.out + ", retry not requested, so exiting...")
 			else
 				retry
 			end
 		end
+
+	max_retries_exceeded: BOOLEAN is
+			-- Have we already retried/re-initialized listening too many times
+			-- If we are in a loop that is generating errors or we simply can't listen
+			-- Then bail instead of continuing forever and filling the server logs
+		do
+			Result := retries > max_retries
+		end
+
+
+	retries: INTEGER
+		-- The number of times run has retried or called initialize_listening
+
+	max_retries: INTEGER is
+		-- The maximum number of times application will retry
+		once
+			Result := 100
+		end
+
+
+	set_end_application is
+			-- Set end_application to true
+		do
+			end_application := True
+		ensure
+			end_application: end_application
+		end
+
+
+	end_application: BOOLEAN
+			-- Should we stop running this application?
 
 	process_request is
 			-- Process a request.

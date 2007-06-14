@@ -35,13 +35,12 @@ feature -- Initialization
 			-- Clear all request fields	
 		do
 			socket := Void
-			read_ok := False
-			write_ok := False
+			read_ok := True
+			write_ok := True
 			app_status := 0
 			num_writers := 0
 			failed := False
 			create parameters.make (20)
---			io.put_string ("============================================  Request Created%N")
 		end
 
 feature -- Access
@@ -50,7 +49,7 @@ feature -- Access
 		-- Did this request fail?
 
 	socket: ABSTRACT_TCP_SOCKET
-		-- The request communication socket
+		-- The socket used to communicate with fastcgi
 
 	read_ok: BOOLEAN
 		-- Was the last read operation successful?
@@ -60,8 +59,6 @@ feature -- Access
 
 	request_id: INTEGER
 		-- Request id. Zero for management request.
-
-	keep_connection: BOOLEAN
 
 	role: INTEGER
 
@@ -85,12 +82,6 @@ feature -- Access
 			-- Table of parameters passed to this request.
 
 	raw_stdin_content: STRING
-
-	broken_pipe: BOOLEAN is
-			-- Was the last error for the serving socket a broken pipe?
-		do
-			Result := socket.errno.value = signal_pipe
-		end
 
 feature -- Status setting
 
@@ -116,7 +107,6 @@ feature -- Basic operations
 				print (generator + ".read%R%N")
 			end
 			from
-				read_ok := True
 				stdin_records_done := False
 				param_records_done := False
 			until
@@ -129,7 +119,9 @@ feature -- Basic operations
 				end
 			end
 			-- extract parameters
-			process_parameter_raw_data
+			if read_ok then
+				process_parameter_raw_data
+			end
 			debug ("fcgi_protocol")
 				print (generator + ".read - finished.%R%N")
 			end
@@ -151,6 +143,7 @@ feature -- Basic operations
 			-- split into chunks 65535 bytes or less.
 			from
 				offset := 1
+				write_ok := socket.errno.first_value = 0
 			until
 				offset > str.count
 			loop
@@ -159,7 +152,9 @@ feature -- Basic operations
 				create record_header.make (version, request_id, Fcgi_stderr, bytes_to_send, 0)
 				create record_body.make (str.substring (offset, offset + bytes_to_send - 1), 0)
 				record_header.write (socket)
-				record_body.write (socket)
+				if write_ok then
+					record_body.write (socket)
+				end
 				offset := offset + 65535
 			end
 			-- end stderr stream record
@@ -175,28 +170,25 @@ feature -- Basic operations
 		require
 			socket_exists: socket /= Void
 			valid_socket: socket.is_open
+			write_ok: write_ok
 		local
 			record_header: GOA_FAST_CGI_RECORD_HEADER
 			record_body: GOA_FAST_CGI_RAW_BODY
 			offset, bytes_to_send: INTEGER
 			body_string: STRING
---			now: DATE_TIME
 		do
---			io.put_string ("FAST_CGI_REQUEST.write_stdout Starting...%N")
---			io.put_string ("Data Length: " + str.count.out + "%N")
 			debug ("fcgi_protocol")
 				print (generator + ".write_stdout%R%N")
+				print ("Data Length: " + str.count.out + "%N")
 			end
 			-- split into chunks 65535 bytes or less.
 			from
 				offset := 1
 			until
-				offset > str.count
+				offset > str.count or not write_ok
 			loop
 				bytes_to_send := (65535).min (str.count - (offset - 1))
---				io.put_string (generator + "Bytes to send: " + bytes_to_send.out + "%N")
 				-- create and send stdout stream record
-
 				create record_header.make (version, request_id, Fcgi_stdout, bytes_to_send, 0)
 				debug ("fcgi_protocol")
 					body_string := str.substring (offset, offset + bytes_to_send - 1)
@@ -204,29 +196,30 @@ feature -- Basic operations
 					print ("body_string: " + body_string + "%R%N")
 				end
 				create record_body.make (str.substring (offset, offset + bytes_to_send - 1), 0)
---				io.put_string ("FAST_CGI_REQUEST.write_stdout Sending Header...%N")
 				record_header.write (socket)
---				io.put_string ("FAST_CGI_REQUEST.write_stdout Sending Body...%N")
-				record_body.write (socket)
+				write_ok := record_header.write_ok
+				if write_ok then
+					record_body.write (socket)
+					write_ok := record_body.write_ok
+				end
+
 				offset := offset + 65535
 			end
 			-- end stdout stream record
 			create record_header.make (version, request_id, Fcgi_stdout, 0, 0)
---			io.put_string ("FAST_CGI_REQUEST.write_stdout Sending End of Request Header...%N")
-			record_header.write (socket)
+			if write_ok then
+				record_header.write (socket)
+			end
+			write_ok := record_header.write_ok
 			debug ("fcgi_protocol")
 				print (generator + ".write_stdout - finished%R%N")
 			end
---			io.put_string ("FAST_CGI_REQUEST.write_stdout finished.%N")
---			create now.make_now
---			io.put_string ("Finished {FAST_CGI_REQUEST}.write_std_out: " + now.out + "%N")
 		end
 
 	end_request is
 			-- Notify the web server that this request has completed.
 		require
 			socket_exists: socket /= Void
-			valid_socket: socket.is_open
 		local
 			record_header: GOA_FAST_CGI_RECORD_HEADER
 			record_body: GOA_FAST_CGI_END_REQUEST_BODY
@@ -235,11 +228,15 @@ feature -- Basic operations
 				print (generator + ".end_request%R%N")
 			end
 			-- send end request record
-			create record_header.make (version, request_id, Fcgi_end_request,
-				Fcgi_end_req_body_len, 0)
-			create record_body.make (Fcgi_request_complete, 0)
-			record_header.write (socket)
-			record_body.write (socket)
+			if write_ok then
+				create record_header.make (version, request_id, Fcgi_end_request,
+					Fcgi_end_req_body_len, 0)
+				create record_body.make (Fcgi_request_complete, 0)
+				record_header.write (socket)
+				if record_header.write_ok then
+					record_body.write (socket)
+				end
+			end
 			socket.close
 			debug ("fcgi_protocol")
 				print (generator + ".end_request - finished%R%N")

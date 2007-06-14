@@ -39,7 +39,7 @@ feature -- Initialization
 			valid_socket: socket.is_open
 		local
 			raw_padding: STRING
-			bytes_to_read: INTEGER
+			bytes_to_read, bytes_read: INTEGER
 		do
 			read_ok := True
 			from
@@ -50,19 +50,22 @@ feature -- Initialization
 			loop
 				socket.read_string (bytes_to_read)
 				raw_content_data.append (socket.last_string)
-				bytes_to_read := bytes_to_read - socket.last_read
-				read_ok := socket.last_read > 0
+				bytes_read := socket.last_string.count
+				bytes_to_read := bytes_to_read - bytes_read
+				read_ok := socket.errno.first_value = 0 and then bytes_read > 0
 			end
 			from
 				raw_padding := ""
 				bytes_to_read := header.padding_length
+				bytes_read := 0
 			until
 				bytes_to_read <= 0 or not read_ok
 			loop
 				socket.read_string (bytes_to_read)
+				bytes_read := socket.last_string.count
 				raw_padding.append (socket.last_string)
-				bytes_to_read := bytes_to_read - socket.last_read
-				read_ok := socket.last_read > 0
+				bytes_to_read := bytes_to_read - bytes_read
+				read_ok := socket.errno.first_value = 0 and then bytes_read > 0
 			end
 		end
 

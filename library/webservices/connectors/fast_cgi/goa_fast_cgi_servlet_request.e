@@ -18,11 +18,11 @@ inherit
 		redefine
 			has_header, get_header, get_header_names, internal_response, content
 		end
-		
+
 create
 
 	make
-	
+
 feature {NONE} -- Initialisation
 
 	make (fcgi_request: GOA_FAST_CGI_REQUEST; resp: GOA_FAST_CGI_SERVLET_RESPONSE) is
@@ -37,7 +37,7 @@ feature {NONE} -- Initialisation
 			create parameters.make (5)
 			parse_parameters
 		end
-	
+
 feature -- Access
 
 	get_header (name: STRING): STRING is
@@ -70,37 +70,49 @@ feature -- Access
 		do
 			debug ("Fast CGI servlet request")
 				print ("Content entered%N")
-			end				
+			end
 			if has_header (Content_length_var) then
 				debug ("Fast CGI servlet request")
 					print ("Found content length header%N")
-				end	
+				end
 				if internal_content = Void then
 					if content_length > 0 then
 						debug ("Fast CGI servlet request")
 							print ("Content length > 0%N")
-						end	
+						end
 						-- TODO: check for errors
 						internal_content := internal_request.raw_stdin_content
 						debug ("Fast CGI servlet request")
 							print ("Internal content is: " + internal_content + "%N")
-						end							
+						end
 					else
 						debug ("Fast CGI servlet request")
 							print ("No internal content 1%N")
-						end							
+						end
 						internal_content := ""
 					end
 				end
 			else
 				debug ("Fast CGI servlet request")
 					print ("No internal content 2%N")
-				end					
+				end
 				internal_content := ""
 			end
 			Result := internal_content
 		end
-	
+
+	close_socket is
+			-- Close the socket used to communicate with web server
+		local
+			socket: ABSTRACT_TCP_SOCKET
+		do
+			socket := internal_request.socket
+			if socket /= Void and then socket.is_owner and then socket.is_open then
+				socket.close
+			end
+		end
+
+
 feature -- Status report
 
 	has_header (name: STRING): BOOLEAN is
@@ -108,12 +120,12 @@ feature -- Status report
 		do
 			Result := internal_request.parameters.has (name)
 		end
-		
+
 feature {GOA_FAST_CGI_SERVLET_REQUEST} -- Implementation
 
 	internal_request: GOA_FAST_CGI_REQUEST
 		-- Internal request information and stream functionality.
-	
+
 	internal_response: GOA_FAST_CGI_SERVLET_RESPONSE
 		-- Response object held so that session cookie can be set.
 

@@ -67,4 +67,7 @@ feature -- Basic operations
 			not_committed: not is_committed
 		end
 
+	write_ok: BOOLEAN
+			-- Was there a problem sending the data to the client?
+
 end -- class GOA_SERVLET_RESPONSE

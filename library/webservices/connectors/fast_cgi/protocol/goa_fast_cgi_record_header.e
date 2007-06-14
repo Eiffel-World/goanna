@@ -76,13 +76,14 @@ feature -- Basic operations
 			from
 				bytes_to_read := Fcgi_header_len
 				buffer := ""
+				read_ok := socket.errno.first_value = 0
 			until
 				bytes_to_read <= 0 or not read_ok
 			loop
 				socket.read_string (Fcgi_header_len)
 				buffer.append (socket.last_string)
-				bytes_to_read := bytes_to_read - socket.last_read
-				read_ok := socket.last_read > 0
+				bytes_to_read := bytes_to_read - socket.last_string.count
+				read_ok := socket.errno.first_value = 0 and then socket.last_string.count > 0
 			end
 			if buffer.count = Fcgi_header_len then
 				process_header_bytes (buffer)
@@ -97,17 +98,26 @@ feature -- Basic operations
 		local
 			enc_data: STRING
 			bytes_to_send, retries: INTEGER
+			header_contents: STRING -- For debugging only
 		do
 			debug ("fcgi_protocol")
 				io.put_string (generating_type + ".write + %N")
 			end
 
---			io.put_string ("Starting write...%N")
---			io.put_string ("Version: " + version.out + "%N")
---			io.put_string ("request_id: " + request_id.out + "%N")
---			io.put_string ("type: " + type.out + "%N")
---			io.put_string ("content_length: " + content_length.out + "%N")
---			io.put_string ("padding_length: " + padding_length.out + "%N")
+-- Start debugging code
+-- This code won't work unless the class also inherits from
+-- The logging hierarchy and GOA_SHARED_APPLICATION_CONFIGURATION
+--			header_contents := ""
+--			header_contents.append (version.out + ", ")
+--			header_contents.append (type.out +  ", ")
+--			header_contents.append (INTEGER_.bit_and (INTEGER_.bit_shift_right (request_id, 8), 255).out + " (" + request_id.out + "), ")
+--			header_contents.append (INTEGER_.bit_and (request_id, 255).out + " (" + request_id.out + "), ")
+--			header_contents.append (INTEGER_.bit_and (INTEGER_.bit_shift_right (content_length, 8), 255).out + " (" + content_length.out + "), ")
+--			header_contents.append (INTEGER_.bit_and (content_length, 255).out + " (" + content_length.out + "), ")
+--			header_contents.append (padding_length.out)
+--			log_hierarchy.logger (configuration.application_log_category).info ("GOA_FAST_CGI_RECORD_HEADER: " + header_contents)
+-- End debugging code
+
 			enc_data := create_blank_buffer (Fcgi_header_len)
 			enc_data.put (code_to_string (version).item (1), 1)
 			enc_data.put (code_to_string (type).item (1), 2)
@@ -117,39 +127,46 @@ feature -- Basic operations
 			enc_data.put (code_to_string (INTEGER_.bit_and (content_length, 255)).item (1), 6)
 			enc_data.put (code_to_string (padding_length).item (1), 7)
 			enc_data.put ('%/0/', 8) -- reserved byte
---			io.put_string ("FAST_CGI_RECORD_HEADER.write: " + quoted_eiffel_string_out(enc_data) + "%N")
---			io.put_string ("FAST_CGI_RECORD_HEADER bytes to send: " + enc_data.count.out + "%N")
---			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
---			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
---			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
---			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
---			io.put_string ("Sending data...%N")
+			debug ("fcgi_protocol")
+				--			io.put_string ("Starting write...%N")
+				--			io.put_string ("Version: " + version.out + "%N")
+				--			io.put_string ("request_id: " + request_id.out + "%N")
+				--			io.put_string ("type: " + type.out + "%N")
+				--			io.put_string ("content_length: " + content_length.out + "%N")
+				--			io.put_string ("padding_length: " + padding_length.out + "%N")
+				--			io.put_string ("FAST_CGI_RECORD_HEADER.write: " + quoted_eiffel_string_out(enc_data) + "%N")
+				--			io.put_string ("FAST_CGI_RECORD_HEADER bytes to send: " + enc_data.count.out + "%N")
+				--			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+				--			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
+				--			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
+				--			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+				--			io.put_string ("Sending data...%N")			
+			end
 			from
 				bytes_to_send := enc_data.count
-				write_ok := True
+				write_ok := socket.errno.first_value = 0
 			until
 				bytes_to_send <= 0 or not write_ok
 			loop
 				socket.put_string (enc_data)
 				bytes_to_send := bytes_to_send - socket.last_written
-				if socket.last_written = 0 then
-					retries := retries + 1
-					millisleep (10)
-					write_ok := retries < 5
+				write_ok := socket.errno.first_value = 0
+				if bytes_to_send > 0 then
+					enc_data.keep_tail (bytes_to_send)
 				end
 			end
---			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
---			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
---			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
---			write_ok := socket.last_error_code = Sock_err_no_error
---			io.put_string ("FAST_CGI_RECORD_HEADER Write OK: " + write_ok.out + "%N")
---			io.put_string ("FAST_CGI_RECORD_HEADER bytes sent: " + socket.bytes_sent.out + "%N")
 			debug("fcgi_protocol")
---				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+				--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+				--				io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
+				--				io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
+				--				io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
+				--				write_ok := socket.last_error_code = Sock_err_no_error
+				--				io.put_string ("FAST_CGI_RECORD_HEADER Write OK: " + write_ok.out + "%N")
+				--				io.put_string ("FAST_CGI_RECORD_HEADER bytes sent: " + socket.bytes_sent.out + "%N")
+
 				io.put_string ("write_ok: " + write_ok.out + "%N")
 				io.put_string (generating_type + ".write - finished + %N")
 			end
---			io.put_string ("Starting write finished.%N")
 		end
 
 feature {NONE} -- Implementation

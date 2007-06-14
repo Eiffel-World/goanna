@@ -17,11 +17,11 @@ inherit
 	KL_IMPORTED_INTEGER_ROUTINES
 
 	EPX_CURRENT_PROCESS
-			
+
 create
 
 	read, make
-	
+
 feature -- Initialisation
 
 	make (new_app_status, new_protocol_status: INTEGER)is
@@ -35,11 +35,11 @@ feature -- Initialisation
 		end
 
 	write_ok: BOOLEAN
-	
+
 feature -- Access
 
 	app_status, protocol_status: INTEGER
-	
+
 feature -- Basic operations
 
 	write (socket: ABSTRACT_TCP_SOCKET) is
@@ -53,45 +53,37 @@ feature -- Basic operations
 		do
 			debug ("fcgi_protocol")
 				io.put_string (generating_type + ".write + %N")
+				io.put_string ("FAST_CGI_END_REQUEST_BODY.app_status: " + app_status.out + "%N")
+				io.put_string ("FAST_CGI_END_REQUEST_BODY.protocol_status: " + protocol_status.out + "%N")
 			end
 
-			--			io.put_string ("FAST_CGI_END_REQUEST_BODY.app_status: " + app_status.out + "%N")
---			io.put_string ("FAST_CGI_END_REQUEST_BODY.protocol_status: " + protocol_status.out + "%N")
 			enc_data := create_blank_buffer (Fcgi_end_req_body_len)
 			enc_data.put (code_to_string (INTEGER_.bit_and (INTEGER_.bit_shift_right (app_status, 24), 255)).item (1), 1)
 			enc_data.put (code_to_string (INTEGER_.bit_and (INTEGER_.bit_shift_right (app_status, 16), 255)).item (1), 2)
 			enc_data.put (code_to_string (INTEGER_.bit_and (INTEGER_.bit_shift_right (app_status, 8), 255)).item (1), 3)
 			enc_data.put (code_to_string (INTEGER_.bit_and (app_status, 255)).item (1), 4)
 			enc_data.put (code_to_string (protocol_status).item (1), 5)
---			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
---			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
-
 			from
 				bytes_to_send := enc_data.count
-				write_ok := True
+				write_ok := socket.errno.first_value = 0
 			until
 				bytes_to_send <= 0 or not write_ok
 			loop
 				socket.put_string (enc_data)
+				write_ok := socket.errno.first_value = 0
 				bytes_to_send := bytes_to_send - socket.last_written
-				if socket.last_written = 0 then
-					retries := retries + 1
-					millisleep (10)
-					write_ok := retries < 5
+				if bytes_to_send > 0 then
+					enc_data.keep_tail (bytes_to_send)
 				end
 			end
---			io.put_string ("Bytes to send: " + enc_data.count.out + "%N")
---			io.put_string (generator +  "bytes to sent: " + socket.last_written.out + "%N")
---			io.put_string (generator + ".write: " + quoted_eiffel_string_out (enc_data) + "%R%N")
---			io.put_string ("Bytes Sent: " + socket.bytes_sent.out + "%N")	
 			debug("fcgi_protocol")
-				--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) + 
+				--				print (generator + ".write: " + quoted_eiffel_string_out (enc_data) +
 				--				"%R%N")
 				io.put_string ("write_ok: " + write_ok.out + "%N")
 				io.put_string (generating_type + ".write - finished+ %N")
 			end
 		end
-	
+
 feature {NONE} -- Implementation
 
 	process_body_fields is
@@ -104,5 +96,5 @@ feature {NONE} -- Implementation
 --			protocol_status := raw_content_data.item (5).code
 			-- 3 reserved bytes also read. Ignore them.
 		end
-		
+
 end -- class GOA_FAST_CGI_END_REQUEST_BODY

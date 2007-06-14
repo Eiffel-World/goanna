@@ -43,9 +43,7 @@ feature -- Initialisation
 			-- outstanding requests.
 		require
 			valid_host: new_host /= Void and then new_host /= Void
-				-- Host should be "localhost" (to listen only to domain sockets)
-				-- or IP address of local host to listen for network requests for that IP address
-				-- Don't know if host name will work or not
+				-- Host should be "localhost"
 			positive_port: port >= 0
 			positive_backlog: backlog >= 0
 		do
@@ -59,50 +57,8 @@ feature -- Initialisation
 
 feature -- FGCI interface
 
-	accept: INTEGER is
-			-- Accept a new request from the HTTP server and create
-			-- a CGI-compatible execution environment for the request.
-			-- Returns zero for a successful call, -1 for error.
-		local
-			failed: BOOLEAN
-			retries: INTEGER
-		do
-			debug ("fcgi_interface")
-				print (generator + ".accept%R%N")
-			end
-			if not failed then
-				-- if first call mark it and create server socket
-				if not accept_called then
-					accept_called := True
-					initialize_listening
-				end
-				-- finish the previous request
-				finish
-				-- accept the next request
-				Result := accept_request
-			end
-			debug ("fcgi_interface")
-				print (generator + ".accept - finished%R%N")
-			end
-		rescue
-			if exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) then
-				connection_reset_by_peer_exception_occurred
-				retries := retries + 1
-				if retries < 5 then
-					retry
-				end
-			end
-		end
-
-	connection_reset_by_peer_exception_occurred is
-			-- While processing the request, the connection was reset by peer
-
-		do
-			initialize_listening
-		end
-
-
 	initialize_listening is
+			-- Set up port to listen for requests from the web server
 		local
 			service: EPX_SERVICE
 			host_port: EPX_HOST_PORT
@@ -114,13 +70,22 @@ feature -- FGCI interface
 			end
 			create srv_socket.listen_by_address (host_port)
 			request := Void
-			srv_socket.errno.clear_first
-			srv_socket.errno.clear
+			srv_socket.errno.clear_all
 		rescue
 			unable_to_listen := True
+			end_listening
 		end
 
 	unable_to_listen: BOOLEAN
+		-- True if the application is unable to listen on host_port
+
+	end_listening is
+			-- Take down socket used to listen for requests from the server
+		do
+			if srv_socket /= Void and then srv_socket.is_owner and then srv_socket.is_open then
+				srv_socket.close
+			end
+		end
 
 	finish is
 			-- Finish the current request from the HTTP server. The
@@ -130,19 +95,17 @@ feature -- FGCI interface
 			debug ("fcgi_interface")
 				print (generator + ".finish%R%N")
 			end
-			if request /= Void then
+			if request /= Void and then request.socket /= Void then
 				-- complete the current request
 				request.end_request
-				if request.keep_connection and then request.socket.is_open then
-					request.socket.close
-					request.make -- reset the request
-				else
-					request := Void
-				end
 			end
+			request := Void
 			debug ("fcgi_interface")
 				print (generator + ".finish - finished%R%N")
 			end
+		rescue
+			request := Void
+			retry
 		end
 
 	flush is
@@ -302,62 +265,40 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	accept_request: INTEGER is
-			-- Wait for a request to be received
+	accept_request: BOOLEAN is
+			-- Wait for a request to be received; Returns true if request was successfully read
+		require
+			void_request: request = Void
 		local
-			is_new_connection, request_read, failed: BOOLEAN
+			request_read, failed: BOOLEAN
 		do
-			-- setup the request and its connection. Use the current request if keep_connection is
-			-- specified. Otherwise create a new one.
-			if not failed then
-				if request /= Void then
-					-- complete the previous request
-					request.end_request
-					if request.failed then
-						request.socket.close
-						request.make   -- reset the request
-						request := Void
-						Result := -1
-					elseif not request.keep_connection then
-						request.socket.close
-						request.make   -- reset the request
-					end
+			-- setup the request and its connection.
+			create request.make
+			-- setup request connection and read request.
+			from
+			until
+				request_read or failed
+			loop
+				if request.socket = Void then
+					-- accept new connection (blocking)
+					request.set_socket(srv_socket.accept)
+					request.socket.set_continue_on_error
+					request.socket.errno.set_value (0)
+					request.socket.errno.clear_all
+				end
+				-- check peer address for allowed server addresses
+				-- if peer_address_ok (peer) then
+				-- attempt to read the request. If this fails and it was an old
+				-- connection then the server probably closed it; try making a new connection
+				-- before giving up.
+				request.read
+				if not request.read_ok then
+					failed := True
 				else
-					create request.make
+					request_read := True
 				end
-				-- setup request connection and read request. Attempt to reconnect if the server
-				-- closed the connection.
-				from
-					is_new_connection := False
-				until
-					request_read or Result = -1
-				loop
-					if request.socket = Void then
-						-- accept new connection (blocking)
-						request.set_socket(srv_socket.accept)
-						is_new_connection := True
-					end
-					-- check peer address for allowed server addresses
-					-- if peer_address_ok (peer) then
-					-- attempt to read the request. If this fails and it was an old
-					-- connection then the server probably closed it; try making a new connection
-					-- before giving up.
-					request.read
-					if not request.read_ok then
-						request.socket.close
-						request.set_socket (Void)
-						-- if this was a new connection then we failed, otherwise try again
-						if is_new_connection then
-							Result := -1
-						end
-					else
-						request_read := True
-					end
-				end
---				if Result < 0 then
---					io.put_string ("GOA_FAST_CGI.accept_request = " + Result.out + "%N")
---				end
 			end
+			Result := request_read
 		end
 
 	peer_address_ok (peer_address: STRING): BOOLEAN is
