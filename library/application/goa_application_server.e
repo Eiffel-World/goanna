@@ -75,8 +75,9 @@ feature
 		local
 			the_posix_signal: POSIX_SIGNAL
 			snoop_servlet: GOA_SNOOP_SERVLET
+			exception_occurred: BOOLEAN
 		do
-			if command_line_ok then
+			if command_line_ok and not exception_occurred then
 				-- create a server listening for 'host:port'
 				make (configuration.host, configuration.port, 10)
 				-- Register built in servlets
@@ -96,6 +97,11 @@ feature
 				-- start to processe requests
 				run
 			end
+		rescue
+			-- We are passed trying to rescue at this point
+			exception_occurred := True
+			log_hierarchy.logger (configuration.application_log_category).info ("Exception in GOA_APPLICATION_SERVER.execute; goodbye")
+			retry
 		end
 
     expiring (session: GOA_HTTP_SESSION) is
@@ -163,21 +169,15 @@ feature
 		do
 			if exceptions.is_developer_exception_of_name (configuration.bring_down_server_exception_description) then
 				log_hierarchy.logger (configuration.application_log_category).info ("Application Ending per Request")
+				set_end_application
+				Result := True
 			elseif unable_to_listen then
 				log_hierarchy.logger (configuration.application_log_category).error ("Unable to open listening socket; is the socket in use?")
-			elseif exceptions.is_developer_exception_of_name (broken_pipe_exception_message) then
-				log_hierarchy.logger (configuration.application_log_category).info (broken_pipe_exception_message)
-				initialize_listening
-				Result := True
-			elseif exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) then
-				log_hierarchy.logger (configuration.application_log_category).info (connection_reset_by_peer_message)
-				initialize_listening
-				Result := True
+				end_listening
 			else
 				if log_uncaught_exception_trace then
 					log_hierarchy.logger (configuration.application_log_category).info ("Exception Occurred:%N" + exceptions.exception_trace)
 				end
-				initialize_listening
 				Result := True
 			end
 		ensure
@@ -188,6 +188,16 @@ feature
 	initialize_listening is
 		deferred
 		end
+
+	end_listening is
+		deferred
+		end
+
+	set_end_application is
+		deferred
+		end
+
+
 
 	log_uncaught_exception_trace: BOOLEAN is
 			-- An uncaught exception has occured; should we log the trace?
@@ -217,7 +227,7 @@ feature
 						servlet_by_name.has (shut_down_server_servlet.name_without_extension) and then
 						servlet_manager.has_registered_servlet (shut_down_server_servlet.name)
 			if not Result then
-				io.put_string ("Missing A Standard Goanna Application Servlet (See GOA_APPLICATION_SERVER.all_servlets_registered)%N")
+				log_hierarchy.logger (configuration.application_log_category).error ("Missing A Standard Goanna Application Servlet (See GOA_APPLICATION_SERVER.all_servlets_registered)")
 			end
 			from
 				servlet_by_name.start
@@ -227,7 +237,7 @@ feature
 				has_this_servlet := servlet_manager.has_registered_servlet (servlet_by_name.item_for_iteration.name)
 				Result := Result and has_this_servlet
 				if not has_this_servlet then
-					io.put_string ("Servlet " + servlet_by_name.key_for_iteration + " is not registered with GOA_APPLICATION_SERVER.servlet_manager%N")
+					log_hierarchy.logger (configuration.application_log_category).error ("Servlet " + servlet_by_name.key_for_iteration + " is not registered with GOA_APPLICATION_SERVER.servlet_manager")
 				end
 				servlet_by_name.forth
 			end
