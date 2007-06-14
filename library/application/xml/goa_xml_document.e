@@ -17,6 +17,7 @@ inherit
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	KL_IMPORTED_ARRAY_ROUTINES
 	KL_IMPORTED_STRING_ROUTINES
+	DT_SHARED_SYSTEM_CLOCK
 
 feature -- Status
 
@@ -154,6 +155,7 @@ feature -- Output
 			shell_command: KL_SHELL_COMMAND
 			command_text: STRING
 			count: INTEGER
+			now: DT_DATE_TIME
 		do
 			if configuration.use_saxon then
 				saxon_input_file := file_system.new_output_file (configuration.temp_saxon_input_file_name)
@@ -176,7 +178,15 @@ feature -- Output
 					saxon_input_file.put_string (writer.as_string)
 					saxon_input_file.close
 				end
+				debug ("xslt_performance")
+					now := system_clock.date_time_now
+					io.put_string ("Starting Transform: " + now.precise_time_out + "%N")
+				end
 				Result := transformer.transform_string_to_string (as_xml)
+				debug ("xslt_performance")
+					now := system_clock.date_time_now
+					io.put_string ("Finished Transform: " + now.precise_time_out + "%N")
+				end
  			end
 		end
 
@@ -187,11 +197,16 @@ feature -- Output
 			valid_file_name: file_name /= Void -- and then file_name represents a writable file on disk
 			input_finished: current_element_code = xml_null_code and root_element_added
 		local
-			the_file: KI_TEXT_OUTPUT_FILE
+			the_file: POSIX_TEXT_FILE
 		do
-			the_file := file_system.new_output_file (file_name)
-			the_file.open_write
+--			the_file := file_system.new_output_file (file_name)
+			create the_file.create_write (file_name)
+--			the_file.open_write
 			the_file.put_string (as_xml)
+				-- This is a feature I added to KI_TEXT_OUTPUT_FILE and redefined in
+				-- KL_TEXT_OUTPUT_FILE; It's only purpose is to avoid UC_STRING -> STRING
+				-- Conversion overhead (about 18% of runtime)
+				-- KL_TEXT_OUTPUT_FILE implmenetation is: old_put_string (the_string)
 			the_file.close
 		end
 
@@ -410,7 +425,7 @@ feature -- {NONE} -- Implementation
 	contents_stack: DS_LINKED_STACK [ARRAY [INTEGER]]
 			-- Stack containing codes representing the contents of all currently open elements in the document
 
-	writer: EPX_XML_WRITER
+	writer: GOA_XML_WRITER
 			-- Implements creatino of the XML document
 
 feature {NONE} -- Transformation
@@ -435,13 +450,13 @@ feature {NONE} -- Transformation
 	transformer: GOA_XSLT_STRING_TRANSFORMER is
 			-- Transformer used to generate HTML from this pages XML
 		do
---			if transformers.has (transform_file_name) then
---				Result := transformers.item (transform_file_name)
---			else
+			if transformers.has (transform_file_name) then
+				Result := transformers.item (transform_file_name)
+			else
 				Result := xslt_transformer_factory.new_string_transformer_from_file_name (transform_file_name)
 				-- If we reuse transformers, GEXSLT retains references and bloats memory usage
---				transformers.force (Result, transform_file_name)
---			end
+				transformers.force (Result, transform_file_name)
+			end
 		end
 
 	transformers: DS_HASH_TABLE [GOA_XSLT_STRING_TRANSFORMER, STRING] is

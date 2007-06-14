@@ -8,14 +8,14 @@ indexing
 
 deferred class
 	GOA_SELECT_OPTION_PARAMETER [G]
-	
+
 inherit
-	
+
 	GOA_REQUEST_PARAMETER
 	GOA_SCHEMA_FACILITIES
 
 feature
-	
+
 	process (processing_result: PARAMETER_PROCESSING_RESULT) is
 		local
 			item_selected: G
@@ -34,7 +34,7 @@ feature
 			end
 			commit  (processing_result.request_processing_result)
 		end
-		
+
 	display_text_for_item_index (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER; index: INTEGER): STRING is
 			-- Text for the item at index
 		require
@@ -44,7 +44,7 @@ feature
 		do
 			Result := text_for_item (processing_result, suffix, option_list (processing_result, suffix).item (index))
 		end
-		
+
 	text_for_item (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER; item: G): STRING is
 			-- Text for the item at index
 		require
@@ -53,7 +53,7 @@ feature
 			valid_item: item /= Void
 		deferred
 		end
-		
+
 	same_item (a, b: G; processing_result: REQUEST_PROCESSING_RESULT): BOOLEAN is
 			-- Are a & b the same item?
 		require
@@ -63,7 +63,7 @@ feature
  		ensure
  			ok_to_read_data (processing_result)
  		end
- 		
+
  	show_the_item_as_selected (the_item: G; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
 		require
 			valid_the_item: the_item /= Void
@@ -81,7 +81,7 @@ feature
  		ensure
  			ok_to_read_data (processing_result)
  		end
- 		
+
  	default_selected_item (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): G is
 			-- The item to select in the list if there is not a value selected in the database
 		require
@@ -91,7 +91,7 @@ feature
  		ensure
  			ok_to_read_data (processing_result)
  		end
- 		
+
  	ok_to_save (processing_result: PARAMETER_PROCESSING_RESULT): BOOLEAN is
  			-- Is it OK to save this parameter?
 		require
@@ -109,7 +109,7 @@ feature
 		do
 			Result := False
 		end
- 		
+
  	currently_selected_item_in_database (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): G is
  			-- The list item that is currently selected in the database
 		require
@@ -119,7 +119,7 @@ feature
  		ensure
  			ok_to_read_data (processing_result)
  		end
- 		
+
  	set_currently_selected_item_in_database (processing_result: PARAMETER_PROCESSING_RESULT; new_item: G) is
  			-- Set the currently selected item in the list
 		require
@@ -130,7 +130,7 @@ feature
  		ensure
  			ok_to_read_data (processing_result.request_processing_result)
  		end
- 		
+
 	option_list (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): DS_LINKED_LIST [G] is
 			-- The list upon which this parameter will operate
 		require
@@ -150,6 +150,7 @@ feature
 	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		local
 			local_option_list: DS_LINKED_LIST [G]
+			index: INTEGER
 		do
 			local_option_list := option_list (processing_result, suffix)
 			xml.start_select_element (input_class (processing_result, suffix), full_parameter_name (name, suffix), yes_no_string_for_boolean (is_disabled (processing_result, suffix)), Void, Void, script_name (processing_result, suffix))
@@ -158,15 +159,17 @@ feature
 				until
 					local_option_list.after
 				loop
+					index := local_option_list.index
 					xml.add_option_element (local_option_list.index.out, yes_no_string_for_boolean (show_the_item_as_selected (local_option_list.item_for_iteration, processing_result, suffix)), text_for_item (processing_result, suffix, local_option_list.item_for_iteration))
+					local_option_list.go_i_th (index)
 					local_option_list.forth
 				end
 			xml.end_current_element
 		end
-		
+
 	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED): BOOLEAN is
 		do
 			Result := xml.ok_to_add_element_or_text (xml.select_element_code)
 		end
-	
+
 end -- class GOA_SELECT_OPTION_PARAMETER

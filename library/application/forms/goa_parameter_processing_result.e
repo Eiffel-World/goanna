@@ -159,13 +159,17 @@ feature {NONE} -- Creation
 		do
 			raw_parameter := STRING_.cloned_string (new_raw_parameter)
 			raw_parameter.to_lower
-			parameter_name := name_from_raw_parameter (raw_parameter)
-			parameter_suffix := suffix_from_raw_parameter (raw_parameter)
+			if not raw_parameter.is_empty then
+				parameter_name := name_from_raw_parameter (raw_parameter)
+				parameter_suffix := suffix_from_raw_parameter (raw_parameter)
+			else
+				parameter_name := ""
+			end
 			value := ""
 			create error_message.make_with_processing_result (new_processing_result)
 			request_processing_result := new_processing_result
 		ensure
-			raw_parameter_name: equal (raw_parameter, new_raw_parameter.as_lower)
+			raw_parameter_name: not raw_parameter.is_empty implies equal (raw_parameter, new_raw_parameter.as_lower)
 		end
 
 invariant
@@ -173,13 +177,11 @@ invariant
 	is_value_valid: value /= Void
 	valid_error_message: error_message /= Void
 	valid_request_processing_reuslt: request_processing_result /= Void
-	valid_parameter_name: equal (parameter_name, name_from_raw_parameter (raw_parameter))
+	valid_parameter_name: not parameter_name.is_empty implies equal (parameter_name, name_from_raw_parameter (raw_parameter))
 	valid_parameter_suffix: equal (parameter_suffix, suffix_from_raw_parameter (raw_parameter))
 	is_value_valid_implies_empty_error_message: is_value_valid implies error_message.is_empty
 	not_is_value_valid_implies_not_empty_error_message: not is_value_valid implies not error_message.is_empty
 	not_is_value_valid_implies_not_processing_result_all_parameter_valid: not is_value_valid implies not request_processing_result.all_parameters_are_valid
 	was_updated_implies_request_updated: was_updated implies request_processing_result.was_updated
-
-
 
 end -- class GOA_PARAMETER_PROCESSING_RESULT

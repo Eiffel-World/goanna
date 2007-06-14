@@ -12,7 +12,7 @@ indexing
 
 class
 	GOA_MESSAGE_CATALOG
-	
+
 feature
 
 	attribute_unchanged_message (new_label, old_value: STRING):STRING is
@@ -23,7 +23,16 @@ feature
 		do
 			Result := new_label + " was not updated and remains %'" + old_value + "%'."
 		end
-		
+
+	attribute_unchanged_message_no_value (new_label: STRING):STRING is
+			-- Message indicating an attribute was not changed
+		require
+			valid_new_label: new_label /= Void and then not new_label.is_empty
+		do
+			Result := new_label + " was not updated."
+		end
+
+
 	is_required_message: STRING is "may not be empty."
 
 	invalid_email_message: STRING is
@@ -33,16 +42,16 @@ feature
 
 	email_address_label: STRING is "e-Mail Address"
 			-- label for the email address field
-	
+
 	email_address_not_updated: STRING is
 			-- Email address was not updated
 		do
 			Result := "Your " + email_address_label + " was not updated."
-		end		
-	
+		end
+
 	password_label: STRING is "Password"
 			-- Password text input label
-			
+
 	confirm_label (the_label: STRING): STRING is
 			-- Conrirm the_label field label
 		require
@@ -50,7 +59,7 @@ feature
 		do
 			Result := "Confirm " + the_label
 		end
-		
+
 	submit_label: STRING is "Submit"
 
 	data_entry_form_summary: STRING is "A table used to format a data entry form."

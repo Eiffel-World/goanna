@@ -42,6 +42,7 @@ feature
 				create a_uri.make_resolve_uri (file_uri.pathname_to_uri (a_cwd), file_uri.filename_to_uri (new_file_name))
 				create stylesheet.make (configuration)
 				create stylesheet_source.make (a_uri.full_reference)
+--				stylesheet.prepare (stylesheet_source, a_uri)
 				create_new_transformer (stylesheet_source, a_uri)
 --				create_new_transformer (stylesheet_source)
 				if was_error then

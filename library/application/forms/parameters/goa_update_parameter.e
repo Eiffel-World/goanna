@@ -11,14 +11,14 @@ indexing
 
 deferred class
 	 GOA_UPDATE_PARAMETER
-	
+
 inherit
-	
+
 	GOA_REQUEST_PARAMETER
-	GOA_STRING_LABELED_PARAMETER	
-	
+	GOA_STRING_LABELED_PARAMETER
+
 feature
-	
+
 	process (processing_result: PARAMETER_PROCESSING_RESULT) is
 		local
 			local_current_value: STRING
@@ -28,7 +28,7 @@ feature
 			start_transaction (processing_result.request_processing_result)
 			local_current_value := current_value (processing_result.request_processing_result, processing_result.parameter_suffix)
 			validate (processing_result)
-			if not equal (processing_result.value, local_current_value) then 
+			if not equal (processing_result.value, local_current_value) then
 				if ok_to_save (processing_result) then
 					processing_result.set_was_updated
 					add_update_message (processing_result)
@@ -37,12 +37,16 @@ feature
 				elseif not local_current_value.is_empty then
 					the_label := label_string (processing_result.request_processing_result, processing_result.parameter_suffix)
 					message_catalog := processing_result.session_status.message_catalog
-					processing_result.error_message.add_message (message_catalog.attribute_unchanged_message (the_label, local_current_value))
+					if include_value_in_error_message then
+						processing_result.error_message.add_message (message_catalog.attribute_unchanged_message (the_label, local_current_value))
+					else
+						processing_result.error_message.add_message (message_catalog.attribute_unchanged_message_no_value (the_label))
+					end
 				end
 			end
 			commit (processing_result.request_processing_result)
 		end
-		
+
 	ok_to_save (processing_result: PARAMETER_PROCESSING_RESULT): BOOLEAN is
 			-- Is it OK to save the value of processing_result in the database?
 		require
@@ -50,7 +54,7 @@ feature
 		do
 			Result := processing_result.is_value_valid
 		end
-	
+
 	add_update_message (processing_result: PARAMETER_PROCESSING_RESULT) is
 			-- Descendents may redefine if they must send a message to the user when the parameter updates a database value
 		require
@@ -58,7 +62,7 @@ feature
 		do
 			-- Default is do nothing
 		end
-		
+
 	save_current_value (processing_result: PARAMETER_PROCESSING_RESULT) is
 			-- Save value in the database
 		require
@@ -68,7 +72,7 @@ feature
 		ensure
 			ok_to_write_data (processing_result.request_processing_result)
 		end
-	
+
 	validate (processing_result: GOA_PARAMETER_PROCESSING_RESULT) is
 			-- Validate the value of processing_result.value
 		require
@@ -77,7 +81,13 @@ feature
 		deferred
 		ensure
 			ok_to_write_data (processing_result.request_processing_result)
-		end	
+		end
+
+	include_value_in_error_message: BOOLEAN is
+		once
+			Result := True
+		end
+
 
 
 end -- class GOA_UPDATE_PARAMETER

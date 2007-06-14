@@ -8,15 +8,22 @@ indexing
 
 class
 	GOA_VIRTUAL_DOMAIN_HOST
-	
+
 feature -- Attributes
 
 	host_name: STRING
-	
-	base_url: STRING is
+
+	base_url (is_secure: BOOLEAN): STRING is
 			-- URL to current virtual domain host
+		local
+			base: STRING
 		do
-			Result := "http://" + host_name + "/"
+			if is_secure and use_ssl then
+				base := "https://"
+			else
+				base := "http://"
+			end
+			Result := base + host_name + "/"
 		end
 
 	use_ssl: BOOLEAN
@@ -39,5 +46,5 @@ feature -- Attribute Setting
 		do
 			use_ssl := True
 		end
-		
+
 end -- class GOA_VIRTUAL_DOMAIN_HOST

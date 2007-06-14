@@ -13,7 +13,7 @@ inherit
 
 	GOA_HTTP_SERVLET
 		redefine
-			do_get, do_post, log_service_error, service
+			do_get, do_post, log_service_error, service, log_write_error
 		end
 	GOA_SHARED_APPLICATION_CONFIGURATION
 	GOA_TEXT_PROCESSING_FACILITIES
@@ -125,6 +125,8 @@ feature -- Request Processing
 			temp_name, exception_description: STRING
 			failed_once, failed_twice: BOOLEAN
 			suffix_list: DS_LINKED_LIST [INTEGER]
+			connection_reset_output_file: KL_TEXT_OUTPUT_FILE
+			cgi_response: GOA_CGI_SERVLET_RESPONSE
 		do
 			debug ("goa_application_servlet")
 				io.put_string ("========" + generator + "%N")
@@ -169,14 +171,15 @@ feature -- Request Processing
 						raw_parameter_name := parameter_names.item_for_iteration
 						parameter_name := name_from_raw_parameter (raw_parameter_name)
 						parameter_name.to_lower
---						io.put_string ("Raw Parameter_name: " + raw_parameter_name + "%N")
---						io.put_string ("Parameter_name: " + parameter_name + "%N")
-
-						-- Get the value of the parameter and remove leading and trailing spaces
-						parameter_value := request.get_parameter (raw_parameter_name)
-						parameter_value.left_adjust
-						parameter_value.right_adjust
-
+						if not parameter_name.is_empty then
+							parameter_name := name_from_raw_parameter (parameter_name)
+							parameter_value := request.get_parameter (raw_parameter_name)
+							-- Remove leading and trailing spaces from all input; normalize parameter name to lower case
+							parameter_value.left_adjust
+							parameter_value.right_adjust
+						else
+							parameter_value := ""
+						end
 						-- Cross check parameter name against mandatory, expected and possible parameter lists
 						if mandatory_parameters.has (parameter_name) then
 							if not mandatory_parameters_in_request.has (parameter_name) then
@@ -194,7 +197,7 @@ feature -- Request Processing
 							unexpected_parameters_found := True
 							log_hierarchy.logger (configuration.application_security_log_category).info ("Illegal parameter [" + parameter_names.item_for_iteration + "] with value = %"" + request.get_parameter (parameter_names.item_for_iteration) + "%" received in servlet " + name)
 						end
-						
+
 						if not current_parameter_is_unexpected then
 							-- Create a processing result for this parameter and add it to the request_processing_result
 							create parameter_processing_result.make (raw_parameter_name, processing_result)
@@ -328,8 +331,19 @@ feature -- Request Processing
 			if 	exception_is_shutdown_signal then
 				processing_result.response.send ("Server Will Be Shut Down</br>")
 				processing_result.response.flush_buffer
-			elseif 	exceptions.is_developer_exception_of_name (broken_pipe_exception_message) or
-					exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) or not
+			elseif exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) then
+				cgi_response ?= response
+				if cgi_response /= Void then
+					create connection_reset_output_file.make (configuration.data_directory + "connection_reset_output.txt")
+					connection_reset_output_file.open_write
+					if cgi_response.content_buffer /= Void then
+						connection_reset_output_file.put_string (cgi_response.content_buffer)
+					else
+						connection_reset_output_file.put_string ("GOA_CGI_SERVLET_RESPONSE.content_buffer was Void%N")
+					end
+					connection_reset_output_file.close
+				end
+			elseif 	exceptions.is_developer_exception_of_name (broken_pipe_exception_message) or not
 					field_exception (request, response) then
 				-- Do nothing
 			elseif not failed_once then
@@ -343,6 +357,7 @@ feature -- Request Processing
 				else
 					log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice: " + exceptions.meaning (exceptions.exception))
 				end
+				log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice")
 				failed_twice := True
 				retry
 			end
@@ -510,51 +525,62 @@ feature -- Logging Facilities
 			-- A string describing the client the sent req
 		require
 			valid_req: req /= Void
+		local
+			exception_occurred: BOOLEAN
 		do
-			Result := " [host: "
-			if req.has_header ("HTTP_HOST") then
-				Result.append (req.get_header ("HTTP_HOST"))
+			if exception_occurred then
+				Result := "Exception Occurred Gathering Client Information"
+				-- Every now and then a cookie is received which causes
+				-- An exception in this routine
 			else
-				Result.append ("Not Available")
-			end
-			Result.append ("][client: ")
-			if req.has_header ("REMOTE_HOST") then
-				Result.append (req.get_header ("REMOTE_HOST"))
-			else
-				Result.append ("Not Available")
-			end
-			Result.append ("][client ip: ")
-			if req.has_header ("REMOTE_ADDR") then
-				Result.append (req.get_header ("REMOTE_ADDR"))
-			else
-				Result.append ("Not Available")
-			end
-			Result.append ("][Cookies: ")
-			from
-				req.cookies.start
-			until
-				req.cookies.after
-			loop
-				Result.append (req.cookies.item_for_iteration.name + "|")
-				Result.append (req.cookies.item_for_iteration.value)
-				req.cookies.forth
-				if not req.cookies.after then
-					Result.append (" ")
+				Result := " [host: "
+				if req.has_header ("HTTP_HOST") then
+					Result.append (req.get_header ("HTTP_HOST"))
+				else
+					Result.append ("Not Available")
 				end
+				Result.append ("][client: ")
+				if req.has_header ("REMOTE_HOST") then
+					Result.append (req.get_header ("REMOTE_HOST"))
+				else
+					Result.append ("Not Available")
+				end
+				Result.append ("][client ip: ")
+				if req.has_header ("REMOTE_ADDR") then
+					Result.append (req.get_header ("REMOTE_ADDR"))
+				else
+					Result.append ("Not Available")
+				end
+				Result.append ("][Cookies: ")
+				from
+					req.cookies.start
+				until
+					req.cookies.after
+				loop
+					Result.append (req.cookies.item_for_iteration.name + "|")
+					Result.append (req.cookies.item_for_iteration.value)
+					req.cookies.forth
+					if not req.cookies.after then
+						Result.append (" ")
+					end
 
-			end
-			if log_request_content then
-				Result.append ("][Content: ")
-				if req.content /= Void then
-					 Result.append (eiffel_string_out (req.content))
 				end
-				Result.append ("][Query String: ")
-				if req.query_string /= Void then
-					Result.append (eiffel_string_out (req.query_string) + "]")
+				if log_request_content then
+					Result.append ("][Content: ")
+					if req.content /= Void then
+						 Result.append (eiffel_string_out (req.content))
+					end
+					Result.append ("][Query String: ")
+					if req.query_string /= Void then
+						Result.append (eiffel_string_out (req.query_string) + "]")
+					end
+				else
+					Result.append ("][Content/Query String Redacted for Security Purposes]")
 				end
-			else
-				Result.append ("][Content/Query String Redacted for Security Purposes]")
 			end
+		rescue
+			exception_occurred := True
+			Retry
 		end
 
 	log_request_content: BOOLEAN is
@@ -562,6 +588,11 @@ feature -- Logging Facilities
 			-- Default is not to log content received from secure servlets
 		do
 			Result := not receive_secure
+		end
+
+	log_write_error (response: GOA_FAST_CGI_SERVLET_RESPONSE) is
+		do
+			info (configuration.application_log_category, response.socket_error)
 		end
 
 
@@ -581,12 +612,12 @@ feature -- Logging Facilities
 
 	service (req: GOA_HTTP_SERVLET_REQUEST; resp: GOA_HTTP_SERVLET_RESPONSE) is
 			-- Handle a request by dispatching it to the correct method handler.
+		local
+			socket_error: STRING
 		do
 			precursor (req, resp)
 			if configuration.bring_down_server then
 				exceptions.raise (configuration.bring_down_server_exception_description)
-				-- The default version of this routine will swallow the exception and continue serving requests
-				-- So re-raise the exception here
 			end
 		end
 
