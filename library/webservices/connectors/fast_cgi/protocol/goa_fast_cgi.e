@@ -40,8 +40,9 @@ feature -- Initialisation
 
 	make (new_host: STRING; port, backlog: INTEGER) is
 			-- Initialise this FCGI application to listen on 'port' with room for 'backlog'
-			-- outstanding requests.
-		require
+			-- For new_host, use 'localhost' to listen only to requests from local machine (domain socket)
+   			-- Use IP Address of host running the GOA_APPLICATION_SERVER if server
+   			-- must accept requests from other machinesgo
 			valid_host: new_host /= Void and then new_host /= Void
 				-- Host should be "localhost"
 			positive_port: port >= 0
