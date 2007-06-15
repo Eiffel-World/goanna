@@ -13,11 +13,11 @@ class GOA_HTTP_UTILITY_FUNCTIONS
 	-- TODO: this class might be replaceable by UT_URL_ENCODING
 
 inherit
-	
+
 	UT_STRING_FORMATTER
 		export
 			{NONE} all
-		end	
+		end
 
 	KL_IMPORTED_INTEGER_ROUTINES
 
@@ -39,7 +39,7 @@ feature -- Basic operations
 			from
 				i := 1
 			until
-				i > url.count 
+				i > url.count
 			loop
 				ch := url.item (i)
 				inspect
@@ -68,7 +68,7 @@ feature -- Basic operations
 		ensure
 			result_exists: Result /= Void
 		end
-	
+
 	encode (str: STRING): STRING is
 			-- Translate 'str' into HTML safe format.
 		require
@@ -100,7 +100,7 @@ feature -- Basic operations
 				when '%/205/' then
 					Result.append_string ("&#133;")
 				else
-					Result.append_character (str.item (i))	
+					Result.append_character (str.item (i))
 				end
 				i := i + 1
 			end
@@ -119,5 +119,5 @@ feature -- Basic operations
 				Result := CHARACTER_.as_lower (ch).code - 87
 			end
 		end
-	
+
 end -- class GOA_HTTP_UTILITY_FUNCTIONS
