@@ -192,7 +192,12 @@ feature -- Mashalling
 				Result.append (type.out)
 				Result.append (">")
 			end
-			Result.append (string_value)
+			-- if it is a string, we have to escape it
+			if type = String_type then
+				Result.append (escape_xml (string_value))
+			else
+				Result.append (string_value)
+			end
 			if type /= String_type then
 				Result.append ("</")
 				Result.append (type.out)
@@ -219,6 +224,22 @@ feature -- Conversion
 		end
 
 feature {NONE} -- Implementation
+
+	escape_xml (str: STRING): STRING is
+			-- Escape special xml characters in str.
+		require
+			str_exists: str /= Void
+		do
+			Result := str.twin
+			Result.replace_substring_all ("&", "&amp;")
+			Result.replace_substring_all ("%"", "&quot;")
+			Result.replace_substring_all ("'", "&apos;")
+			Result.replace_substring_all ("<", "&lt;")
+			Result.replace_substring_all (">", "&gt;")
+		ensure
+			Result_not_void: Result /= Void
+		end
+
 
 	format_date_iso8601 (date: DT_DATE_TIME): STRING is
 			-- Format a date time in ISO8601 format
