@@ -3,7 +3,7 @@
 	 id="application_introduction">
   <chapterinfo>
     <copyright>
-      <year>2005</year>
+      <year>2007</year>
       <holder>Neal L. Lester and others</holder>
     </copyright>
     <author>
@@ -11,7 +11,7 @@
       <surname>Lester</surname>
     </author>
     <email>neallester@users.sourceforge.net</email>
-    <date>October 11, 2005</date>
+    <date>June 28, 2007</date>
   </chapterinfo>
   <title>Goanna HTML Web Application Framework</title>
   <para>
@@ -114,13 +114,13 @@ has undergone much less usage.  In particular,
 	<para>
 
 Install the <ulink
-url="http://sourceforge.net/cvs/?group_id=24591">CVS version</ulink>
+url="http://sourceforge.net/svn/?group_id=24591">Subversion version</ulink>
 of <ulink url="http://www.gobosoft.com">the GOBO library</ulink> as
 described <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/gobo-eiffel/gobo/Readme.txt?view=markup">here</ulink>
+url="http://gobo-eiffel.svn.sourceforge.net/viewvc/gobo-eiffel/gobo/trunk/Readme.txt?view=markup">here</ulink>
 taking care to set all of the required environment variables and
 <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/gobo-eiffel/gobo/work/bootstrap/Readme.txt?view=markup">bootstrap</ulink>
+url="http://gobo-eiffel.svn.sourceforge.net/viewvc/gobo-eiffel/gobo/trunk/work/bootstrap/Readme.txt?view=markup">bootstrap</ulink>
 the library.
 
 	</para>
@@ -137,7 +137,7 @@ variables.
 	<para>
 
 Install the
-<ulink url="http://sourceforge.net/cvs/?group_id=14711">CVS version of Goanna</ulink>
+<ulink url="http://sourceforge.net/svn/?group_id=14711">SVN version of Goanna</ulink>
 as described
 <ulink url="http://goanna.sourceforge.net/">here</ulink>
 taking care to set the <envar>GOANNA</envar> environment variable.
@@ -156,12 +156,10 @@ for production use.
 	<para>
 
 A sample Apache httpd.conf file is provided in <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/httpd.conf.sample?view=markup">$GOANNA/examples/application</ulink>.
-A list of other web servers supported is available <ulink url="TODO
-fill in this link">here</ulink>.  Each Goanna Application running on
-the web server must have it's own FastCgiExternalServer with a unique
-(developer selected) path and it's own port.  The port number must
-match
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/examples/application/httpd.conf.sample?view=markup">$GOANNA/examples/application</ulink>.
+Each Goanna Application running on the web server must have it's own
+FastCgiExternalServer with a unique (developer selected) path and it's
+own port.  The port number must match
 <classname>APPLICATION_CONFIGURATION</classname>.<featurename>port</featurename>.
 In each alias declaration, the alias path is selected by the developer
 and the path in quotes must match the path given in the
@@ -234,7 +232,7 @@ An example application is available in:
       </para>
       <para>
 
-<ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/">$GOANNA/examples/application</ulink>
+<ulink url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/examples/application/">$GOANNA/examples/application</ulink>
 	
       </para>
       <para>
@@ -354,7 +352,7 @@ Return a result of <featurename>True</featurename>.
 	  <para>
 
 In our example, this is done in <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/application_server.e?view=markup">APPLICATION_SERVER</ulink>.
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/examples/application/application_server.e?view=markup">APPLICATION_SERVER</ulink>.
 
 	  </para>
 	  <para>
@@ -363,7 +361,7 @@ The feature
 <classname>APPLICATION_CONFIGURATION</classname>.<featurename>next_page</featurename>
 returns the next page to display to the user.  In our example, it is
 <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/application_configuration.e?view=markup">APPLICATION_CONFIGURATION</ulink>.
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/examples/application/application_configuration.e?view=markup">APPLICATION_CONFIGURATION</ulink>.
 
 	  </para>
 	</listitem>
@@ -399,7 +397,7 @@ user should inherit from
 incoming requests but never generate a response to the user may
 inherit directly from
 <classname>GOA_APPLICATION_SERVLET</classname>. Class <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/servlets/question_servlet.e?view=markup">QUESTION_SERVLET</ulink>
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/examples/application/servlets/question_servlet.e?view=markup">QUESTION_SERVLET</ulink>
 provides an example of a simple servlet that displays an input form to
 the user and processes the request when the user submits the form to
 the server. Developers must implement the deferred feature
@@ -518,7 +516,7 @@ Each parameter submitted in an HTML form is processed by an object of
 type <classname>GOA_DEFERRED_PARAMETER</classname>.  These objects
 must be instantiated (and accessed) as once functions in
 <classname>SHARED_REQUEST_PARAMETERS</classname>. The same parameter
-may be used by multiple servlets. In the sample application, <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/parameters/name_parameter.e?view=markup">NAME_PARAMETER</ulink> provides an example of a parameter that allows the user to enter their name and stores their input in the sample application's <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/examples/application/session_status.e?view=markup">SESSION_STATUS</ulink> object.  It will display an error message to the user if the user attempts to enter an empty name.  If the user attempts to replace a previously valid name with an empty name, it will not do the update and will so inform the user.  These behaviors are inherited from <ulink url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/forms/parameters/goa_non_empty_update_input_parameter.e?view=markup">NON_EMPTY_UPDATE_INPUT_PARAMETER</ulink>.
+may be used by multiple servlets. In the sample application, <ulink url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/examples/application/parameters/name_parameter.e?view=markup">NAME_PARAMETER</ulink> provides an example of a parameter that allows the user to enter their name and stores their input in the sample application's <ulink url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/examples/application/session_status.e?view=markup">SESSION_STATUS</ulink> object.  It will display an error message to the user if the user attempts to enter an empty name.  If the user attempts to replace a previously valid name with an empty name, it will not do the update and will so inform the user.  These behaviors are inherited from <ulink url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/library/application/forms/parameters/goa_non_empty_update_input_parameter.e?view=markup">NON_EMPTY_UPDATE_INPUT_PARAMETER</ulink>.
 
       </para>
       <para>
@@ -762,9 +760,9 @@ with that schema.  The document schema and XSLT transform must have
 the same file name. A document schema and all supporting files
 (included schemas and XSLT transforms) must be in a single
 subdirectory. When designing a schema please keep in mind that the
-full RNC is not currently supported.  An (incomplete) list of known
+full RNC is not currently supported.  A list of known
 limitations may be found <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/src/goa_build/transform/README?view=markup">here</ulink>.
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/src/goa_build/transform/README?view=markup">here</ulink>.
       
     </para>
     <para>
@@ -833,9 +831,9 @@ below.
       <para>
 	 
 <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_page/goa_page.rnc?view=markup">goa_page.rnc</ulink>
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/library/application/xml/goa_page/goa_page.rnc?view=markup">goa_page.rnc</ulink>
 and the corresponding XSLT transform <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_page/goa_page.xsl?view=markup">goa_page.xsl</ulink>
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/library/application/xml/goa_page/goa_page.xsl?view=markup">goa_page.xsl</ulink>
 provide an example of how to specify a document schema.  The document
 schema must include the namespace declaration for every included
 schema (recursively), and (generally):
@@ -1030,9 +1028,9 @@ XML document within the application.
       <para>
 
 <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_common/goa_common.rnc?view=markup">goa_common.rnc</ulink>
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/library/application/xml/goa_common/goa_common.rnc?view=markup">goa_common.rnc</ulink>
 and the corresponding XSLT transform <ulink
-url="http://cvs.sourceforge.net/viewcvs.py/goanna/goanna/library/application/xml/goa_common/goa_common.xsl?view=markup">goa_common.xsl</ulink>
+url="http://goanna.svn.sourceforge.net/viewvc/goanna/trunk/goanna/library/application/xml/goa_common/goa_common.xsl?view=markup">goa_common.xsl</ulink>
 provide an example of how to specify an included schema.  Included
 schemas must include a namespace declaration (with the namespace
 prefix matching the file name) and the namespace declaration for each
