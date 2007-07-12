@@ -118,7 +118,7 @@ feature -- Document Manipulation
 			open_current_element: current_element_code /= xml_null_code
 			valid_current_content: is_valid_element_content (current_element_code, current_element_contents)
 		do
-			debug ("program_xml")
+			debug ("goa_xml_document")
 				io.put_string ("End Current Element: " + element_tag_for_code (current_element_code) + "%N")
 			end
 

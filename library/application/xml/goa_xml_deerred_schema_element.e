@@ -9,7 +9,7 @@ deferred class
 	GOA_XML_DEERRED_SCHEMA_ELEMENT
 
 
-feature {GOA_XML_DEERRED_SCHEMA_ELEMENT} -- Implementation
+feature
 
 	is_required: BOOLEAN
 			-- Is this element required to be present for the parent element to be valid?
