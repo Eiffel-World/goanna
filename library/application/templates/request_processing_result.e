@@ -18,8 +18,6 @@ creation
 	
 	make
 
-feature -- Obsolete features, to be deleted
-
-	was_dependency_updated: BOOLEAN
+feature
 
 end -- class REQUEST_PROCESSING_RESULT

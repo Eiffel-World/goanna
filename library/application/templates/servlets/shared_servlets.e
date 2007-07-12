@@ -12,10 +12,6 @@ inherit
 
 	GOA_SHARED_SERVLETS
 
-creation
-
-	make
-
 feature -- Servlets
 
 end -- class SHARED_SERVLETS

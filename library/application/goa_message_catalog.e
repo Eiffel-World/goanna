@@ -60,6 +60,15 @@ feature
 			Result := "Confirm " + the_label
 		end
 
+	parameters_dont_match_message (parameter_label, the_confirm_label: STRING): STRING is
+			-- Message to display if parameters don't match
+		require
+			valid_parameter_label: parameter_label /= Void and then not parameter_label.is_empty
+			valid_the_confirm_label: the_confirm_label /= Void and then not the_confirm_label.is_empty
+		do
+			Result := parameter_label + " and " + the_confirm_label + " must match exactly (including spaces and capital letters).  Please retype both."
+		end
+
 	submit_label: STRING is "Submit"
 
 	data_entry_form_summary: STRING is "A table used to format a data entry form."

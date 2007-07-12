@@ -13,8 +13,7 @@ inherit
 	
 	GOA_VIRTUAL_DOMAIN_HOST
 
-creation
+feature
 
-	make
 	
 end -- class VIRTUAL_DOMAIN_HOST

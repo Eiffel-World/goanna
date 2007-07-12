@@ -334,7 +334,7 @@ feature -- Request Processing
 			elseif exceptions.is_developer_exception_of_name (connection_reset_by_peer_message) then
 				cgi_response ?= response
 				if cgi_response /= Void then
-					create connection_reset_output_file.make (configuration.data_directory + "connection_reset_output.txt")
+					create connection_reset_output_file.make (configuration.internal_log_directory + "connection_reset_output.txt")
 					connection_reset_output_file.open_write
 					if cgi_response.content_buffer /= Void then
 						connection_reset_output_file.put_string (cgi_response.content_buffer)

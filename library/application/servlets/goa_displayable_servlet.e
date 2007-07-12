@@ -119,6 +119,9 @@ feature
 			until
 				Result.is_complete
 			loop
+				debug ("goa_xml_document")
+					io.put_string ("Dangling Element: " + Result.element_tag_for_code (Result.current_element_code) + "%N")
+				end
 				Result.end_current_element
 			end
 		end

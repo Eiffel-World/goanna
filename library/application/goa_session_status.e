@@ -8,12 +8,12 @@ indexing
 
 class
 	GOA_SESSION_STATUS
-	
+
 inherit
-	
+
 	GOA_SHARED_VIRTUAL_DOMAIN_HOSTS
 	GOA_AUTHENTICATION_STATUS_CODE_FACILITIES
-	
+
 feature -- Server Information
 
 	virtual_domain_host: VIRTUAL_DOMAIN_HOST
@@ -29,14 +29,14 @@ feature -- Access
 		once
 			create Result
 		end
-		
+
 	has_served_a_page: BOOLEAN
 			-- Has this session served a page yet?
 
 	secure_page: GOA_DISPLAYABLE_SERVLET
 			-- page to send via SSL connection on subsequent request from the user
 			-- Used to forward user from an insecure request page to a secure response page
-			
+
 	initialized: BOOLEAN
 			-- Has this object been initialized?
 
@@ -48,7 +48,7 @@ feature -- Status Setting
 		ensure
 			secure_page_updated: secure_page = new_secure_page
 		end
-		
+
 	set_server_name (new_server_name: STRING) is
 			-- Set server_name to new_server_name
 		require
@@ -64,7 +64,7 @@ feature -- Status Setting
 		do
 			has_served_a_page := True
 		end
-		
+
 	set_virtual_domain_host (new_virtual_domain_host: VIRTUAL_DOMAIN_HOST) is
 			-- Set virtual_domain_host for this session
 		require
@@ -72,7 +72,7 @@ feature -- Status Setting
 		do
 			virtual_domain_host := new_virtual_domain_host
 		end
-		
+
 feature {GOA_APPLICATION_SERVLET} -- Initialization
 
 	initialize (processing_result: REQUEST_PROCESSING_RESULT) is
@@ -97,13 +97,13 @@ feature {GOA_APPLICATION_SERVLET} -- Initialization
 			valid_virtual_domain_host: virtual_domain_host /= Void
 		end
 
-feature {NONE} 
+feature {NONE}
 
 	make is
 			-- Creation
 		do
-			
+
 		end
-		
+
 
 end -- class GOA_SESSION_STATUS

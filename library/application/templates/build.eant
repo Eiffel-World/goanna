@@ -34,6 +34,8 @@
 	</target>
 
 	<target name="xace" depend="init">
+		<argument name="a_compiler"/>
+		<argument name="a_output"/>
 		<description>
 			Build Ace file or ESD file for Eiffel compiler ${eiffel}.
 			Generate file in ${gexace_output} if specified.
@@ -51,15 +53,14 @@
 
 		<set name="gexace_output" value="" unless="${gexace_output}"/>
 		<gexace system="${eiffel}" output="${gexace_output}" xace="${system_dir}/system.xace">
-			<define name="DEBUG" value="${debug}" if="${debug}"/>
 			<define name="GOANNA_WITHOUT_DOM" value="true"/>
 			<define name="BOOTSTRAP" value="${bootstrap}" if="${bootstrap}"/>
+			<define name="GOBO_EIFFEL" value="${eiffel}"/>
 			<define name="GOBO_OS" value="${GOBO_OS}"/>
 			<define name="GOBO_CC" value="${GOBO_CC}" if="${GOBO_CC}"/>
 			<define name="GOBO_XML_EXPAT" value="true" if="${GOBO_XML_EXPAT}"/>
 			<define name="GOBO_DOTNET" value="true" if="${GOBO_DOTNET}"/>
-			<define name="ISE_5_1" value="true" if="${ISE_5_1}"/>
-			<define name="SE_0_74" value="true" if="${SE_0_74}"/>
+			<define name="ISE_5_6" value="true" if="${ISE_5_6}"/>
 		</gexace>
 	</target>
 </project>
