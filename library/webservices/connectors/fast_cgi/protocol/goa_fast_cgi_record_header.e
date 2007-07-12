@@ -65,30 +65,28 @@ feature -- Access
 feature -- Basic operations
 
 	read (socket: ABSTRACT_TCP_SOCKET) is
-			-- Read header data from 'socket'
-		local
-			buffer: STRING
-			bytes_to_read: INTEGER
-		do
-			millisleep (5)
-			buffer := create_blank_buffer (Fcgi_header_len)
-			read_ok := True
-			from
-				bytes_to_read := Fcgi_header_len
-				buffer := ""
-				read_ok := socket.errno.first_value = 0
-			until
-				bytes_to_read <= 0 or not read_ok
-			loop
-				socket.read_string (Fcgi_header_len)
-				buffer.append (socket.last_string)
-				bytes_to_read := bytes_to_read - socket.last_string.count
-				read_ok := socket.errno.first_value = 0 and then socket.last_string.count > 0
-			end
-			if buffer.count = Fcgi_header_len then
-				process_header_bytes (buffer)
-			end
-		end
+    			-- Read header data from 'socket'
+    		local
+    			buffer: STRING
+    			bytes_to_read: INTEGER
+    		do
+    			buffer := create_blank_buffer (Fcgi_header_len)
+    			read_ok := True
+    			from
+    				bytes_to_read := Fcgi_header_len
+    				buffer := ""
+    			until
+    				bytes_to_read <= 0 or not read_ok
+    			loop
+    				socket.read_string (Fcgi_header_len)
+    				buffer.append (socket.last_string)
+    				bytes_to_read := bytes_to_read - socket.last_read
+    				read_ok := socket.last_read > 0
+    			end
+    			if buffer.count = Fcgi_header_len then
+    				process_header_bytes (buffer)
+    			end
+    		end
 
 	write (socket: ABSTRACT_TCP_SOCKET) is
 			-- Write this header to 'socket'

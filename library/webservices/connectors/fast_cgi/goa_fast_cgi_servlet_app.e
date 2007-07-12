@@ -113,7 +113,7 @@ feature -- Basic operations
 								slash_index := 0
 							end
 							if slash_index > 0 then
-								servlet_name := servlet_name.substring (1, slash_index - 1)
+								servlet_name := servlet_name.substring (slash_index + 1, servlet_name.count)
 							else
 								debug ("Fast CGI servlet app")
 									info (Servlet_app_log_category, "Servlet name is " + servlet_name)

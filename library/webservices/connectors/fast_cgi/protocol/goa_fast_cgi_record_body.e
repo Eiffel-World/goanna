@@ -52,7 +52,7 @@ feature -- Initialization
 				raw_content_data.append (socket.last_string)
 				bytes_read := socket.last_string.count
 				bytes_to_read := bytes_to_read - bytes_read
-				read_ok := socket.errno.first_value = 0 and then bytes_read > 0
+				read_ok := bytes_read > 0
 			end
 			from
 				raw_padding := ""
@@ -65,7 +65,7 @@ feature -- Initialization
 				bytes_read := socket.last_string.count
 				raw_padding.append (socket.last_string)
 				bytes_to_read := bytes_to_read - bytes_read
-				read_ok := socket.errno.first_value = 0 and then bytes_read > 0
+				read_ok := bytes_read > 0
 			end
 		end
 
