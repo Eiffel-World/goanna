@@ -64,6 +64,9 @@ feature
 				end
 				if not address_is_valid then
 					processing_result.error_message.add_message (message_catalog.invalid_email_message)
+					if domain = Void then
+						domain := "No Domain"
+					end
 					log_hierarchy.logger (configuration.application_log_category).info ("invalid_email_address: " + new_email_address + "; Domain: " + domain)
 				end
 			end
