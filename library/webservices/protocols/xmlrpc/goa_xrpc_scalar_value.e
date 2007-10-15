@@ -86,6 +86,7 @@ feature -- Initialisation
 		do
 			type := Base64_type
 			value := buffer
+			create encoder
 			create string_value.make_from_string (encoder.encode (buffer))
 		end
 
