@@ -53,7 +53,7 @@ feature
 
 	default_virtual_host_lookup_string: STRING is "localhost"
 
-	internal_data_directory: STRING is "$GOANNA/examples/application/"
+	internal_data_directory: STRING is "c:\examples\application\"
 
 	bring_down_server_servlet_name: STRING is "uo98344noqpfjslak8392nowpg.htm"
 
