@@ -30,11 +30,25 @@ feature -- Access
 			Result.root.add_appender (appender)
 		end
 
+	set_custom_log_file (log_file: STRING) is
+			-- Sets a custom log file, where log_file must be the complete path + name.
+			-- This must be set before the logger is used for the first time otherwise
+			-- the default log file is used.
+		require
+			not_void: log_file /= Void
+			not_empty: log_file.count > 0
+		do
+			custom_log_file := log_file
+		end
+
 feature {NONE} -- Implementation
 
 	Internal_category: STRING is "httpd.internal"
 
 	Access_category: STRING is "httpd.access"
+
+	custom_log_file: STRING
+			-- Complete custom log file path e.g. /home/apps/myapp/errors.log
 
 	Application_log: STRING is
 			-- Construct application log from system name and ".log" extension.
@@ -44,15 +58,21 @@ feature {NONE} -- Implementation
 			app_name: STRING
 --			p: INTEGER
 		once
-			app_name := (Arguments.argument (0)).twin
--- Commented out for SmallEiffel support			
---			p := app_name.last_index_of ('.', app_name.count)
---			if p > 0 then
---				app_name := app_name.substring (1, p - 1)
---			end
-			create Result.make (app_name.count + 4)
-			Result.append (app_name)
-			Result.append (".log")
+			if (custom_log_file /= Void) then
+					-- custom log file name
+				Result := custom_log_file
+			else
+					-- default log file name
+				app_name := (Arguments.argument (0)).twin
+	-- Commented out for SmallEiffel support			
+	--			p := app_name.last_index_of ('.', app_name.count)
+	--			if p > 0 then
+	--				app_name := app_name.substring (1, p - 1)
+	--			end
+				create Result.make (app_name.count + 4)
+				Result.append (app_name)
+				Result.append (".log")
+			end
 		end
 
 end -- class GOA_HTTPD_LOGGER

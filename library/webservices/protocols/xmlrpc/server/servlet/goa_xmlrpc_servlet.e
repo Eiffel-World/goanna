@@ -35,6 +35,7 @@ inherit
 	GOA_HTTPD_LOGGER
 		export
 			{NONE} all
+			{ANY} set_custom_log_file
 		end
 
 creation
