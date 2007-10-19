@@ -19,11 +19,6 @@ inherit
 	GOA_SHARED_HTTP_SESSION_MANAGER
 	GOA_HTTP_SESSION_EVENT_LISTENER
 	GOA_HTTP_UTILITY_FUNCTIONS
-	POSIX_DAEMON
-		rename
-			random as posix_random,
-			exceptions as posix_exceptions
-		end
 	GOA_SHARED_VIRTUAL_DOMAIN_HOSTS
 	KL_SHARED_EXCEPTIONS
 	L4E_SHARED_HIERARCHY
@@ -73,7 +68,6 @@ feature
 			-- on 'port' and serving documents from 'doc_root'.
 			-- Start the server
 		local
-			the_posix_signal: POSIX_SIGNAL
 			snoop_servlet: GOA_SNOOP_SERVLET
 			exception_occurred: BOOLEAN
 		do
@@ -90,10 +84,6 @@ feature
 					servlet_manager.register_servlet (snoop_servlet, configuration.snoop_servlet_name)
 				end
 				session_manager.register_event_listener (Current)
-				create the_posix_signal.make (sigchld)
-				the_posix_signal.set_child_stop (True)
-				the_posix_signal.set_default_action
-				the_posix_signal.apply
 				-- start to processe requests
 				run
 			end

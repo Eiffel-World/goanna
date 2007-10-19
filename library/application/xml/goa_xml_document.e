@@ -197,16 +197,12 @@ feature -- Output
 			valid_file_name: file_name /= Void -- and then file_name represents a writable file on disk
 			input_finished: current_element_code = xml_null_code and root_element_added
 		local
-			the_file: POSIX_TEXT_FILE
+			the_file: KI_TEXT_OUTPUT_FILE
 		do
---			the_file := file_system.new_output_file (file_name)
-			create the_file.create_write (file_name)
---			the_file.open_write
+			the_file := file_system.new_output_file (file_name)
+--			create the_file.create_write (file_name)
+			the_file.open_write
 			the_file.put_string (as_xml)
-				-- This is a feature I added to KI_TEXT_OUTPUT_FILE and redefined in
-				-- KL_TEXT_OUTPUT_FILE; It's only purpose is to avoid UC_STRING -> STRING
-				-- Conversion overhead (about 18% of runtime)
-				-- KL_TEXT_OUTPUT_FILE implmenetation is: old_put_string (the_string)
 			the_file.close
 		end
 
