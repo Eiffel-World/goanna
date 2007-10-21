@@ -27,8 +27,6 @@ create
 
 feature
 
-	table: ROSE_N_WAY_TABLE [STRING]
-
 	command_line_ok: BOOLEAN is
 		local
 			a_host: VIRTUAL_DOMAIN_HOST
