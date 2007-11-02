@@ -78,13 +78,14 @@ feature -- Basic operations
 					-- extract service details
 					service_name := call.extract_service_name.out
 					action := call.extract_action.out
-					log_hierarchy.logger (Xmlrpc_category).info ("Calling: " + call.method_name.out)
+
 					-- retrieve service and execute call
 					if registry.has (service_name) then
 						agent_service := registry.get (service_name)
 						if agent_service.has (action) then
 							parameters := call.extract_parameters (agent_service, action)
 							if call.are_parameters_valid and then agent_service.valid_operands (action, parameters) then
+								log_method_entry(call.method_name, parameters)
 								agent_service.call (action, parameters)
 								if agent_service.process_ok then
 										-- if a fault occured, send it back
@@ -103,6 +104,7 @@ feature -- Basic operations
 											response_text := fault.marshall
 										end
 									else
+										-- no return value
 										create response.make (Void)
 										response_text := response.marshall
 									end
@@ -130,13 +132,18 @@ feature -- Basic operations
 					response_text := fault.marshall
 				end
 			end
+
 			-- send response
 			resp.set_content_type (Headerval_content_type)
 			resp.set_content_length (response_text.count)
 			resp.send (response_text)
-			-- check result and log if there was a failure
+
 			if fault /= Void then
-				log_hierarchy.logger (Xmlrpc_category).error ("Call failed: " + fault.string)
+				-- log failure
+				log_hierarchy.logger (Xmlrpc_category).error ("Call (" + call.method_name + ") failed: " + fault.string)
+			else
+				-- log return value
+				log_method_exit (call.method_name, agent_service.last_result)
 			end
 		rescue
 			if not failed then
@@ -217,6 +224,89 @@ feature {NONE} -- Implementation
 			create fault.make_with_detail (Assertion_failure, detail)
 		ensure
 			fault_initialised: fault /= Void and then fault.code = Assertion_failure
+		end
+
+feature {NONE} -- Logging
+
+	limit: INTEGER is
+			-- The nr. of characters of the return value's string representation that are logged
+			-- in `log_method_exit' (the rest is truncated)
+		once
+			Result := 50
+		end
+
+	log_method_entry (method_name: STRING; params: TUPLE) is
+			-- Logs an xml rpc method call with debug level INFO
+			-- Example output: "Calling foo ('abc': STRING, '133': INTEGER)"
+		require
+			valid_method_name: method_name /= void
+		local
+			param: ANY
+			logger: L4E_LOGGER
+			logging_string: STRING
+			i: INTEGER
+		do
+			logger := log_hierarchy.logger (Xmlrpc_category)
+			if (logger.is_enabled_for (info_p)) then
+				create logging_string.make_from_string ("Calling " + method_name + " (")
+
+				-- create method params debug string
+				from
+					i := 1
+				until
+					i > params.count
+				loop
+					param := params.item(i)
+					logging_string.append ("'" + param.out + "': " + param.generating_type)
+
+					-- add param separator if necessary
+					if (i < params.count) then
+						logging_string.append (", ")
+					end
+
+					i := i + 1
+				end
+
+				logging_string.append (")")
+				logger.info (logging_string)
+			end
+		end
+
+	log_method_exit (method_name: STRING; return_value: ANY) is
+			-- Logs an xml rpc method return with debug level DEBUG
+			-- `return_value' is Void if the method has no return value.
+			-- Only `limit' characters of the return value's string representation are logged.
+			-- Example output: "Leaving foo (result = 'test': STRING)"
+		require
+			valid_method_name: method_name /= Void
+		local
+			logger: L4E_LOGGER
+			logging_string: STRING
+			out_string: STRING
+		do
+			logger := log_hierarchy.logger (Xmlrpc_category)
+
+			if (logger.is_enabled_for (debug_p)) then
+				create logging_string.make_from_string ("Leaving " + method_name)
+
+				-- Log return value
+				if (return_value /= Void) then
+					logging_string.append (" (Result= '")
+
+					out_string := return_value.out
+					if (out_string.count > limit) then
+						-- Truncate return value string
+						logging_string.append(out_string.substring (1, limit))
+						logging_string.append ("(...)")
+					else
+						logging_string.append (out_string)
+					end
+
+					logging_string.append ("': " + return_value.generating_type + ")")
+				end
+
+				logger.debugging (logging_string)
+			end
 		end
 
 end -- class GOA_XMLRPC_SERVLET
