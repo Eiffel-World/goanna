@@ -11,21 +11,21 @@ indexing
 class GOA_XRPC_CALL
 
 inherit
-	
+
 	GOA_XRPC_ELEMENT
-	
+
 create
-	
+
 	make, make_from_string, unmarshall
-	
+
 create {GOA_XRPC_SYSTEM}
 
 	unmarshall_for_multi_call
-	
+
 feature -- Initialisation
 
 	make (new_method: STRING) is
-			-- Initialise 
+			-- Initialise
 		require
 			new_method_exists: new_method /= Void
 		do
@@ -33,7 +33,7 @@ feature -- Initialisation
 			create params.make_default
 			unmarshall_ok := True
 		end
-	
+
 	make_from_string (new_method: STRING) is
 			-- Initialise
 		require
@@ -42,8 +42,8 @@ feature -- Initialisation
 			create method_name.make_from_string (new_method)
 			create params.make_default
 			unmarshall_ok := True
-		end	
-		
+		end
+
 	unmarshall (node: XM_ELEMENT) is
 			-- Initialise XML-RPC call from DOM element.
 		local
@@ -61,7 +61,7 @@ feature -- Initialisation
 				params_elem := get_named_element (node, Params_element)
 				if params_elem /= Void then
 					-- unmarshall all parameters
-					if not params_elem.is_empty then		
+					if not params_elem.is_empty then
 						param_set_cursor := params_elem.new_cursor
 						-- unmarshall each parameter
 						from
@@ -91,7 +91,7 @@ feature -- Initialisation
 				unmarshall_error_code := Method_name_element_missing
 			end
 		end
-	
+
 feature {GOA_XRPC_SYSTEM} -- Initialisation
 
 	unmarshall_for_multi_call (struct: ANY) is
@@ -102,7 +102,7 @@ feature {GOA_XRPC_SYSTEM} -- Initialisation
 		local
 			table: DS_HASH_TABLE [ANY, STRING]
 			param_array: ARRAY [ANY]
-			param_value: GOA_XRPC_VALUE 
+			param_value: GOA_XRPC_VALUE
 			i: INTEGER
 		do
 			unmarshall_ok := True
@@ -135,12 +135,12 @@ feature {GOA_XRPC_SYSTEM} -- Initialisation
 				unmarshall_error_code := Invalid_multi_call_params
 			end
 		end
-		
+
 feature -- Access
 
 	method_name: STRING
 			-- Name of method to call
-			
+
 	params: DS_LINKED_LIST [GOA_XRPC_PARAM]
 			-- Call parameters
 
@@ -163,7 +163,7 @@ feature -- Access
 		ensure
 			empty_service_name_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")
 		end
-	
+
 	extract_action: STRING is
 			-- Extract the service name from the call's 'method_name'. The 'method_name'
 			-- should be in the form 'service.action', where 'action' is the action to be invoked.
@@ -179,11 +179,11 @@ feature -- Access
 				create Result.make (0)
 			else
 				Result := method_name.substring (i + 1, method_name.count)
-			end		
+			end
 		ensure
-			empty_action_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")	
-		end	
-		
+			empty_action_if_no_dot: method_name.index_of ('.', 1) = 0 implies Result.is_equal ("")
+		end
+
 	extract_parameters (a_service: GOA_SERVICE_PROXY; an_action: STRING): TUPLE is
 			-- Convert params to a tuple suitable for passing to an agent.
 		require
@@ -197,7 +197,12 @@ feature -- Access
 		do
 			are_parameters_valid := True
 			Result := a_service.new_tuple (an_action)
-			if not params.is_empty then				
+
+			if Result.count /= params.count then
+				are_parameters_valid := False
+			end
+
+			if not params.is_empty then
 				from
 					c := params.new_cursor
 					c.start
@@ -223,7 +228,7 @@ feature -- Access
 			param_tuple_exists: Result /= Void
 			valid_number_of_params: Result.count = params.count
 		end
-		
+
 feature -- Status report
 
 	are_parameters_valid: BOOLEAN
@@ -247,7 +252,7 @@ feature -- Status setting
 		do
 			params.force_last (new_param)
 		end
-	
+
 feature -- Marshalling
 
 	marshall: STRING is
@@ -274,10 +279,10 @@ feature -- Marshalling
 			end
 			Result.append ("</methodCall>")
 		end
-	
+
 invariant
-	
+
 	method_name_set: unmarshall_ok implies method_name /= Void
 	params_exists: unmarshall_ok implies params /= Void
-	
+
 end -- class GOA_XRPC_CALL
