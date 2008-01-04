@@ -140,7 +140,13 @@ feature -- Basic operations
 
 			if fault /= Void then
 				-- log failure
-				log_hierarchy.logger (Xmlrpc_category).error ("Call (" + call.method_name + ") failed: " + fault.string)
+				if call = Void then
+						-- invalid call
+					log_hierarchy.logger (Xmlrpc_category).error ("Call failed (invalid call): " + fault.string)
+				else
+						-- other error
+					log_hierarchy.logger (Xmlrpc_category).error ("Call (" + call.method_name + ") failed: " + fault.string)
+				end
 			else
 				-- log return value
 				log_method_exit (call.method_name, agent_service.last_result)
