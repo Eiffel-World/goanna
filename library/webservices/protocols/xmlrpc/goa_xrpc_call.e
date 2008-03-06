@@ -196,10 +196,13 @@ feature -- Access
 			an_object: ANY
 		do
 			are_parameters_valid := True
-			Result := a_service.new_tuple (an_action)
+			last_error_msg := Void
 
+			Result := a_service.new_tuple (an_action)
 			if Result.count /= params.count then
+					-- Nr of parameters does not match
 				are_parameters_valid := False
+				last_error_msg := "Params count is off: Expected: " + Result.count.out + " but got " + params.count.out
 			end
 
 			if not params.is_empty then
@@ -215,12 +218,16 @@ feature -- Access
 						if Result.valid_type_for_index (an_object, i) then
 							Result.put (an_object, i)
 						else
+							-- Expected and actual types do not match
 							are_parameters_valid := False
+							last_error_msg := "Wrong type for param nr." + i.out
 						end
 						c.forth
 						i := i + 1
 					else
+							-- should never occur
 						are_parameters_valid := False
+						last_error_msg := "No param with index " + i.out
 					end
 				end
 			end
@@ -233,6 +240,9 @@ feature -- Status report
 
 	are_parameters_valid: BOOLEAN
 			-- Did `extract_parameters' return a TUPLE of valid parameters?
+
+	last_error_msg: STRING
+			-- Contains the last error message if not `are_parameters_valid', otherwise `Void'
 
 feature -- Status setting
 

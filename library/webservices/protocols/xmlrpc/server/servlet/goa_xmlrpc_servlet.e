@@ -115,7 +115,7 @@ feature -- Basic operations
 								end
 							else
 								-- construct fault response for invalid action operands
-								create fault.make_with_detail (Invalid_operands_for_service_action, " " + call.method_name.out)
+								create fault.make_with_detail (Invalid_operands_for_service_action, " " + make_invalid_operands_detail_msg)
 								response_text := fault.marshall
 							end
 						else
@@ -313,6 +313,27 @@ feature {NONE} -- Logging
 
 				logger.debugging (logging_string)
 			end
+		end
+
+	make_invalid_operands_detail_msg: STRING is
+			-- Creates the detailed message to be used for a fault of type `Invalid_operands_for_service_action'
+		do
+			Result := call.method_name.out + " (" + call.last_error_msg + ", parameters: "
+			from
+				call.params.start
+			until
+				call.params.after
+			loop
+				Result.append ("'")
+				Result.append (call.params.item_for_iteration.value.as_object.out)
+				Result.append ("': ")
+				Result.append (call.params.item_for_iteration.value.type)
+				Result.append (", ")
+				call.params.forth
+			end
+
+			Result.remove_tail (2)
+			Result.append (")")
 		end
 
 end -- class GOA_XMLRPC_SERVLET
