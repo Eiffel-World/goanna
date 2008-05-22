@@ -6,7 +6,7 @@ indexing
 	revision: "$Revision$"
 	author: "Glenn Maughan <glennmaughan@users.sourceforge.net>"
 	copyright: "Copyright (c) 2001 Glenn Maughan and others"
-	license: "Eiffel Forum License v2 (see forum.txt)."
+	license: "GNU General Public License version 3 (see gpl-3.0.txt)"
 
 deferred class GOA_SERVLET
 
