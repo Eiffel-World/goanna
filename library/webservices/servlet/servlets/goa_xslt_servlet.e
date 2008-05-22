@@ -209,7 +209,7 @@ feature {NONE} -- Implementation
 			else
 				create {XM_XSLT_URI_SOURCE} a_source.make (a_transform_uri)
 			end
-			transformer_factory.create_new_transformer (a_source)
+			transformer_factory.create_new_transformer (a_source, create {UT_URI}.make ("dummy:"))
 			if transformer_factory.was_error then
 				a_response := STRING_.concat ("<html><head><title>Error creating transform</title></head><body><div><p>", error_listener.error_text)
 				a_response := STRING_.appended_string (a_response, "</p></div></body></html>")

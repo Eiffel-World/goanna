@@ -45,7 +45,7 @@ feature -- Basic operations
 			ctype_code: INTEGER
 			final_slash: BOOLEAN
 		do
-			file_name := clone (servlet_config.document_root)
+			file_name := servlet_config.document_root.twin
 			final_slash := file_name.substring(file_name.count, file_name.count).is_equal ("/")
 			debug
 				print ("Document root ends with slash? " + final_slash.out + "%N")
