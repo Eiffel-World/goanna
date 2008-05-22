@@ -1,8 +1,10 @@
 Project Goanna Release Notes
 ----------------------------
 
-Release XX
-----------
+Release 1.0
+-----------
+
+o Implemented change of license to GPL version 3.
 
 o Removed YAESOCKETS dependency
 
