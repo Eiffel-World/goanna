@@ -310,7 +310,9 @@
     <xsl:call-template name="goa_common:class" />
     <xsl:apply-templates select="goa_common:tool_tip" mode="attributes"/>
     <xsl:attribute name="href"><xsl:value-of select="@url" /></xsl:attribute>
-    <xsl:value-of select="text ()" />
+    <xsl:for-each select="text()">
+      <xsl:value-of select="."/>
+    </xsl:for-each>
   </xsl:element>
 </xsl:template>
 
