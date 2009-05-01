@@ -8,6 +8,7 @@
 
 # stylesheet="goa_common.css"
 
+
 namespace goa_common="http://www.sourceforge.net/projects/goanna/goa_common"
 
 paragraph = element goa_common:paragraph { class?, ( text_item | popup_hyperlink | hyperlink | submit | input | radio | select | text_area | image )+ }

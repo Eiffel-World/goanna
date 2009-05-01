@@ -326,6 +326,7 @@
 		<xsl:attribute name="height"><xsl:value-of select="@height" /></xsl:attribute>
 		<xsl:attribute name="width"><xsl:value-of select="@width" /></xsl:attribute>
 		<xsl:attribute name="alt"><xsl:value-of select="@alternate_text" /></xsl:attribute>
+		<xsl:attribute name="title"><xsl:value-of select="@alternate_text" /></xsl:attribute>
 	</xsl:element>
 </xsl:template>
 
