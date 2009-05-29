@@ -30,6 +30,7 @@ feature
 		require
 			valid_new_file_name: new_file_name /= Void
 			valid_new_file_name: True -- new_file_name represents an existing file containing a valid XSLT stylesheet
+			file_exists: file_system.file_exists (new_file_name)
 		local
 			stylesheet: XM_XSLT_STYLESHEET_COMPILER
 			a_cwd: KI_PATHNAME
