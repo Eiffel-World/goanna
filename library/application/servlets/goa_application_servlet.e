@@ -127,9 +127,16 @@ feature -- Request Processing
 			suffix_list: DS_LINKED_LIST [INTEGER]
 			connection_reset_output_file: KL_TEXT_OUTPUT_FILE
 			cgi_response: GOA_CGI_SERVLET_RESPONSE
+			safe_commit_required, safe_end_version_access_required: BOOLEAN
 		do
 			debug ("goa_application_servlet")
 				io.put_string ("========" + generator + "%N")
+			end
+			-- Previous exception may have left dangling transaction or version access
+			if processing_result /= Void and then ok_to_write_data (processing_result) then
+				safe_commit (processing_result)
+			elseif processing_result /= Void and then ok_to_read_data (processing_result) then
+				safe_end_version_access (processing_result)
 			end
 			if not failed_once then
 				log_hierarchy.logger (configuration.application_log_category).info ("Request: " + name + client_info (request))
@@ -323,11 +330,6 @@ feature -- Request Processing
 				end
 			end
 		rescue
-			if ok_to_write_data (processing_result) then
-				commit (processing_result)
-			elseif ok_to_read_data (processing_result) then
-				end_version_access (processing_result)
-			end
 			if 	exception_is_shutdown_signal then
 				processing_result.response.send ("Server Will Be Shut Down</br>")
 				processing_result.response.flush_buffer
@@ -355,7 +357,7 @@ feature -- Request Processing
 				if exceptions.is_developer_exception then
 					log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice: " + exceptions.developer_exception_name)
 				else
-					log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice: " + exceptions.meaning (exceptions.exception))
+					log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice: " + exceptions.exception.out)
 				end
 				log_hierarchy.logger (configuration.application_log_category).info (generator + " Failed Twice")
 				failed_twice := True
