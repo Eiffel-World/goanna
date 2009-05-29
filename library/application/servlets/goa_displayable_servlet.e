@@ -124,6 +124,9 @@ feature
 				end
 				Result.end_current_element
 			end
+			debug ("goa_xml_document")
+				Result.put_html_to_file ("output.htm")
+			end
 		end
 
 end -- class GOA_DISPLAYABLE_SERVLET
