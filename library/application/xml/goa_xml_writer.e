@@ -151,8 +151,6 @@ feature
 			i: INTEGER
 			c: INTEGER
 			character: CHARACTER
-			as_uc: UC_STRING
-			is_uc: BOOLEAN
 		do
 			from
 				i := 1
@@ -164,6 +162,9 @@ feature
 				else
 					character := data.item (i)
 					c := character.code
+				end
+				debug ("goa_xml_writer")
+					io.put_string (data.item (i).out + ": " + c.out + "%N")
 				end
 				inspect c
 				when Less_than_code then
@@ -223,6 +224,9 @@ feature
 				i := i + 1
 			end
 		end
+
+	is_uc: BOOLEAN = true
+		-- May content contain unicode?
 
 
 end
