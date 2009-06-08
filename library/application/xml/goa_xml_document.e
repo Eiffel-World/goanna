@@ -157,7 +157,7 @@ feature -- Output
 			count: INTEGER
 			now: DT_DATE_TIME
 		do
-			if configuration.use_saxon then
+			if use_saxon then
 				saxon_input_file := file_system.new_output_file (configuration.temp_saxon_input_file_name)
 				saxon_input_file.open_write
 				saxon_input_file.put_string (as_xml)
@@ -425,6 +425,12 @@ feature -- {NONE} -- Implementation
 			-- Implements creatino of the XML document
 
 feature {NONE} -- Transformation
+
+	use_saxon: BOOLEAN is
+			-- Should we use Saxon to render the xml using xslt?
+		do
+			Result := configuration.use_saxon
+		end
 
 	transform_file_name: STRING is
 			-- Name of file containing XSLT transform to generate html version of this document
