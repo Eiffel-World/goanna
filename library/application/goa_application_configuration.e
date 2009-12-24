@@ -201,17 +201,23 @@ feature -- Constants
 
 feature -- File Names
 
-	temp_saxon_input_file_name: STRING is
+--	temp_saxon_input_file_name (suffix: STRING): STRING is
 			-- Name of temporary input file for transformations by Saxon
-		once
-			Result := temp_directory + "saxon_input.xml"
-		end
+			-- Suffix should uniquely identify the file
+--		require
+--			valid_suffix: suffix /= Void and then not suffix.is_empty
+--		do
+--			Result := temp_directory + "saxon_input_" + suffix + ".xml"
+--		end
 
-	temp_saxon_output_file_name: STRING is
+--	temp_saxon_output_file_name (suffix: STRING): STRING is
 			-- Name of temporary output fiel for transformations by Saxon
-		once
-			Result := temp_directory + "saxon_output.xml"
-		end
+			-- Suffix should uniquely identify the file
+--		require
+--			valid_suffix: suffix /= Void and then not suffix.is_empty
+--		do
+--			Result := temp_directory + "saxon_output_" + suffix + ".xml"
+--		end
 
 feature -- Transformation
 

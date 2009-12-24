@@ -32,7 +32,7 @@ feature {GOA_XML_ELEMENT_SCHEMA, GOA_XML_DEERRED_SCHEMA_ELEMENT} -- Query implem
 		ensure
 			fragment_count_unchanged: the_fragment.count = old the_fragment.count
 			false_implies_fragment_is_unchanged: not Result implies the_fragment.is_equal (old the_fragment)
-			true_and_required_implies_fragment_counter_moved: (Result and is_required) implies (the_fragment.index > old the_fragment.index)
+			--true_and_required_implies_fragment_counter_moved: (Result and is_required) implies (the_fragment.index > old the_fragment.index)
 		end
 
 

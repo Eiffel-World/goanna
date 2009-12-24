@@ -150,44 +150,71 @@ feature -- Output
 	as_html: STRING is
 			-- Transform the_page to html
 		local
-			saxon_input_file: KI_TEXT_OUTPUT_FILE
+			saxon_input_file, xml_file: KI_TEXT_OUTPUT_FILE
 			saxon_output_file: KI_TEXT_INPUT_FILE
 			shell_command: KL_SHELL_COMMAND
-			command_text: STRING
+			command_text, temp_file_name, saxon_input_file_name, saxon_output_file_name: STRING
 			count: INTEGER
 			now: DT_DATE_TIME
+			no_conflict_with_input_name, no_conflict_with_output_name: BOOLEAN
+			retries, file_name_retries: INTEGER
 		do
-			if use_saxon then
-				saxon_input_file := file_system.new_output_file (configuration.temp_saxon_input_file_name)
-				saxon_input_file.open_write
-				saxon_input_file.put_string (as_xml)
-				saxon_input_file.close
-				command_text := configuration.java_binary_location + " -jar " + configuration.saxon_jar_file_location + " " + configuration.temp_saxon_input_file_name + " " + transform_file_name + " > " + configuration.temp_saxon_output_file_name
---				io.put_string (command_text + "%N")
-				create shell_command.make (command_text)
-				shell_command.execute
-				saxon_output_file := file_system.new_input_file (configuration.temp_saxon_output_file_name)
-				count := saxon_output_file.count
-				saxon_output_file.open_read
-				saxon_output_file.read_string (count)
-				Result := saxon_output_file.last_string
-			else
-				if configuration.test_mode then
-					saxon_input_file := file_system.new_output_file (configuration.temp_saxon_input_file_name)
-					saxon_input_file.open_write
-					saxon_input_file.put_string (writer.as_string)
+			if retries < 100 then
+				if use_saxon then
+					if saxon_input_file /= Void and then saxon_input_file.is_open_write then
+						saxon_input_file.close
+					end
+					if saxon_output_file /= Void and then saxon_output_file.is_open_read then
+						saxon_output_file.close
+					end
+					from
+					until
+						no_conflict_with_input_name and no_conflict_with_output_name and (file_name_retries < 100)
+					loop
+						now := system_clock.date_time_now
+						temp_file_name :=  now.hash_code.out
+						saxon_input_file_name := configuration.temp_directory + temp_file_name + "_input.xml"
+						saxon_output_file_name := configuration.temp_directory + temp_file_name + "_output.xml"
+						no_conflict_with_input_name := not file_system.file_exists (saxon_input_file_name)
+						if no_conflict_with_input_name then
+							saxon_input_file := file_system.new_output_file (saxon_input_file_name)
+							saxon_input_file.open_write
+						end
+						no_conflict_with_output_name := not file_system.file_exists (saxon_output_file_name)
+						file_name_retries := file_name_retries + 1
+					end
+					saxon_input_file.put_string (as_xml)
 					saxon_input_file.close
-				end
-				debug ("xslt_performance")
-					now := system_clock.date_time_now
-					io.put_string ("Starting Transform: " + now.precise_time_out + "%N")
-				end
-				Result := transformer.transform_string_to_string (as_xml)
-				debug ("xslt_performance")
-					now := system_clock.date_time_now
-					io.put_string ("Finished Transform: " + now.precise_time_out + "%N")
-				end
- 			end
+					command_text := configuration.java_binary_location + " -jar " + configuration.saxon_jar_file_location + " -s " + saxon_input_file_name + " -s " + saxon_input_file_name + " -xsl " + transform_file_name + " > " + saxon_output_file_name
+					io.put_string (command_text + "%N")
+					create shell_command.make (command_text)
+					shell_command.execute
+					saxon_output_file := file_system.new_input_file (saxon_output_file_name)
+					count := saxon_output_file.count
+					saxon_output_file.open_read
+					saxon_output_file.read_string (count)
+					Result := saxon_output_file.last_string
+				else
+					if configuration.test_mode then
+						xml_file := file_system.new_output_file (configuration.temp_directory + "last_page.htm")
+						xml_file.open_write
+						xml_file.put_string (writer.as_string)
+						xml_file.close
+					end
+					debug ("xslt_performance")
+						now := system_clock.date_time_now
+						io.put_string ("Starting Transform: " + now.precise_time_out + "%N")
+					end
+					Result := transformer.transform_string_to_string (as_xml)
+					debug ("xslt_performance")
+						now := system_clock.date_time_now
+						io.put_string ("Finished Transform: " + now.precise_time_out + "%N")
+					end
+	 			end
+	 		end
+ 		rescue
+ 			retries := retries + 1
+ 			retry
 		end
 
 	put_xml_to_file (file_name: STRING) is

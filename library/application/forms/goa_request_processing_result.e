@@ -138,8 +138,6 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 			-- Process the request
 		require
 			not_was_processed: not was_processed
-		local
-			failed: BOOLEAN
 		do
 			was_processed := True
 			sorter.sort (mandatory_processing_results)
@@ -196,11 +194,6 @@ feature {GOA_APPLICATION_SERVLET, GOA_PARAMETER_PROCESSING_RESULT, GOA_REQUEST_P
 			end
 		ensure
 			was_processed: was_processed
-		rescue
-			if ok_to_retry_process_parameters and not failed then
-				failed := True
-				Retry
-			end
 		end
 
 	process_submit_parameter_if_present is
