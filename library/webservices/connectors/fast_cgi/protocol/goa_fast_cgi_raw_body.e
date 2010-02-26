@@ -88,6 +88,12 @@ feature -- Basic operations
 			end
 		end
 
+	as_fast_cgi_string: STRING is
+		do
+			Result := raw_content_data
+		end
+
+
 feature {NONE} -- Implementation
 
 	process_body_fields is

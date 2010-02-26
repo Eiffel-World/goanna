@@ -38,7 +38,7 @@ inherit
 
 		end
 
-		
+
 
 feature -- Test
 
@@ -76,7 +76,20 @@ feature -- Test
 
 			assert_integers_equal ("one_char", last_index_of (str, '.', str.count), 1)
 
-		end	
+		end
+
+	test_as_16_bit_string is
+		do
+			assert_equal ("16448.as_16_bit_string", "@@", as_16_bit_string (16448))
+			assert_equal ("5.as_16_bit_string.count", 2, as_16_bit_string (5).count)
+		end
+
+
+	test_as_32_bit_string is
+		do
+			assert_equal ("1077952576.as_32_bit_string", "@@@@", as_32_bit_string (1077952576))
+			assert_equal ("5.as_16_bit_string.count", 4, as_32_bit_string (5).count)
+		end
 
 
 

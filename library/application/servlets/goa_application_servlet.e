@@ -134,8 +134,10 @@ feature -- Request Processing
 			end
 			-- Previous exception may have left dangling transaction or version access
 			if processing_result /= Void and then ok_to_write_data (processing_result) then
+				log_hierarchy.logger (configuration.application_log_category).info ("safety_commit: " + client_info (request))
 				safe_commit (processing_result)
 			elseif processing_result /= Void and then ok_to_read_data (processing_result) then
+				log_hierarchy.logger (configuration.application_log_category).info ("safe_version_access: " + client_info (request))
 				safe_end_version_access (processing_result)
 			end
 			if not failed_once then

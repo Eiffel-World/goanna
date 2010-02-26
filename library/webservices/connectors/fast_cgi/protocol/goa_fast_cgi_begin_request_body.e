@@ -13,22 +13,56 @@ class GOA_FAST_CGI_BEGIN_REQUEST_BODY
 inherit
 
 	GOA_FAST_CGI_RECORD_BODY
-		
+
 	KL_IMPORTED_INTEGER_ROUTINES
-			
+
 feature -- Access
 
 	role, flags: INTEGER
-	
-feature {NONE} -- Implementation
+
+feature -- Attribute Setting
+
+	set_role (new_role: like role) is
+		do
+			role := new_role
+		ensure
+			role_updated: role = new_role
+		end
+
+	set_flags (new_flags: like flags) is
+		do
+			flags := new_flags
+		ensure
+			flags_updated: flags = new_flags
+		end
+
+	as_fast_cgi_string: STRING is
+			-- Formatted as a STRING per FastCGI protocol
+		do
+			Result := as_16_bit_string (role)
+			Result.extend (flags.to_character_8)
+			Result.append (create_blank_buffer (5))
+		end
+
+feature {TS_TEST_CASE} -- Testing
+
+	set_raw_content_data (new_raw_content_data: like raw_content_data) is
+		do
+			raw_content_data := new_raw_content_data
+		ensure
+			raw_content_data_updated: equal (raw_content_data, new_raw_content_data)
+		end
+
+
+feature {TS_TEST_CASE} -- Implementation
 
 	process_body_fields is
 			-- Extract body fields from raw content data.
 		do
-			role := INTEGER_.bit_shift_left (raw_content_data.item (1).code, 8) 
+			role := INTEGER_.bit_shift_left (raw_content_data.item (1).code, 8)
 				+ raw_content_data.item (2).code
 			flags := raw_content_data.item (3).code
 			-- 5 reserved bytes also read. Ignore them.
 		end
-		
+
 end -- class GOA_FAST_CGI_BEGIN_REQUEST_BODY

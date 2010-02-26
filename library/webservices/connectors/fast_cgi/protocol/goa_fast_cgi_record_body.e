@@ -67,6 +67,10 @@ feature -- Initialization
 				bytes_to_read := bytes_to_read - bytes_read
 				read_ok := bytes_read > 0
 			end
+   			debug ("fcgi_record_output")
+				io.put_string (generating_type + "%N")
+			end
+
 		end
 
 feature -- Access
@@ -79,6 +83,10 @@ feature -- Access
 
 	padding_length: INTEGER
 			-- Length of padding to write.
+
+	as_fast_cgi_string: STRING is
+		deferred
+		end
 
 feature {NONE} -- Implementation
 

@@ -14,7 +14,7 @@ inherit
 
 	GOA_FAST_CGI_DEFS
 		export
-			{NONE} all
+			{TS_TEST_CASE} all
 		end
 
 	UT_STRING_FORMATTER
@@ -56,6 +56,7 @@ feature -- Initialization
 
 feature -- Access
 
+
 	version, request_id, type, content_length, padding_length: INTEGER
 
 	read_ok: BOOLEAN
@@ -85,6 +86,13 @@ feature -- Basic operations
     			end
     			if buffer.count = Fcgi_header_len then
     				process_header_bytes (buffer)
+    			end
+    			debug ("fcgi_record_output")
+					io.put_string (generating_type + "%N")
+    				io.put_string ("  version: " + version.out + "%N")
+    				io.put_string ("  request_id: " + type.out + "%N")
+    				io.put_string ("  content_length: " + content_length.out + "%N")
+    				io.put_string ("  padding_length: " + padding_length.out + "%N")
     			end
     		end
 
@@ -167,7 +175,19 @@ feature -- Basic operations
 			end
 		end
 
-feature {NONE} -- Implementation
+	as_fast_cgi_string: STRING is
+			-- This record formatted in accordance with the FastCGI Protocol
+		do
+			Result := ""
+			Result.extend (version.to_character_8)
+			Result.extend (type.to_character_8)
+			Result.append (as_16_bit_string (request_id))
+			Result.append (as_16_bit_string (content_length))
+			Result.extend (padding_length.to_character_8)
+			Result.append (create_blank_buffer (1))
+		end
+
+feature {TS_TEST_CASE} -- Implementation
 
 	process_header_bytes (buffer: STRING) is
 			-- Extract the header data from 'buffer'

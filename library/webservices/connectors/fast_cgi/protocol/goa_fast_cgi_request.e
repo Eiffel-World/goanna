@@ -16,15 +16,13 @@ inherit
 		export
 			{NONE} all
 		end
-
 	UT_STRING_FORMATTER
 		export
 			{NONE} all
 		end
-
 	KL_IMPORTED_INTEGER_ROUTINES
-
 	POSIX_CONSTANTS
+	GOA_STRING_MANIPULATION
 
 creation
 	make
@@ -103,6 +101,9 @@ feature -- Basic operations
 		local
 			record_header: GOA_FAST_CGI_RECORD_HEADER
 		do
+   			debug ("fcgi_record_output")
+				io.put_string (generating_type + "%N")
+			end
 			debug ("fcgi_protocol")
 				print (generator + ".read%R%N")
 			end
@@ -125,7 +126,17 @@ feature -- Basic operations
 			debug ("fcgi_protocol")
 				print (generator + ".read - finished.%R%N")
 			end
+   			debug ("fcgi_record_output")
+   				io.put_string ("Parameters%N")
+				parameters.do_all_with_key (agent print_parameter (?, ?))
+			end
 		end
+
+	print_parameter (a_value, a_key: STRING) is
+		do
+			io.put_string ("  " + a_key + " | " + a_value + "%N")
+		end
+
 
 	write_stderr (str: STRING) is
 			-- Write 'str' as a stderr record to the socket
@@ -386,6 +397,8 @@ feature {NONE} -- Implementation
 			end
 		end
 
+feature {TS_TEST_CASE} -- Process Raw Parameter Data
+
 	process_parameter_raw_data is
 			-- Extract parameters from 'raw_param_content'
 		local
@@ -443,6 +456,45 @@ feature {NONE} -- Implementation
 			debug ("fcgi_protocol")
 				print (generator + ".process_parameter_raw_data: Finished")
 			end
+		end
+
+feature
+
+	add_parameter_to_raw_content (a_name, a_value: STRING) is
+		require
+			valid_a_name: a_name /= Void
+			valid_a_value: a_value /= Void
+			valid_name_length: a_name.count < max_length
+			valid_value_length: a_value.count < max_length
+		do
+			if raw_param_content = Void then
+				raw_param_content := ""
+			end
+			raw_param_content.append (encode_length (a_name.count))
+			raw_param_content.append (encode_length (a_value.count))
+			raw_param_content.append (a_name)
+			raw_param_content.append (a_value)
+		end
+
+	encode_length (a_length: INTEGER): STRING is
+		require
+			non_negative_a_length: a_length >= 0
+			a_length_valid: a_length < max_length
+		do
+			-- See http://www.fastcgi.com/devkit/doc/fcgi-spec.html
+			-- If length fits into 7 bits: use a single byte
+			-- Else: use 4 bytes (1st bit is the flag indicating 4 byte length)
+			if a_length < 128 then
+				Result := ""
+				Result.extend (a_length.to_character_8)
+			else
+				Result := as_32_bit_string (a_length + max_length)
+			end
+		end
+
+	max_length: INTEGER_32 is
+		once
+			Result := (2147483648).as_integer_32
 		end
 
 end -- class GOA_FAST_CGI_REQUEST

@@ -16,7 +16,7 @@ inherit
 			display_value, current_value
 		end
 	GOA_SCHEMA_FACILITIES
-	
+
 feature -- Processing
 
 	process (processing_result: PARAMETER_PROCESSING_RESULT) is
@@ -33,7 +33,7 @@ feature -- Processing
 				end
 			commit (processing_result.request_processing_result)
 		end
-		
+
 	display_value (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 		local
 			parameter_result: PARAMETER_PROCESSING_RESULT
@@ -45,7 +45,7 @@ feature -- Processing
 				Result := current_value (processing_result, suffix)
 			end
 		end
-		
+
 	boolean_updated (processing_result: PARAMETER_PROCESSING_RESULT): BOOLEAN is
 			-- Does processing_result contain a change for the boolean value contained in the database?
 		require
@@ -72,8 +72,8 @@ feature -- Processing
 			Result := equal (processing_result.value.as_lower, on)
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result.request_processing_result)
-		end	
-		
+		end
+
 	current_value (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): STRING is
 		do
 			Result := yes_no_string_for_boolean (boolean_in_database (processing_result, suffix))
@@ -90,20 +90,20 @@ feature -- Processing
 		end
 
 feature -- As XML
-		
+
 	add_to_document (xml: GOA_COMMON_XML_DOCUMENT_EXTENDED; processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER) is
 		do
 			xml.add_checkbox_element (input_class (processing_result, suffix), full_parameter_name (name, suffix), display_value (processing_result, suffix), xml.yes_no_string_for_boolean (is_disabled (processing_result, suffix)), script_name (processing_result, suffix))
 		end
-		
-	
+
+
 	ok_to_add (xml: GOA_COMMON_XML_DOCUMENT): BOOLEAN is
 		do
 			Result := xml.ok_to_add_element_or_text (xml.checkbox_element_code)
 		end
-	
+
 feature -- Deferred Features
-		
+
 	process_checked (processing_result: PARAMETER_PROCESSING_RESULT) is
 		require
 			ok_to_read_data: ok_to_read_data (processing_result.request_processing_result)
@@ -113,7 +113,7 @@ feature -- Deferred Features
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result.request_processing_result)
 		end
-	
+
 	process_not_checked (processing_result: PARAMETER_PROCESSING_RESULT) is
 		require
 			ok_to_read_data: ok_to_read_data (processing_result.request_processing_result)
@@ -123,8 +123,8 @@ feature -- Deferred Features
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result.request_processing_result)
 		end
-	
-	boolean_in_database (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is 
+
+	boolean_in_database (processing_result: REQUEST_PROCESSING_RESULT; suffix: INTEGER): BOOLEAN is
 		require
 			ok_to_read_data: ok_to_read_data (processing_result)
 			valid_processing_result: processing_result /= Void
@@ -133,5 +133,5 @@ feature -- Deferred Features
 		ensure
 			ok_to_read_data: ok_to_read_data (processing_result)
 		end
-		
+
 end -- class GOA_BOOLEAN_PARAMETER

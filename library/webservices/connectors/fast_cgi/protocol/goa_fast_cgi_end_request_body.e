@@ -84,6 +84,15 @@ feature -- Basic operations
 			end
 		end
 
+	as_fast_cgi_string: STRING is
+			-- Formatted as a String per the FastCGI protocol
+		do
+			Result := as_32_bit_string (app_status)
+			Result.extend (protocol_status.to_character_8)
+			Result.append (create_blank_buffer (3))
+		end
+
+
 feature {NONE} -- Implementation
 
 	process_body_fields is

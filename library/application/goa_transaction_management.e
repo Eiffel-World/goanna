@@ -79,7 +79,7 @@ feature -- Access to data structures
 		deferred
 		end
 
-		
+
 	ok_to_start_transaction (processing_result: GOA_REQUEST_PROCESSING_RESULT): BOOLEAN is
 			-- Can we currently start a transaction?
 		require
