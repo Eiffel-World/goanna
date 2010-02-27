@@ -11,10 +11,11 @@ deferred class
 inherit
 
 	TS_TEST_CASE
+	UT_STRING_FORMATTER
 
 feature
 
-	test_as_fast_cgi_string is
+	test_add_raw_parameter_to_request is
 		local
 			request: GOA_FAST_CGI_REQUEST
 			parameters: DS_HASH_TABLE [STRING, STRING]
@@ -76,5 +77,20 @@ feature
 				table_1.forth
 			end
 		end
+
+	test_as_fast_cgi_string is
+		local
+			request: GOA_FAST_CGI_REQUEST
+			as_fast_cgi_string: STRING
+		do
+			create request.make
+			request.add_parameter_record ("name1", "value1")
+			request.add_parameter_record ("name2", "value2")
+			request.add_parameter_record ("name3", "value3")
+			as_fast_cgi_string := request.as_fast_cgi_string (4)
+			assert_equal ("as_fast_cgi_string.count", 103, as_fast_cgi_string.count)
+			-- Need to verify that the output is actually correct
+		end
+
 
 end

@@ -40,6 +40,8 @@ feature -- Access
 
 	app_status, protocol_status: INTEGER
 
+	header_type_code: INTEGER is 5
+
 feature -- Basic operations
 
 	write (socket: ABSTRACT_TCP_SOCKET) is
@@ -87,9 +89,7 @@ feature -- Basic operations
 	as_fast_cgi_string: STRING is
 			-- Formatted as a String per the FastCGI protocol
 		do
-			Result := as_32_bit_string (app_status)
-			Result.extend (protocol_status.to_character_8)
-			Result.append (create_blank_buffer (3))
+			Result := ""
 		end
 
 
@@ -104,6 +104,10 @@ feature {NONE} -- Implementation
 --				+ raw_param_content.item (4).code
 --			protocol_status := raw_content_data.item (5).code
 			-- 3 reserved bytes also read. Ignore them.
+			debug ("fcgi_record_output")
+				io.put_string ("  app_status: " + app_status.out + "%N")
+				io.put_string ("  protocol_status: " + protocol_status.out + "%N")
+			end
 		end
 
 end -- class GOA_FAST_CGI_END_REQUEST_BODY

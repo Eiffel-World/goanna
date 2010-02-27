@@ -254,7 +254,38 @@ feature -- Basic operations
 			end
 		end
 
+	as_fast_cgi_string (new_request_id: INTEGER): STRING is
+		local
+			begin_record: GOA_FAST_CGI_BEGIN_REQUEST_BODY
+			raw_record: GOA_FAST_CGI_RAW_BODY
+			end_record: GOA_FAST_CGI_BEGIN_REQUEST_BODY
+		do
+			create begin_record
+			Result := begin_record.record_header (new_request_id).as_fast_cgi_string
+			Result.append (begin_record.as_fast_cgi_string)
+			if parameter_records = Void then
+				create parameter_records.make
+			end
+			create raw_record.make ("", 0)
+			parameter_records.force_last (raw_record)
+			parameter_records.do_all (agent append_to_fast_cgi_string (?, new_request_id, Result))
+			create end_record
+			Result.append (end_record.record_header (new_request_id).as_fast_cgi_string)
+			Result.append (end_record.as_fast_cgi_string)
+		end
+
 feature {NONE} -- Implementation
+
+	append_to_fast_cgi_string (raw_record: GOA_FAST_CGI_RAW_BODY; new_request_id: INTEGER; fast_cgi_string: STRING) is
+			-- Append representation of raw_record to fast_cgi_string
+		require
+			valid_raw_record: raw_record /= Void
+			valid_fast_cgi_string: fast_cgi_string /= Void
+		do
+			fast_cgi_string.append (raw_record.record_header (new_request_id).as_fast_cgi_string)
+			fast_cgi_string.append (raw_record.as_fast_cgi_string)
+		end
+
 
 	stdin_records_done, param_records_done: BOOLEAN
 			-- Have all stdin and param records been read?
@@ -327,6 +358,11 @@ feature {NONE} -- Implementation
 				-- store body elements
 				role := record_body.role
 				flags := record_body.flags
+				debug ("fcgi_record_output")
+					io.put_string ("  Role: " + role.out + "%N")
+					io.put_string ("  Flags: " + flags.out + "%N")
+				end
+
 			end
 			debug ("fcgi_protocol")
 				print (generator + ".read_begin_request_body - finished%R%N")
@@ -397,6 +433,9 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	parameter_records: DS_LINKED_LIST [GOA_FAST_CGI_RAW_BODY]
+		-- Parameter records add via add_parameter_record
+
 feature {TS_TEST_CASE} -- Process Raw Parameter Data
 
 	process_parameter_raw_data is
@@ -459,6 +498,20 @@ feature {TS_TEST_CASE} -- Process Raw Parameter Data
 		end
 
 feature
+
+	add_parameter_record (a_name, a_value: STRING) is
+		require
+			valid_a_name: a_name /= Void
+			valid_a_value: a_value /= Void
+		local
+			new_record: GOA_FAST_CGI_RAW_BODY
+		do
+			if parameter_records = Void then
+				create parameter_records.make
+			end
+			create new_record.make (parameter_as_raw_content (a_name, a_value), 0)
+			parameter_records.force_last (new_record)
+		end
 
 	add_parameter_to_raw_content (a_name, a_value: STRING) is
 		require

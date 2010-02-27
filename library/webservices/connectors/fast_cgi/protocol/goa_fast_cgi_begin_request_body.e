@@ -20,6 +20,8 @@ feature -- Access
 
 	role, flags: INTEGER
 
+	header_type_code: INTEGER is 1
+
 feature -- Attribute Setting
 
 	set_role (new_role: like role) is

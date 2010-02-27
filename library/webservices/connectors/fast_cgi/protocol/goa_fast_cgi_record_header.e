@@ -90,7 +90,8 @@ feature -- Basic operations
     			debug ("fcgi_record_output")
 					io.put_string (generating_type + "%N")
     				io.put_string ("  version: " + version.out + "%N")
-    				io.put_string ("  request_id: " + type.out + "%N")
+    				io.put_string ("  request_id: " + request_id.out + "%N")
+    				io.put_string ("  type: " + type.out + "%N")
     				io.put_string ("  content_length: " + content_length.out + "%N")
     				io.put_string ("  padding_length: " + padding_length.out + "%N")
     			end

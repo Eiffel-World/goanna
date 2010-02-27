@@ -91,6 +91,20 @@ feature -- Access
 		deferred
 		end
 
+	record_header (request_id: INTEGER): GOA_FAST_CGI_RECORD_HEADER is
+		local
+			content_length: INTEGER
+		do
+			if as_fast_cgi_string /= Void then
+				content_length := as_fast_cgi_string.count
+			end
+			create Result.make (1, request_id, header_type_code, content_length, padding_length)
+		end
+
+	header_type_code: INTEGER is
+		deferred
+		end
+
 feature {NONE} -- Implementation
 
 	process_body_fields is

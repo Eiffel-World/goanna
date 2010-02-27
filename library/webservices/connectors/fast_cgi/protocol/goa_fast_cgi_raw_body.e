@@ -42,6 +42,8 @@ feature -- Initialization
 
 feature -- Basic operations
 
+	header_type_code: INTEGER is 4
+
 	write (socket: ABSTRACT_TCP_SOCKET) is
 			-- Write this raw data body to 'socket'
 		require
@@ -90,7 +92,11 @@ feature -- Basic operations
 
 	as_fast_cgi_string: STRING is
 		do
-			Result := raw_content_data
+			if raw_content_data /= Void then
+				Result := raw_content_data
+			else
+				Result := ""
+			end
 		end
 
 
