@@ -69,6 +69,9 @@ feature -- Initialization
 			end
    			debug ("fcgi_record_output")
 				io.put_string (generating_type + "%N")
+				if raw_content_data /= Void then
+					io.put_string ("raw_content_data.count: " + raw_content_data.count.out + "%N")
+				end
 			end
 
 		end

@@ -464,22 +464,28 @@ feature
 		require
 			valid_a_name: a_name /= Void
 			valid_a_value: a_value /= Void
-			valid_name_length: a_name.count < max_length
-			valid_value_length: a_value.count < max_length
 		do
 			if raw_param_content = Void then
 				raw_param_content := ""
 			end
-			raw_param_content.append (encode_length (a_name.count))
-			raw_param_content.append (encode_length (a_value.count))
-			raw_param_content.append (a_name)
-			raw_param_content.append (a_value)
+			raw_param_content.append (parameter_as_raw_content (a_name, a_value))
+		end
+
+	parameter_as_raw_content (a_name, a_value: STRING): STRING is
+		require
+			valid_a_name: a_name /= Void
+			valid_a_value: a_value /= Void
+		do
+			Result := ""
+			Result.append (encode_length (a_name.count))
+			Result.append (encode_length (a_value.count))
+			Result.append (a_name)
+			Result.append (a_value)
 		end
 
 	encode_length (a_length: INTEGER): STRING is
 		require
 			non_negative_a_length: a_length >= 0
-			a_length_valid: a_length < max_length
 		do
 			-- See http://www.fastcgi.com/devkit/doc/fcgi-spec.html
 			-- If length fits into 7 bits: use a single byte
@@ -488,13 +494,9 @@ feature
 				Result := ""
 				Result.extend (a_length.to_character_8)
 			else
-				Result := as_32_bit_string (a_length + max_length)
+				Result := as_32_bit_string (a_length + a_length.min_value)
+				-- This forces the flag bit to be 1; leaving all the other bits the same
 			end
-		end
-
-	max_length: INTEGER_32 is
-		once
-			Result := (2147483648).as_integer_32
 		end
 
 end -- class GOA_FAST_CGI_REQUEST
