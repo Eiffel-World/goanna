@@ -67,7 +67,6 @@
 			Remove intermediary generated files.
 		</description>
 
-		<ve clean="utility" recursive="true"/>
 	</target>
 
 	<target name="clobber">
